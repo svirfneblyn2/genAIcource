@@ -1,0 +1,124 @@
+<svg viewBox="0 0 1200 680" width="1200" height="680" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #0e131b; }
+      .surface { fill: #141c28; stroke: #253245; stroke-width: 1.5; rx: 8px; }
+      .surface-alt { fill: #1b2434; stroke: #364761; stroke-width: 1.5; rx: 6px; }
+      .text-title { font-family: 'Inter', -apple-system, sans-serif; font-weight: 700; fill: #f8fafc; font-size: 20px; }
+      .text-sub { font-family: 'Inter', -apple-system, sans-serif; font-weight: 400; fill: #94a3b8; font-size: 13px; }
+      .text-header { font-family: 'Inter', -apple-system, sans-serif; font-weight: 600; fill: #e2e8f0; font-size: 15px; }
+      .text-body { font-family: 'Inter', -apple-system, sans-serif; font-weight: 400; fill: #94a3b8; font-size: 12px; }
+      .text-mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #60a5fa; }
+      .text-mono-green { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #6ee7b7; }
+      .text-mono-amber { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #e0c58e; }
+      .text-mono-coral { font-family: 'JetBrains Mono', monospace; font-size: 11px; fill: #d98585; }
+      .line { stroke: #364761; stroke-width: 1.5; stroke-dasharray: 4 4; }
+      .arrow { stroke: #60a5fa; stroke-width: 2; marker-end: url(#arrow-blue); }
+      .arrow-green { stroke: #6ee7b7; stroke-width: 2; marker-end: url(#arrow-g); }
+      .arrow-coral { stroke: #d98585; stroke-width: 2; marker-end: url(#arrow-c); }
+      .token-pill { fill: #1e2c42; stroke: #60a5fa; stroke-width: 1; rx: 4px; }
+    </style>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#60a5fa" />
+    </marker>
+    <marker id="arrow-g" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6ee7b7" />
+    </marker>
+    <marker id="arrow-c" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d98585" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="680" class="bg" />
+
+  <!-- Title Area -->
+  <text x="40" y="45" class="text-title">STREAMING ARCHITECTURE: SSE PROTOCOL &amp; LATENCY DYNAMICS</text>
+  <text x="40" y="70" class="text-sub">Synchronous Blocking (Traditional) vs. Server-Sent Events (SSE) Incremental Streaming</text>
+
+  <!-- Left: Blocking Pattern -->
+  <rect x="40" y="100" width="540" height="540" class="surface" />
+  <rect x="55" y="115" width="510" height="36" class="surface-alt" />
+  <circle cx="75" cy="133" r="6" fill="#d98585" />
+  <text x="90" y="138" class="text-header">1. Synchronous Request (stream=False)</text>
+  <text x="450" y="138" class="text-mono-coral">POOR UX / HIGH PERCEIVED LATENCY</text>
+
+  <!-- Actor Labels -->
+  <text x="100" y="180" class="text-mono" font-weight="bold">Client App</text>
+  <text x="440" y="180" class="text-mono" font-weight="bold">Cloud LLM Engine</text>
+  <line x1="130" y1="195" x2="130" y2="580" class="line" />
+  <line x1="480" y1="195" x2="480" y2="580" class="line" />
+
+  <!-- Timeline Flow Blocking -->
+  <!-- t=0 request -->
+  <line x1="130" y1="220" x2="475" y2="220" class="arrow" />
+  <text x="210" y="215" class="text-body">POST /chat/completions (Full Prompt)</text>
+
+  <!-- Processing wait -->
+  <rect x="470" y="225" width="20" height="280" fill="#2d2516" stroke="#e0c58e" rx="3" />
+  <text x="350" y="360" class="text-mono-amber" text-anchor="end">Model Inference (3.2s)</text>
+  <text x="350" y="380" class="text-body" text-anchor="end">Client completely blocked</text>
+  <text x="350" y="398" class="text-body" text-anchor="end">Spinner / Blank screen</text>
+
+  <!-- Response return -->
+  <line x1="470" y1="510" x2="135" y2="510" class="arrow-coral" />
+  <text x="210" y="505" class="text-body">HTTP 200 OK (Complete JSON Body)</text>
+
+  <!-- Metrics box blocking -->
+  <rect x="70" y="540" width="480" height="75" class="surface-alt" />
+  <text x="90" y="565" class="text-header" font-size="13px">Latency Metrics (Non-Streaming):</text>
+  <text x="90" y="588" class="text-body">• Time To First Token (TTFT): <tspan class="text-mono-coral">3,200 ms (identical to total duration)</tspan></text>
+  <text x="90" y="605" class="text-body">• User Feedback: Frozen for 3.2s • Network failure at 3.1s drops 100% of generated data</text>
+
+
+  <!-- Right: Streaming Pattern -->
+  <rect x="620" y="100" width="540" height="540" class="surface" />
+  <rect x="635" y="115" width="510" height="36" class="surface-alt" />
+  <circle cx="655" cy="133" r="6" fill="#6ee7b7" />
+  <text x="670" y="138" class="text-header">2. Server-Sent Events (stream=True)</text>
+  <text x="1030" y="138" class="text-mono-green">OPTIMAL UX / SUB-300ms TTFT</text>
+
+  <!-- Actor Labels -->
+  <text x="680" y="180" class="text-mono" font-weight="bold">Client App</text>
+  <text x="1020" y="180" class="text-mono" font-weight="bold">Cloud LLM Engine</text>
+  <line x1="710" y1="195" x2="710" y2="580" class="line" />
+  <line x1="1060" y1="195" x2="1060" y2="580" class="line" />
+
+  <!-- Timeline Flow Streaming -->
+  <!-- Request -->
+  <line x1="710" y1="220" x2="1055" y2="220" class="arrow" />
+  <text x="790" y="215" class="text-body">POST /chat/completions (stream=True)</text>
+
+  <!-- TTFT -->
+  <line x1="710" y1="220" x2="710" y2="270" stroke="#6ee7b7" stroke-width="3" />
+  <text x="718" y="250" class="text-mono-green">TTFT: 280ms</text>
+
+  <!-- SSE Chunks -->
+  <line x1="1055" y1="270" x2="715" y2="270" class="arrow-green" />
+  <rect x="800" y="258" width="150" height="20" class="token-pill" />
+  <text x="810" y="272" class="text-mono-green">data: {"delta": "Hello"}</text>
+
+  <line x1="1055" y1="310" x2="715" y2="310" class="arrow-green" />
+  <rect x="800" y="298" width="165" height="20" class="token-pill" />
+  <text x="810" y="312" class="text-mono-green">data: {"delta": " world!"}</text>
+
+  <line x1="1055" y1="350" x2="715" y2="350" class="arrow-green" />
+  <rect x="800" y="338" width="170" height="20" class="token-pill" />
+  <text x="810" y="352" class="text-mono-green">data: {"delta": " I am"}</text>
+
+  <line x1="1055" y1="390" x2="715" y2="390" class="arrow-green" />
+  <rect x="800" y="378" width="180" height="20" class="token-pill" />
+  <text x="810" y="392" class="text-mono-green">data: {"delta": " streaming..."}</text>
+
+  <line x1="1055" y1="430" x2="715" y2="430" class="arrow-green" />
+  <rect x="800" y="418" width="195" height="20" class="token-pill" />
+  <text x="810" y="432" class="text-mono-green">data: [DONE] + Usage chunk</text>
+
+  <line x1="1060" y1="225" x2="1060" y2="430" stroke="#60a5fa" stroke-width="6" opacity="0.4" />
+
+  <!-- Metrics box streaming -->
+  <rect x="650" y="540" width="480" height="75" class="surface-alt" />
+  <text x="670" y="565" class="text-header" font-size="13px">Latency Metrics (Incremental Streaming):</text>
+  <text x="670" y="588" class="text-body">• Time To First Token (TTFT): <tspan class="text-mono-green">280 ms (11.4x faster user perceived response)</tspan></text>
+  <text x="670" y="605" class="text-body">• Inter-Token Latency (ITL): <tspan class="text-mono">18 ms/token</tspan> • Total Generation Time: 3.2s</text>
+</svg>
