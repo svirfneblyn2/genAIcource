@@ -1,0 +1,5 @@
+# Optional: Official LangGraph ecosystem packages
+# NOTE: The demo package includes a standalone zero-dependency engine.
+# It runs out of the box on pure Python 3.9+ standard library without running pip install.
+langgraph>=0.2.0
+langchain-core>=0.3.0

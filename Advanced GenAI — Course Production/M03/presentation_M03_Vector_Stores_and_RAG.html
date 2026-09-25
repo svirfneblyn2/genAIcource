@@ -1,0 +1,3192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 03: Vector Stores and RAG | Systems Engineering Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Calm Engineering Palette */
+      --bg-canvas: #0e131b;
+      --bg-surface: #141c28;
+      --bg-surface-alt: #1b2434;
+      --border-subtle: #253245;
+      --border-focus: #3b82f6;
+      --border-strong: #364761;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      /* Functional Muted Technical Accents */
+      --accent-blue: #60a5fa;
+      --accent-green: #6ee7b7;
+      --accent-amber: #e0c58e;
+      --accent-coral: #d98585;
+      --accent-purple: #b4a4e5;
+      
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Main Deck Stage */
+    main.stage-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    .slide-viewport {
+      width: 1440px;
+      height: 810px;
+      position: relative;
+      background-color: var(--bg-canvas);
+      transform-origin: center center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      flex-shrink: 0;
+    }
+
+    .slide-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: none;
+      flex-direction: column;
+      padding: 38px 48px 24px 48px;
+      background-color: var(--bg-canvas);
+      background-image: 
+        radial-gradient(circle at 100% 0%, rgba(96, 165, 250, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 0% 100%, rgba(180, 164, 229, 0.03) 0%, transparent 40%);
+    }
+
+    .slide-container.active {
+      display: flex;
+    }
+
+    /* Slide Header */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      max-width: 1100px;
+    }
+
+    .category-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-blue);
+      background-color: rgba(96, 165, 250, 0.08);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      padding: 3px 9px;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .category-badge::before {
+      content: "";
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: var(--accent-blue);
+    }
+
+    .slide-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      line-height: 1.15;
+    }
+
+    .slide-subtitle {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      font-weight: 400;
+      line-height: 1.35;
+    }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-dim);
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    /* Slide Canvas Arena */
+    .slide-canvas {
+      flex: 1;
+      width: 100%;
+      position: relative;
+      margin-bottom: 12px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      background-color: rgba(20, 28, 40, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .diagram-arena {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .diagram-arena svg {
+      width: 100%;
+      height: 100%;
+      max-height: 520px;
+    }
+
+    /* Footer Takeaway Bar */
+    .slide-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 10px;
+      height: 38px;
+    }
+
+    .takeaway-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--text-main);
+      font-weight: 500;
+    }
+
+    .takeaway-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-amber);
+      background-color: rgba(224, 197, 142, 0.12);
+      border: 1px solid rgba(224, 197, 142, 0.3);
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+
+    .footer-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* SVG Base Styling */
+    text {
+      font-family: var(--font-sans);
+    }
+    .text-title { font-weight: 700; fill: #ffffff; }
+    .text-h1 { font-weight: 600; fill: #f8fafc; }
+    .text-h2 { font-weight: 600; fill: var(--text-muted); }
+    .text-p { font-weight: 400; fill: #cbd5e1; }
+    .text-muted { font-weight: 400; fill: #94a3b8; }
+    .text-dim { font-weight: 400; fill: #64748b; }
+    .text-mono { font-family: var(--font-mono); font-weight: 500; }
+    .text-mono-bold { font-family: var(--font-mono); font-weight: 700; }
+
+    /* Interactive Speaker Notes Drawer */
+    .notes-drawer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 280px;
+      background-color: #0b0f16;
+      border-top: 2px solid var(--border-focus);
+      box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      transform: translateY(100%);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notes-drawer.open {
+      transform: translateY(0);
+    }
+
+    .notes-header {
+      padding: 10px 24px;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .notes-title {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--accent-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .notes-close-btn {
+      background: none;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 3px;
+    }
+
+    .notes-content {
+      flex: 1;
+      padding: 16px 24px;
+      overflow-y: auto;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      user-select: text;
+    }
+
+    .notes-content h4 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-amber);
+      margin: 8px 0 4px 0;
+      font-family: var(--font-mono);
+    }
+
+    .notes-content p {
+      margin-bottom: 8px;
+    }
+
+    /* Grid Overview Modal */
+    .grid-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(14, 19, 27, 0.95);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      padding: 30px;
+    }
+
+    .grid-modal.open {
+      display: flex;
+    }
+
+    .grid-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+
+    .grid-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .grid-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+
+    .grid-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      height: 130px;
+    }
+
+    .grid-card:hover {
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+    }
+
+    .grid-card.active {
+      border-color: var(--border-focus);
+      background-color: rgba(59, 130, 246, 0.08);
+    }
+
+    .grid-card-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .grid-card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    /* Micro Control Toolbar */
+    .controls-toolbar {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background-color: rgba(20, 28, 40, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      padding: 4px 6px;
+      z-index: 500;
+      backdrop-filter: blur(4px);
+    }
+
+    .tool-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.1s ease;
+    }
+
+    .tool-btn:hover {
+      color: #fff;
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    /* Print / PDF Export Optimization (Exact 1440pt x 810pt Vector Export) */
+    @media print {
+      @page {
+        size: 1440pt 810pt;
+        margin: 0;
+      }
+      html, body {
+        background-color: #0e131b !important;
+        color: #f8fafc !important;
+        overflow: visible !important;
+        height: auto !important;
+        width: 1440pt !important;
+        display: block !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      main.stage-wrapper {
+        position: static !important;
+        height: auto !important;
+        width: 1440pt !important;
+        overflow: visible !important;
+        display: block !important;
+        background: transparent !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .slide-viewport {
+        position: static !important;
+        height: auto !important;
+        width: 1440pt !important;
+        overflow: visible !important;
+        display: block !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+      }
+      .slide-container {
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
+        opacity: 1 !important;
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        break-after: page !important;
+        break-inside: avoid !important;
+        width: 1440pt !important;
+        height: 810pt !important;
+        max-height: 810pt !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+        background: #0e131b !important;
+        padding: 38px 48px 24px 48px !important;
+        margin: 0 !important;
+      }
+      .slide-container:last-of-type {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+      }
+      .controls-toolbar, .notes-drawer, .grid-modal {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="stage-wrapper">
+    <div class="slide-viewport" id="viewport">
+      <section class="slide-container active" id="slide-01" data-slide="1">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">ADVANCED GENAI | MODULE 03</span>
+            <h1 class="slide-title">Vector Stores and Enterprise RAG: Architectural Blueprint</h1>
+            <p class="slide-subtitle">Decoupling probabilistic reasoning from deterministic memory across the complete retrieval lifecycle.</p>
+          </div>
+          <div class="slide-counter">01 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+        </marker>
+        <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#6ee7b7"/>
+        </marker>
+      </defs>
+
+      <!-- Stage 1: Ingestion -->
+      <g transform="translate(15, 40)">
+        <rect width="145" height="260" rx="6" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="145" height="32" rx="6" fill="#1b2434"/>
+        <text x="72" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#60a5fa">1. INGESTION</text>
+        
+        <rect x="12" y="48" width="121" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="72" y="68" text-anchor="middle" class="text-h1" font-size="11.5">Raw Documents</text>
+        <text x="72" y="86" text-anchor="middle" class="text-dim" font-size="9.5">PDFs, Markdown, SQL</text>
+
+        <path d="M 72 103 L 72 120" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <rect x="12" y="125" width="121" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="72" y="145" text-anchor="middle" class="text-h1" font-size="11.5">Structure Parser</text>
+        <text x="72" y="163" text-anchor="middle" class="text-dim" font-size="9.5">Headings &amp; Tables</text>
+
+        <path d="M 72 180 L 72 197" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+        <rect x="12" y="202" width="121" height="46" rx="4" fill="#0e131b" stroke="#3b82f6" stroke-width="1.2"/>
+        <text x="72" y="222" text-anchor="middle" class="text-mono" font-size="10.5" fill="#60a5fa">ACL Metadata</text>
+        <text x="72" y="238" text-anchor="middle" class="text-dim" font-size="9">Tenant &amp; Role Tags</text>
+      </g>
+
+      <path d="M 160 170 L 185 170" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Stage 2: Representation & Indexing -->
+      <g transform="translate(190, 40)">
+        <rect width="150" height="260" rx="6" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="150" height="32" rx="6" fill="#1b2434"/>
+        <text x="75" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#b4a4e5">2. INDEXING</text>
+
+        <rect x="12" y="48" width="126" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="75" y="68" text-anchor="middle" class="text-h1" font-size="11">Dense Vectors</text>
+        <text x="75" y="86" text-anchor="middle" class="text-dim" font-size="9.5">1536-dim Embeddings</text>
+
+        <rect x="12" y="115" width="126" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="75" y="135" text-anchor="middle" class="text-h1" font-size="11">Sparse Tokens</text>
+        <text x="75" y="153" text-anchor="middle" class="text-dim" font-size="9.5">BM25 Inverted Index</text>
+
+        <rect x="12" y="182" width="126" height="66" rx="4" fill="#1b2434" stroke="#b4a4e5" stroke-width="1.2"/>
+        <text x="75" y="204" text-anchor="middle" class="text-mono" font-size="10.5" fill="#b4a4e5">Vector DB</text>
+        <text x="75" y="222" text-anchor="middle" class="text-p" font-size="9.5">HNSW + IVF-PQ</text>
+        <text x="75" y="238" text-anchor="middle" class="text-dim" font-size="8.5">Sub-5ms Graph Routing</text>
+      </g>
+
+      <path d="M 340 170 L 365 170" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Stage 3: Retrieval & Filter -->
+      <g transform="translate(370, 40)">
+        <rect width="150" height="260" rx="6" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="150" height="32" rx="6" fill="#1b2434"/>
+        <text x="75" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#e0c58e">3. RETRIEVAL</text>
+
+        <rect x="12" y="48" width="126" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="75" y="68" text-anchor="middle" class="text-h1" font-size="11">Pre-Filtering</text>
+        <text x="75" y="86" text-anchor="middle" class="text-dim" font-size="9.5">Role &amp; ACL Check</text>
+
+        <rect x="12" y="115" width="126" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="75" y="135" text-anchor="middle" class="text-h1" font-size="11">Hybrid Fusion</text>
+        <text x="75" y="153" text-anchor="middle" class="text-dim" font-size="9.5">RRF (k=60) Scoring</text>
+
+        <rect x="12" y="182" width="126" height="66" rx="4" fill="#0e131b" stroke="#e0c58e" stroke-width="1.2"/>
+        <text x="75" y="204" text-anchor="middle" class="text-mono" font-size="10.5" fill="#e0c58e">Cross-Encoder</text>
+        <text x="75" y="222" text-anchor="middle" class="text-p" font-size="9.5">Rerank Top-50</text>
+        <text x="75" y="238" text-anchor="middle" class="text-dim" font-size="8.5">Selects Top-5 Clustered</text>
+      </g>
+
+      <path d="M 520 170 L 545 170" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Stage 4: Synthesis & Grounding -->
+      <g transform="translate(550, 40)">
+        <rect width="150" height="260" rx="6" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="150" height="32" rx="6" fill="#1b2434"/>
+        <text x="75" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#6ee7b7">4. SYNTHESIS</text>
+
+        <rect x="12" y="48" width="126" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="75" y="68" text-anchor="middle" class="text-h1" font-size="11">Context Assembly</text>
+        <text x="75" y="86" text-anchor="middle" class="text-dim" font-size="9.5">Primacy &amp; Recency</text>
+
+        <rect x="12" y="115" width="126" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="75" y="135" text-anchor="middle" class="text-h1" font-size="11">LLM Inference</text>
+        <text x="75" y="153" text-anchor="middle" class="text-dim" font-size="9.5">Grounded Generation</text>
+
+        <rect x="12" y="182" width="126" height="66" rx="4" fill="#0e131b" stroke="#6ee7b7" stroke-width="1.2"/>
+        <text x="75" y="204" text-anchor="middle" class="text-mono" font-size="10.5" fill="#6ee7b7">Inline Citations</text>
+        <text x="75" y="222" text-anchor="middle" class="text-p" font-size="9.5">[Source: ID § Sec]</text>
+        <text x="75" y="238" text-anchor="middle" class="text-dim" font-size="8.5">Verified Evidence Span</text>
+      </g>
+
+      <path d="M 700 170 L 725 170" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Stage 5: Evaluation -->
+      <g transform="translate(730, 40)">
+        <rect width="115" height="260" rx="6" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="115" height="32" rx="6" fill="#1b2434"/>
+        <text x="57" y="21" text-anchor="middle" class="text-mono" font-size="10" fill="#d98585">5. EVALUATION</text>
+
+        <rect x="10" y="55" width="95" height="75" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="57" y="76" text-anchor="middle" class="text-mono" font-size="9.5" fill="#60a5fa">Retrieval</text>
+        <text x="57" y="96" text-anchor="middle" class="text-p" font-size="9">Hit Rate</text>
+        <text x="57" y="112" text-anchor="middle" class="text-p" font-size="9">MRR, NDCG</text>
+
+        <rect x="10" y="150" width="95" height="85" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="57" y="172" text-anchor="middle" class="text-mono" font-size="9.5" fill="#6ee7b7">Generation</text>
+        <text x="57" y="192" text-anchor="middle" class="text-p" font-size="9">Faithfulness</text>
+        <text x="57" y="208" text-anchor="middle" class="text-p" font-size="9">Relevance</text>
+        <text x="57" y="224" text-anchor="middle" class="text-dim" font-size="8">Ragas Triad</text>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">SYSTEMS BLUEPRINT</span>
+            <span>RAG is a distributed systems pattern: externalize factual memory so models focus on synthesis.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Pedagogical Objective</h4>
+      <p>Open the lecture by clarifying the engineering thesis: RAG is not a prompt hack; it is a decoupled distributed memory architecture.</p>
+      <h4>What to Highlight</h4>
+      <p>Point to the 5 connected stages: Document Ingestion, Vector Indexing, Hybrid Query, Precision Reranking, and Grounded Generation.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-02" data-slide="2">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">SYSTEMS MENTAL MODEL</span>
+            <h1 class="slide-title">Parametric Weights vs Dynamic Retrieval Memory</h1>
+            <p class="slide-subtitle">Why enterprise applications must decouple knowledge storage from language reasoning.</p>
+          </div>
+          <div class="slide-counter">02 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left Box: Parametric Weights -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="36" rx="8" fill="#1b2434"/>
+        <text x="20" y="24" class="text-h1" font-size="13" fill="#d98585">Internal Parametric Memory (LLM Weights)</text>
+        
+        <g transform="translate(20, 52)">
+          <rect width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="20" class="text-mono" font-size="10.5" fill="#e2e8f0">Update Latency: Hours to Days</text>
+          <text x="14" y="34" class="text-dim" font-size="9">Requires retraining, fine-tuning, or alignment checkpoint</text>
+
+          <rect y="50" width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="70" class="text-mono" font-size="10.5" fill="#e2e8f0">Access Control: Impossible (Global Leak)</text>
+          <text x="14" y="84" class="text-dim" font-size="9">Weights cannot enforce per-user tenant or role boundaries</text>
+
+          <rect y="100" width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="120" class="text-mono" font-size="10.5" fill="#e2e8f0">Factual Verifiability: Opaque Black Box</text>
+          <text x="14" y="134" class="text-dim" font-size="9">Cannot audit exact origin file or paragraph for claims</text>
+
+          <rect y="150" width="320" height="66" rx="4" fill="#1b2434" stroke="#d98585" stroke-width="1.2"/>
+          <text x="14" y="172" class="text-mono-bold" font-size="11" fill="#d98585">Failure Mode: Fluent Hallucination</text>
+          <text x="14" y="190" class="text-p" font-size="9.5">Generates statistically plausible text that is factually false</text>
+          <text x="14" y="204" class="text-dim" font-size="8.5">Silent failure: user cannot distinguish fact from fiction</text>
+        </g>
+      </g>
+
+      <!-- Center VS Divider -->
+      <circle cx="430" cy="175" r="20" fill="#1b2434" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="430" y="180" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">VS</text>
+
+      <!-- Right Box: Non-Parametric Memory -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="36" rx="8" fill="#1b2434"/>
+        <text x="20" y="24" class="text-h1" font-size="13" fill="#6ee7b7">External Non-Parametric Memory (Vector Store)</text>
+
+        <g transform="translate(20, 52)">
+          <rect width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="20" class="text-mono" font-size="10.5" fill="#e2e8f0">Update Latency: Milliseconds</text>
+          <text x="14" y="34" class="text-dim" font-size="9">Instant document insert, update, or tombstone deletion</text>
+
+          <rect y="50" width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="70" class="text-mono" font-size="10.5" fill="#e2e8f0">Access Control: Strict Role Pre-Filtering</text>
+          <text x="14" y="84" class="text-dim" font-size="9">Metadata tags enforce tenant and user permissions</text>
+
+          <rect y="100" width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="120" class="text-mono" font-size="10.5" fill="#e2e8f0">Factual Verifiability: Cryptographic Audit</text>
+          <text x="14" y="134" class="text-dim" font-size="9">Every statement links to doc_id, section, and version tag</text>
+
+          <rect y="150" width="320" height="66" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="14" y="172" class="text-mono-bold" font-size="11" fill="#6ee7b7">Safe Failure: Explicit Refusal</text>
+          <text x="14" y="190" class="text-p" font-size="9.5">States 'Insufficient evidence in approved policy'</text>
+          <text x="14" y="204" class="text-dim" font-size="8.5">Deterministic failure boundary prevents compliance incidents</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">MEMORY DUALITY</span>
+            <span>Parametric weights store language logic: external indexes store factual truth.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Key Mental Model</h4>
+      <p>Contrast internal synaptic weights with external vector memory. Weights are frozen, expensive to modify, and probabilistic. RAG is instant, inspectable, and access-controlled.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-03" data-slide="3">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">DIAGNOSTIC FOUNDATION</span>
+            <h1 class="slide-title">The Hook: The Generative Model Can Be Innocent</h1>
+            <p class="slide-subtitle">Over 75% of production RAG defects originate in data retrieval, not in model weights.</p>
+          </div>
+          <div class="slide-counter">03 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr-red" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#d98585"/>
+        </marker>
+        <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#6ee7b7"/>
+        </marker>
+        <marker id="arr-blue" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+        </marker>
+      </defs>
+
+      <!-- Center Query -->
+      <g transform="translate(30, 20)">
+        <rect width="800" height="42" rx="6" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <text x="20" y="26" class="text-mono" font-size="12" fill="#60a5fa">User Query:</text>
+        <text x="115" y="26" class="text-h1" font-size="12.5" fill="#f8fafc">"How many days can an employee borrow an emergency replacement laptop?"</text>
+      </g>
+
+      <!-- Scenario A: Stale Context -->
+      <g transform="translate(30, 80)">
+        <rect width="250" height="235" rx="6" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+        <rect width="250" height="30" rx="6" fill="#1b2434"/>
+        <text x="125" y="20" text-anchor="middle" class="text-mono" font-size="11" fill="#d98585">SCENARIO A: STALE RETRIEVAL</text>
+
+        <rect x="15" y="42" width="220" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="25" y="62" class="text-mono" font-size="10" fill="#d98585">Retrieved Chunk (v1.2):</text>
+        <text x="25" y="78" class="text-p" font-size="10">"Hardware loan limit: 7 days"</text>
+
+        <path d="M 125 100 L 125 125" stroke="#d98585" stroke-width="1.2" marker-end="url(#arr-red)"/>
+
+        <rect x="15" y="132" width="220" height="46" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="25" y="152" class="text-mono" font-size="10" fill="#60a5fa">Inference Engine:</text>
+        <text x="25" y="166" class="text-dim" font-size="9">Temperature = 0.0</text>
+
+        <path d="M 125 184 L 125 198" stroke="#d98585" stroke-width="1.2" marker-end="url(#arr-red)"/>
+
+        <rect x="15" y="202" width="220" height="24" rx="4" fill="#1b2434"/>
+        <text x="125" y="218" text-anchor="middle" class="text-mono" font-size="10.5" fill="#d98585">Output: "7 calendar days" (FALSE)</text>
+      </g>
+
+      <!-- Scenario B: Accurate Context -->
+      <g transform="translate(305, 80)">
+        <rect width="250" height="235" rx="6" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="250" height="30" rx="6" fill="#1b2434"/>
+        <text x="125" y="20" text-anchor="middle" class="text-mono" font-size="11" fill="#6ee7b7">SCENARIO B: FRESH RETRIEVAL</text>
+
+        <rect x="15" y="42" width="220" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="25" y="62" class="text-mono" font-size="10" fill="#6ee7b7">Retrieved Chunk (v2.4):</text>
+        <text x="25" y="78" class="text-p" font-size="10">"Hardware loan limit: 14 days"</text>
+
+        <path d="M 125 100 L 125 125" stroke="#6ee7b7" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+        <rect x="15" y="132" width="220" height="46" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="25" y="152" class="text-mono" font-size="10" fill="#60a5fa">Inference Engine:</text>
+        <text x="25" y="166" class="text-dim" font-size="9">Same Model &amp; Prompt</text>
+
+        <path d="M 125 184 L 125 198" stroke="#6ee7b7" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+        <rect x="15" y="202" width="220" height="24" rx="4" fill="#1b2434"/>
+        <text x="125" y="218" text-anchor="middle" class="text-mono" font-size="10.5" fill="#6ee7b7">Output: "14 calendar days" (TRUE)</text>
+      </g>
+
+      <!-- Scenario C: Missing Context -->
+      <g transform="translate(580, 80)">
+        <rect width="250" height="235" rx="6" fill="#141c28" stroke="#60a5fa" stroke-width="1.2"/>
+        <rect width="250" height="30" rx="6" fill="#1b2434"/>
+        <text x="125" y="20" text-anchor="middle" class="text-mono" font-size="11" fill="#60a5fa">SCENARIO C: SAFE REFUSAL</text>
+
+        <rect x="15" y="42" width="220" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="25" y="62" class="text-mono" font-size="10" fill="#e0c58e">Retrieval Result:</text>
+        <text x="25" y="78" class="text-dim" font-size="10">No matching chunks above threshold</text>
+
+        <path d="M 125 100 L 125 125" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr-blue)"/>
+
+        <rect x="15" y="132" width="220" height="46" rx="4" fill="#0e131b" stroke="#253245"/>
+        <text x="25" y="152" class="text-mono" font-size="10" fill="#60a5fa">Grounded Guardrail:</text>
+        <text x="25" y="166" class="text-dim" font-size="9">Enforces explicit refusal</text>
+
+        <path d="M 125 184 L 125 198" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr-blue)"/>
+
+        <rect x="15" y="202" width="220" height="24" rx="4" fill="#1b2434"/>
+        <text x="125" y="218" text-anchor="middle" class="text-mono" font-size="10" fill="#6ee7b7">"Insufficient policy evidence" (SAFE)</text>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">ROOT CAUSE ANALYSIS</span>
+            <span>Do not tune prompts to fix bad retrieval: fix chunk freshness, parsing, and index filtering.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Pedagogical Focus</h4>
+      <p>Demonstrate that the same model with the same temperature will hallucinate or answer accurately depending strictly on the context fed to it.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-04" data-slide="4">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">SYSTEM TOPOLOGY</span>
+            <h1 class="slide-title">Dual-Lane Architecture: Ingestion vs Real-Time Query</h1>
+            <p class="slide-subtitle">Decoupling high-latency batch preparation from sub-second client request inference.</p>
+          </div>
+          <div class="slide-counter">04 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+        </marker>
+        <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#6ee7b7"/>
+        </marker>
+      </defs>
+
+      <!-- Lane 1: Offline Ingestion -->
+      <g transform="translate(30, 25)">
+        <rect width="800" height="120" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="180" height="24" rx="4" fill="#1b2434"/>
+        <text x="12" y="16" class="text-mono" font-size="10.5" fill="#60a5fa">LANE 1: OFFLINE INGESTION</text>
+
+        <!-- Pipeline Steps -->
+        <g transform="translate(20, 36)">
+          <rect width="120" height="65" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="60" y="24" text-anchor="middle" class="text-h1" font-size="11">Sources</text>
+          <text x="60" y="42" text-anchor="middle" class="text-dim" font-size="9">PDF, Markdown</text>
+          <text x="60" y="55" text-anchor="middle" class="text-dim" font-size="8.5">SharePoint, S3</text>
+
+          <path d="M 125 32 L 155 32" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+          <rect x="160" width="125" height="65" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="222" y="24" text-anchor="middle" class="text-h1" font-size="11">Structure Parser</text>
+          <text x="222" y="42" text-anchor="middle" class="text-dim" font-size="9">Heading Extraction</text>
+          <text x="222" y="55" text-anchor="middle" class="text-dim" font-size="8.5">Tables &amp; Sections</text>
+
+          <path d="M 290 32 L 320 32" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+          <rect x="325" width="125" height="65" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="387" y="24" text-anchor="middle" class="text-h1" font-size="11">Embedder</text>
+          <text x="387" y="42" text-anchor="middle" class="text-dim" font-size="9">Dense: 1536-dim</text>
+          <text x="387" y="55" text-anchor="middle" class="text-dim" font-size="8.5">Sparse: BM25 terms</text>
+
+          <path d="M 455 32 L 485 32" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+          <rect x="490" width="125" height="65" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="552" y="24" text-anchor="middle" class="text-h1" font-size="11">Metadata Tagger</text>
+          <text x="552" y="42" text-anchor="middle" class="text-dim" font-size="9">tenant_id, role</text>
+          <text x="552" y="55" text-anchor="middle" class="text-dim" font-size="8.5">version, doc_id</text>
+
+          <path d="M 620 32 L 650 32" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+          <rect x="655" width="105" height="65" rx="4" fill="#1b2434" stroke="#60a5fa" stroke-width="1.2"/>
+          <text x="707" y="25" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">Vector Store</text>
+          <text x="707" y="42" text-anchor="middle" class="text-p" font-size="9">HNSW Index</text>
+          <text x="707" y="55" text-anchor="middle" class="text-dim" font-size="8.5">+ Inverted Index</text>
+        </g>
+      </g>
+
+      <!-- Center Connector -->
+      <path d="M 737 148 L 737 175" stroke="#6ee7b7" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="737" cy="162" r="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+
+      <!-- Lane 2: Online Request -->
+      <g transform="translate(30, 180)">
+        <rect width="800" height="145" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="180" height="24" rx="4" fill="#1b2434"/>
+        <text x="12" y="16" class="text-mono" font-size="10.5" fill="#6ee7b7">LANE 2: ONLINE REQUEST</text>
+
+        <!-- Pipeline Steps -->
+        <g transform="translate(20, 36)">
+          <rect width="115" height="85" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="57" y="24" text-anchor="middle" class="text-h1" font-size="11">User Query</text>
+          <text x="57" y="42" text-anchor="middle" class="text-dim" font-size="9">Web / API Client</text>
+          <text x="57" y="60" text-anchor="middle" class="text-mono" font-size="8.5" fill="#60a5fa">Auth: JWT / Role</text>
+
+          <path d="M 120 42 L 145 42" stroke="#6ee7b7" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+          <rect x="150" width="125" height="85" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="212" y="24" text-anchor="middle" class="text-h1" font-size="11">Pre-Filter Gate</text>
+          <text x="212" y="42" text-anchor="middle" class="text-dim" font-size="9">Prunes search space</text>
+          <text x="212" y="60" text-anchor="middle" class="text-mono" font-size="8.5" fill="#e0c58e">ACL Enforced</text>
+
+          <path d="M 280 42 L 305 42" stroke="#6ee7b7" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+          <rect x="310" width="130" height="85" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="375" y="24" text-anchor="middle" class="text-h1" font-size="11">Hybrid Retrieval</text>
+          <text x="375" y="42" text-anchor="middle" class="text-dim" font-size="9">Dense + BM25</text>
+          <text x="375" y="60" text-anchor="middle" class="text-mono" font-size="8.5" fill="#b4a4e5">RRF (k=60)</text>
+
+          <path d="M 445 42 L 470 42" stroke="#6ee7b7" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+          <rect x="475" width="130" height="85" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="540" y="24" text-anchor="middle" class="text-h1" font-size="11">Context Assembly</text>
+          <text x="540" y="42" text-anchor="middle" class="text-dim" font-size="9">Lost-in-Middle fix</text>
+          <text x="540" y="60" text-anchor="middle" class="text-mono" font-size="8.5" fill="#e0c58e">Citation Hooks</text>
+
+          <path d="M 610 42 L 635 42" stroke="#6ee7b7" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+          <rect x="640" width="120" height="85" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="700" y="25" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">Grounded LLM</text>
+          <text x="700" y="44" text-anchor="middle" class="text-p" font-size="9.5">Inline Citations</text>
+          <text x="700" y="62" text-anchor="middle" class="text-dim" font-size="8.5">Deterministic Guard</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">LANE ISOLATION</span>
+            <span>Never parse or chunk documents synchronously inside a user query request.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Architectural Separation</h4>
+      <p>Top lane is asynchronous document indexing (hours/minutes). Bottom lane is synchronous user query response (sub-500ms). Both share storage and observability.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-05" data-slide="5">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">MATHEMATICAL FOUNDATION</span>
+            <h1 class="slide-title">Text Embeddings & Geometric Metric Spaces</h1>
+            <p class="slide-subtitle">How natural language is projected into continuous high-dimensional vector representations.</p>
+          </div>
+          <div class="slide-counter">05 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Geometry Graph -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="32" rx="8" fill="#1b2434"/>
+        <text x="180" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#60a5fa">Vector Angle &amp; Cosine Metric</text>
+
+        <!-- Coordinate axes -->
+        <g transform="translate(60, 240)">
+          <line x1="0" y1="0" x2="240" y2="0" stroke="#364761" stroke-width="1.5"/>
+          <line x1="0" y1="0" x2="0" y2="-170" stroke="#364761" stroke-width="1.5"/>
+          
+          <!-- Vector u (Query) -->
+          <line x1="0" y1="0" x2="160" y2="-120" stroke="#60a5fa" stroke-width="2.5"/>
+          <circle cx="160" cy="-120" r="5" fill="#60a5fa"/>
+          <text x="175" y="-120" class="text-mono-bold" font-size="11" fill="#60a5fa">q (Query)</text>
+          
+          <!-- Vector v (Target chunk) -->
+          <line x1="0" y1="0" x2="190" y2="-80" stroke="#6ee7b7" stroke-width="2.5"/>
+          <circle cx="190" cy="-80" r="5" fill="#6ee7b7"/>
+          <text x="205" y="-80" class="text-mono-bold" font-size="11" fill="#6ee7b7">d1 (Match)</text>
+
+          <!-- Vector w (Unrelated chunk) -->
+          <line x1="0" y1="0" x2="40" y2="-150" stroke="#d98585" stroke-width="1.8"/>
+          <circle cx="40" cy="-150" r="4" fill="#d98585"/>
+          <text x="50" y="-155" class="text-mono" font-size="10" fill="#d98585">d2 (Unrelated)</text>
+
+          <!-- Angle theta -->
+          <path d="M 60 -45 A 75 75 0 0 1 70 -30" fill="none" stroke="#e0c58e" stroke-width="1.5"/>
+          <text x="85" y="-40" class="text-mono" font-size="11" fill="#e0c58e">θ ≈ 18°</text>
+        </g>
+      </g>
+
+      <!-- Right: Formulas & Hardware Optimization -->
+      <g transform="translate(430, 30)">
+        <rect width="390" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="390" height="32" rx="8" fill="#1b2434"/>
+        <text x="195" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#e0c58e">Formula &amp; Tensor Core Optimization</text>
+
+        <g transform="translate(20, 50)">
+          <!-- General Cosine Formula -->
+          <rect width="350" height="65" rx="6" fill="#0e131b" stroke="#253245"/>
+          <text x="15" y="22" class="text-mono" font-size="10.5" fill="#94a3b8">Standard Cosine Metric:</text>
+          <text x="15" y="46" class="text-mono-bold" font-size="12" fill="#f8fafc">Cosine(q, d) = (q · d) / ( ||q|| · ||d|| )</text>
+
+          <!-- L2 Normalization Benefit -->
+          <rect y="78" width="350" height="75" rx="6" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="15" y="98" class="text-mono-bold" font-size="11" fill="#6ee7b7">Production Optimization: Unit L2 Norm</text>
+          <text x="15" y="118" class="text-p" font-size="10.5">If ||q|| = 1.0 and ||d|| = 1.0, denominator = 1.0:</text>
+          <text x="15" y="138" class="text-mono-bold" font-size="12.5" fill="#6ee7b7">Cosine(q, d) ≡ q · d = Σ (q_i × d_i)</text>
+
+          <!-- Tensor Core Note -->
+          <rect y="165" width="350" height="55" rx="6" fill="#0e131b" stroke="#253245"/>
+          <text x="15" y="185" class="text-mono" font-size="10" fill="#60a5fa">Hardware Execution: Pure GEMV</text>
+          <text x="15" y="202" class="text-dim" font-size="9">Eliminates sqrt() and div() across millions of vector checks</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">VECTOR GEOMETRY</span>
+            <span>Unit L2 normalization simplifies cosine similarity to a single hardware-accelerated dot product.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Mathematical Details</h4>
+      <p>Show that when vectors are L2-normalized, ||u|| = 1 and ||v|| = 1. The denominator of cosine similarity disappears, reducing search to matrix multiplication (GEMV) on tensor cores.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-06" data-slide="6">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">INGESTION ENGINEERING</span>
+            <h1 class="slide-title">Chunking Strategies: Naive Character vs Structure-Aware</h1>
+            <p class="slide-subtitle">How document segmentation determines the atomic boundary of retrieval accuracy.</p>
+          </div>
+          <div class="slide-counter">06 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Strategy 1: Naive Fixed Size -->
+      <g transform="translate(30, 30)">
+        <rect width="250" height="290" rx="8" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+        <rect width="250" height="32" rx="8" fill="#1b2434"/>
+        <text x="125" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#d98585">1. NAIVE FIXED-SIZE</text>
+
+        <g transform="translate(15, 45)">
+          <rect width="220" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono" font-size="10" fill="#d98585">Chunk #1 (chars 0-400)</text>
+          <text x="12" y="42" class="text-p" font-size="9.5">"...standard issue includes one"</text>
+          <text x="12" y="54" class="text-dim" font-size="8.5">[Cut mid-sentence!]</text>
+
+          <rect y="70" width="220" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="92" class="text-mono" font-size="10" fill="#d98585">Chunk #2 (chars 350-750)</text>
+          <text x="12" y="112" class="text-p" font-size="9.5">"laptop workstation. ## Sec 2..."</text>
+          <text x="12" y="124" class="text-dim" font-size="8.5">[Separated from heading]</text>
+
+          <rect y="140" width="220" height="90" rx="4" fill="#1b2434" stroke="#d98585"/>
+          <text x="12" y="160" class="text-mono-bold" font-size="10" fill="#d98585">Critical Pitfalls:</text>
+          <text x="12" y="178" class="text-p" font-size="9">- Separates tables from headers</text>
+          <text x="12" y="194" class="text-p" font-size="9">- Splits sentences across chunks</text>
+          <text x="12" y="210" class="text-p" font-size="9">- Zero semantic awareness</text>
+        </g>
+      </g>
+
+      <!-- Strategy 2: Structure-Aware Markdown -->
+      <g transform="translate(305, 30)">
+        <rect width="250" height="290" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="250" height="32" rx="8" fill="#1b2434"/>
+        <text x="125" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#6ee7b7">2. STRUCTURE-AWARE</text>
+
+        <g transform="translate(15, 45)">
+          <rect width="220" height="75" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono" font-size="9.5" fill="#60a5fa">Breadcrumb Context:</text>
+          <text x="12" y="36" class="text-dim" font-size="9">Doc: Hardware Policy</text>
+          <text x="12" y="50" class="text-dim" font-size="9">Sec: 2. Temporary Loans</text>
+          <text x="12" y="66" class="text-p" font-size="9.5">Content: 14 days, Room B12...</text>
+
+          <rect y="85" width="220" height="50" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="105" class="text-mono" font-size="9.5" fill="#6ee7b7">Preserved Table Unit:</text>
+          <text x="12" y="122" class="text-p" font-size="9">All columns and headers intact</text>
+
+          <rect y="145" width="220" height="85" rx="4" fill="#1b2434" stroke="#6ee7b7"/>
+          <text x="12" y="165" class="text-mono-bold" font-size="10" fill="#6ee7b7">Production Benefits:</text>
+          <text x="12" y="182" class="text-p" font-size="9">+ Clean logical boundary</text>
+          <text x="12" y="198" class="text-p" font-size="9">+ Breadcrumbs enrich semantics</text>
+          <text x="12" y="214" class="text-p" font-size="9">+ Ideal for technical policies</text>
+        </g>
+      </g>
+
+      <!-- Strategy 3: Semantic Windowing -->
+      <g transform="translate(580, 30)">
+        <rect width="250" height="290" rx="8" fill="#141c28" stroke="#60a5fa" stroke-width="1.2"/>
+        <rect width="250" height="32" rx="8" fill="#1b2434"/>
+        <text x="125" y="21" text-anchor="middle" class="text-mono" font-size="11" fill="#60a5fa">3. SEMANTIC WINDOWING</text>
+
+        <g transform="translate(15, 45)">
+          <rect width="220" height="65" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono" font-size="9.5" fill="#e0c58e">Rolling Embeddings:</text>
+          <text x="12" y="36" class="text-dim" font-size="9">Computes adjacent sentence</text>
+          <text x="12" y="52" class="text-dim" font-size="9">cosine similarity distance</text>
+
+          <rect y="75" width="220" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="95" class="text-mono" font-size="9.5" fill="#60a5fa">Adaptive Split Barrier:</text>
+          <text x="12" y="112" class="text-p" font-size="9">Splits when similarity drops</text>
+
+          <rect y="140" width="220" height="90" rx="4" fill="#1b2434" stroke="#60a5fa"/>
+          <text x="12" y="160" class="text-mono-bold" font-size="10" fill="#60a5fa">Best Used For:</text>
+          <text x="12" y="178" class="text-p" font-size="9">- Narrative text without headers</text>
+          <text x="12" y="194" class="text-p" font-size="9">- Transcripts and conversation logs</text>
+          <text x="12" y="210" class="text-p" font-size="9">- Higher offline compute cost</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">CHUNK QUALITY</span>
+            <span>Blind character splits destroy context: prepend heading hierarchy to every chunk.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Chunking Trade-offs</h4>
+      <p>Explain that naive character splits cut sentences and drop table rows. Structure-aware chunking preserves section paths and enables contextualized embeddings.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-07" data-slide="7">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">ENTERPRISE SECURITY</span>
+            <h1 class="slide-title">Metadata Filtering & The Security Boundary</h1>
+            <p class="slide-subtitle">Why similarity search alone cannot enforce authorization: pre-filtering vs post-filtering.</p>
+          </div>
+          <div class="slide-counter">07 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Pre-Filtering (Approved) -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="12" fill="#6ee7b7">PRE-FILTERING (ENTERPRISE STANDARD)</text>
+
+        <g transform="translate(20, 50)">
+          <!-- Step 1: User Request -->
+          <rect width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono" font-size="10" fill="#60a5fa">1. Query + User Identity</text>
+          <text x="12" y="34" class="text-dim" font-size="9">User: Alice | Role: 'engineer' | Tenant: 'Acme'</text>
+
+          <!-- Step 2: Index Pruning -->
+          <rect y="50" width="320" height="48" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="12" y="70" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">2. Hard Metadata Filter BEFORE Search</text>
+          <text x="12" y="86" class="text-p" font-size="9.5">WHERE tenant == 'Acme' AND role IN ('all', 'engineer')</text>
+
+          <!-- Step 3: Vector Search on Subset -->
+          <rect y="106" width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="126" class="text-mono" font-size="10" fill="#f8fafc">3. Approximate Nearest Neighbor Search</text>
+          <text x="12" y="140" class="text-dim" font-size="9">Vector traversal runs ONLY on authorized subset</text>
+
+          <!-- Outcome -->
+          <rect y="156" width="320" height="65" rx="4" fill="#0e131b" stroke="#6ee7b7"/>
+          <text x="12" y="178" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">Zero Leakage Guarantee:</text>
+          <text x="12" y="196" class="text-p" font-size="9">+ Confidential C-suite chunks cannot enter top-k</text>
+          <text x="12" y="210" class="text-p" font-size="9">+ Full top-k slots populated with valid evidence</text>
+        </g>
+      </g>
+
+      <!-- Right: Post-Filtering (Flawed) -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="12" fill="#d98585">POST-FILTERING (FLAWED ARCHITECTURE)</text>
+
+        <g transform="translate(20, 50)">
+          <!-- Step 1: Blind Vector Search -->
+          <rect width="320" height="42" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono" font-size="10" fill="#d98585">1. Blind Global Vector Search</text>
+          <text x="12" y="34" class="text-dim" font-size="9">Searches across ALL tenants and confidential documents</text>
+
+          <!-- Step 2: Unfiltered Candidates -->
+          <rect y="50" width="320" height="48" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="70" class="text-mono" font-size="10.5" fill="#f8fafc">2. Retrieves Global Top-10 Chunks</text>
+          <text x="12" y="86" class="text-dim" font-size="9.5">Top 8 matches happen to be Executive Compensation</text>
+
+          <!-- Step 3: Dropping Chunks -->
+          <rect y="106" width="320" height="42" rx="4" fill="#1b2434" stroke="#d98585" stroke-width="1.2"/>
+          <text x="12" y="126" class="text-mono-bold" font-size="10" fill="#d98585">3. Drop Unauthorized Chunks Afterwards</text>
+          <text x="12" y="140" class="text-p" font-size="9">Drops 8 out of 10 chunks from context</text>
+
+          <!-- Failure Outcome -->
+          <rect y="156" width="320" height="65" rx="4" fill="#0e131b" stroke="#d98585"/>
+          <text x="12" y="178" class="text-mono-bold" font-size="10.5" fill="#d98585">Recall Starvation Failure:</text>
+          <text x="12" y="196" class="text-p" font-size="9">- Only 2 chunks reach the LLM (Recall Collapse)</text>
+          <text x="12" y="210" class="text-p" font-size="9">- If top-10 are unauthorized, user gets 0 chunks</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">SECURITY BOUNDARY</span>
+            <span>Always pre-filter by user ACLs: post-filtering risks leaking data or returning zero results.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Security Flaw in RAG</h4>
+      <p>Vector similarity is blind to permissions. Explain why pre-filtering (filtering before ANN search) is mandatory in enterprise multi-tenant systems.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-08" data-slide="8">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">SEARCH COMPLEXITY</span>
+            <h1 class="slide-title">Similarity Search: Exact kNN vs Approximate Nearest Neighbors</h1>
+            <p class="slide-subtitle">Trading 1% recall for orders-of-magnitude reduction in latency and compute complexity.</p>
+          </div>
+          <div class="slide-counter">08 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Exact kNN -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono" font-size="11" fill="#d98585">EXACT SEARCH (FLAT / BRUTE-FORCE)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="24" class="text-mono" font-size="10.5" fill="#94a3b8">Computational Complexity:</text>
+          <text x="14" y="48" class="text-mono-bold" font-size="14" fill="#d98585">O( N · d )</text>
+
+          <rect y="70" width="320" height="75" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="90" class="text-mono" font-size="10" fill="#60a5fa">Benchmark on 10,000,000 Vectors:</text>
+          <text x="14" y="110" class="text-p" font-size="9.5">10,000,000 × 1536 dims = 15.36 Billion Ops</text>
+          <text x="14" y="128" class="text-dim" font-size="9">Query Latency: 2,500ms - 8,000ms per call</text>
+
+          <rect y="155" width="320" height="65" rx="4" fill="#1b2434" stroke="#d98585"/>
+          <text x="14" y="178" class="text-mono-bold" font-size="10.5" fill="#d98585">Trade-off Profile:</text>
+          <text x="14" y="196" class="text-p" font-size="9.5">+ 100% Exact Recall (No false negatives)</text>
+          <text x="14" y="210" class="text-dim" font-size="8.5">- Completely unusable for interactive user applications</text>
+        </g>
+      </g>
+
+      <!-- Right: Approximate Nearest Neighbors (ANN) -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono" font-size="11" fill="#6ee7b7">APPROXIMATE NEAREST NEIGHBORS (ANN)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="24" class="text-mono" font-size="10.5" fill="#94a3b8">Search Complexity (HNSW):</text>
+          <text x="14" y="48" class="text-mono-bold" font-size="14" fill="#6ee7b7">O( log N )</text>
+
+          <rect y="70" width="320" height="75" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="90" class="text-mono" font-size="10" fill="#6ee7b7">Benchmark on 10,000,000 Vectors:</text>
+          <text x="14" y="110" class="text-p" font-size="9.5">Inspects only ~500 to 2,000 candidate nodes</text>
+          <text x="14" y="128" class="text-mono" font-size="9" fill="#6ee7b7">Query Latency: 2ms - 8ms per call</text>
+
+          <rect y="155" width="320" height="65" rx="4" fill="#1b2434" stroke="#6ee7b7"/>
+          <text x="14" y="178" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">Production Viability:</text>
+          <text x="14" y="196" class="text-p" font-size="9.5">+ 98% - 99.5% Empirical Recall</text>
+          <text x="14" y="210" class="text-dim" font-size="8.5">+ Enables sub-second interactive RAG pipelines</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">ANN COMPLEXITY</span>
+            <span>At scale, exact kNN search O(N·d) is cost-prohibitive: enterprise search requires O(log N) ANN.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Complexity Comparison</h4>
+      <p>Show the math: 10M vectors at 1536 dims burns 15.3 billion FLOPS for a single query in exact search. ANN with HNSW drops latency from seconds to 3-5 milliseconds.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-09" data-slide="9">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">ALGORITHMIC DEEP-DIVE</span>
+            <h1 class="slide-title">Vector Indexing: HNSW Multi-Layer Skip Graph</h1>
+            <p class="slide-subtitle">Hierarchical Navigable Small World: Combining probabilistic skip-lists with proximity graphs.</p>
+          </div>
+          <div class="slide-counter">09 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Diagram Arena -->
+      <g transform="translate(30, 25)">
+        <rect width="800" height="300" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+
+        <!-- Layer 2 (Top Sparse Layer) -->
+        <g transform="translate(40, 25)">
+          <rect width="720" height="65" rx="6" fill="#1b2434" stroke="#60a5fa" stroke-width="1"/>
+          <text x="15" y="20" class="text-mono-bold" font-size="10.5" fill="#60a5fa">LAYER 2: SPARSE ENTRY HIGHWAY (Long-range jumps)</text>
+
+          <circle cx="120" cy="40" r="8" fill="#60a5fa"/>
+          <text x="120" y="44" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#0e131b">EP</text>
+
+          <line x1="128" y1="40" x2="380" y2="40" stroke="#60a5fa" stroke-width="2"/>
+
+          <circle cx="380" cy="40" r="7" fill="#60a5fa"/>
+          <circle cx="620" cy="40" r="7" fill="#334155"/>
+
+          <line x1="387" y1="40" x2="613" y2="40" stroke="#334155" stroke-width="1.5" stroke-dasharray="3,3"/>
+
+          <!-- Drop line to Layer 1 -->
+          <path d="M 380 47 L 380 95" stroke="#e0c58e" stroke-width="2" stroke-dasharray="3,3"/>
+        </g>
+
+        <!-- Layer 1 (Intermediate Layer) -->
+        <g transform="translate(40, 105)">
+          <rect width="720" height="75" rx="6" fill="#1b2434" stroke="#b4a4e5" stroke-width="1"/>
+          <text x="15" y="20" class="text-mono-bold" font-size="10.5" fill="#b4a4e5">LAYER 1: MEDIUM NAVIGATION GRAPH</text>
+
+          <circle cx="100" cy="45" r="6" fill="#334155"/>
+          <circle cx="220" cy="45" r="6" fill="#334155"/>
+          <circle cx="380" cy="45" r="7" fill="#e0c58e"/>
+          <circle cx="480" cy="45" r="7" fill="#b4a4e5"/>
+          <circle cx="640" cy="45" r="6" fill="#334155"/>
+
+          <line x1="106" y1="45" x2="214" y2="45" stroke="#334155" stroke-width="1"/>
+          <line x1="226" y1="45" x2="373" y2="45" stroke="#334155" stroke-width="1"/>
+          <line x1="387" y1="45" x2="473" y2="45" stroke="#b4a4e5" stroke-width="2"/>
+          <line x1="487" y1="45" x2="634" y2="45" stroke="#334155" stroke-width="1"/>
+
+          <!-- Drop line to Layer 0 -->
+          <path d="M 480 52 L 480 100" stroke="#6ee7b7" stroke-width="2" stroke-dasharray="3,3"/>
+        </g>
+
+        <!-- Layer 0 (Bottom Dense All-Nodes Layer) -->
+        <g transform="translate(40, 195)">
+          <rect width="720" height="90" rx="6" fill="#0e131b" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="15" y="20" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">LAYER 0: ALL VECTORS (Dense Proximity Graph)</text>
+
+          <!-- Nodes -->
+          <circle cx="80" cy="55" r="5" fill="#334155"/>
+          <circle cx="160" cy="55" r="5" fill="#334155"/>
+          <circle cx="260" cy="55" r="5" fill="#334155"/>
+          <circle cx="360" cy="55" r="5" fill="#334155"/>
+          <circle cx="480" cy="55" r="7" fill="#6ee7b7"/>
+          <circle cx="530" cy="40" r="7" fill="#6ee7b7"/>
+          <circle cx="550" cy="65" r="8" fill="#6ee7b7" stroke="#fff" stroke-width="2"/>
+          <circle cx="650" cy="55" r="5" fill="#334155"/>
+
+          <!-- Routing Path in Layer 0 -->
+          <line x1="487" y1="52" x2="523" y2="42" stroke="#6ee7b7" stroke-width="2"/>
+          <line x1="535" y1="45" x2="547" y2="60" stroke="#6ee7b7" stroke-width="2.5"/>
+
+          <text x="565" y="70" class="text-mono-bold" font-size="11" fill="#6ee7b7">Nearest Match (k=1)</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">HNSW ARCHITECTURE</span>
+            <span>HNSW provides sub-5ms search: top sparse layers make long-range jumps, bottom layers route locally.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>HNSW Deep-Dive</h4>
+      <p>Explain the multi-layer graph topology. Query starts at top entry point (Layer 2) with wide skips, then drops to Layer 1, and finishes in Layer 0 with fine-grained greedy routing.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-10" data-slide="10">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">MEMORY OPTIMIZATION</span>
+            <h1 class="slide-title">Vector Indexing: IVF Voronoi Cells & Quantization</h1>
+            <p class="slide-subtitle">Compressing vector memory footprints by 75% to 90% for massive 100M+ vector scale.</p>
+          </div>
+          <div class="slide-counter">10 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: IVF Voronoi Partitioning -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono" font-size="11" fill="#e0c58e">INVERTED FILE (IVF VORONOI CELLS)</text>
+
+        <g transform="translate(30, 50)">
+          <!-- Voronoi Cells visualization -->
+          <rect width="300" height="135" rx="6" fill="#0e131b" stroke="#253245"/>
+          
+          <!-- Cell 1 -->
+          <polygon points="10,10 120,15 100,75 15,65" fill="#141c28" stroke="#364761"/>
+          <circle cx="60" cy="40" r="4" fill="#60a5fa"/>
+          <text x="60" y="55" text-anchor="middle" class="text-dim" font-size="8">Centroid C1</text>
+
+          <!-- Cell 2 (Active probe) -->
+          <polygon points="120,15 210,10 230,80 100,75" fill="rgba(224, 197, 142, 0.12)" stroke="#e0c58e" stroke-width="1.5"/>
+          <circle cx="165" cy="45" r="5" fill="#e0c58e"/>
+          <circle cx="180" cy="35" r="3" fill="#cbd5e1"/>
+          <circle cx="150" cy="60" r="3" fill="#cbd5e1"/>
+          <circle cx="190" cy="55" r="3" fill="#cbd5e1"/>
+          <text x="165" y="72" text-anchor="middle" class="text-mono-bold" font-size="8.5" fill="#e0c58e">nprobe Cell</text>
+
+          <!-- Cell 3 -->
+          <polygon points="210,10 290,15 285,75 230,80" fill="#141c28" stroke="#364761"/>
+          <circle cx="260" cy="45" r="4" fill="#60a5fa"/>
+
+          <!-- Text description -->
+          <rect y="145" width="300" height="80" rx="4" fill="#1b2434" stroke="#253245"/>
+          <text x="12" y="165" class="text-mono-bold" font-size="10" fill="#e0c58e">IVF Mechanics (k-means):</text>
+          <text x="12" y="182" class="text-p" font-size="9">- Partitions vectors into k clusters</text>
+          <text x="12" y="198" class="text-p" font-size="9">- Search checks only 'nprobe' nearest centroids</text>
+          <text x="12" y="214" class="text-p" font-size="9">- Trades exact boundaries for fast pruning</text>
+        </g>
+      </g>
+
+      <!-- Right: Quantization Comparison -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono" font-size="11" fill="#6ee7b7">QUANTIZATION: COMPRESSION TIERS</text>
+
+        <g transform="translate(20, 50)">
+          <!-- Tier 1: Full float32 -->
+          <rect width="320" height="58" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10.5" fill="#f8fafc">1. Float32 (Uncompressed Baseline)</text>
+          <text x="12" y="36" class="text-p" font-size="9.5">4 bytes per dimension | 1536 dims = 6,144 bytes / vector</text>
+          <text x="12" y="50" class="text-dim" font-size="9">Maximum precision, highest RAM expenditure</text>
+
+          <!-- Tier 2: SQ8 (int8) -->
+          <rect y="68" width="320" height="66" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="12" y="88" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">2. Scalar Quantization: SQ8 (int8)</text>
+          <text x="12" y="104" class="text-p" font-size="9.5">1 byte per dimension | 1536 dims = 1,536 bytes / vector</text>
+          <text x="12" y="122" class="text-mono" font-size="9.5" fill="#6ee7b7">75% Memory Reduction | Recall drop &lt; 0.8%</text>
+
+          <!-- Tier 3: PQ (Product Quantization) -->
+          <rect y="144" width="320" height="68" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="164" class="text-mono-bold" font-size="10.5" fill="#b4a4e5">3. Product Quantization: PQ</text>
+          <text x="12" y="180" class="text-p" font-size="9.5">Sub-vector centroid codebooks | 64 - 128 bytes / vector</text>
+          <text x="12" y="198" class="text-mono" font-size="9.5" fill="#b4a4e5">Up to 95% Memory Reduction | Best for 100M+ scale</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">QUANTIZATION COMPACTION</span>
+            <span>Scalar Quantization (SQ8) compresses vectors from 4 bytes to 1 byte with under 1% recall loss.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>IVF and Quantization</h4>
+      <p>Explain Voronoi cell partitioning (IVF). Explain how Scalar Quantization (float32 to int8) cuts RAM by 75%, and Product Quantization (PQ) cuts RAM by up to 95%.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-11" data-slide="11">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">CAPACITY PLANNING</span>
+            <h1 class="slide-title">Vector DB Sizing Math: Calculating RAM for 1M Vectors</h1>
+            <p class="slide-subtitle">Step-by-step engineering sizing for memory footprints, index overhead, and payload storage.</p>
+          </div>
+          <div class="slide-counter">11 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Stacked Memory Calculation -->
+      <g transform="translate(40, 30)">
+        <rect width="400" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="400" height="34" rx="8" fill="#1b2434"/>
+        <text x="200" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">PRODUCTION SIZING: 1,000,000 VECTORS (1536-DIM)</text>
+
+        <g transform="translate(20, 50)">
+          <!-- Item 1: Raw Vectors -->
+          <rect width="360" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="22" class="text-mono-bold" font-size="10.5" fill="#f8fafc">1. Raw Float32 Vector Storage</text>
+          <text x="14" y="40" class="text-mono" font-size="10" fill="#60a5fa">1M × 1536 dims × 4 bytes = 6.14 GB</text>
+
+          <!-- Item 2: HNSW Graph Links -->
+          <rect y="60" width="360" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="82" class="text-mono-bold" font-size="10.5" fill="#f8fafc">2. HNSW Graph Connectivity Links (M=16)</text>
+          <text x="14" y="100" class="text-mono" font-size="10" fill="#b4a4e5">Index overhead factor ~1.75x = +4.60 GB</text>
+
+          <!-- Item 3: Metadata & Payloads -->
+          <rect y="120" width="360" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="142" class="text-mono-bold" font-size="10.5" fill="#f8fafc">3. Document Payload &amp; ACL Metadata</text>
+          <text x="14" y="160" class="text-mono" font-size="10" fill="#e0c58e">1M chunks × 3 KB text/metadata = 3.00 GB</text>
+
+          <!-- Total Banner -->
+          <rect y="180" width="360" height="42" rx="4" fill="#1b2434" stroke="#d98585" stroke-width="1.2"/>
+          <text x="14" y="206" class="text-mono-bold" font-size="11.5" fill="#d98585">Total In-Memory RAM Needed: ~14.0 to 16.0 GB</text>
+        </g>
+      </g>
+
+      <!-- Right: With Quantization Comparison -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">WITH SQ8 QUANTIZATION (INT8)</text>
+
+        <g transform="translate(20, 50)">
+          <!-- Quantized Vector -->
+          <rect width="320" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="22" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">1. Quantized SQ8 Vectors</text>
+          <text x="14" y="40" class="text-mono" font-size="10" fill="#6ee7b7">1M × 1536 dims × 1 byte = 1.54 GB (75% savings)</text>
+
+          <!-- Quantized Graph -->
+          <rect y="60" width="320" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="82" class="text-mono-bold" font-size="10.5" fill="#f8fafc">2. Compressed Graph Links</text>
+          <text x="14" y="100" class="text-mono" font-size="10" fill="#6ee7b7">Optimized neighbor list = +1.15 GB</text>
+
+          <!-- Payload in disk / mmap -->
+          <rect y="120" width="320" height="52" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="14" y="142" class="text-mono-bold" font-size="10.5" fill="#f8fafc">3. Text Payloads on SSD (mmap)</text>
+          <text x="14" y="160" class="text-mono" font-size="10" fill="#e0c58e">Memory-mapped disk read: ~0.50 GB RAM cache</text>
+
+          <!-- Quantized Total -->
+          <rect y="180" width="320" height="42" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="14" y="206" class="text-mono-bold" font-size="11.5" fill="#6ee7b7">Quantized RAM Footprint: ~3.2 to 3.8 GB</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">MEMORY CAPACITY</span>
+            <span>Unquantized 1M vectors requires 14-16 GB RAM: SQ8 quantization slashes this to under 4 GB.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Capacity Sizing Equation</h4>
+      <p>Break down the 3 components: raw float32 vectors (6.14 GB), HNSW graph links overhead (1.75x -> 10.75 GB), and payload/metadata storage (3 GB). Total is 14-16 GB RAM.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-12" data-slide="12">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">RETRIEVAL PARADIGMS</span>
+            <h1 class="slide-title">Lexical vs Dense Retrieval: Why Neither Alone is Enough</h1>
+            <p class="slide-subtitle">BM25 keyword precision vs bi-encoder semantic abstraction: complimentary strengths.</p>
+          </div>
+          <div class="slide-counter">12 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Sparse BM25 -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">SPARSE LEXICAL (BM25 INVERTED INDEX)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#6ee7b7">Unbeatable On Exact Matches:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">- Alphanumeric codes: 'POL-IT-101', 'Room B12'</text>
+          <text x="12" y="52" class="text-p" font-size="9.5">- Technical error codes: '0x80070005', 'CVE-2026-118'</text>
+
+          <rect y="70" width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#6ee7b7">Vocabulary Specifics:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">- Product SKUs, person names, and acronyms</text>
+          <text x="12" y="52" class="text-p" font-size="9.5">- Zero embedding model inference needed</text>
+
+          <rect y="140" width="320" height="75" rx="4" fill="#1b2434" stroke="#d98585"/>
+          <text x="12" y="162" class="text-mono-bold" font-size="10.5" fill="#d98585">Critical Failure Mode: Vocabulary Mismatch</text>
+          <text x="12" y="180" class="text-p" font-size="9">- Searching 'laptop loan' fails if doc says 'hardware borrow'</text>
+          <text x="12" y="196" class="text-dim" font-size="8.5">- Zero conceptual generalization or multilingual bridging</text>
+        </g>
+      </g>
+
+      <!-- Right: Dense Bi-Encoder -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#b4a4e5">DENSE VECTOR (BI-ENCODER EMBEDDINGS)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#6ee7b7">Unbeatable On Conceptual Intent:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">- Synonyms: 'take laptop' ≈ 'equipment loan'</text>
+          <text x="12" y="52" class="text-p" font-size="9.5">- Multilingual alignment: cross-lingual retrieval</text>
+
+          <rect y="70" width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#6ee7b7">Paraphrase Robustness:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">- Robust to typos and conversational framing</text>
+          <text x="12" y="52" class="text-p" font-size="9.5">- Captures latent domain concepts</text>
+
+          <rect y="140" width="320" height="75" rx="4" fill="#1b2434" stroke="#d98585"/>
+          <text x="12" y="162" class="text-mono-bold" font-size="10.5" fill="#d98585">Critical Failure Mode: Keyword Blindness</text>
+          <text x="12" y="180" class="text-p" font-size="9">- Blurs 'Room B12' into generic office location vectors</text>
+          <text x="12" y="196" class="text-dim" font-size="8.5">- Confuses similar product model numbers (V100 vs H100)</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">HYBRID REASONING</span>
+            <span>Dense embeddings blur exact codes and part numbers: lexical BM25 guarantees keyword precision.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Complementary Strengths</h4>
+      <p>Demonstrate why pure dense vector search fails on alphanumeric codes (Room B12, POL-SEC-402, 0x80070005). BM25 handles exact tokens; Dense handles semantic synonyms.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-13" data-slide="13">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">RANKING MECHANICS</span>
+            <h1 class="slide-title">Hybrid Fusion: Reciprocal Rank Fusion (RRF)</h1>
+            <p class="slide-subtitle">Combining disparate score distributions into a single mathematically calibrated ranking.</p>
+          </div>
+          <div class="slide-counter">13 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+        </marker>
+      </defs>
+
+      <!-- Left: Two Streams -->
+      <g transform="translate(30, 30)">
+        <!-- Stream 1: Dense -->
+        <rect width="260" height="135" rx="6" fill="#141c28" stroke="#b4a4e5" stroke-width="1.2"/>
+        <rect width="260" height="28" rx="6" fill="#1b2434"/>
+        <text x="130" y="19" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#b4a4e5">Stream A: Dense Vector Search</text>
+        <g transform="translate(15, 38)">
+          <text x="0" y="18" class="text-mono" font-size="10">Rank #1: Chunk 004 (Cosine: 0.88)</text>
+          <text x="0" y="36" class="text-mono" font-size="10">Rank #2: Chunk 002 (Cosine: 0.84)</text>
+          <text x="0" y="54" class="text-mono" font-size="10">Rank #3: Chunk 009 (Cosine: 0.79)</text>
+          <text x="0" y="72" class="text-dim" font-size="9">Cosine range: [-1.0, 1.0]</text>
+        </g>
+
+        <!-- Stream 2: Sparse BM25 -->
+        <g transform="translate(0, 155)">
+          <rect width="260" height="135" rx="6" fill="#141c28" stroke="#60a5fa" stroke-width="1.2"/>
+          <rect width="260" height="28" rx="6" fill="#1b2434"/>
+          <text x="130" y="19" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#60a5fa">Stream B: Sparse BM25 Search</text>
+          <g transform="translate(15, 38)">
+            <text x="0" y="18" class="text-mono" font-size="10">Rank #1: Chunk 002 (BM25: 14.8)</text>
+            <text x="0" y="36" class="text-mono" font-size="10">Rank #2: Chunk 008 (BM25: 11.2)</text>
+            <text x="0" y="54" class="text-mono" font-size="10">Rank #3: Chunk 004 (BM25: 6.4)</text>
+            <text x="0" y="72" class="text-dim" font-size="9">BM25 range: [0.0, ∞)</text>
+          </g>
+        </g>
+      </g>
+
+      <!-- Center Arrows -->
+      <path d="M 300 95 L 350 160" stroke="#b4a4e5" stroke-width="1.5" marker-end="url(#arr)"/>
+      <path d="M 300 220 L 350 180" stroke="#60a5fa" stroke-width="1.5" marker-end="url(#arr)"/>
+
+      <!-- Right: Fusion Engine -->
+      <g transform="translate(360, 30)">
+        <rect width="470" height="290" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="470" height="34" rx="8" fill="#1b2434"/>
+        <text x="235" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">RECIPROCAL RANK FUSION (RRF) ENGINE</text>
+
+        <g transform="translate(20, 50)">
+          <!-- Formula Box -->
+          <rect width="430" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="15" y="22" class="text-mono" font-size="10.5" fill="#94a3b8">The Universal RRF Equation (k = 60):</text>
+          <text x="15" y="46" class="text-mono-bold" font-size="13" fill="#6ee7b7">RRF_Score(d) = Σ [ 1 / (60 + Rank_m(d)) ]</text>
+
+          <!-- Calculated Example -->
+          <rect y="72" width="430" height="150" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="15" y="94" class="text-mono-bold" font-size="11" fill="#6ee7b7">Computed Results for Query "Room B12 Loan":</text>
+
+          <text x="15" y="118" class="text-mono" font-size="10.5" fill="#f8fafc">1. Chunk 002 (Ranked #2 Dense, #1 BM25):</text>
+          <text x="35" y="134" class="text-mono" font-size="9.5" fill="#6ee7b7">Score = 1/(60+2) + 1/(60+1) = 0.0161 + 0.0164 = 0.0325 → RANK #1</text>
+
+          <text x="15" y="156" class="text-mono" font-size="10.5" fill="#f8fafc">2. Chunk 004 (Ranked #1 Dense, #3 BM25):</text>
+          <text x="35" y="172" class="text-mono" font-size="9.5" fill="#94a3b8">Score = 1/(60+1) + 1/(60+3) = 0.0164 + 0.0158 = 0.0322 → RANK #2</text>
+
+          <text x="15" y="196" class="text-p" font-size="9.5" fill="#cbd5e1">Outcome: Documents verified by BOTH semantic and lexical signals win.</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">FUSION FORMULA</span>
+            <span>Reciprocal Rank Fusion (k=60) merges sparse and dense rankings without score normalization.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>RRF Mathematics</h4>
+      <p>Explain why we cannot simply add BM25 scores (0 to inf) and Cosine scores (-1 to 1). RRF uses ordinal rank positions with smoothing constant k=60, making it immune to scale calibration issues.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-14" data-slide="14">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">TWO-STAGE RETRIEVAL</span>
+            <h1 class="slide-title">Cross-Encoder Reranking: Two-Stage Pipeline Precision</h1>
+            <p class="slide-subtitle">Combining ultra-fast bi-encoder candidate retrieval with full cross-attention scoring.</p>
+          </div>
+          <div class="slide-counter">14 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#6ee7b7"/>
+        </marker>
+      </defs>
+
+      <!-- Stage 1 Box: Bi-Encoder Candidate Retrieval -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">STAGE 1: BI-ENCODER (HIGH RECALL)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="50" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono" font-size="10" fill="#60a5fa">Architecture: Dual Independent Towers</text>
+          <text x="12" y="36" class="text-p" font-size="9.5">Vector(Query) · Vector(Document)</text>
+
+          <rect y="60" width="320" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono" font-size="10" fill="#f8fafc">Latency &amp; Throughput:</text>
+          <text x="12" y="42" class="text-mono" font-size="10" fill="#6ee7b7">Latency: ~10ms - 20ms | Scans Millions</text>
+
+          <rect y="125" width="320" height="70" rx="4" fill="#1b2434" stroke="#60a5fa"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10.5" fill="#60a5fa">First-Stage Output:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">Retrieves Top-50 candidates with high recall</text>
+          <text x="12" y="54" class="text-dim" font-size="8.5">Misses subtle multi-sentence syntactic nuances</text>
+        </g>
+      </g>
+
+      <!-- Center Transition Arrow -->
+      <path d="M 405 175 L 450 175" stroke="#6ee7b7" stroke-width="2" marker-end="url(#arr-green)"/>
+      <text x="428" y="165" text-anchor="middle" class="text-mono" font-size="9" fill="#6ee7b7">Top-50</text>
+
+      <!-- Stage 2 Box: Cross-Encoder Precision Reranker -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">STAGE 2: CROSS-ENCODER (HIGH PRECISION)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="50" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono" font-size="10" fill="#6ee7b7">Architecture: Joint Transformer Attention</text>
+          <text x="12" y="36" class="text-p" font-size="9.5">Softmax( [Query ; Document] )</text>
+
+          <rect y="60" width="320" height="55" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono" font-size="10" fill="#f8fafc">Latency &amp; Throughput:</text>
+          <text x="12" y="42" class="text-mono" font-size="10" fill="#e0c58e">Latency: ~30ms - 50ms | Top-50 Pairs Only</text>
+
+          <rect y="125" width="320" height="70" rx="4" fill="#1b2434" stroke="#6ee7b7"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">Final High-Precision Output:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">Selects Top-5 highest confidence chunks</text>
+          <text x="12" y="54" class="text-dim" font-size="8.5">NDCG@5 improves by +18% to +34% across benchmarks</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">RERANKING GAINS</span>
+            <span>Bi-encoders fetch top-50 candidates in 15ms: a cross-encoder scores full joint attention to pick top-5.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Two-Stage Retrieval</h4>
+      <p>Bi-encoders encode query and document independently (fast, vector dot-product). Cross-encoders concatenate query + document into a single transformer with full cross-attention (slow, but captures deep token interactions).</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-15" data-slide="15">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">CONTEXT ARCHITECTURE</span>
+            <h1 class="slide-title">Context Window Assembly: The 'Lost in the Middle' Phenomenon</h1>
+            <p class="slide-subtitle">How transformer attention decay shapes evidence positioning within prompt budgets.</p>
+          </div>
+          <div class="slide-counter">15 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Stanford Attention Curve -->
+      <g transform="translate(30, 30)">
+        <rect width="380" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="380" height="34" rx="8" fill="#1b2434"/>
+        <text x="190" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">EMPIRICAL RETRIEVAL ACCURACY VS POSITION</text>
+
+        <!-- The U Curve Graph -->
+        <g transform="translate(45, 230)">
+          <line x1="0" y1="0" x2="300" y2="0" stroke="#364761" stroke-width="1.5"/>
+          <line x1="0" y1="0" x2="0" y2="-150" stroke="#364761" stroke-width="1.5"/>
+          <line x1="0" y1="-120" x2="300" y2="-120" stroke="#253245" stroke-dasharray="2,2"/>
+          <line x1="0" y1="-60" x2="300" y2="-60" stroke="#253245" stroke-dasharray="2,2"/>
+
+          <text x="-10" y="-115" text-anchor="end" class="text-mono" font-size="8.5" fill="#64748b">80%</text>
+          <text x="-10" y="-55" text-anchor="end" class="text-mono" font-size="8.5" fill="#64748b">40%</text>
+
+          <path d="M 0 -130 C 60 -125, 90 -40, 150 -40 C 210 -40, 240 -120, 300 -125" fill="none" stroke="#60a5fa" stroke-width="3"/>
+
+          <circle cx="15" cy="-128" r="5" fill="#6ee7b7"/>
+          <text x="15" y="-140" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#6ee7b7">Primacy: 92%</text>
+
+          <circle cx="150" cy="-40" r="5" fill="#d98585"/>
+          <text x="150" y="-20" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#d98585">Middle Trough: ~38%</text>
+
+          <circle cx="285" cy="-124" r="5" fill="#6ee7b7"/>
+          <text x="285" y="-136" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#6ee7b7">Recency: 89%</text>
+
+          <text x="15" y="16" class="text-dim" font-size="8.5">0% (Prompt Start)</text>
+          <text x="150" y="16" text-anchor="middle" class="text-dim" font-size="8.5">50% (Center)</text>
+          <text x="285" y="16" text-anchor="end" class="text-dim" font-size="8.5">100% (End)</text>
+        </g>
+      </g>
+
+      <!-- Right: Boundary Assembly Strategy -->
+      <g transform="translate(430, 30)">
+        <rect width="400" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="400" height="34" rx="8" fill="#1b2434"/>
+        <text x="200" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">BOUNDARY ENGINEERING RULES</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="360" height="58" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">1. Pin Primary Evidence to Start (Primacy)</text>
+          <text x="12" y="36" class="text-p" font-size="9.5">Put highest-scoring Reranker chunks (#1, #2) at the top</text>
+          <text x="12" y="50" class="text-dim" font-size="8.5">Benefits from maximum initial attention allocation</text>
+
+          <rect y="68" width="360" height="58" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10.5" fill="#e0c58e">2. Neutral Middle Chunk Space</text>
+          <text x="12" y="36" class="text-p" font-size="9.5">Auxiliary background or secondary reference context</text>
+          <text x="12" y="50" class="text-dim" font-size="8.5">Avoid placing critical security/action rules here</text>
+
+          <rect y="136" width="360" height="58" rx="4" fill="#1b2434" stroke="#60a5fa" stroke-width="1.2"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10.5" fill="#60a5fa">3. Pin Task &amp; Citations to End (Recency)</text>
+          <text x="12" y="36" class="text-p" font-size="9.5">Re-state prompt instructions, output schema, and query</text>
+          <text x="12" y="50" class="text-dim" font-size="8.5">Direct proximity to the first autoregressive generation token</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">BOUNDARY RULES</span>
+            <span>Position critical evidence at prompt boundaries: anchor output schemas at the absolute end.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Attention U-Curve</h4>
+      <p>Explain the Stanford empirical finding: facts in the center of long prompts suffer 30-50% retrieval drop. Mitigate by pinning high-scoring chunks to the top (Primacy) and schema rules to the bottom (Recency).</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-16" data-slide="16">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">ATTRIBUTION & INTEGRITY</span>
+            <h1 class="slide-title">Grounding & Verifiable Citations: System Guardrails</h1>
+            <p class="slide-subtitle">Enforcing inline source attribution and deterministic refusal on out-of-domain queries.</p>
+          </div>
+          <div class="slide-counter">16 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Citation Enforcement -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">INLINE CITATION SPECIFICATION</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="75" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10" fill="#6ee7b7">Synthesized Assistant Output:</text>
+          <text x="12" y="42" class="text-p" font-size="9.5">"You may borrow a loaner laptop for up to 14 days"</text>
+          <text x="12" y="58" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">[Source: POL-IT-101 § Section 2]</text>
+
+          <rect y="85" width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10" fill="#6ee7b7">Multi-Source Fact Attribution:</text>
+          <text x="12" y="40" class="text-p" font-size="9.5">"Extensions require Department Head approval"</text>
+          <text x="12" y="54" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">[Source: POL-IT-101 § Section 2.3]</text>
+
+          <rect y="155" width="320" height="65" rx="4" fill="#1b2434" stroke="#6ee7b7"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10" fill="#6ee7b7">Automated Audit Verification:</text>
+          <text x="12" y="40" class="text-p" font-size="9">+ Regex parser checks citation presence</text>
+          <text x="12" y="54" class="text-p" font-size="9">+ Verifies doc_id exists in retrieved candidate set</text>
+        </g>
+      </g>
+
+      <!-- Right: Refusal Guardrail -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#d98585">DETERMINISTIC REFUSAL GUARDRAIL</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono" font-size="10" fill="#d98585">Out-of-Scope Employee Query:</text>
+          <text x="12" y="40" class="text-h1" font-size="10">"Can I bring my pet iguana to the office?"</text>
+
+          <rect y="70" width="320" height="65" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono" font-size="10" fill="#e0c58e">Retrieval Score Threshold Check:</text>
+          <text x="12" y="38" class="text-dim" font-size="9.5">Max Cosine Score = 0.18 (Below 0.45 cutoff)</text>
+          <text x="12" y="52" class="text-mono" font-size="9.5" fill="#d98585">Condition: ZERO VALID EVIDENCE</text>
+
+          <rect y="145" width="320" height="75" rx="4" fill="#1b2434" stroke="#d98585"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10" fill="#d98585">Enforced Refusal Template:</text>
+          <text x="12" y="42" class="text-p" font-size="9.5">"I cannot find evidence in the approved company policy</text>
+          <text x="12" y="56" class="text-p" font-size="9.5">to answer this question. Please contact HR Desk."</text>
+          <text x="12" y="68" class="text-mono" font-size="8.5" fill="#6ee7b7">[HALLUCINATION SAFELY PREVENTED]</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">CITATION DEFENSE</span>
+            <span>An answer without citations is an unverified assertion: mandatory refusal stops hallucinations.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Citation Protocol</h4>
+      <p>Demonstrate the structure: every factual assertion ends in [Source: doc_id § section]. If evidence is missing, model is strictly commanded to refuse rather than extrapolate.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-17" data-slide="17">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">COST & LATENCY ANALYSIS</span>
+            <h1 class="slide-title">RAG vs Million-Token Context Windows: Economic Reality</h1>
+            <p class="slide-subtitle">Why 1M+ context windows do not replace RAG for enterprise knowledge repositories.</p>
+          </div>
+          <div class="slide-counter">17 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Long Context Brute Force -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#d98585">STUFFING 1,000,000 TOKENS (BRUTE FORCE)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10.5" fill="#d98585">Cost Per Single User Query:</text>
+          <text x="12" y="44" class="text-mono-bold" font-size="13" fill="#d98585">$3.50 - $7.00 per query</text>
+
+          <rect y="70" width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10.5" fill="#d98585">Time to First Token (TTFT):</text>
+          <text x="12" y="44" class="text-mono-bold" font-size="13" fill="#d98585">15,000ms - 30,000ms (15-30s latency)</text>
+
+          <rect y="140" width="320" height="75" rx="4" fill="#1b2434" stroke="#d98585"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10" fill="#d98585">Attention Quality:</text>
+          <text x="12" y="40" class="text-p" font-size="9">- Severe needle-in-haystack degradation</text>
+          <text x="12" y="54" class="text-p" font-size="9">- Confuses outdated policy versions in text</text>
+          <text x="12" y="68" class="text-dim" font-size="8.5">10,000 daily queries = $35,000 - $70,000 / day</text>
+        </g>
+      </g>
+
+      <!-- Right: Hybrid RAG Architecture -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">HYBRID ENTERPRISE RAG ARCHITECTURE</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">Cost Per Single User Query:</text>
+          <text x="12" y="44" class="text-mono-bold" font-size="13" fill="#6ee7b7">$0.003 - $0.008 per query</text>
+
+          <rect y="70" width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">Time to First Token (TTFT):</text>
+          <text x="12" y="44" class="text-mono-bold" font-size="13" fill="#6ee7b7">400ms - 850ms (Sub-second streaming)</text>
+
+          <rect y="140" width="320" height="75" rx="4" fill="#1b2434" stroke="#6ee7b7"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10" fill="#6ee7b7">Attention Quality:</text>
+          <text x="12" y="40" class="text-p" font-size="9">+ Precise top-5 chunks focus model reasoning</text>
+          <text x="12" y="54" class="text-p" font-size="9">+ Pre-filtered for current version and user ACL</text>
+          <text x="12" y="68" class="text-mono" font-size="8.5" fill="#6ee7b7">10,000 daily queries = ~$50 / day (700x cheaper)</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">ECONOMIC CURVE</span>
+            <span>RAG is 700x cheaper and 25x faster than stuffing 1M tokens into frontier models for every query.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Economic & Performance Realities</h4>
+      <p>Compare costs: 1M tokens costs $3.50-$7.00 per query with 20s latency. RAG costs $0.005 with 800ms latency. Long context is for single large files; RAG is for enterprise scale.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-18" data-slide="18">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">DATABASE SELECTION</span>
+            <h1 class="slide-title">Vector Database Landscape: Managed Cloud vs Self-Hosted</h1>
+            <p class="slide-subtitle">Architectural trade-offs across data privacy, operations overhead, and latency tiers.</p>
+          </div>
+          <div class="slide-counter">18 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Managed Cloud SaaS -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">MANAGED CLOUD SAAS (Pinecone, Azure Search, Bedrock KB)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#6ee7b7">Key Advantages:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">+ Zero infrastructure maintenance or GPU cluster ops</text>
+          <text x="12" y="52" class="text-p" font-size="9.5">+ Automated serverless scaling, backups, and high availability</text>
+
+          <rect y="70" width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#60a5fa">Ecosystem Integration:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">+ Native IAM / Entra ID role mapping</text>
+          <text x="12" y="52" class="text-p" font-size="9.5">+ Pre-built connectors for S3, SharePoint, Blob</text>
+
+          <rect y="140" width="320" height="75" rx="4" fill="#1b2434" stroke="#d98585"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10.5" fill="#d98585">Trade-offs &amp; Constraints:</text>
+          <text x="12" y="38" class="text-p" font-size="9">- Higher unit compute pricing and minimum spend floors</text>
+          <text x="12" y="52" class="text-p" font-size="9">- Vendor lock-in across proprietary search APIs</text>
+          <text x="12" y="66" class="text-dim" font-size="8.5">Data egress outside private corporate VPC boundary</text>
+        </g>
+      </g>
+
+      <!-- Right: Self-Hosted / Bare Metal -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#b4a4e5">SELF-HOSTED / EMBEDDED (Qdrant, Milvus, pgvector)</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#6ee7b7">Key Advantages:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">+ Complete data sovereignty: air-gapped on-prem or VPC</text>
+          <text x="12" y="52" class="text-p" font-size="9.5">+ Predictable flat bare-metal hardware cost</text>
+
+          <rect y="70" width="320" height="60" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#b4a4e5">Flexibility &amp; Control:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">+ Custom index tuning (M, efSearch, PQ centroids)</text>
+          <text x="12" y="52" class="text-p" font-size="9.5">+ Direct integration with existing PostgreSQL (pgvector)</text>
+
+          <rect y="140" width="320" height="75" rx="4" fill="#1b2434" stroke="#d98585"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10.5" fill="#d98585">Trade-offs &amp; Constraints:</text>
+          <text x="12" y="38" class="text-p" font-size="9">- Requires dedicated 24/7 database operations team</text>
+          <text x="12" y="52" class="text-p" font-size="9">- Complex sharding, snapshotting, and memory tuning</text>
+          <text x="12" y="66" class="text-dim" font-size="8.5">Scaling requires manual Kubernetes cluster management</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">ENGINEERING CHOICE</span>
+            <span>Managed cloud vector DBs accelerate time to market: self-hosted (Qdrant/pgvector) guarantees data sovereignty.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Database Comparison</h4>
+      <p>Evaluate managed SaaS (Pinecone, Azure AI Search, Bedrock KB) vs self-hosted (Qdrant, Milvus, pgvector). Focus on operational burden, security boundaries, and scaling limits.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-19" data-slide="19">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">FINANCIAL ENGINEERING</span>
+            <h1 class="slide-title">Production TCO: The 5 Cost Pillars of Enterprise RAG</h1>
+            <p class="slide-subtitle">Raw token cost is only one bar: dissecting the complete monthly infrastructure bill.</p>
+          </div>
+          <div class="slide-counter">19 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(40, 25)">
+        <rect width="780" height="300" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="780" height="34" rx="8" fill="#1b2434"/>
+        <text x="390" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#e0c58e">ENTERPRISE RAG MONTHLY INFRASTRUCTURE BILL</text>
+
+        <g transform="translate(30, 50)">
+          <!-- Pillar 1 -->
+          <g transform="translate(0, 0)">
+            <rect width="135" height="150" rx="4" fill="#1b2434" stroke="#60a5fa" stroke-width="1.2"/>
+            <text x="67" y="22" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#60a5fa">Pillar 1</text>
+            <text x="67" y="42" text-anchor="middle" class="text-h1" font-size="11">Vector Index</text>
+            <text x="67" y="60" text-anchor="middle" class="text-dim" font-size="9">OpenSearch / Pinecone</text>
+            <rect x="15" y="80" width="105" height="50" rx="3" fill="#0e131b"/>
+            <text x="67" y="100" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#e0c58e">$250 - $700</text>
+            <text x="67" y="118" text-anchor="middle" class="text-dim" font-size="8.5">Min compute floor</text>
+          </g>
+
+          <!-- Pillar 2 -->
+          <g transform="translate(150, 0)">
+            <rect width="135" height="150" rx="4" fill="#1b2434" stroke="#b4a4e5" stroke-width="1.2"/>
+            <text x="67" y="22" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#b4a4e5">Pillar 2</text>
+            <text x="67" y="42" text-anchor="middle" class="text-h1" font-size="11">Embeddings</text>
+            <text x="67" y="60" text-anchor="middle" class="text-dim" font-size="9">Doc Ingestion Updates</text>
+            <rect x="15" y="80" width="105" height="50" rx="3" fill="#0e131b"/>
+            <text x="67" y="100" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#e0c58e">$20 - $80</text>
+            <text x="67" y="118" text-anchor="middle" class="text-dim" font-size="8.5">Per 10M tokens</text>
+          </g>
+
+          <!-- Pillar 3 -->
+          <g transform="translate(300, 0)">
+            <rect width="135" height="150" rx="4" fill="#1b2434" stroke="#e0c58e" stroke-width="1.2"/>
+            <text x="67" y="22" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#e0c58e">Pillar 3</text>
+            <text x="67" y="42" text-anchor="middle" class="text-h1" font-size="11">Reranker</text>
+            <text x="67" y="60" text-anchor="middle" class="text-dim" font-size="9">Cross-Encoder Service</text>
+            <rect x="15" y="80" width="105" height="50" rx="3" fill="#0e131b"/>
+            <text x="67" y="100" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#e0c58e">$80 - $220</text>
+            <text x="67" y="118" text-anchor="middle" class="text-dim" font-size="8.5">Hosted GPU container</text>
+          </g>
+
+          <!-- Pillar 4 -->
+          <g transform="translate(450, 0)">
+            <rect width="135" height="150" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+            <text x="67" y="22" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#6ee7b7">Pillar 4</text>
+            <text x="67" y="42" text-anchor="middle" class="text-h1" font-size="11">LLM Inference</text>
+            <text x="67" y="60" text-anchor="middle" class="text-dim" font-size="9">Context + Output</text>
+            <rect x="15" y="80" width="105" height="50" rx="3" fill="#0e131b"/>
+            <text x="67" y="100" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#e0c58e">$150 - $450</text>
+            <text x="67" y="118" text-anchor="middle" class="text-dim" font-size="8.5">Prompt cache discount</text>
+          </g>
+
+          <!-- Pillar 5 -->
+          <g transform="translate(600, 0)">
+            <rect width="120" height="150" rx="4" fill="#1b2434" stroke="#d98585" stroke-width="1.2"/>
+            <text x="60" y="22" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#d98585">Pillar 5</text>
+            <text x="60" y="42" text-anchor="middle" class="text-h1" font-size="11">Telemetry</text>
+            <text x="60" y="60" text-anchor="middle" class="text-dim" font-size="9">OTel Traces &amp; Logs</text>
+            <rect x="10" y="80" width="100" height="50" rx="3" fill="#0e131b"/>
+            <text x="60" y="100" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#e0c58e">$60 - $180</text>
+            <text x="60" y="118" text-anchor="middle" class="text-dim" font-size="8.5">Trace storage 30d</text>
+          </g>
+        </g>
+
+        <!-- Summary Footer Banner -->
+        <g transform="translate(30, 220)">
+          <rect width="720" height="55" rx="4" fill="#0e131b" stroke="#e0c58e" stroke-width="1"/>
+          <text x="20" y="24" class="text-mono-bold" font-size="11" fill="#e0c58e">ARCHITECTURAL TAKEAWAY:</text>
+          <text x="20" y="42" class="text-p" font-size="10">Model tokens represent only 25-35% of the total monthly production bill at standard corporate volumes.</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">TCO BREAKDOWN</span>
+            <span>At moderate traffic, vector database minimums and telemetry storage often exceed LLM token costs.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Cost Pillars</h4>
+      <p>Detail the 5 cost drivers: Vector DB capacity, Embedding generation, Reranker compute, LLM tokens, and Observability log retention.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-20" data-slide="20">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">INCIDENT TRIAGE</span>
+            <h1 class="slide-title">RAG Failure Taxonomy: Root-Cause Analysis (Part 1)</h1>
+            <p class="slide-subtitle">Pinpointing defects across the first 4 ingestion, chunking, and retrieval stages.</p>
+          </div>
+          <div class="slide-counter">20 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(30, 30)">
+        <!-- Stage 1 -->
+        <g transform="translate(0, 0)">
+          <rect width="185" height="280" rx="6" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+          <rect width="185" height="32" rx="6" fill="#1b2434"/>
+          <text x="92" y="20" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#d98585">1. INGESTION GAP</text>
+
+          <g transform="translate(12, 45)">
+            <text x="0" y="16" class="text-mono" font-size="9.5" fill="#f8fafc">Root Cause:</text>
+            <text x="0" y="32" class="text-p" font-size="9">OCR failure on scanned</text>
+            <text x="0" y="46" class="text-p" font-size="9">PDF or crawler skipped</text>
+            <text x="0" y="60" class="text-p" font-size="9">dynamic JS page.</text>
+
+            <rect y="75" width="160" height="50" rx="4" fill="#0e131b"/>
+            <text x="10" y="96" class="text-dim" font-size="8.5">Content never entered</text>
+            <text x="10" y="112" class="text-dim" font-size="8.5">the search index.</text>
+
+            <text x="0" y="148" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">Fix:</text>
+            <text x="0" y="165" class="text-p" font-size="8.5">Layout-aware parsers</text>
+            <text x="0" y="180" class="text-p" font-size="8.5">&amp; ingestion telemetry.</text>
+          </g>
+        </g>
+
+        <!-- Stage 2 -->
+        <g transform="translate(205, 0)">
+          <rect width="185" height="280" rx="6" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+          <rect width="185" height="32" rx="6" fill="#1b2434"/>
+          <text x="92" y="20" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#d98585">2. CHUNKING FRACTURE</text>
+
+          <g transform="translate(12, 45)">
+            <text x="0" y="16" class="text-mono" font-size="9.5" fill="#f8fafc">Root Cause:</text>
+            <text x="0" y="32" class="text-p" font-size="9">Blind character split</text>
+            <text x="0" y="46" class="text-p" font-size="9">severed condition from</text>
+            <text x="0" y="60" class="text-p" font-size="9">the policy clause.</text>
+
+            <rect y="75" width="160" height="50" rx="4" fill="#0e131b"/>
+            <text x="10" y="96" class="text-dim" font-size="8.5">Table column headers</text>
+            <text x="10" y="112" class="text-dim" font-size="8.5">separated from values.</text>
+
+            <text x="0" y="148" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">Fix:</text>
+            <text x="0" y="165" class="text-p" font-size="8.5">Heading hierarchy</text>
+            <text x="0" y="180" class="text-p" font-size="8.5">prepended to chunks.</text>
+          </g>
+        </g>
+
+        <!-- Stage 3 -->
+        <g transform="translate(410, 0)">
+          <rect width="185" height="280" rx="6" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+          <rect width="185" height="32" rx="6" fill="#1b2434"/>
+          <text x="92" y="20" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#d98585">3. RETRIEVAL MISS</text>
+
+          <g transform="translate(12, 45)">
+            <text x="0" y="16" class="text-mono" font-size="9.5" fill="#f8fafc">Root Cause:</text>
+            <text x="0" y="32" class="text-p" font-size="9">Vocabulary mismatch</text>
+            <text x="0" y="46" class="text-p" font-size="9">or alphanumeric blur</text>
+            <text x="0" y="60" class="text-p" font-size="9">in dense embedding.</text>
+
+            <rect y="75" width="160" height="50" rx="4" fill="#0e131b"/>
+            <text x="10" y="96" class="text-dim" font-size="8.5">Correct chunk scored</text>
+            <text x="10" y="112" class="text-dim" font-size="8.5">below top-k boundary.</text>
+
+            <text x="0" y="148" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">Fix:</text>
+            <text x="0" y="165" class="text-p" font-size="8.5">Hybrid BM25 + Dense</text>
+            <text x="0" y="180" class="text-p" font-size="8.5">with RRF fusion.</text>
+          </g>
+        </g>
+
+        <!-- Stage 4 -->
+        <g transform="translate(615, 0)">
+          <rect width="185" height="280" rx="6" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+          <rect width="185" height="32" rx="6" fill="#1b2434"/>
+          <text x="92" y="20" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#d98585">4. FILTER EXCLUSION</text>
+
+          <g transform="translate(12, 45)">
+            <text x="0" y="16" class="text-mono" font-size="9.5" fill="#f8fafc">Root Cause:</text>
+            <text x="0" y="32" class="text-p" font-size="9">Erroneous or overly</text>
+            <text x="0" y="46" class="text-p" font-size="9">restrictive metadata</text>
+            <text x="0" y="60" class="text-p" font-size="9">predicate on index.</text>
+
+            <rect y="75" width="160" height="50" rx="4" fill="#0e131b"/>
+            <text x="10" y="96" class="text-dim" font-size="8.5">Valid document dropped</text>
+            <text x="10" y="112" class="text-dim" font-size="8.5">before search started.</text>
+
+            <text x="0" y="148" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">Fix:</text>
+            <text x="0" y="165" class="text-p" font-size="8.5">Audited role hierarchy</text>
+            <text x="0" y="180" class="text-p" font-size="8.5">&amp; tenant tag validation.</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">FAILURE TRIAGE 1</span>
+            <span>Diagnose the stage, not the symptom: 'the answer is wrong' is an unhelpful bug report.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Failure Modes 1-4</h4>
+      <p>Break down the first 4 stages: Ingestion Gap (OCR error), Chunking Fracture (split tables), Retrieval Miss (vocabulary gap), and Security Filter Drop (over-restrictive ACL).</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-21" data-slide="21">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">INCIDENT TRIAGE</span>
+            <h1 class="slide-title">RAG Failure Taxonomy: Root-Cause Analysis (Part 2)</h1>
+            <p class="slide-subtitle">Pinpointing defects across reranking, context assembly, and synthesis stages.</p>
+          </div>
+          <div class="slide-counter">21 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(50, 30)">
+        <!-- Stage 5 -->
+        <g transform="translate(0, 0)">
+          <rect width="235" height="280" rx="6" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+          <rect width="235" height="32" rx="6" fill="#1b2434"/>
+          <text x="117" y="20" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#d98585">5. RERANKING FALL</text>
+
+          <g transform="translate(15, 45)">
+            <text x="0" y="16" class="text-mono" font-size="10" fill="#f8fafc">Root Cause:</text>
+            <text x="0" y="34" class="text-p" font-size="9.5">Valid chunk pushed out of</text>
+            <text x="0" y="48" class="text-p" font-size="9.5">top-5 by peripheral noise</text>
+            <text x="0" y="62" class="text-p" font-size="9.5">or low cross-encoder score.</text>
+
+            <rect y="78" width="205" height="52" rx="4" fill="#0e131b"/>
+            <text x="10" y="98" class="text-dim" font-size="9">Chunk was in top-50, but</text>
+            <text x="10" y="114" class="text-dim" font-size="9">dropped before LLM prompt.</text>
+
+            <text x="0" y="152" class="text-mono-bold" font-size="10" fill="#6ee7b7">Fix:</text>
+            <text x="0" y="170" class="text-p" font-size="9">Domain fine-tuned reranker</text>
+            <text x="0" y="184" class="text-p" font-size="9">&amp; expand top-k to 8-10 chunks.</text>
+          </g>
+        </g>
+
+        <!-- Stage 6 -->
+        <g transform="translate(265, 0)">
+          <rect width="235" height="280" rx="6" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+          <rect width="235" height="32" rx="6" fill="#1b2434"/>
+          <text x="117" y="20" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#d98585">6. CONTEXT OVERLOOK</text>
+
+          <g transform="translate(15, 45)">
+            <text x="0" y="16" class="text-mono" font-size="10" fill="#f8fafc">Root Cause:</text>
+            <text x="0" y="34" class="text-p" font-size="9.5">Evidence buried in center</text>
+            <text x="0" y="48" class="text-p" font-size="9.5">of 16k context window</text>
+            <text x="0" y="62" class="text-p" font-size="9.5">(Lost in the Middle decay).</text>
+
+            <rect y="78" width="205" height="52" rx="4" fill="#0e131b"/>
+            <text x="10" y="98" class="text-dim" font-size="9">Chunk was inside prompt,</text>
+            <text x="10" y="114" class="text-dim" font-size="9">but attention missed it.</text>
+
+            <text x="0" y="152" class="text-mono-bold" font-size="10" fill="#6ee7b7">Fix:</text>
+            <text x="0" y="170" class="text-p" font-size="9">Pin top evidence to start;</text>
+            <text x="0" y="184" class="text-p" font-size="9">trim context budget aggressively.</text>
+          </g>
+        </g>
+
+        <!-- Stage 7 -->
+        <g transform="translate(530, 0)">
+          <rect width="235" height="280" rx="6" fill="#141c28" stroke="#d98585" stroke-width="1.2"/>
+          <rect width="235" height="32" rx="6" fill="#1b2434"/>
+          <text x="117" y="20" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#d98585">7. SYNTHESIS HALLUCINATION</text>
+
+          <g transform="translate(15, 45)">
+            <text x="0" y="16" class="text-mono" font-size="10" fill="#f8fafc">Root Cause:</text>
+            <text x="0" y="34" class="text-p" font-size="9.5">Model overrides evidence</text>
+            <text x="0" y="48" class="text-p" font-size="9.5">with pre-trained weights,</text>
+            <text x="0" y="62" class="text-p" font-size="9.5">or extrapolates unsupported.</text>
+
+            <rect y="78" width="205" height="52" rx="4" fill="#0e131b"/>
+            <text x="10" y="98" class="text-dim" font-size="9">Evidence was present, but</text>
+            <text x="10" y="114" class="text-dim" font-size="9">generated claims are false.</text>
+
+            <text x="0" y="152" class="text-mono-bold" font-size="10" fill="#6ee7b7">Fix:</text>
+            <text x="0" y="170" class="text-p" font-size="9">Lower temperature to 0.0 &amp;</text>
+            <text x="0" y="184" class="text-p" font-size="9">strict citation guardrails.</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">FAILURE TRIAGE 2</span>
+            <span>Address context crowding and lost-in-the-middle positioning before blaming LLM generation.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Failure Modes 5-7</h4>
+      <p>Break down the final 3 stages: Reranking Fall (valid chunk ranked outside top-5), Context Truncation (lost in middle), and Synthesis Hallucination (model relies on weights over evidence).</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-22" data-slide="22">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">EVALUATION METRICS</span>
+            <h1 class="slide-title">Retrieval Evaluation: Hit Rate, Recall@k, MRR & NDCG</h1>
+            <p class="slide-subtitle">Quantitative statistical benchmarks for measuring retrieval quality before model generation.</p>
+          </div>
+          <div class="slide-counter">22 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(30, 30)">
+        <!-- Metric 1: Hit Rate -->
+        <g transform="translate(0, 0)">
+          <rect width="185" height="280" rx="6" fill="#141c28" stroke="#60a5fa" stroke-width="1.2"/>
+          <rect width="185" height="32" rx="6" fill="#1b2434"/>
+          <text x="92" y="20" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#60a5fa">HIT RATE @ k</text>
+
+          <g transform="translate(12, 45)">
+            <rect width="160" height="48" rx="4" fill="#0e131b"/>
+            <text x="10" y="20" class="text-mono" font-size="9.5" fill="#94a3b8">Formula:</text>
+            <text x="10" y="38" class="text-mono-bold" font-size="10.5" fill="#f8fafc">Hits / Total Queries</text>
+
+            <text x="0" y="112" class="text-mono-bold" font-size="10" fill="#6ee7b7">What it measures:</text>
+            <text x="0" y="130" class="text-p" font-size="9">Percentage of queries</text>
+            <text x="0" y="144" class="text-p" font-size="9">where AT LEAST ONE</text>
+            <text x="0" y="158" class="text-p" font-size="9">true relevant chunk is</text>
+            <text x="0" y="172" class="text-p" font-size="9">present in top-k.</text>
+
+            <rect y="190" width="160" height="36" rx="4" fill="#1b2434"/>
+            <text x="80" y="212" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#60a5fa">Target: &gt; 92%</text>
+          </g>
+        </g>
+
+        <!-- Metric 2: Recall@k -->
+        <g transform="translate(205, 0)">
+          <rect width="185" height="280" rx="6" fill="#141c28" stroke="#b4a4e5" stroke-width="1.2"/>
+          <rect width="185" height="32" rx="6" fill="#1b2434"/>
+          <text x="92" y="20" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#b4a4e5">RECALL @ k</text>
+
+          <g transform="translate(12, 45)">
+            <rect width="160" height="48" rx="4" fill="#0e131b"/>
+            <text x="10" y="20" class="text-mono" font-size="9.5" fill="#94a3b8">Formula:</text>
+            <text x="10" y="38" class="text-mono-bold" font-size="10.5" fill="#f8fafc">Retrieved_Rel / Total_Rel</text>
+
+            <text x="0" y="112" class="text-mono-bold" font-size="10" fill="#6ee7b7">What it measures:</text>
+            <text x="0" y="130" class="text-p" font-size="9">Fraction of all relevant</text>
+            <text x="0" y="144" class="text-p" font-size="9">ground-truth chunks</text>
+            <text x="0" y="158" class="text-p" font-size="9">successfully found</text>
+            <text x="0" y="172" class="text-p" font-size="9">in the top-k window.</text>
+
+            <rect y="190" width="160" height="36" rx="4" fill="#1b2434"/>
+            <text x="80" y="212" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#b4a4e5">Target: &gt; 85%</text>
+          </g>
+        </g>
+
+        <!-- Metric 3: MRR -->
+        <g transform="translate(410, 0)">
+          <rect width="185" height="280" rx="6" fill="#141c28" stroke="#e0c58e" stroke-width="1.2"/>
+          <rect width="185" height="32" rx="6" fill="#1b2434"/>
+          <text x="92" y="20" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#e0c58e">MRR (RECIPROCAL)</text>
+
+          <g transform="translate(12, 45)">
+            <rect width="160" height="48" rx="4" fill="#0e131b"/>
+            <text x="10" y="20" class="text-mono" font-size="9.5" fill="#94a3b8">Formula:</text>
+            <text x="10" y="38" class="text-mono-bold" font-size="10.5" fill="#f8fafc">(1 / Q) Σ (1 / rank_i)</text>
+
+            <text x="0" y="112" class="text-mono-bold" font-size="10" fill="#6ee7b7">What it measures:</text>
+            <text x="0" y="130" class="text-p" font-size="9">How close to the TOP</text>
+            <text x="0" y="144" class="text-p" font-size="9">the primary correct</text>
+            <text x="0" y="158" class="text-p" font-size="9">chunk is placed.</text>
+            <text x="0" y="172" class="text-p" font-size="9">(Rank 1 = 1.0, Rank 2 = 0.5)</text>
+
+            <rect y="190" width="160" height="36" rx="4" fill="#1b2434"/>
+            <text x="80" y="212" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#e0c58e">Target: &gt; 0.80</text>
+          </g>
+        </g>
+
+        <!-- Metric 4: NDCG -->
+        <g transform="translate(615, 0)">
+          <rect width="185" height="280" rx="6" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+          <rect width="185" height="32" rx="6" fill="#1b2434"/>
+          <text x="92" y="20" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">NDCG @ k</text>
+
+          <g transform="translate(12, 45)">
+            <rect width="160" height="48" rx="4" fill="#0e131b"/>
+            <text x="10" y="20" class="text-mono" font-size="9.5" fill="#94a3b8">Formula:</text>
+            <text x="10" y="38" class="text-mono-bold" font-size="10.5" fill="#f8fafc">DCG@k / IDCG@k</text>
+
+            <text x="0" y="112" class="text-mono-bold" font-size="10" fill="#6ee7b7">What it measures:</text>
+            <text x="0" y="130" class="text-p" font-size="9">Graded relevance quality.</text>
+            <text x="0" y="144" class="text-p" font-size="9">Heavily penalizes highly</text>
+            <text x="0" y="158" class="text-p" font-size="9">relevant items placed</text>
+            <text x="0" y="172" class="text-p" font-size="9">low in the result list.</text>
+
+            <rect y="190" width="160" height="36" rx="4" fill="#1b2434"/>
+            <text x="80" y="212" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#6ee7b7">Target: &gt; 0.85</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">RETRIEVAL BENCHMARKS</span>
+            <span>Test retrieval independently: Hit Rate, MRR, and NDCG verify your index before touching prompts.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Retrieval Metrics</h4>
+      <p>Explain Hit Rate (binary presence), Recall@k (fraction of all relevant chunks), MRR (position penalty for rank #1), and NDCG@k (graded relevance across ranked candidates).</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-23" data-slide="23">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">EVALUATION METRICS</span>
+            <h1 class="slide-title">Generation Evaluation: The Ragas / TruLens Triad</h1>
+            <p class="slide-subtitle">Automated Model-as-a-Judge assessment across context, grounding, and response quality.</p>
+          </div>
+          <div class="slide-counter">23 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+        </marker>
+      </defs>
+
+      <!-- Center Triangle / Triad Diagram -->
+      <g transform="translate(50, 30)">
+        <!-- Node 1: Context Relevance -->
+        <g transform="translate(0, 0)">
+          <rect width="230" height="280" rx="8" fill="#141c28" stroke="#60a5fa" stroke-width="1.2"/>
+          <rect width="230" height="34" rx="8" fill="#1b2434"/>
+          <text x="115" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">1. CONTEXT RELEVANCE</text>
+
+          <g transform="translate(15, 50)">
+            <text x="0" y="16" class="text-mono" font-size="10" fill="#94a3b8">Equation:</text>
+            <text x="0" y="34" class="text-mono-bold" font-size="10" fill="#f8fafc">|S_relevant| / |S_total_chunks|</text>
+
+            <rect y="50" width="200" height="75" rx="4" fill="#0e131b"/>
+            <text x="10" y="70" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">Evaluation Question:</text>
+            <text x="10" y="90" class="text-p" font-size="9">"Did retrieval fetch clean</text>
+            <text x="10" y="104" class="text-p" font-size="9">signal, or is the context</text>
+            <text x="10" y="118" class="text-p" font-size="9">stuffed with noisy junk?"</text>
+
+            <rect y="140" width="200" height="60" rx="4" fill="#1b2434"/>
+            <text x="10" y="160" class="text-mono" font-size="9" fill="#e0c58e">Target Benchmark: &gt; 0.80</text>
+            <text x="10" y="176" class="text-dim" font-size="8.5">Low score = excessive top-k</text>
+          </g>
+        </g>
+
+        <!-- Node 2: Faithfulness / Groundedness -->
+        <g transform="translate(265, 0)">
+          <rect width="230" height="280" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+          <rect width="230" height="34" rx="8" fill="#1b2434"/>
+          <text x="115" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">2. FAITHFULNESS</text>
+
+          <g transform="translate(15, 50)">
+            <text x="0" y="16" class="text-mono" font-size="10" fill="#94a3b8">Equation:</text>
+            <text x="0" y="34" class="text-mono-bold" font-size="10" fill="#f8fafc">|V_claims| / |Total_claims|</text>
+
+            <rect y="50" width="200" height="75" rx="4" fill="#0e131b"/>
+            <text x="10" y="70" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">Evaluation Question:</text>
+            <text x="10" y="90" class="text-p" font-size="9">"Can every factual statement</text>
+            <text x="10" y="104" class="text-p" font-size="9">be verified mathematically</text>
+            <text x="10" y="118" class="text-p" font-size="9">against the context?"</text>
+
+            <rect y="140" width="200" height="60" rx="4" fill="#1b2434"/>
+            <text x="10" y="160" class="text-mono" font-size="9" fill="#6ee7b7">Target Benchmark: &gt; 0.95</text>
+            <text x="10" y="176" class="text-dim" font-size="8.5">Low score = Hallucination</text>
+          </g>
+        </g>
+
+        <!-- Node 3: Answer Relevance -->
+        <g transform="translate(530, 0)">
+          <rect width="230" height="280" rx="8" fill="#141c28" stroke="#b4a4e5" stroke-width="1.2"/>
+          <rect width="230" height="34" rx="8" fill="#1b2434"/>
+          <text x="115" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#b4a4e5">3. ANSWER RELEVANCE</text>
+
+          <g transform="translate(15, 50)">
+            <text x="0" y="16" class="text-mono" font-size="10" fill="#94a3b8">Equation:</text>
+            <text x="0" y="34" class="text-mono-bold" font-size="10" fill="#f8fafc">Cosine( Embed(Q), Embed(Q_pred) )</text>
+
+            <rect y="50" width="200" height="75" rx="4" fill="#0e131b"/>
+            <text x="10" y="70" class="text-mono-bold" font-size="9.5" fill="#6ee7b7">Evaluation Question:</text>
+            <text x="10" y="90" class="text-p" font-size="9">"Does the response directly</text>
+            <text x="10" y="104" class="text-p" font-size="9">address the user prompt,</text>
+            <text x="10" y="118" class="text-p" font-size="9">or does it ramble?"</text>
+
+            <rect y="140" width="200" height="60" rx="4" fill="#1b2434"/>
+            <text x="10" y="160" class="text-mono" font-size="9" fill="#b4a4e5">Target Benchmark: &gt; 0.88</text>
+            <text x="10" y="176" class="text-dim" font-size="8.5">Low score = Incomplete response</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">RAGAS TRIAD</span>
+            <span>Deconstruct answer quality into 3 distinct gates: context relevance, faithfulness, and answer relevance.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>The Ragas Triad</h4>
+      <p>Explain the 3 core metrics: Context Relevance (signal vs noise in retrieved chunks), Faithfulness (every generated claim backed by context), and Answer Relevance (response directly addresses the prompt).</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-24" data-slide="24">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">REFERENCE TOPOLOGY</span>
+            <h1 class="slide-title">Production Architecture Reference: Industrial RAG Pipeline</h1>
+            <p class="slide-subtitle">The complete enterprise architecture incorporating semantic caching, guardrails, and telemetry.</p>
+          </div>
+          <div class="slide-counter">24 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#60a5fa"/>
+        </marker>
+        <marker id="arr-green" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#6ee7b7"/>
+        </marker>
+      </defs>
+
+      <g transform="translate(30, 25)">
+        <rect width="800" height="300" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+
+        <!-- Top Row: Client & Frontline Gate -->
+        <g transform="translate(25, 20)">
+          <!-- Client -->
+          <rect width="130" height="75" rx="6" fill="#0e131b" stroke="#253245"/>
+          <text x="65" y="24" text-anchor="middle" class="text-h1" font-size="11">Client UI / API</text>
+          <text x="65" y="42" text-anchor="middle" class="text-dim" font-size="9">Web / Slack / Teams</text>
+          <text x="65" y="58" text-anchor="middle" class="text-mono" font-size="8.5" fill="#60a5fa">JWT / Bearer Token</text>
+
+          <path d="M 135 37 L 165 37" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+          <!-- Semantic Cache -->
+          <rect x="170" width="140" height="75" rx="6" fill="#1b2434" stroke="#e0c58e" stroke-width="1.2"/>
+          <text x="240" y="24" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#e0c58e">Semantic Cache</text>
+          <text x="240" y="42" text-anchor="middle" class="text-dim" font-size="9">Exact / Vector Match</text>
+          <text x="240" y="58" text-anchor="middle" class="text-mono" font-size="8.5" fill="#6ee7b7">35% FAQ Cache Hit</text>
+
+          <path d="M 315 37 L 345 37" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+          <!-- Guardrail & PII -->
+          <rect x="350" width="135" height="75" rx="6" fill="#0e131b" stroke="#253245"/>
+          <text x="417" y="24" text-anchor="middle" class="text-h1" font-size="11">Input Guardrail</text>
+          <text x="417" y="42" text-anchor="middle" class="text-dim" font-size="9">PII Masking &amp; Anonymize</text>
+          <text x="417" y="58" text-anchor="middle" class="text-mono" font-size="8.5" fill="#d98585">Prompt Injection Gate</text>
+
+          <path d="M 490 37 L 520 37" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+          <!-- Authorization Filter -->
+          <rect x="525" width="130" height="75" rx="6" fill="#0e131b" stroke="#253245"/>
+          <text x="590" y="24" text-anchor="middle" class="text-h1" font-size="11">Auth &amp; ACL Pruner</text>
+          <text x="590" y="42" text-anchor="middle" class="text-dim" font-size="9">RBAC &amp; Tenant ID</text>
+          <text x="590" y="58" text-anchor="middle" class="text-mono" font-size="8.5" fill="#6ee7b7">Pre-Filtering Engine</text>
+
+          <path d="M 660 37 L 690 37" stroke="#60a5fa" stroke-width="1.2" marker-end="url(#arr)"/>
+
+          <!-- Vector Store -->
+          <rect x="695" width="80" height="75" rx="6" fill="#1b2434" stroke="#60a5fa" stroke-width="1.2"/>
+          <text x="735" y="32" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#60a5fa">Vector</text>
+          <text x="735" y="48" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#60a5fa">Index</text>
+          <text x="735" y="64" text-anchor="middle" class="text-dim" font-size="8">HNSW</text>
+        </g>
+
+        <!-- Down Arrow from Vector Store to Bottom Row -->
+        <path d="M 760 102 L 760 135" stroke="#6ee7b7" stroke-width="1.5" marker-end="url(#arr-green)"/>
+
+        <!-- Bottom Row: Rerank, Assembly, Generation & Telemetry -->
+        <g transform="translate(25, 145)">
+          <!-- Telemetry OTel -->
+          <rect width="130" height="125" rx="6" fill="#0e131b" stroke="#d98585" stroke-width="1"/>
+          <text x="65" y="24" text-anchor="middle" class="text-mono-bold" font-size="10" fill="#d98585">OTel Telemetry</text>
+          <text x="65" y="44" text-anchor="middle" class="text-dim" font-size="8.5">Distributed Spans</text>
+          <text x="65" y="60" text-anchor="middle" class="text-dim" font-size="8.5">Latency &amp; Token Count</text>
+          <text x="65" y="76" text-anchor="middle" class="text-dim" font-size="8.5">Failure Root Cause</text>
+          <rect x="10" y="88" width="110" height="26" rx="3" fill="#1b2434"/>
+          <text x="65" y="105" text-anchor="middle" class="text-mono" font-size="8.5" fill="#e0c58e">Tracing Bus</text>
+
+          <!-- Generation -->
+          <rect x="170" width="160" height="125" rx="6" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+          <text x="250" y="24" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">Grounded LLM</text>
+          <text x="250" y="44" text-anchor="middle" class="text-p" font-size="9">Temperature = 0.0</text>
+          <text x="250" y="60" text-anchor="middle" class="text-p" font-size="9">Prompt Caching Enabled</text>
+          <text x="250" y="76" text-anchor="middle" class="text-mono" font-size="8.5" fill="#6ee7b7">Inline Citation Format</text>
+          <text x="250" y="92" text-anchor="middle" class="text-dim" font-size="8.5">Mandatory Refusal Rule</text>
+          <text x="250" y="108" text-anchor="middle" class="text-mono" font-size="8.5" fill="#e0c58e">Sub-1s Latency Target</text>
+
+          <path d="M 370 60 L 335 60" stroke="#6ee7b7" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+          <!-- Context Assembly -->
+          <rect x="375" width="160" height="125" rx="6" fill="#0e131b" stroke="#253245"/>
+          <text x="455" y="24" text-anchor="middle" class="text-h1" font-size="11">Context Assembler</text>
+          <text x="455" y="44" text-anchor="middle" class="text-dim" font-size="8.5">Primacy: Top Rerank at Start</text>
+          <text x="455" y="60" text-anchor="middle" class="text-dim" font-size="8.5">Recency: Task at End</text>
+          <text x="455" y="76" text-anchor="middle" class="text-mono" font-size="8.5" fill="#b4a4e5">Evidence Token Budget</text>
+          <text x="455" y="92" text-anchor="middle" class="text-dim" font-size="8.5">Deduplicate Overlaps</text>
+          <text x="455" y="108" text-anchor="middle" class="text-mono" font-size="8.5" fill="#60a5fa">Top-5 Chunks Packed</text>
+
+          <path d="M 575 60 L 540 60" stroke="#6ee7b7" stroke-width="1.2" marker-end="url(#arr-green)"/>
+
+          <!-- Cross-Encoder Reranker -->
+          <rect x="580" width="195" height="125" rx="6" fill="#1b2434" stroke="#b4a4e5" stroke-width="1.2"/>
+          <text x="677" y="24" text-anchor="middle" class="text-mono-bold" font-size="10.5" fill="#b4a4e5">Cross-Encoder Reranker</text>
+          <text x="677" y="44" text-anchor="middle" class="text-p" font-size="9">Takes Top-50 Hybrid Candidates</text>
+          <text x="677" y="60" text-anchor="middle" class="text-dim" font-size="8.5">Runs joint self-attention across pairs</text>
+          <text x="677" y="76" text-anchor="middle" class="text-mono" font-size="8.5" fill="#6ee7b7">NDCG@5 Precision Boost</text>
+          <text x="677" y="92" text-anchor="middle" class="text-dim" font-size="8.5">Latency: ~35ms compute budget</text>
+          <text x="677" y="108" text-anchor="middle" class="text-mono" font-size="8.5" fill="#e0c58e">Prunes 90% of noise</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">INDUSTRIAL SPEC</span>
+            <span>Enterprise RAG wraps the core pipeline in semantic caching, security gates, and continuous tracing.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Production Reference Design</h4>
+      <p>Walk through the complete production stack: Semantic Cache (bypasses LLM for 40% of FAQ queries), PII Masking, Multi-tenant Vector Store, Cross-Encoder Reranker, and OpenTelemetry collector.</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-25" data-slide="25">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">PRACTICAL WORKSHOP</span>
+            <h1 class="slide-title">Hands-On Workshop: Enterprise Policy Assistant</h1>
+            <p class="slide-subtitle">Building and defending a grounded retrieval system under strict enterprise constraints.</p>
+          </div>
+          <div class="slide-counter">25 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <!-- Left: Scenario Description -->
+      <g transform="translate(40, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#60a5fa">WORKSHOP SCENARIO: APEX GLOBAL</text>
+
+        <g transform="translate(20, 50)">
+          <rect width="320" height="65" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#e0c58e">Enterprise Workload:</text>
+          <text x="12" y="38" class="text-p" font-size="9.5">Corporate IT &amp; HR Policy Knowledge Base</text>
+          <text x="12" y="52" class="text-dim" font-size="9">18,000 employees across 14 global offices</text>
+
+          <rect y="75" width="320" height="135" rx="4" fill="#1b2434" stroke="#253245"/>
+          <text x="12" y="20" class="text-mono-bold" font-size="10" fill="#f8fafc">4 Core Engineering Constraints:</text>
+          <text x="12" y="40" class="text-p" font-size="9">1. Zero Role Leakage: Interns cannot read executive perks</text>
+          <text x="12" y="58" class="text-p" font-size="9">2. Alphanumeric Search: Matches exact room 'B12' and codes</text>
+          <text x="12" y="76" class="text-p" font-size="9">3. Mandatory Grounding: Inline [Source: ID § Sec] tags</text>
+          <text x="12" y="94" class="text-p" font-size="9">4. Explicit Refusal: Refuse out-of-domain questions cleanly</text>
+          <text x="12" y="116" class="text-mono" font-size="8.5" fill="#6ee7b7">Evaluation: Tested against 10 golden queries</text>
+        </g>
+      </g>
+
+      <!-- Right: Deliverables -->
+      <g transform="translate(460, 30)">
+        <rect width="360" height="290" rx="8" fill="#141c28" stroke="#6ee7b7" stroke-width="1.2"/>
+        <rect width="360" height="34" rx="8" fill="#1b2434"/>
+        <text x="180" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">CHOOSE YOUR TRACK (100-POINT RUBRIC)</text>
+
+        <g transform="translate(20, 50)">
+          <!-- Track A -->
+          <rect width="320" height="95" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10.5" fill="#60a5fa">Track A: Architecture &amp; Evaluation</text>
+          <text x="12" y="40" class="text-p" font-size="9">- Complete Mermaid.js topology diagram</text>
+          <text x="12" y="56" class="text-p" font-size="9">- Chunking &amp; metadata pre-filtering schema</text>
+          <text x="12" y="72" class="text-p" font-size="9">- Ragas automated evaluation specification</text>
+          <text x="12" y="86" class="text-dim" font-size="8.5">Ideal for System Architects &amp; Tech Leads (No coding)</text>
+
+          <!-- Track B -->
+          <rect y="105" width="320" height="95" rx="4" fill="#0e131b" stroke="#253245"/>
+          <text x="12" y="22" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">Track B: Working Python Prototype</text>
+          <text x="12" y="40" class="text-p" font-size="9">- Working local script (NumPy or ChromaDB)</text>
+          <text x="12" y="56" class="text-p" font-size="9">- Role-based ACL pre-filter + BM25 hybrid fusion</text>
+          <text x="12" y="72" class="text-p" font-size="9">- Grounded prompt synthesis &amp; refusal path</text>
+          <text x="12" y="86" class="text-mono" font-size="8.5" fill="#6ee7b7">100% Zero-cost guarantee (local execution)</text>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">WORKSHOP BRIEF</span>
+            <span>Design under real constraints: role-based access filtering, hybrid search, and citation grounding.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Workshop Instructions</h4>
+      <p>Students have 15 minutes to design or implement the policy assistant. Two tracks available: Track A (Architecture & Evaluation Plan) and Track B (Python Code Prototype with zero-cost guarantee).</p>
+    
+        </div>
+      </section>
+      <section class="slide-container" id="slide-26" data-slide="26">
+        <div class="slide-header">
+          <div class="header-left">
+            <span class="category-badge">PRODUCTION READINESS</span>
+            <h1 class="slide-title">Architectural Checklist: The 7 Production Gates</h1>
+            <p class="slide-subtitle">Essential verification gates before deploying any enterprise RAG workload.</p>
+          </div>
+          <div class="slide-counter">26 / 26</div>
+        </div>
+        <div class="slide-canvas">
+          <div class="diagram-arena">
+<svg viewBox="0 0 860 360" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(40, 25)">
+        <rect width="780" height="300" rx="8" fill="#141c28" stroke="#253245" stroke-width="1.2"/>
+        <rect width="780" height="34" rx="8" fill="#1b2434"/>
+        <text x="390" y="22" text-anchor="middle" class="text-mono-bold" font-size="11" fill="#6ee7b7">THE 7 ENTERPRISE RAG PRODUCTION GATES</text>
+
+        <g transform="translate(25, 48)">
+          <!-- Gate 1 -->
+          <g transform="translate(0, 0)">
+            <rect width="355" height="48" rx="4" fill="#0e131b" stroke="#253245"/>
+            <circle cx="20" cy="24" r="8" fill="#6ee7b7"/>
+            <text x="20" y="28" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#0e131b">1</text>
+            <text x="36" y="20" class="text-mono-bold" font-size="10" fill="#f8fafc">Structure-Aware Parsing</text>
+            <text x="36" y="34" class="text-dim" font-size="8.5">Headings preserved; table rows kept with headers</text>
+          </g>
+
+          <!-- Gate 2 -->
+          <g transform="translate(375, 0)">
+            <rect width="355" height="48" rx="4" fill="#0e131b" stroke="#253245"/>
+            <circle cx="20" cy="24" r="8" fill="#6ee7b7"/>
+            <text x="20" y="28" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#0e131b">2</text>
+            <text x="36" y="20" class="text-mono-bold" font-size="10" fill="#f8fafc">Hard Metadata Pre-Filtering</text>
+            <text x="36" y="34" class="text-dim" font-size="8.5">Tenant and role ACL checked before vector search</text>
+          </g>
+
+          <!-- Gate 3 -->
+          <g transform="translate(0, 58)">
+            <rect width="355" height="48" rx="4" fill="#0e131b" stroke="#253245"/>
+            <circle cx="20" cy="24" r="8" fill="#6ee7b7"/>
+            <text x="20" y="28" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#0e131b">3</text>
+            <text x="36" y="20" class="text-mono-bold" font-size="10" fill="#f8fafc">Hybrid Search (Dense + BM25)</text>
+            <text x="36" y="34" class="text-dim" font-size="8.5">Fused via Reciprocal Rank Fusion (k=60)</text>
+          </g>
+
+          <!-- Gate 4 -->
+          <g transform="translate(375, 58)">
+            <rect width="355" height="48" rx="4" fill="#0e131b" stroke="#253245"/>
+            <circle cx="20" cy="24" r="8" fill="#6ee7b7"/>
+            <text x="20" y="28" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#0e131b">4</text>
+            <text x="36" y="20" class="text-mono-bold" font-size="10" fill="#f8fafc">Cross-Encoder Precision Reranking</text>
+            <text x="36" y="34" class="text-dim" font-size="8.5">Reranks top-50 down to top-5 highest confidence</text>
+          </g>
+
+          <!-- Gate 5 -->
+          <g transform="translate(0, 116)">
+            <rect width="355" height="48" rx="4" fill="#0e131b" stroke="#253245"/>
+            <circle cx="20" cy="24" r="8" fill="#6ee7b7"/>
+            <text x="20" y="28" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#0e131b">5</text>
+            <text x="36" y="20" class="text-mono-bold" font-size="10" fill="#f8fafc">Boundary Context Assembly</text>
+            <text x="36" y="34" class="text-dim" font-size="8.5">Top evidence at start; schema &amp; task at end</text>
+          </g>
+
+          <!-- Gate 6 -->
+          <g transform="translate(375, 116)">
+            <rect width="355" height="48" rx="4" fill="#0e131b" stroke="#253245"/>
+            <circle cx="20" cy="24" r="8" fill="#6ee7b7"/>
+            <text x="20" y="28" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#0e131b">6</text>
+            <text x="36" y="20" class="text-mono-bold" font-size="10" fill="#f8fafc">Citations &amp; Mandatory Refusal</text>
+            <text x="36" y="34" class="text-dim" font-size="8.5">Every fact cited; explicit refusal when evidence is missing</text>
+          </g>
+
+          <!-- Gate 7 -->
+          <g transform="translate(0, 174)">
+            <rect width="730" height="58" rx="4" fill="#1b2434" stroke="#6ee7b7" stroke-width="1.2"/>
+            <circle cx="20" cy="29" r="8" fill="#6ee7b7"/>
+            <text x="20" y="33" text-anchor="middle" class="text-mono-bold" font-size="9" fill="#0e131b">7</text>
+            <text x="36" y="24" class="text-mono-bold" font-size="10.5" fill="#6ee7b7">Continuous CI/CD Automated Evaluation Suite (Ragas / TruLens)</text>
+            <text x="36" y="42" class="text-dim" font-size="9">Regression gates: Recall@5 &gt; 85%, Faithfulness &gt; 95%, Answer Relevance &gt; 88%</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+          </div>
+        </div>
+        <div class="slide-footer">
+          <div class="takeaway-pill">
+            <span class="takeaway-tag">PRODUCTION GATES</span>
+            <span>A RAG system is only as reliable as its parsing boundaries, ACL filters, and evaluation suite.</span>
+          </div>
+          <div class="footer-meta">ADVANCED GENAI | ARCHITECTURE TRACK</div>
+        </div>
+        <div class="speaker-notes-data" style="display: none;">
+
+      <h4>Final Synthesis & Checklist</h4>
+      <p>Review the 7 gates: Structure-aware chunking, Hard ACL pre-filtering, Hybrid RRF retrieval, Cross-encoder reranking, Boundary prompt assembly, Mandatory refusal guardrails, and Automated CI/CD evaluation.</p>
+    
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Interactive Controls Toolbar -->
+  <div class="controls-toolbar">
+    <button class="tool-btn" id="btn-prev" title="Previous Slide (Left Arrow / Page Up)">Prev</button>
+    <button class="tool-btn" id="btn-next" title="Next Slide (Right Arrow / Space / Page Down)">Next</button>
+    <span style="color: var(--border-subtle);">|</span>
+    <button class="tool-btn" id="btn-notes" title="Toggle Speaker Notes (N)">Notes [N]</button>
+    <button class="tool-btn" id="btn-grid" title="Slide Overview Grid (G)">Grid [G]</button>
+    <button class="tool-btn" id="btn-fullscreen" title="Toggle Fullscreen (F)">FS [F]</button>
+  </div>
+
+  <!-- Speaker Notes Drawer -->
+  <div class="notes-drawer" id="notes-drawer">
+    <div class="notes-header">
+      <span class="notes-title" id="notes-slide-indicator">Speaker Notes: Slide 01</span>
+      <button class="notes-close-btn" id="btn-close-notes">Esc / Close</button>
+    </div>
+    <div class="notes-content" id="notes-body">
+      <!-- Dynamic notes content -->
+    </div>
+  </div>
+
+  <!-- Slide Overview Grid Modal -->
+  <div class="grid-modal" id="grid-modal">
+    <div class="grid-header">
+      <span class="grid-title">Slide Overview Grid</span>
+      <button class="notes-close-btn" id="btn-close-grid">Esc / Close</button>
+    </div>
+    <div class="grid-container" id="grid-container">
+      <!-- Dynamic grid cards -->
+    </div>
+  </div>
+
+  <script>
+    // Slide Navigation & Viewport Engine
+    (function() {
+      const slides = document.querySelectorAll('.slide-container');
+      const totalSlides = slides.length;
+      let currentIndex = 0;
+      
+      const viewport = document.getElementById('viewport');
+      const notesDrawer = document.getElementById('notes-drawer');
+      const notesBody = document.getElementById('notes-body');
+      const notesIndicator = document.getElementById('notes-slide-indicator');
+      const gridModal = document.getElementById('grid-modal');
+      const gridContainer = document.getElementById('grid-container');
+
+      // Populate Grid
+      slides.forEach((s, idx) => {
+        const title = s.querySelector('.slide-title') ? s.querySelector('.slide-title').textContent : `Slide ${idx+1}`;
+        const card = document.createElement('div');
+        card.className = `grid-card ${idx === 0 ? 'active' : ''}`;
+        card.dataset.index = idx;
+        card.innerHTML = `
+          <span class="grid-card-num">Slide ${String(idx+1).padStart(2, '0')} / ${totalSlides}</span>
+          <span class="grid-card-title">${title}</span>
+        `;
+        card.addEventListener('click', () => {
+          goToSlide(idx);
+          toggleGrid(false);
+        });
+        gridContainer.appendChild(card);
+      });
+
+      // Responsive Auto-Scaling (1440x810 native)
+      function resizeViewport() {
+        const wrapper = document.querySelector('.stage-wrapper');
+        const availWidth = wrapper.clientWidth - 24;
+        const availHeight = wrapper.clientHeight - 24;
+        
+        const scaleX = availWidth / 1440;
+        const scaleY = availHeight / 810;
+        const scale = Math.min(scaleX, scaleY);
+        
+        viewport.style.transform = `scale(${scale})`;
+      }
+
+      window.addEventListener('resize', resizeViewport);
+      resizeViewport();
+
+      function updateSlide(index) {
+        slides.forEach((s, idx) => {
+          s.classList.toggle('active', idx === index);
+        });
+
+        // Update speaker notes
+        const currentSlide = slides[index];
+        const notesElem = currentSlide.querySelector('.speaker-notes-data');
+        if (notesElem) {
+          notesBody.innerHTML = notesElem.innerHTML;
+        } else {
+          notesBody.innerHTML = "<p>No speaker notes for this slide.</p>";
+        }
+        notesIndicator.textContent = `Speaker Notes: Slide ${String(index+1).padStart(2, '0')} / ${totalSlides}`;
+
+        // Update Grid Active State
+        document.querySelectorAll('.grid-card').forEach((gc, idx) => {
+          gc.classList.toggle('active', idx === index);
+        });
+      }
+
+      function goToSlide(index) {
+        if (index >= 0 && index < totalSlides) {
+          currentIndex = index;
+          updateSlide(currentIndex);
+        }
+      }
+
+      function nextSlide() {
+        if (currentIndex < totalSlides - 1) {
+          goToSlide(currentIndex + 1);
+        }
+      }
+
+      function prevSlide() {
+        if (currentIndex > 0) {
+          goToSlide(currentIndex - 1);
+        }
+      }
+
+      function toggleNotes(force) {
+        const isOpen = force !== undefined ? force : !notesDrawer.classList.contains('open');
+        notesDrawer.classList.toggle('open', isOpen);
+      }
+
+      function toggleGrid(force) {
+        const isOpen = force !== undefined ? force : !gridModal.classList.contains('open');
+        gridModal.classList.toggle('open', isOpen);
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => console.error(err));
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      }
+
+      // Keyboard Controls
+      window.addEventListener('keydown', (e) => {
+        if (gridModal.classList.contains('open')) {
+          if (e.key === 'Escape' || e.key === 'g' || e.key === 'G') {
+            toggleGrid(false);
+          }
+          return;
+        }
+
+        switch(e.key) {
+          case 'ArrowRight':
+          case 'Space':
+          case 'PageDown':
+            e.preventDefault();
+            nextSlide();
+            break;
+          case 'ArrowLeft':
+          case 'PageUp':
+            e.preventDefault();
+            prevSlide();
+            break;
+          case 'Home':
+            e.preventDefault();
+            goToSlide(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            goToSlide(totalSlides - 1);
+            break;
+          case 'n':
+          case 'N':
+            toggleNotes();
+            break;
+          case 'g':
+          case 'G':
+            toggleGrid();
+            break;
+          case 'f':
+          case 'F':
+            toggleFullscreen();
+            break;
+          case 'Escape':
+            toggleNotes(false);
+            toggleGrid(false);
+            break;
+        }
+      });
+
+      // Button Bindings
+      document.getElementById('btn-prev').addEventListener('click', prevSlide);
+      document.getElementById('btn-next').addEventListener('click', nextSlide);
+      document.getElementById('btn-notes').addEventListener('click', () => toggleNotes());
+      document.getElementById('btn-close-notes').addEventListener('click', () => toggleNotes(false));
+      document.getElementById('btn-grid').addEventListener('click', () => toggleGrid());
+      document.getElementById('btn-close-grid').addEventListener('click', () => toggleGrid(false));
+      document.getElementById('btn-fullscreen').addEventListener('click', toggleFullscreen);
+
+      // Initialize
+      updateSlide(0);
+    })();
+  </script>
+</body>
+</html>

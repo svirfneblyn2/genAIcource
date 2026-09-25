@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture 01: AI, ML, and Generative AI Overview | Systems Engineering Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Understated Engineering Dark Palette */
+      --bg-canvas: #0e131b;
+      --bg-surface: #151c28;
+      --bg-surface-alt: #1b2434;
+      --border-subtle: #253245;
+      --border-focus: #3b82f6;
+      --border-strong: #364761;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      /* Functional Muted Technical Accents */
+      --accent-blue: #60a5fa;
+      --accent-green: #6ee7b7;
+      --accent-amber: #e0c58e;
+      --accent-coral: #d98585;
+      --accent-purple: #b4a4e5;
+      
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      user-select: none;
+    }
+
+    /* Discreet Bottom Mini Controls (Calm, non-intrusive) */
+    .bottom-controls {
+      position: fixed;
+      bottom: 8px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(18, 24, 36, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 4px 10px;
+      border-radius: 6px;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      opacity: 0.75;
+      transition: opacity 0.2s ease, transform 0.15s ease;
+      pointer-events: auto;
+    }
+
+    .bottom-controls:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+    }
+
+    .btn-mini {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #9aa7bc;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+      font-family: var(--font-sans);
+      user-select: none;
+    }
+
+    .btn-mini:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.14);
+      border-color: #3b82f6;
+    }
+
+    .btn-mini:active {
+      transform: scale(0.96);
+    }
+
+    .btn-mini.active {
+      color: #60a5fa;
+      background: rgba(96, 165, 250, 0.18);
+      border-color: #60a5fa;
+    }
+
+    .counter-mini {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #e8ecf2;
+      padding: 0 6px;
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .sep-mini {
+      width: 1px;
+      height: 16px;
+      background: #253245;
+      margin: 0 3px;
+    }
+
+    /* Main Presentation Viewport */
+    main.stage-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0e131b;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .slide-frame {
+      width: 96vw;
+      max-width: 1750px;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100vh - 88px);
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      box-shadow: 0 30px 70px -20px rgba(0, 0, 0, 0.8), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Individual Slide */
+    .slide-page {
+      position: absolute;
+      inset: 0;
+      padding: 38px 48px 30px 48px;
+      display: none;
+      flex-direction: column;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .slide-page.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    /* Typography Scaled Up for Classroom Projectors */
+    .slide-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .kicker-tag {
+      font-size: 15.5px;
+      color: #60a5fa;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .kicker-tag::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      background: var(--accent-blue);
+      border-radius: 50%;
+    }
+
+    .index-tag {
+      font-family: var(--font-mono);
+      font-size: 15px;
+      padding: 4px 12px;
+      color: var(--text-dim);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .slide-title {
+      font-size: 40px;
+      font-weight: 800;
+      line-height: 1.15;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: -0.025em;
+    }
+
+    .slide-lead {
+      font-size: 19px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 18px;
+      max-width: 1200px;
+    }
+
+    /* Canvas Work Area */
+    .diagram-arena {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #151c28;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    /* Footbar */
+    .slide-footer {
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: var(--text-dim);
+      border-top: 1px solid var(--border-subtle);
+      padding-top: 8px;
+    }
+
+    .takeaway-pill {
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .takeaway-pill strong {
+      color: var(--accent-amber);
+      font-weight: 700;
+    }
+
+    /* Progress Indicator */
+    .deck-progress {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .deck-progress-bar {
+      height: 100%;
+      background: var(--accent-blue);
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+
+    /* Speaker Notes Drawer */
+    .notes-drawer {
+      position: fixed;
+      right: -500px;
+      top: 0;
+      bottom: 0;
+      width: 480px;
+      z-index: 1200;
+      background: #0d121c;
+      border-left: 1px solid var(--border-strong);
+      box-shadow: -15px 0 35px rgba(0, 0, 0, 0.6);
+      z-index: 150;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .notes-drawer.open {
+      right: 0;
+    }
+
+    .notes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 18px;
+    }
+
+    .notes-title {
+      font-size: 16px;
+      color: #e0c58e;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-amber);
+    }
+
+    .notes-body {
+      font-size: 16px;
+      color: #cbd5e1;
+      line-height: 1.6;
+      color: #cbd5e1;
+    }
+
+    .notes-tag {
+      font-size: 13px;
+      color: #60a5fa;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent-blue);
+      margin: 16px 0 6px 0;
+      letter-spacing: 0.06em;
+    }
+
+    .notes-box {
+      margin-top: 18px;
+      padding: 14px 16px;
+      font-size: 14px;
+      background: rgba(251, 191, 36, 0.08);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+      border-radius: 6px;
+      font-size: 13px;
+      color: #f5e8c7;
+    }
+
+    /* Grid Overview Modal */
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(7, 10, 15, 0.96);
+      backdrop-filter: blur(12px);
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      padding: 36px;
+      overflow-y: auto;
+    }
+
+    .grid-overlay.open {
+      display: flex;
+    }
+
+    .grid-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      max-width: 1450px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+
+    .grid-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .grid-sheet {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      max-width: 1450px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .grid-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .grid-item:hover {
+      border-color: var(--accent-blue);
+      transform: translateY(-2px);
+      background: var(--bg-surface-alt);
+    }
+
+    .grid-item.active {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+    }
+
+    .grid-item-num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-blue);
+      font-weight: 700;
+    }
+
+    .grid-item-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      line-height: 1.35;
+    }
+
+    /* Common SVG Blueprint Typography & Styles (Large, High-Contrast) */
+    svg.blueprint-svg {
+      width: 100%;
+      height: 100%;
+      max-height: 540px;
+      overflow: visible;
+    }
+
+    .node-box {
+      fill: #161f2c;
+      stroke: var(--border-subtle);
+      stroke-width: 1.5;
+      rx: 6;
+    }
+
+    .text-h1 {
+      font-family: var(--font-sans);
+      font-size: 18px;
+      font-weight: 700;
+      fill: #ffffff;
+    }
+
+    .text-p {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      fill: #94a3b8;
+    }
+
+    .text-mono {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      fill: var(--accent-blue);
+    }
+
+    .img-schematic {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 6px;
+    }
+
+  
+    @media print {
+      @page {
+        size: 1920px 1080px;
+        margin: 0;
+      }
+      html, body {
+        background-color: #0e131b !important;
+        color: #e8ecf2 !important;
+        overflow: visible !important;
+        height: auto !important;
+        width: 1920px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      main.stage-wrapper, .slide-frame {
+        position: static !important;
+        height: auto !important;
+        width: 1920px !important;
+        overflow: visible !important;
+        display: block !important;
+        background: transparent !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .slide-page {
+        display: flex !important;
+        flex-direction: column !important;
+        position: relative !important;
+        opacity: 1 !important;
+        box-sizing: border-box !important;
+        width: 1920px !important;
+        height: 100vh !important;
+        max-height: 100vh !important;
+        background: #0e131b !important;
+        padding: 24px 48px 20px 48px !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        break-after: page !important;
+        page-break-after: always !important;
+      }
+      .slide-page:last-of-type {
+        break-after: avoid !important;
+      }
+      .slide-topbar, .slide-title, .slide-lead, .slide-footer {
+        flex-shrink: 0 !important;
+      }
+      .diagram-arena {
+        flex: 1 1 0% !important;
+        min-height: 0 !important;
+        max-height: 540px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        overflow: hidden !important;
+      }
+      .img-schematic {
+        max-height: 100% !important;
+        max-width: 100% !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+      }
+      .blueprint-svg {
+        max-height: 100% !important;
+      }
+      .bottom-controls, .notes-drawer, .grid-overlay, .deck-progress {
+        display: none !important;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Presentation Stage -->
+  <main class="stage-wrapper">
+    <div class="slide-frame">
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 1: AI is not one thing (Integrated Generated Schematic) -->
+      <!-- ======================================================= -->
+      <section class="slide-page active" data-slide="1">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Problem Framing</div>
+          <div class="index-tag">01 / 22</div>
+        </div>
+        <h1 class="slide-title">AI Is Not One Thing: The Problem Spectrum</h1>
+        <p class="slide-lead">The primary engineering skill is classification: identify the problem type before choosing a technique or model.</p>
+        
+        <div class="diagram-arena">
+          <img src="assets/problem_spectrum_prism.jpg" alt="Problem Spectrum Optical Prism Diagram" class="img-schematic" onerror="this.style.display='none'; document.getElementById('svg-s1').style.display='block';">
+          <!-- Fallback SVG if image not accessible -->
+          <svg id="svg-s1" class="blueprint-svg" viewBox="0 0 1000 480" style="display: none;">
+            <polygon points="400,100 490,380 310,340" fill="#131b2b" stroke="#60a5fa" stroke-width="2.5"/>
+            <text x="400" y="270" text-anchor="middle" class="text-h1" fill="#60a5fa">ENGINEERING PRISM</text>
+            <rect x="580" y="40" width="380" height="75" rx="6" class="node-box" stroke="#60a5fa"/>
+            <text x="600" y="70" class="text-h1" fill="#60a5fa">1. Deterministic Software</text>
+            <text x="600" y="95" class="text-p">Known rules, exact math, zero hallucinations</text>
+            <rect x="580" y="140" width="380" height="75" rx="6" class="node-box" stroke="#6ee7b7"/>
+            <text x="600" y="170" class="text-h1" fill="#6ee7b7">2. Classical Machine Learning</text>
+            <text x="600" y="195" class="text-p">Statistical scoring from historical tabular data</text>
+            <rect x="580" y="240" width="380" height="75" rx="6" class="node-box" stroke="#b4a4e5"/>
+            <text x="600" y="270" class="text-h1" fill="#b4a4e5">3. Generative Transformers</text>
+            <text x="600" y="295" class="text-p">Unstructured language and media synthesis</text>
+            <rect x="580" y="340" width="380" height="75" rx="6" class="node-box" stroke="#e0c58e"/>
+            <text x="600" y="370" class="text-h1" fill="#e0c58e">4. Autonomous Agent Loops</text>
+            <text x="600" y="395" class="text-p">External system state mutation via tools</text>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Core Axiom:</strong> Classify before choosing a model. AI is not a universal hammer.</div>
+          <div>Lecture 01 • Section 1</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 2: Four tasks, four different systems -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="2">
+        <div class="slide-topbar">
+          <div class="kicker-tag">System Architectures</div>
+          <div class="index-tag">02 / 22</div>
+        </div>
+        <h1 class="slide-title">Four Real Tasks: Four Distinct Architectures</h1>
+        <p class="slide-lead">Forcing all workloads into an LLM degrades reliability and spikes cloud latency and costs.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Row 1: VAT -->
+            <g transform="translate(30, 20)">
+              <rect x="0" y="0" width="230" height="72" rx="6" class="node-box"/>
+              <text x="20" y="30" class="text-h1">1. Calculate VAT</text>
+              <text x="20" y="52" class="text-p">Invoice Total: $100.00</text>
+              
+              <path d="M 230 36 L 310 36" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="310" y="0" width="450" height="72" rx="6" fill="#151f2e" stroke="#60a5fa" stroke-width="1.5"/>
+              <text x="330" y="30" class="text-h1" fill="#60a5fa">Deterministic Logic (Python / SQL)</text>
+              <text x="330" y="54" class="text-mono">return amount * 0.20  # 0ms latency, exact</text>
+              
+              <path d="M 760 36 L 830 36" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="830" y="0" width="210" height="72" rx="6" fill="#14221e" stroke="#6ee7b7" stroke-width="1.5"/>
+              <text x="850" y="32" class="text-h1" fill="#6ee7b7">$20.00 Exact</text>
+              <text x="850" y="52" class="text-p">Zero error rate</text>
+            </g>
+
+            <!-- Row 2: Churn -->
+            <g transform="translate(30, 115)">
+              <rect x="0" y="0" width="230" height="72" rx="6" class="node-box"/>
+              <text x="20" y="30" class="text-h1">2. Predict Churn</text>
+              <text x="20" y="52" class="text-p">Activity &amp; billing logs</text>
+              
+              <path d="M 230 36 L 310 36" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="310" y="0" width="450" height="72" rx="6" fill="#15211c" stroke="#6ee7b7" stroke-width="1.5"/>
+              <text x="330" y="30" class="text-h1" fill="#6ee7b7">Classical ML (XGBoost / Logistic Regression)</text>
+              <text x="330" y="54" class="text-mono">model.predict_proba(user_features)</text>
+              
+              <path d="M 760 36 L 830 36" stroke="#e0c58e" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="830" y="0" width="210" height="72" rx="6" fill="#201c15" stroke="#e0c58e" stroke-width="1.5"/>
+              <text x="850" y="32" class="text-h1" fill="#e0c58e">P(churn) = 0.84</text>
+              <text x="850" y="52" class="text-p">Calibrated score</text>
+            </g>
+
+            <!-- Row 3: Ticket Summary -->
+            <g transform="translate(30, 210)">
+              <rect x="0" y="0" width="230" height="72" rx="6" class="node-box"/>
+              <text x="20" y="30" class="text-h1">3. Summarize Tickets</text>
+              <text x="20" y="52" class="text-p">Messy support thread</text>
+              
+              <path d="M 230 36 L 310 36" stroke="#b4a4e5" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="310" y="0" width="450" height="72" rx="6" fill="#1a1828" stroke="#b4a4e5" stroke-width="1.5"/>
+              <text x="330" y="30" class="text-h1" fill="#b4a4e5">Generative AI (Transformer with Context)</text>
+              <text x="330" y="54" class="text-mono">transformer.generate(thread_prompt)</text>
+              
+              <path d="M 760 36 L 830 36" stroke="#b4a4e5" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="830" y="0" width="210" height="72" rx="6" fill="#1b1728" stroke="#b4a4e5" stroke-width="1.5"/>
+              <text x="850" y="32" class="text-h1" fill="#b4a4e5">3 Action Items</text>
+              <text x="850" y="52" class="text-p">Structured synthesis</text>
+            </g>
+
+            <!-- Row 4: CI Bug Fix -->
+            <g transform="translate(30, 305)">
+              <rect x="0" y="0" width="230" height="72" rx="6" class="node-box"/>
+              <text x="20" y="30" class="text-h1">4. Fix Broken Build</text>
+              <text x="20" y="52" class="text-p">Failed GitHub Actions log</text>
+              
+              <path d="M 230 36 L 310 36" stroke="#d98585" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="310" y="0" width="450" height="72" rx="6" fill="#221618" stroke="#d98585" stroke-width="1.5"/>
+              <text x="330" y="30" class="text-h1" fill="#d98585">Autonomous Agent Workflow (Read / Patch / Test)</text>
+              <text x="330" y="54" class="text-mono">repo.read() -> patch() -> pytest -> human_gate</text>
+              
+              <path d="M 760 36 L 830 36" stroke="#d98585" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="830" y="0" width="210" height="72" rx="6" fill="#241416" stroke="#d98585" stroke-width="1.5"/>
+              <text x="850" y="32" class="text-h1" fill="#d98585">Pull Request</text>
+              <text x="850" y="52" class="text-p">Gated mutation</text>
+            </g>
+
+            <!-- Markers -->
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 9 5 L 0 9 z" fill="#64748b"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Rule:</strong> Never use a probabilistic model where deterministic arithmetic exists.</div>
+          <div>Lecture 01 • Section 1</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 3: Predict, Generate, Act -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="3">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Capability Spectrum</div>
+          <div class="index-tag">03 / 22</div>
+        </div>
+        <h1 class="slide-title">Predict, Generate, Act: The Three Primitives</h1>
+        <p class="slide-lead">Separating system capabilities across these three verbs determines your architecture and blast radius.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- 3 Columns -->
+            <!-- Column 1: Predict -->
+            <g transform="translate(40, 25)">
+              <rect x="0" y="0" width="310" height="380" rx="8" class="node-box" stroke="#60a5fa" stroke-width="2"/>
+              <rect x="24" y="20" width="100" height="26" rx="4" fill="rgba(56, 189, 248, 0.15)"/>
+              <text x="74" y="37" text-anchor="middle" fill="#60a5fa" font-size="13.5" font-weight="700">READ-ONLY</text>
+              
+              <text x="24" y="80" class="text-h1" font-size="26" fill="#60a5fa">Predict</text>
+              <text x="24" y="105" class="text-p">Score, classify, rank, forecast</text>
+              
+              <line x1="24" y1="125" x2="286" y2="125" stroke="#253245" stroke-width="2"/>
+              
+              <rect x="24" y="145" width="262" height="52" rx="6" fill="#0e131b" stroke="#28374d"/>
+              <text x="38" y="176" class="text-mono">y ∈ {0, 1} or R^k</text>
+              
+              <text x="24" y="235" class="text-h1" font-size="17">Primary Outputs:</text>
+              <text x="24" y="260" class="text-p">• Churn probability score</text>
+              <text x="24" y="285" class="text-p">• Fraud detection binary flag</text>
+              <text x="24" y="310" class="text-p">• Search ranking position</text>
+              
+              <rect x="24" y="335" width="262" height="28" rx="4" fill="rgba(56, 189, 248, 0.1)"/>
+              <text x="155" y="354" text-anchor="middle" fill="#60a5fa" font-size="15" font-weight="600">Blast Radius: Zero</text>
+            </g>
+
+            <!-- Column 2: Generate -->
+            <g transform="translate(395, 25)">
+              <rect x="0" y="0" width="310" height="380" rx="8" class="node-box" stroke="#b4a4e5" stroke-width="2"/>
+              <rect x="24" y="20" width="90" height="26" rx="4" fill="rgba(192, 132, 252, 0.15)"/>
+              <text x="69" y="37" text-anchor="middle" fill="#b4a4e5" font-size="13.5" font-weight="700">SYNTHESIS</text>
+              
+              <text x="24" y="80" class="text-h1" font-size="26" fill="#b4a4e5">Generate</text>
+              <text x="24" y="105" class="text-p">Text, code, image, audio</text>
+              
+              <line x1="24" y1="125" x2="286" y2="125" stroke="#253245" stroke-width="2"/>
+              
+              <rect x="24" y="145" width="262" height="52" rx="6" fill="#0e131b" stroke="#28374d"/>
+              <text x="38" y="176" class="text-mono">P(token_t | context)</text>
+              
+              <text x="24" y="235" class="text-h1" font-size="17">Primary Outputs:</text>
+              <text x="24" y="260" class="text-p">• Support ticket response draft</text>
+              <text x="24" y="285" class="text-p">• Synthesized code boilerplate</text>
+              <text x="24" y="310" class="text-p">• Document condensation</text>
+              
+              <rect x="24" y="335" width="262" height="28" rx="4" fill="rgba(192, 132, 252, 0.1)"/>
+              <text x="155" y="354" text-anchor="middle" fill="#b4a4e5" font-size="15" font-weight="600">Blast Radius: Low (Drafting)</text>
+            </g>
+
+            <!-- Column 3: Act -->
+            <g transform="translate(750, 25)">
+              <rect x="0" y="0" width="310" height="380" rx="8" class="node-box" stroke="#d98585" stroke-width="2"/>
+              <rect x="24" y="20" width="90" height="26" rx="4" fill="rgba(248, 113, 113, 0.15)"/>
+              <text x="69" y="37" text-anchor="middle" fill="#d98585" font-size="13.5" font-weight="700">MUTATION</text>
+              
+              <text x="24" y="80" class="text-h1" font-size="26" fill="#d98585">Act</text>
+              <text x="24" y="105" class="text-p">Mutate external state via tools</text>
+              
+              <line x1="24" y1="125" x2="286" y2="125" stroke="#253245" stroke-width="2"/>
+              
+              <rect x="24" y="145" width="262" height="52" rx="6" fill="#0e131b" stroke="#28374d"/>
+              <text x="38" y="176" class="text-mono">POST /api/v1/refund (Tool)</text>
+              
+              <text x="24" y="235" class="text-h1" font-size="17">Primary Outputs:</text>
+              <text x="24" y="260" class="text-p">• Database write / SQL update</text>
+              <text x="24" y="285" class="text-p">• Git commit &amp; deployment</text>
+              <text x="24" y="310" class="text-p">• Live email dispatch to customer</text>
+              
+              <rect x="24" y="335" width="262" height="28" rx="4" fill="rgba(248, 113, 113, 0.15)"/>
+              <text x="155" y="354" text-anchor="middle" fill="#d98585" font-size="15" font-weight="700">Blast Radius: CRITICAL</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> Moving from Generate to Act requires least privilege, sandboxes, and human approvals.</div>
+          <div>Lecture 01 • Section 1</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 4: Automation is not automatically AI -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="4">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Software Engineering Baseline</div>
+          <div class="index-tag">04 / 22</div>
+        </div>
+        <h1 class="slide-title">Automation Is Not Automatically AI</h1>
+        <p class="slide-lead">Deterministic code remains the engineering default when business rules are stable and well-defined.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Left Card: Deterministic -->
+            <g transform="translate(60, 20)">
+              <rect x="0" y="0" width="450" height="380" rx="8" fill="#151c28" stroke="#60a5fa" stroke-width="1.5"/>
+              <rect x="24" y="20" width="140" height="28" rx="4" fill="rgba(56, 189, 248, 0.15)"/>
+              <text x="94" y="38" text-anchor="middle" fill="#60a5fa" font-size="13.5" font-weight="700">DEFAULT CHOICE</text>
+              
+              <text x="24" y="80" class="text-h1" font-size="24">Deterministic Software</text>
+              <text x="24" y="104" class="text-p">Hand-crafted rules, state machines, math formulas</text>
+              
+              <g transform="translate(24, 130)">
+                <rect x="0" y="0" width="402" height="48" rx="6" fill="#151c28" stroke="#253245"/>
+                <text x="16" y="29" class="text-h1" font-size="16">Execution:</text>
+                <text x="140" y="29" fill="#60a5fa" font-size="16" font-weight="600">100% Deterministic (Zero variance)</text>
+
+                <rect x="0" y="60" width="402" height="48" rx="6" fill="#151c28" stroke="#253245"/>
+                <text x="16" y="89" class="text-h1" font-size="16">Testability:</text>
+                <text x="140" y="89" fill="#6ee7b7" font-size="16" font-weight="600">Exact unit tests (assert result == y)</text>
+
+                <rect x="0" y="120" width="402" height="48" rx="6" fill="#151c28" stroke="#253245"/>
+                <text x="16" y="149" class="text-h1" font-size="16">Latency:</text>
+                <text x="140" y="149" fill="#60a5fa" font-size="16">&lt; 1 ms CPU execution</text>
+
+                <rect x="0" y="180" width="402" height="48" rx="6" fill="#151c28" stroke="#253245"/>
+                <text x="16" y="209" class="text-h1" font-size="16">Marginal Cost:</text>
+                <text x="140" y="209" fill="#6ee7b7" font-size="16">$0.00000 per invocation</text>
+              </g>
+            </g>
+
+            <!-- Middle VS divider -->
+            <circle cx="550" cy="210" r="24" fill="#1b2434" stroke="#364761" stroke-width="2"/>
+            <text x="550" y="218" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="800">VS</text>
+
+            <!-- Right Card: AI Component -->
+            <g transform="translate(590, 20)">
+              <rect x="0" y="0" width="450" height="380" rx="8" fill="#151a26" stroke="#b4a4e5" stroke-width="1.5"/>
+              <rect x="24" y="20" width="130" height="28" rx="4" fill="rgba(192, 132, 252, 0.15)"/>
+              <text x="89" y="38" text-anchor="middle" fill="#b4a4e5" font-size="13.5" font-weight="700">HIGH COMPLEXITY</text>
+              
+              <text x="24" y="80" class="text-h1" font-size="24">AI Component</text>
+              <text x="24" y="104" class="text-p">Learned behavior over unstructured patterns</text>
+              
+              <g transform="translate(24, 130)">
+                <rect x="0" y="0" width="402" height="48" rx="6" fill="#151c28" stroke="#281c3b"/>
+                <text x="16" y="29" class="text-h1" font-size="16">Execution:</text>
+                <text x="140" y="29" fill="#e0c58e" font-size="16" font-weight="600">Probabilistic (Error rate ε &gt; 0)</text>
+
+                <rect x="0" y="60" width="402" height="48" rx="6" fill="#151c28" stroke="#281c3b"/>
+                <text x="16" y="89" class="text-h1" font-size="16">Testability:</text>
+                <text x="140" y="89" fill="#e0c58e" font-size="16" font-weight="600">Statistical benchmark eval suites</text>
+
+                <rect x="0" y="120" width="402" height="48" rx="6" fill="#151c28" stroke="#281c3b"/>
+                <text x="16" y="149" class="text-h1" font-size="16">Latency:</text>
+                <text x="140" y="149" fill="#d98585" font-size="16">300 ms - 3000 ms GPU inference</text>
+
+                <rect x="0" y="180" width="402" height="48" rx="6" fill="#151c28" stroke="#281c3b"/>
+                <text x="16" y="209" class="text-h1" font-size="16">Marginal Cost:</text>
+                <text x="140" y="209" fill="#d98585" font-size="16">Metered GPU tokens / compute</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Principle:</strong> AI adds non-zero error rates and latency. Use it only where rules cannot be hard-coded.</div>
+          <div>Lecture 01 • Section 2</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 5: Traditional software vs machine learning -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="5">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Paradigm Shift</div>
+          <div class="index-tag">05 / 22</div>
+        </div>
+        <h1 class="slide-title">Traditional Programming vs Machine Learning</h1>
+        <p class="slide-lead">Who derives the rules: the human engineer writing conditions, or the optimization algorithm fitting examples?</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Top: Traditional -->
+            <g transform="translate(60, 30)">
+              <text x="0" y="0" fill="#60a5fa" font-size="17" font-weight="700" letter-spacing="0.06em">TRADITIONAL PROGRAMMING: HUMAN ENCODES THE RULES</text>
+              
+              <rect x="0" y="20" width="180" height="70" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="90" y="52" text-anchor="middle" class="text-h1">Data (X)</text>
+              <text x="90" y="72" text-anchor="middle" class="text-p">Inputs</text>
+              
+              <text x="210" y="60" text-anchor="middle" fill="#64748b" font-size="26" font-weight="700">+</text>
+              
+              <rect x="240" y="20" width="240" height="70" rx="6" fill="#151f2e" stroke="#60a5fa" stroke-width="2"/>
+              <text x="360" y="50" text-anchor="middle" class="text-h1" fill="#60a5fa">Rules / Code</text>
+              <text x="360" y="72" text-anchor="middle" class="text-p">Written by software engineer</text>
+              
+              <path d="M 495 55 L 575 55" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="585" y="20" width="190" height="70" rx="6" class="node-box"/>
+              <text x="680" y="50" text-anchor="middle" class="text-h1">Computer / CPU</text>
+              <text x="680" y="72" text-anchor="middle" class="text-mono">Executes instructions</text>
+              
+              <path d="M 790 55 L 860 55" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="870" y="20" width="150" height="70" rx="6" fill="#14221e" stroke="#6ee7b7" stroke-width="2"/>
+              <text x="945" y="52" text-anchor="middle" class="text-h1" fill="#6ee7b7">Answers (Y)</text>
+              <text x="945" y="72" text-anchor="middle" class="text-p">Output result</text>
+            </g>
+
+            <line x1="60" y1="160" x2="1040" y2="160" stroke="#253245" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+            <!-- Bottom: ML -->
+            <g transform="translate(60, 200)">
+              <text x="0" y="0" fill="#6ee7b7" font-size="17" font-weight="700" letter-spacing="0.06em">MACHINE LEARNING: ALGORITHM DERIVES THE RULES</text>
+              
+              <rect x="0" y="20" width="180" height="70" rx="6" class="node-box" stroke="#6ee7b7"/>
+              <text x="90" y="52" text-anchor="middle" class="text-h1">Data (X)</text>
+              <text x="90" y="72" text-anchor="middle" class="text-p">Feature vectors</text>
+              
+              <text x="210" y="60" text-anchor="middle" fill="#64748b" font-size="26" font-weight="700">+</text>
+              
+              <rect x="240" y="20" width="240" height="70" rx="6" fill="#15211c" stroke="#6ee7b7" stroke-width="2"/>
+              <text x="360" y="50" text-anchor="middle" class="text-h1" fill="#6ee7b7">Answers (Y)</text>
+              <text x="360" y="72" text-anchor="middle" class="text-p">Historical labeled examples</text>
+              
+              <path d="M 495 55 L 575 55" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="585" y="20" width="190" height="70" rx="6" class="node-box" stroke="#6ee7b7"/>
+              <text x="680" y="50" text-anchor="middle" class="text-h1">Training Loop</text>
+              <text x="680" y="72" text-anchor="middle" class="text-mono">Gradient descent</text>
+              
+              <path d="M 790 55 L 860 55" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              
+              <rect x="870" y="20" width="150" height="70" rx="6" fill="#152130" stroke="#60a5fa" stroke-width="2"/>
+              <text x="945" y="50" text-anchor="middle" class="text-h1" fill="#60a5fa">Model (W)</text>
+              <text x="945" y="72" text-anchor="middle" class="text-mono">Learned rules</text>
+            </g>
+
+            <rect x="60" y="340" width="980" height="48" rx="6" fill="#151c28" stroke="#253245"/>
+            <text x="80" y="370" fill="#94a3b8" font-size="16">Inference Phase: <tspan fill="#ffffff" font-weight="600">New Data</tspan> is fed into the <tspan fill="#60a5fa" font-weight="600">Learned Model (W)</tspan> to compute <tspan fill="#6ee7b7" font-weight="600">Predictions</tspan> without rewriting code.</text>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> When writing rules by hand is impossible (e.g. computer vision, spam), ML fits the rules from data.</div>
+          <div>Lecture 01 • Section 2</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 6: Machine learning has a lifecycle -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="6">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Production Engineering</div>
+          <div class="index-tag">06 / 22</div>
+        </div>
+        <h1 class="slide-title">A Model File Is Not a Product: The MLOps Lifecycle</h1>
+        <p class="slide-lead">Training a weights file is only 15% of the total engineering effort. Production systems require continuous feedback.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Center Core -->
+            <circle cx="550" cy="220" r="90" fill="#151c28" stroke="#28374d" stroke-width="2"/>
+            <text x="550" y="205" text-anchor="middle" fill="#60a5fa" font-size="18" font-weight="800">MLOps</text>
+            <text x="550" y="228" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="600">Production</text>
+            <text x="550" y="248" text-anchor="middle" fill="#94a3b8" font-size="13.5">Lifecycle Loop</text>
+
+            <!-- 8 Circular Nodes -->
+            <g transform="translate(465, 20)">
+              <rect x="0" y="0" width="170" height="52" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="85" y="26" text-anchor="middle" class="text-h1" font-size="15">1. Problem Framing</text>
+              <text x="85" y="42" text-anchor="middle" class="text-p" font-size="13">Metrics &amp; business ROI</text>
+            </g>
+
+            <g transform="translate(740, 60)">
+              <rect x="0" y="0" width="170" height="52" rx="6" class="node-box"/>
+              <text x="85" y="26" text-anchor="middle" class="text-h1" font-size="15">2. Data Ingestion</text>
+              <text x="85" y="42" text-anchor="middle" class="text-p" font-size="13">ETL &amp; schema validation</text>
+            </g>
+
+            <g transform="translate(830, 195)">
+              <rect x="0" y="0" width="170" height="52" rx="6" class="node-box"/>
+              <text x="85" y="26" text-anchor="middle" class="text-h1" font-size="15">3. Feature Store</text>
+              <text x="85" y="42" text-anchor="middle" class="text-p" font-size="13">Normalization &amp; embeddings</text>
+            </g>
+
+            <g transform="translate(740, 330)">
+              <rect x="0" y="0" width="170" height="52" rx="6" class="node-box" stroke="#b4a4e5"/>
+              <text x="85" y="26" text-anchor="middle" class="text-h1" font-size="15" fill="#b4a4e5">4. Model Training</text>
+              <text x="85" y="42" text-anchor="middle" class="text-p" font-size="13">Hyperparameter tuning</text>
+            </g>
+
+            <g transform="translate(465, 380)">
+              <rect x="0" y="0" width="170" height="52" rx="6" class="node-box"/>
+              <text x="85" y="26" text-anchor="middle" class="text-h1" font-size="15">5. Offline Validation</text>
+              <text x="85" y="42" text-anchor="middle" class="text-p" font-size="13">Slice tests, bias, regression</text>
+            </g>
+
+            <g transform="translate(190, 330)">
+              <rect x="0" y="0" width="170" height="52" rx="6" class="node-box"/>
+              <text x="85" y="26" text-anchor="middle" class="text-h1" font-size="15">6. Canary Serving</text>
+              <text x="85" y="42" text-anchor="middle" class="text-p" font-size="13">A/B deploy, latency SLAs</text>
+            </g>
+
+            <!-- Highlighted Node: Monitoring -->
+            <g transform="translate(100, 195)">
+              <rect x="0" y="0" width="180" height="56" rx="6" fill="#201c15" stroke="#e0c58e" stroke-width="2"/>
+              <text x="90" y="26" text-anchor="middle" class="text-h1" font-size="15" fill="#e0c58e">7. DRIFT MONITORING</text>
+              <text x="90" y="44" text-anchor="middle" fill="#f5e8c7" font-size="13">Data &amp; Concept Drift</text>
+            </g>
+
+            <g transform="translate(190, 60)">
+              <rect x="0" y="0" width="170" height="52" rx="6" class="node-box" stroke="#6ee7b7"/>
+              <text x="85" y="26" text-anchor="middle" class="text-h1" font-size="15" fill="#6ee7b7">8. Retraining Trigger</text>
+              <text x="85" y="42" text-anchor="middle" class="text-p" font-size="13">Automated pipeline loop</text>
+            </g>
+
+            <!-- Circular Arrows -->
+            <path d="M 640 46 C 700 50, 720 60, 735 70" stroke="#60a5fa" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 850 115 L 870 185" stroke="#60a5fa" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 870 255 L 850 320" stroke="#60a5fa" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 735 370 C 690 395, 655 405, 640 405" stroke="#60a5fa" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 460 405 C 410 395, 370 375, 365 370" stroke="#60a5fa" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 240 325 L 220 260" stroke="#60a5fa" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 215 190 C 215 150, 230 130, 240 120" stroke="#e0c58e" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 365 70 C 400 55, 430 48, 460 46" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> Production systems decay when environments change. Monitoring and retraining are mandatory.</div>
+          <div>Lecture 01 • Section 2</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 7: Vocabulary Map -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="7">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Taxonomy</div>
+          <div class="index-tag">07 / 22</div>
+        </div>
+        <h1 class="slide-title">Vocabulary Map: Precise Technical Boundaries</h1>
+        <p class="slide-lead">Avoid category errors: AI is broader than ML, Deep Learning is broader than LLMs, and ChatGPT is a product wrapper.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Level 1: AI -->
+            <rect x="40" y="20" width="1020" height="400" rx="12" fill="#0c121e" stroke="#28374d" stroke-width="2"/>
+            <text x="65" y="54" fill="#94a3b8" font-size="18" font-weight="700">ARTIFICIAL INTELLIGENCE (AI)</text>
+            <text x="460" y="54" fill="#64748b" font-size="15">Rule-based expert systems, A* search, tree planning, symbolic logic</text>
+
+            <!-- Level 2: ML -->
+            <rect x="80" y="78" width="940" height="322" rx="10" fill="#101826" stroke="#60a5fa" stroke-width="1.5"/>
+            <text x="105" y="110" fill="#60a5fa" font-size="17" font-weight="700">MACHINE LEARNING (ML)</text>
+            <text x="360" y="110" fill="#94a3b8" font-size="15">Gradient boosting (XGBoost), random forests, linear models, SVM</text>
+
+            <!-- Level 3: Deep Learning -->
+            <rect x="120" y="136" width="860" height="244" rx="8" fill="#151a2e" stroke="#b4a4e5" stroke-width="1.5"/>
+            <text x="145" y="166" fill="#b4a4e5" font-size="16" font-weight="700">DEEP LEARNING (DL)</text>
+            <text x="330" y="166" fill="#94a3b8" font-size="15">Multi-layer artificial neural networks (CNN, RNN, Transformers)</text>
+
+            <!-- Level 4: Foundation Models -->
+            <rect x="160" y="192" width="780" height="168" rx="6" fill="#1c1630" stroke="#d98585" stroke-width="1.5"/>
+            <text x="185" y="222" fill="#d98585" font-size="15" font-weight="700">FOUNDATION MODELS (Broad Pretrained Engines)</text>
+
+            <!-- LLM vs GenAI -->
+            <g transform="translate(190, 240)">
+              <rect x="0" y="0" width="340" height="100" rx="6" fill="#151e2c" stroke="#60a5fa"/>
+              <text x="20" y="32" class="text-h1" font-size="16" fill="#60a5fa">Large Language Models (LLMs)</text>
+              <text x="20" y="56" class="text-p">Text token generation &amp; reasoning</text>
+              <text x="20" y="80" class="text-mono" font-size="13.5">GPT-4, Claude 3.5, Llama 3</text>
+            </g>
+
+            <g transform="translate(560, 240)">
+              <rect x="0" y="0" width="350" height="100" rx="6" fill="#1c1726" stroke="#b4a4e5"/>
+              <text x="20" y="32" class="text-h1" font-size="16" fill="#b4a4e5">Generative AI (Multimodal Media)</text>
+              <text x="20" y="56" class="text-p">Latent diffusion, audio, video</text>
+              <text x="20" y="80" class="text-mono" font-size="13.5">Stable Diffusion, Whisper, Sora</text>
+            </g>
+
+            <!-- Product pill -->
+            <g transform="translate(750, 30)">
+              <rect x="0" y="0" width="290" height="34" rx="4" fill="#12241b" stroke="#6ee7b7"/>
+              <text x="145" y="22" text-anchor="middle" fill="#6ee7b7" font-size="13.5" font-weight="600">Product Apps: ChatGPT, Cursor, Copilot</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> LLMs are one subset of Foundation Models, which are a subset of Deep Learning and ML.</div>
+          <div>Lecture 01 • Section 3</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 8: Model != Product (Integrated Generated Schematic) -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="8">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Systems Architecture</div>
+          <div class="index-tag">08 / 22</div>
+        </div>
+        <h1 class="slide-title">Model ≠ Product: The Architecture Iceberg</h1>
+        <p class="slide-lead">Raw weights are stateless matrix tensors. Over 80% of an AI product is runtime infrastructure, memory, and governance.</p>
+        
+        <div class="diagram-arena">
+          <img src="assets/model_product_iceberg.jpg" alt="Model vs Product Architecture Iceberg Schematic" class="img-schematic">
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> A model alone has no memory, tools, or guardrails. The product is the scaffolding.</div>
+          <div>Lecture 01 • Section 3</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 9: Training Loop (Integrated Generated Schematic) -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="9">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Optimization Mechanics</div>
+          <div class="index-tag">09 / 22</div>
+        </div>
+        <h1 class="slide-title">The Training Loop: How Weights Actually Learn</h1>
+        <p class="slide-lead">Neural networks optimize weights iteratively: Forward Pass → Loss Calculation → Backpropagation → Gradient Update.</p>
+        
+        <div class="diagram-arena">
+          <img src="assets/training_loop_engine.jpg" alt="Machine Learning Training Loop Technical Schematic" class="img-schematic">
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Distinction:</strong> Training mutates parameters offline at high cost. Inference freezes weights for sub-second serving.</div>
+          <div>Lecture 01 • Section 4</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 10: Generalization beats memorization -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="10">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Evaluation Rigor</div>
+          <div class="index-tag">10 / 22</div>
+        </div>
+        <h1 class="slide-title">Generalization Beats Memorization: The Overfitting Trap</h1>
+        <p class="slide-lead">High training accuracy is trivial to fake by rote memorization. Models must generalize to unseen test distributions.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Left Chart: Loss Curves -->
+            <g transform="translate(60, 20)">
+              <rect x="0" y="0" width="480" height="380" rx="8" class="node-box"/>
+              <text x="24" y="32" class="text-h1">Learning Curves &amp; Overfitting</text>
+              
+              <!-- Axes -->
+              <line x1="60" y1="320" x2="440" y2="320" stroke="#475569" stroke-width="2"/>
+              <line x1="60" y1="320" x2="60" y2="70" stroke="#475569" stroke-width="2"/>
+              <text x="440" y="340" class="text-p" font-size="13.5">Training Epochs</text>
+              <text x="40" y="62" class="text-p" font-size="13.5">Loss (Error)</text>
+
+              <!-- Train Loss (Blue, dives to zero) -->
+              <path d="M 60 90 Q 180 230, 280 270 T 430 305" stroke="#60a5fa" stroke-width="3" fill="none"/>
+              <text x="350" y="295" fill="#60a5fa" font-size="15" font-weight="700">Train Loss</text>
+
+              <!-- Val Loss (Red, turns around) -->
+              <path d="M 60 110 Q 180 230, 280 230 T 430 130" stroke="#d98585" stroke-width="3" fill="none"/>
+              <text x="380" y="120" fill="#d98585" font-size="15" font-weight="700">Validation Loss</text>
+
+              <!-- Optimal Checkpoint line -->
+              <line x1="280" y1="70" x2="280" y2="320" stroke="#6ee7b7" stroke-width="2" stroke-dasharray="4 4"/>
+              <circle cx="280" cy="230" r="6" fill="#6ee7b7"/>
+              <rect x="215" y="65" width="130" height="28" rx="4" fill="rgba(52, 211, 153, 0.2)" stroke="#6ee7b7"/>
+              <text x="280" y="84" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="700">OPTIMAL STOP</text>
+
+              <!-- Overfitting Shading -->
+              <rect x="285" y="95" width="150" height="220" fill="rgba(248, 113, 113, 0.08)"/>
+              <text x="360" y="205" text-anchor="middle" fill="#d98585" font-size="15" font-weight="700">Overfitting Zone</text>
+              <text x="360" y="225" text-anchor="middle" class="text-p" font-size="13">(Rote Memorization)</text>
+            </g>
+
+            <!-- Right: Data Split Architecture -->
+            <g transform="translate(580, 20)">
+              <rect x="0" y="0" width="460" height="380" rx="8" class="node-box"/>
+              <text x="24" y="32" class="text-h1">Evaluation Rigor: 70 / 15 / 15 Split</text>
+
+              <!-- Split 1: Train -->
+              <g transform="translate(24, 60)">
+                <rect x="0" y="0" width="412" height="75" rx="6" fill="#0e1726" stroke="#60a5fa" stroke-width="1.5"/>
+                <text x="16" y="28" fill="#60a5fa" font-size="17" font-weight="700">1. Training Set (70%)</text>
+                <text x="16" y="52" class="text-p">The textbook. Gradients and weight updates are directly computed here.</text>
+              </g>
+
+              <!-- Split 2: Val -->
+              <g transform="translate(24, 150)">
+                <rect x="0" y="0" width="412" height="75" rx="6" fill="#19162e" stroke="#b4a4e5" stroke-width="1.5"/>
+                <text x="16" y="28" fill="#b4a4e5" font-size="17" font-weight="700">2. Validation Set (15%)</text>
+                <text x="16" y="52" class="text-p">The practice exam. Tunes hyperparameters and halts training at optimal loss.</text>
+              </g>
+
+              <!-- Split 3: Test -->
+              <g transform="translate(24, 240)">
+                <rect x="0" y="0" width="412" height="75" rx="6" fill="#14221e" stroke="#6ee7b7" stroke-width="1.5"/>
+                <text x="16" y="28" fill="#6ee7b7" font-size="17" font-weight="700">3. Test Set (15%): Sealed Vault</text>
+                <text x="16" y="52" class="text-p">Evaluated strictly once before production deployment. Measures true generalization.</text>
+              </g>
+
+              <!-- Bottom warning -->
+              <rect x="24" y="330" width="412" height="34" rx="4" fill="rgba(251, 191, 36, 0.08)"/>
+              <text x="230" y="352" text-anchor="middle" fill="#f5e8c7" font-size="13.5">Analogy: Memorizing last year's exam answers fails when variables change.</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Rule:</strong> Never evaluate an ML model on data it touched during gradient updates.</div>
+          <div>Lecture 01 • Section 4</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 11: Four learning patterns -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="11">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Signal Architecture</div>
+          <div class="index-tag">11 / 22</div>
+        </div>
+        <h1 class="slide-title">Four Learning Patterns: The Origin of the Signal</h1>
+        <p class="slide-lead">The major branches of machine learning differ by how the optimization algorithm acquires its training signal.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- 4 Columns -->
+            <!-- 1. Supervised -->
+            <g transform="translate(30, 20)">
+              <rect x="0" y="0" width="240" height="390" rx="8" class="node-box" stroke="#60a5fa"/>
+              <rect x="16" y="16" width="95" height="24" rx="4" fill="rgba(56, 189, 248, 0.15)"/>
+              <text x="63" y="33" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="700">LABELED DATA</text>
+              <text x="16" y="72" class="text-h1" font-size="22" fill="#60a5fa">Supervised</text>
+              
+              <rect x="16" y="95" width="208" height="90" rx="6" fill="#0e131b" stroke="#253245"/>
+              <text x="26" y="122" class="text-p">Input: X (Image)</text>
+              <text x="26" y="145" class="text-p">Target: Y ("Dog")</text>
+              <text x="26" y="172" fill="#60a5fa" font-size="13.5" font-weight="600">Signal: Human Annotator</text>
+              
+              <text x="16" y="215" class="text-h1" font-size="15">Typical Workloads:</text>
+              <text x="16" y="238" class="text-p">• Email spam classification</text>
+              <text x="16" y="260" class="text-p">• Credit risk scoring</text>
+              <text x="16" y="282" class="text-p">• Medical diagnosis flags</text>
+
+              <rect x="16" y="325" width="208" height="45" rx="4" fill="#141d2a"/>
+              <text x="120" y="352" text-anchor="middle" fill="#60a5fa" font-size="13.5">Bottleneck: Manual Labeling</text>
+            </g>
+
+            <!-- 2. Unsupervised -->
+            <g transform="translate(290, 20)">
+              <rect x="0" y="0" width="240" height="390" rx="8" class="node-box" stroke="#6ee7b7"/>
+              <rect x="16" y="16" width="90" height="24" rx="4" fill="rgba(52, 211, 153, 0.15)"/>
+              <text x="61" y="33" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="700">NO LABELS</text>
+              <text x="16" y="72" class="text-h1" font-size="22" fill="#6ee7b7">Unsupervised</text>
+              
+              <rect x="16" y="95" width="208" height="90" rx="6" fill="#0e131b" stroke="#253245"/>
+              <text x="26" y="122" class="text-p">Input: X only</text>
+              <text x="26" y="145" class="text-p">Target: None</text>
+              <text x="26" y="172" fill="#6ee7b7" font-size="13.5" font-weight="600">Signal: Data Geometry</text>
+              
+              <text x="16" y="215" class="text-h1" font-size="15">Typical Workloads:</text>
+              <text x="16" y="238" class="text-p">• Customer segmentation</text>
+              <text x="16" y="260" class="text-p">• Fraud anomaly detection</text>
+              <text x="16" y="282" class="text-p">• Dimensionality reduction (PCA)</text>
+
+              <rect x="16" y="325" width="208" height="45" rx="4" fill="#14221e"/>
+              <text x="120" y="352" text-anchor="middle" fill="#6ee7b7" font-size="13.5">Cluster &amp; Manifold Discovery</text>
+            </g>
+
+            <!-- 3. Self-Supervised (The Breakthrough) -->
+            <g transform="translate(550, 20)">
+              <rect x="0" y="0" width="260" height="390" rx="8" fill="#18142a" stroke="#b4a4e5" stroke-width="2"/>
+              <rect x="16" y="16" width="130" height="24" rx="4" fill="rgba(192, 132, 252, 0.2)"/>
+              <text x="81" y="33" text-anchor="middle" fill="#b4a4e5" font-size="13" font-weight="700">FOUNDATION FOR LLMs</text>
+              <text x="16" y="72" class="text-h1" font-size="22" fill="#b4a4e5">Self-Supervised</text>
+              
+              <rect x="16" y="95" width="228" height="90" rx="6" fill="#0e131b" stroke="#331e47"/>
+              <text x="26" y="120" class="text-p">Data creates its own target:</text>
+              <text x="26" y="144" class="text-mono" font-size="13.5">"Paris is in [MASK]" -> "France"</text>
+              <text x="26" y="172" fill="#b4a4e5" font-size="13.5" font-weight="600">Signal: Next-Token Prediction</text>
+              
+              <text x="16" y="215" class="text-h1" font-size="15">Why this changed AI:</text>
+              <text x="16" y="238" class="text-p">• Zero manual human labels</text>
+              <text x="16" y="260" class="text-p">• Scaled across internet text</text>
+              <text x="16" y="282" class="text-p">• Unlocked Foundation Models</text>
+
+              <rect x="16" y="325" width="228" height="45" rx="4" fill="#1c172a"/>
+              <text x="130" y="352" text-anchor="middle" fill="#b4a4e5" font-size="13.5" font-weight="700">Trillions of Tokens Scaled</text>
+            </g>
+
+            <!-- 4. Reinforcement Learning -->
+            <g transform="translate(830, 20)">
+              <rect x="0" y="0" width="240" height="390" rx="8" class="node-box" stroke="#e0c58e"/>
+              <rect x="16" y="16" width="105" height="24" rx="4" fill="rgba(251, 191, 36, 0.15)"/>
+              <text x="68" y="33" text-anchor="middle" fill="#e0c58e" font-size="13" font-weight="700">REWARD SIGNAL</text>
+              <text x="16" y="72" class="text-h1" font-size="22" fill="#e0c58e">Reinforcement</text>
+              
+              <rect x="16" y="95" width="208" height="90" rx="6" fill="#0e131b" stroke="#253245"/>
+              <text x="26" y="122" class="text-p">Agent ↔ Environment</text>
+              <text x="26" y="145" class="text-p">Action → Scalar Reward (R)</text>
+              <text x="26" y="172" fill="#e0c58e" font-size="13.5" font-weight="600">Signal: Outcome Feedback</text>
+              
+              <text x="16" y="215" class="text-h1" font-size="15">Typical Workloads:</text>
+              <text x="16" y="238" class="text-p">• RLHF alignment for LLMs</text>
+              <text x="16" y="260" class="text-p">• Autonomous robotics</text>
+              <text x="16" y="282" class="text-p">• Strategy game agents</text>
+
+              <rect x="16" y="325" width="208" height="45" rx="4" fill="#1e1a14"/>
+              <text x="120" y="352" text-anchor="middle" fill="#e0c58e" font-size="13.5">Policy &amp; Value Optimization</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> Self-supervised masking eliminated the human labeling bottleneck and unlocked modern LLMs.</div>
+          <div>Lecture 01 • Section 5</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 12: Deep learning: representation learning -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="12">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Feature Abstraction</div>
+          <div class="index-tag">12 / 22</div>
+        </div>
+        <h1 class="slide-title">Deep Learning: Hierarchical Representation Learning</h1>
+        <p class="slide-lead">Neural networks construct representations automatically, from low-level pixels to high-level semantic concepts.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Stack of Layers -->
+            <g transform="translate(60, 20)">
+              <!-- Level 0: Raw -->
+              <rect x="0" y="270" width="980" height="65" rx="6" class="node-box"/>
+              <circle cx="35" cy="302" r="14" fill="#1b2434"/>
+              <text x="35" y="307" text-anchor="middle" fill="#94a3b8" font-size="15" font-weight="700">0</text>
+              <text x="70" y="297" class="text-h1" font-size="18">Raw Input Signal (Unstructured Data)</text>
+              <text x="70" y="320" class="text-p">Raw pixel matrix (RGB 1024×1024), audio waveform sampling, or character/byte sequence</text>
+
+              <!-- Arrow Up -->
+              <path d="M 490 270 L 490 235" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <!-- Level 1: Low-level edges -->
+              <rect x="60" y="180" width="860" height="65" rx="6" class="node-box" stroke="#60a5fa"/>
+              <circle cx="95" cy="212" r="14" fill="rgba(56, 189, 248, 0.15)"/>
+              <text x="95" y="217" text-anchor="middle" fill="#60a5fa" font-size="15" font-weight="700">1</text>
+              <text x="130" y="207" class="text-h1" font-size="18" fill="#60a5fa">Early Layers: Edge Detectors &amp; Gabor Gradients</text>
+              <text x="130" y="230" class="text-p">Horizontal/vertical lines, contrast transitions, phonemes, character n-grams</text>
+
+              <!-- Arrow Up -->
+              <path d="M 490 180 L 490 145" stroke="#b4a4e5" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <!-- Level 2: Textures & Parts -->
+              <rect x="120" y="90" width="740" height="65" rx="6" class="node-box" stroke="#b4a4e5"/>
+              <circle cx="155" cy="122" r="14" fill="rgba(192, 132, 252, 0.15)"/>
+              <text x="155" y="127" text-anchor="middle" fill="#b4a4e5" font-size="15" font-weight="700">2</text>
+              <text x="190" y="117" class="text-h1" font-size="18" fill="#b4a4e5">Middle Layers: Geometric Shapes &amp; Component Textures</text>
+              <text x="190" y="140" class="text-p">Corners, circular contours, repeated textures, syntactic phrases and clauses</text>
+
+              <!-- Arrow Up -->
+              <path d="M 490 90 L 490 55" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <!-- Level 3: Semantic Output -->
+              <rect x="180" y="0" width="620" height="65" rx="6" fill="#14221e" stroke="#6ee7b7" stroke-width="2"/>
+              <circle cx="215" cy="32" r="14" fill="rgba(52, 211, 153, 0.2)"/>
+              <text x="215" y="37" text-anchor="middle" fill="#6ee7b7" font-size="15" font-weight="700">3</text>
+              <text x="250" y="27" class="text-h1" font-size="18" fill="#6ee7b7">Deep Layers: High-Level Semantic Concepts</text>
+              <text x="250" y="50" class="text-p">Object identities ("Car", "Human Face"), sentiment tone, legal contract intent</text>
+            </g>
+
+            <!-- Contrast Banner -->
+            <rect x="60" y="365" width="980" height="45" rx="6" fill="#151c28" stroke="#253245"/>
+            <text x="550" y="393" text-anchor="middle" fill="#ffffff" font-size="16">Classical ML required hand-crafted features (SIFT, HOG). Deep Learning learns representations <tspan fill="#6ee7b7" font-weight="700">End-to-End</tspan>.</text>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> Deep networks automate feature engineering by building stacked mathematical abstractions.</div>
+          <div>Lecture 01 • Section 6</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 13: Foundation models changed reuse -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="13">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Paradigm Shift</div>
+          <div class="index-tag">13 / 22</div>
+        </div>
+        <h1 class="slide-title">Foundation Models: The Reuse Paradigm Shift</h1>
+        <p class="slide-lead">Moving from one bespoke model per task to adapting a massive general-purpose foundation model via context.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Left: Old Bespoke Era -->
+            <g transform="translate(50, 20)">
+              <rect x="0" y="0" width="460" height="380" rx="8" class="node-box"/>
+              <text x="24" y="32" class="text-h1" fill="#94a3b8">PRE-2020: BESPOKE MODELS PER TASK</text>
+              <text x="24" y="54" class="text-p">Siloed models, each trained from scratch on niche data</text>
+
+              <g transform="translate(24, 75)">
+                <rect x="0" y="0" width="195" height="55" rx="6" class="node-box"/>
+                <text x="15" y="26" class="text-h1" font-size="15">Sentiment Dataset</text>
+                <text x="15" y="44" fill="#60a5fa" font-size="13.5">→ Sentiment Classifier</text>
+
+                <rect x="215" y="0" width="195" height="55" rx="6" class="node-box"/>
+                <text x="230" y="26" class="text-h1" font-size="15">Translation Dataset</text>
+                <text x="230" y="44" fill="#60a5fa" font-size="13.5">→ Translator Model</text>
+
+                <rect x="0" y="70" width="195" height="55" rx="6" class="node-box"/>
+                <text x="15" y="96" class="text-h1" font-size="15">NER Named Entity</text>
+                <text x="15" y="114" fill="#60a5fa" font-size="13.5">→ Entity Extraction</text>
+
+                <rect x="215" y="70" width="195" height="55" rx="6" class="node-box"/>
+                <text x="230" y="96" class="text-h1" font-size="15">Summarization Data</text>
+                <text x="230" y="114" fill="#60a5fa" font-size="13.5">→ Summary Model</text>
+              </g>
+
+              <rect x="24" y="225" width="412" height="125" rx="6" fill="#151c28"/>
+              <text x="40" y="255" fill="#d98585" font-size="16" font-weight="700">Engineering Drawbacks:</text>
+              <text x="40" y="280" class="text-p">• Expensive custom annotation required for every feature</text>
+              <text x="40" y="305" class="text-p">• High deployment debt maintaining dozens of endpoints</text>
+              <text x="40" y="330" class="text-p">• Zero zero-shot transfer across distinct domains</text>
+            </g>
+
+            <!-- Arrow -->
+            <path d="M 525 210 L 565 210" stroke="#60a5fa" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+            <!-- Right: Foundation Model Era -->
+            <g transform="translate(585, 20)">
+              <rect x="0" y="0" width="465" height="380" rx="8" fill="#151726" stroke="#b4a4e5" stroke-width="2"/>
+              <text x="24" y="32" class="text-h1" fill="#b4a4e5">MODERN FOUNDATION MODEL ERA</text>
+              <text x="24" y="54" class="text-p">One pre-trained core engine adapted via prompt context</text>
+
+              <!-- Central Foundation Base -->
+              <rect x="24" y="80" width="417" height="85" rx="6" fill="#1c172b" stroke="#b4a4e5" stroke-width="1.5"/>
+              <text x="232" y="115" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="800">FOUNDATION MODEL (GPT-4 / Claude / Llama 3)</text>
+              <text x="232" y="142" text-anchor="middle" fill="#b4a4e5" font-size="15">Self-supervised pre-training over internet-scale tokens</text>
+
+              <!-- 3 Adapters -->
+              <g transform="translate(24, 185)">
+                <rect x="0" y="0" width="130" height="70" rx="6" fill="#0e131b" stroke="#60a5fa"/>
+                <text x="12" y="28" class="text-h1" font-size="13.5" fill="#60a5fa">System Prompt</text>
+                <text x="12" y="48" class="text-p" font-size="13">In-context role</text>
+                <text x="12" y="62" class="text-p" font-size="13">&amp; instructions</text>
+
+                <rect x="143" y="0" width="130" height="70" rx="6" fill="#0e131b" stroke="#6ee7b7"/>
+                <text x="155" y="28" class="text-h1" font-size="13.5" fill="#6ee7b7">RAG Context</text>
+                <text x="155" y="48" class="text-p" font-size="13">Retrieved vector</text>
+                <text x="155" y="62" class="text-p" font-size="13">grounding docs</text>
+
+                <rect x="286" y="0" width="131" height="70" rx="6" fill="#0e131b" stroke="#e0c58e"/>
+                <text x="298" y="28" class="text-h1" font-size="13.5" fill="#e0c58e">Fine-Tuning</text>
+                <text x="298" y="48" class="text-p" font-size="13">LoRA weights</text>
+                <text x="298" y="62" class="text-p" font-size="13">&lt;0.1% parameters</text>
+              </g>
+
+              <rect x="24" y="275" width="417" height="75" rx="6" fill="#151c28"/>
+              <text x="232" y="305" text-anchor="middle" fill="#6ee7b7" font-size="16" font-weight="700">1,000+ Downstream Tasks Supported</text>
+              <text x="232" y="330" text-anchor="middle" class="text-p">Enterprises adapt foundational cores instead of training from scratch.</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Economics:</strong> Training frontier models costs $100M+. Adapting them with RAG and context costs pennies.</div>
+          <div>Lecture 01 • Section 7</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 14: Application context surrounds the model -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="14">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Sandwich Architecture</div>
+          <div class="index-tag">14 / 22</div>
+        </div>
+        <h1 class="slide-title">Application Context Surrounds the Model</h1>
+        <p class="slide-lead">System reliability is achieved by strict prompt assembly on ingress and deterministic schema validation on egress.</p>
+        
+        <div class="diagram-arena">
+                    <svg class="blueprint-svg" viewBox="0 0 1100 460">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 1 L 9 5 L 0 9 z" fill="#5a7090"/>
+              </marker>
+            </defs>
+
+            <!-- STAGE 1: INGRESS CONTEXT BUNDLE -->
+            <g transform="translate(30, 20)">
+              <!-- Outer Container for Ingress -->
+              <rect x="0" y="0" width="340" height="390" rx="10" fill="#141c28" stroke="#253549" stroke-width="1.5"/>
+              
+              <!-- Stage Header Pill -->
+              <rect x="20" y="16" width="180" height="26" rx="4" fill="rgba(96, 165, 250, 0.12)" stroke="#60a5fa" stroke-width="1"/>
+              <text x="110" y="33" text-anchor="middle" fill="#60a5fa" font-size="12" font-weight="700" letter-spacing="0.06em">1. CONTEXT INGRESS</text>
+              
+              <text x="20" y="68" class="text-h1" font-size="18">Runtime Context Assembly</text>
+              <text x="20" y="88" class="text-p" font-size="13">Prompt payload compiled in memory before call</text>
+
+              <!-- Layer 1: System Directives -->
+              <g transform="translate(16, 102)">
+                <rect x="0" y="0" width="308" height="58" rx="6" fill="#182333" stroke="#2a3c54"/>
+                <circle cx="16" cy="29" r="4" fill="#b4a4e5"/>
+                <text x="28" y="24" fill="#e8ecf2" font-size="14" font-weight="700">System Directives &amp; Policy</text>
+                <text x="28" y="44" fill="#8b9bb4" font-size="12">Persona, operating rules, refusal boundaries</text>
+              </g>
+
+              <!-- Layer 2: RAG Grounding -->
+              <g transform="translate(16, 168)">
+                <rect x="0" y="0" width="308" height="58" rx="6" fill="#182333" stroke="#2a3c54"/>
+                <circle cx="16" cy="29" r="4" fill="#6ee7b7"/>
+                <text x="28" y="24" fill="#e8ecf2" font-size="14" font-weight="700">Retrieved Facts (RAG Chunks)</text>
+                <text x="28" y="44" fill="#8b9bb4" font-size="12">Semantic document chunks &amp; relational DB state</text>
+              </g>
+
+              <!-- Layer 3: Task & Examples -->
+              <g transform="translate(16, 234)">
+                <rect x="0" y="0" width="308" height="58" rx="6" fill="#182333" stroke="#2a3c54"/>
+                <circle cx="16" cy="29" r="4" fill="#60a5fa"/>
+                <text x="28" y="24" fill="#e8ecf2" font-size="14" font-weight="700">User Prompt &amp; Few-Shot Patterns</text>
+                <text x="28" y="44" fill="#8b9bb4" font-size="12">User request, history, and formatting exemplars</text>
+              </g>
+
+              <!-- Layer 4: Tool & Schema Contract -->
+              <g transform="translate(16, 300)">
+                <rect x="0" y="0" width="308" height="58" rx="6" fill="#182333" stroke="#2a3c54"/>
+                <circle cx="16" cy="29" r="4" fill="#e0c58e"/>
+                <text x="28" y="24" fill="#e8ecf2" font-size="14" font-weight="700">Tool APIs &amp; Schema Contract</text>
+                <text x="28" y="44" fill="#8b9bb4" font-size="12">Pydantic target schema and function definitions</text>
+              </g>
+
+              <rect x="16" y="364" width="308" height="18" rx="3" fill="#101722"/>
+              <text x="170" y="377" text-anchor="middle" fill="#677a94" font-size="11">Payload tokens stream into model context window</text>
+            </g>
+
+            <!-- Connector: Ingress -> Model -->
+            <path d="M 370 215 L 430 215" stroke="#485c7b" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+            <text x="400" y="202" text-anchor="middle" fill="#8b9bb4" font-size="11" font-family="var(--font-mono)">tokens</text>
+
+            <!-- STAGE 2: FOUNDATION MODEL (CENTER CORE) -->
+            <g transform="translate(435, 65)">
+              <rect x="0" y="0" width="230" height="300" rx="12" fill="#182030" stroke="#3d4f6a" stroke-width="1.8"/>
+              
+              <!-- Processor Header Badge -->
+              <rect x="25" y="22" width="180" height="26" rx="4" fill="rgba(180, 164, 229, 0.12)" stroke="#b4a4e5" stroke-width="1"/>
+              <text x="115" y="39" text-anchor="middle" fill="#b4a4e5" font-size="12" font-weight="700" letter-spacing="0.06em">2. CORE INFERENCE</text>
+
+              <text x="115" y="82" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="800">FOUNDATION</text>
+              <text x="115" y="105" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="800">MODEL</text>
+              
+              <rect x="20" y="125" width="190" height="58" rx="6" fill="#111622" stroke="#253245"/>
+              <text x="115" y="148" text-anchor="middle" class="text-mono" font-size="14" fill="#60a5fa">P(token | context)</text>
+              <text x="115" y="168" text-anchor="middle" fill="#8b9bb4" font-size="12">Autoregressive Sampling</text>
+
+              <line x1="20" y1="200" x2="210" y2="200" stroke="#253245" stroke-width="1"/>
+
+              <text x="115" y="225" text-anchor="middle" fill="#8b9bb4" font-size="13">Stateless Transformer Core</text>
+              <text x="115" y="245" text-anchor="middle" fill="#8b9bb4" font-size="13">Frozen Pretrained Weights</text>
+              
+              <rect x="25" y="260" width="180" height="24" rx="4" fill="#111724" stroke="#2c3a50"/>
+              <text x="115" y="276" text-anchor="middle" fill="#e0c58e" font-size="12" font-weight="600">~15% of Application Code</text>
+            </g>
+
+            <!-- Connector: Model -> Egress -->
+            <path d="M 665 215 L 725 215" stroke="#485c7b" stroke-width="2.5" fill="none" marker-end="url(#arrow)"/>
+            <text x="695" y="202" text-anchor="middle" fill="#8b9bb4" font-size="11" font-family="var(--font-mono)">candidates</text>
+
+            <!-- STAGE 3: PRODUCTION GUARDRAIL GATEWAY (RIGHT) -->
+            <g transform="translate(730, 20)">
+              <!-- Outer Container for Egress -->
+              <rect x="0" y="0" width="340" height="390" rx="10" fill="#141c28" stroke="#253549" stroke-width="1.5"/>
+              
+              <!-- Stage Header Pill -->
+              <rect x="20" y="16" width="190" height="26" rx="4" fill="rgba(110, 231, 183, 0.12)" stroke="#6ee7b7" stroke-width="1"/>
+              <text x="115" y="33" text-anchor="middle" fill="#6ee7b7" font-size="12" font-weight="700" letter-spacing="0.06em">3. OUTPUT VERIFICATION</text>
+              
+              <text x="20" y="68" class="text-h1" font-size="18">Deterministic Guardrails</text>
+              <text x="20" y="88" class="text-p" font-size="13">Verification checks before application egress</text>
+
+              <!-- Step 1: Schema -->
+              <g transform="translate(16, 102)">
+                <rect x="0" y="0" width="308" height="74" rx="6" fill="#182333" stroke="#2a3c54"/>
+                <circle cx="16" cy="22" r="4" fill="#6ee7b7"/>
+                <text x="28" y="24" fill="#e8ecf2" font-size="14" font-weight="700">1. JSON Schema Parser</text>
+                <text x="28" y="44" fill="#8b9bb4" font-size="12">Pydantic / Zod parses typed JSON structure,</text>
+                <text x="28" y="60" fill="#8b9bb4" font-size="12">rejects syntax defects and invalid types</text>
+              </g>
+
+              <!-- Step 2: Grounding -->
+              <g transform="translate(16, 184)">
+                <rect x="0" y="0" width="308" height="74" rx="6" fill="#182333" stroke="#2a3c54"/>
+                <circle cx="16" cy="22" r="4" fill="#60a5fa"/>
+                <text x="28" y="24" fill="#e8ecf2" font-size="14" font-weight="700">2. Citation &amp; Grounding Check</text>
+                <text x="28" y="44" fill="#8b9bb4" font-size="12">Cross-references claims against RAG chunks,</text>
+                <text x="28" y="60" fill="#8b9bb4" font-size="12">detects and flags ungrounded hallucinations</text>
+              </g>
+
+              <!-- Step 3: Action Gate -->
+              <g transform="translate(16, 266)">
+                <rect x="0" y="0" width="308" height="74" rx="6" fill="#182333" stroke="#2a3c54"/>
+                <circle cx="16" cy="22" r="4" fill="#e0c58e"/>
+                <text x="28" y="24" fill="#e8ecf2" font-size="14" font-weight="700">3. Action &amp; Mutation Gate</text>
+                <text x="28" y="44" fill="#8b9bb4" font-size="12">Enforces scoped IAM tokens and human sign-off</text>
+                <text x="28" y="60" fill="#8b9bb4" font-size="12">prior to database writes or API execution</text>
+              </g>
+
+              <!-- Bottom verified pill -->
+              <rect x="16" y="348" width="308" height="30" rx="4" fill="rgba(110, 231, 183, 0.08)" stroke="rgba(110, 231, 183, 0.3)"/>
+              <text x="170" y="368" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="700">✓ Verified Safe Production Output</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Axiom:</strong> Garbage in, hallucination out. Context engineering governs system accuracy.</div>
+          <div>Lecture 01 • Section 7</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 15: Generative AI is broader than chat -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="15">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Multimodal Systems</div>
+          <div class="index-tag">15 / 22</div>
+        </div>
+        <h1 class="slide-title">Generative AI Is Broader Than Text Chat</h1>
+        <p class="slide-lead">Modern multimodal transformers project disparate media into a shared latent vector space for unified reasoning.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Left Inputs -->
+            <g transform="translate(60, 20)">
+              <rect x="0" y="0" width="240" height="60" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="20" y="28" class="text-h1" fill="#60a5fa">Text (Natural Language)</text>
+              <text x="20" y="48" class="text-p">BPE token embeddings</text>
+
+              <rect x="0" y="75" width="240" height="60" rx="6" class="node-box" stroke="#6ee7b7"/>
+              <text x="20" y="103" class="text-h1" fill="#6ee7b7">Source Code</text>
+              <text x="20" y="123" class="text-p">Syntax tree AST tokens</text>
+
+              <rect x="0" y="150" width="240" height="60" rx="6" class="node-box" stroke="#b4a4e5"/>
+              <text x="20" y="178" class="text-h1" fill="#b4a4e5">Images (Vision)</text>
+              <text x="20" y="198" class="text-p">ViT 16×16 pixel patches</text>
+
+              <rect x="0" y="225" width="240" height="60" rx="6" class="node-box" stroke="#e0c58e"/>
+              <text x="20" y="253" class="text-h1" fill="#e0c58e">Audio (Speech / Audio)</text>
+              <text x="20" y="273" class="text-p">Mel-frequency spectrograms</text>
+
+              <rect x="0" y="300" width="240" height="60" rx="6" class="node-box" stroke="#d98585"/>
+              <text x="20" y="328" class="text-h1" fill="#d98585">Tabular &amp; JSON Data</text>
+              <text x="20" y="348" class="text-p">Structured serializations</text>
+            </g>
+
+            <!-- Converging Lines -->
+            <path d="M 310 30 C 390 30, 420 180, 470 180" stroke="#60a5fa" stroke-width="2" fill="none"/>
+            <path d="M 310 105 C 370 105, 420 180, 470 180" stroke="#6ee7b7" stroke-width="2" fill="none"/>
+            <path d="M 310 180 L 470 180" stroke="#b4a4e5" stroke-width="2" fill="none"/>
+            <path d="M 310 255 C 370 255, 420 180, 470 180" stroke="#e0c58e" stroke-width="2" fill="none"/>
+            <path d="M 310 330 C 390 330, 420 180, 470 180" stroke="#d98585" stroke-width="2" fill="none"/>
+
+            <!-- Center Shared Space -->
+            <g transform="translate(470, 80)">
+              <rect x="0" y="0" width="220" height="210" rx="10" fill="#151e2e" stroke="#60a5fa" stroke-width="2"/>
+              <circle cx="110" cy="90" r="55" fill="none" stroke="#b4a4e5" stroke-width="1.5" stroke-dasharray="4 4"/>
+              <circle cx="110" cy="90" r="28" fill="none" stroke="#60a5fa" stroke-width="1.5"/>
+              <text x="110" y="85" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="700">SHARED</text>
+              <text x="110" y="104" text-anchor="middle" fill="#60a5fa" font-size="13.5" font-weight="700">EMBEDDING</text>
+              <text x="110" y="122" text-anchor="middle" fill="#b4a4e5" font-size="13.5" font-weight="700">SPACE</text>
+              <text x="110" y="175" text-anchor="middle" class="text-p" font-size="13">Cross-Attention</text>
+            </g>
+
+            <!-- Diverging Lines to Outputs -->
+            <path d="M 700 180 C 750 180, 770 85, 820 85" stroke="#60a5fa" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 700 180 L 820 180" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+            <path d="M 700 180 C 750 180, 770 275, 820 275" stroke="#b4a4e5" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+            <!-- Right Outputs -->
+            <g transform="translate(830, 50)">
+              <rect x="0" y="0" width="220" height="70" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="20" y="30" class="text-h1">Text &amp; Code Execution</text>
+              <text x="20" y="52" class="text-p">Summaries, analytical reasoning</text>
+
+              <rect x="0" y="95" width="220" height="70" rx="6" class="node-box" stroke="#6ee7b7"/>
+              <text x="20" y="125" class="text-h1">Structured Tool Calls</text>
+              <text x="20" y="147" class="text-p">JSON schemas for API clients</text>
+
+              <rect x="0" y="190" width="220" height="70" rx="6" class="node-box" stroke="#b4a4e5"/>
+              <text x="20" y="220" class="text-h1">Media Generation</text>
+              <text x="20" y="242" class="text-p">Diffusion images, speech audio</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> Multimodality means pictures, code, and text live in the exact same vector space.</div>
+          <div>Lecture 01 • Section 8</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 16: Fluent is not the same as grounded -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="16">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Hallucination Anatomy</div>
+          <div class="index-tag">16 / 22</div>
+        </div>
+        <h1 class="slide-title">Fluent Is Not Grounded: Why LLMs Hallucinate</h1>
+        <p class="slide-lead">Language models optimize for linguistic plausibility, not factual database integrity.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Left Side: Database -->
+            <g transform="translate(60, 20)">
+              <rect x="0" y="0" width="450" height="360" rx="8" fill="#14221c" stroke="#6ee7b7" stroke-width="2"/>
+              <rect x="24" y="20" width="160" height="28" rx="4" fill="rgba(52, 211, 153, 0.2)"/>
+              <text x="104" y="38" text-anchor="middle" fill="#6ee7b7" font-size="13.5" font-weight="700">SOURCE OF TRUTH</text>
+              
+              <text x="24" y="80" class="text-h1" font-size="24" fill="#6ee7b7">Relational Database (PostgreSQL)</text>
+              <text x="24" y="104" class="text-p">Exact memory pointer lookup</text>
+              
+              <g transform="translate(24, 125)">
+                <rect x="0" y="0" width="402" height="85" rx="6" fill="#0e131b" stroke="#1b2a24"/>
+                <text x="16" y="32" class="text-mono" fill="#6ee7b7">SELECT balance FROM accounts WHERE id=42;</text>
+                <text x="16" y="62" fill="#ffffff" font-size="17">Result: <tspan fill="#6ee7b7" font-weight="700">$1,450.00</tspan> (or NULL if missing)</text>
+              </g>
+
+              <g transform="translate(24, 230)">
+                <text x="0" y="22" class="text-h1" font-size="17">Integrity Guarantees:</text>
+                <text x="0" y="46" class="text-p">• Fact truth value = 1.0 (binary certainty)</text>
+                <text x="0" y="70" class="text-p">• Returns NULL if record does not exist</text>
+                <text x="0" y="94" class="text-p">• Zero probability of fabricating money</text>
+              </g>
+            </g>
+
+            <!-- Right Side: LLM Hallucination -->
+            <g transform="translate(590, 20)">
+              <rect x="0" y="0" width="450" height="360" rx="8" fill="#221618" stroke="#d98585" stroke-width="2"/>
+              <rect x="24" y="20" width="170" height="28" rx="4" fill="rgba(248, 113, 113, 0.2)"/>
+              <text x="109" y="38" text-anchor="middle" fill="#d98585" font-size="13.5" font-weight="700">PROBABILISTIC SYNTHESIS</text>
+              
+              <text x="24" y="80" class="text-h1" font-size="24" fill="#d98585">Autoregressive Language Model</text>
+              <text x="24" y="104" class="text-p">Predicts next most likely token</text>
+              
+              <g transform="translate(24, 125)">
+                <rect x="0" y="0" width="402" height="85" rx="6" fill="#0e131b" stroke="#2c191c"/>
+                <text x="16" y="32" class="text-mono" fill="#d98585">"The balance for user 42 is..."</text>
+                <text x="16" y="62" fill="#ffffff" font-size="17">P(token) → <tspan fill="#d98585" font-weight="700">"$2,500.00"</tspan> (Fluent, plausible, false!)</text>
+              </g>
+
+              <g transform="translate(24, 230)">
+                <text x="0" y="22" class="text-h1" font-size="17">Vulnerability Surface:</text>
+                <text x="0" y="46" class="text-p">• Optimizes for syntactic smoothness, not truth</text>
+                <text x="0" y="70" class="text-p">• Confidently invents numbers without context</text>
+                <text x="0" y="94" class="text-p">• Critical production risk without strict RAG grounding</text>
+              </g>
+            </g>
+
+            <!-- Bottom Warning Banner -->
+            <rect x="180" y="405" width="740" height="42" rx="6" fill="rgba(251, 191, 36, 0.1)" stroke="#e0c58e"/>
+            <text x="550" y="431" text-anchor="middle" fill="#f5e8c7" font-size="16" font-weight="700">Takeaway: Plausible structure is useful. Plausible facts without grounding are dangerous.</text>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Rule:</strong> Never ask an ungrounded LLM for stored business facts. Retrieve the fact first.</div>
+          <div>Lecture 01 • Section 8</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 17: Weak workflow vs reliable workflow -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="17">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Reliability Engineering</div>
+          <div class="index-tag">17 / 22</div>
+        </div>
+        <h1 class="slide-title">Fragile Workflow vs Production-Grade Architecture</h1>
+        <p class="slide-lead">Production-grade systems surround the probabilistic model with deterministic validation and guardrails.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Fragile Workflow -->
+            <g transform="translate(60, 20)">
+              <text x="0" y="0" fill="#d98585" font-size="16" font-weight="700">FRAGILE WORKFLOW (TOY DEMO)</text>
+              
+              <rect x="0" y="15" width="200" height="65" rx="6" class="node-box" stroke="#d98585"/>
+              <text x="100" y="42" text-anchor="middle" class="text-h1" font-size="16">Raw User Prompt</text>
+              <text x="100" y="62" text-anchor="middle" class="text-p">Unsanitized input</text>
+
+              <path d="M 200 48 L 320 48" stroke="#d98585" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <rect x="320" y="15" width="260" height="65" rx="6" fill="#221618" stroke="#d98585" stroke-width="2"/>
+              <text x="450" y="42" text-anchor="middle" class="text-h1" fill="#d98585" font-size="18">Bare Model</text>
+              <text x="450" y="62" text-anchor="middle" class="text-p">Zero retrieval grounding</text>
+
+              <path d="M 580 48 L 700 48" stroke="#d98585" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <rect x="700" y="15" width="280" height="65" rx="6" fill="#241416" stroke="#d98585" stroke-width="2"/>
+              <text x="840" y="42" text-anchor="middle" class="text-h1" fill="#d98585" font-size="16">Direct Output to Production</text>
+              <text x="840" y="62" text-anchor="middle" class="text-p">High failure &amp; injection risk</text>
+            </g>
+
+            <line x1="60" y1="125" x2="1040" y2="125" stroke="#253245" stroke-width="1.5" stroke-dasharray="6 6"/>
+
+            <!-- Production Workflow -->
+            <g transform="translate(60, 150)">
+              <text x="0" y="0" fill="#6ee7b7" font-size="16" font-weight="700">PRODUCTION-GRADE WORKFLOW (ENTERPRISE STANDARD)</text>
+              
+              <!-- 5 Stage Pipeline -->
+              <rect x="0" y="15" width="160" height="90" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="80" y="44" text-anchor="middle" class="text-h1" font-size="15">1. Guardrails</text>
+              <text x="80" y="66" text-anchor="middle" class="text-p" font-size="13">Input sanitization,</text>
+              <text x="80" y="84" text-anchor="middle" class="text-p" font-size="13">PII filtering</text>
+
+              <path d="M 160 60 L 205 60" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <rect x="205" y="15" width="180" height="90" rx="6" fill="#141d2a" stroke="#60a5fa" stroke-width="1.5"/>
+              <text x="295" y="44" text-anchor="middle" class="text-h1" font-size="15" fill="#60a5fa">2. RAG Retrieval</text>
+              <text x="295" y="66" text-anchor="middle" class="text-p" font-size="13">Verified documentation</text>
+              <text x="295" y="84" text-anchor="middle" class="text-p" font-size="13">&amp; citation extraction</text>
+
+              <path d="M 385 60 L 430 60" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <rect x="430" y="15" width="180" height="90" rx="6" fill="#1b142d" stroke="#b4a4e5" stroke-width="2"/>
+              <text x="520" y="44" text-anchor="middle" class="text-h1" font-size="15" fill="#b4a4e5">3. Model Core</text>
+              <text x="520" y="66" text-anchor="middle" class="text-p" font-size="13">Constrained generation</text>
+              <text x="520" y="84" text-anchor="middle" class="text-mono" font-size="13">Temperature = 0.0</text>
+
+              <path d="M 610 60 L 655 60" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <rect x="655" y="15" width="180" height="90" rx="6" fill="#14221e" stroke="#6ee7b7" stroke-width="1.5"/>
+              <text x="745" y="44" text-anchor="middle" class="text-h1" font-size="15" fill="#6ee7b7">4. Verification</text>
+              <text x="745" y="66" text-anchor="middle" class="text-p" font-size="13">Pydantic schema check</text>
+              <text x="745" y="84" text-anchor="middle" class="text-p" font-size="13">&amp; citation matching</text>
+
+              <path d="M 835 60 L 880 60" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+              <rect x="880" y="15" width="160" height="90" rx="6" fill="#201c15" stroke="#e0c58e" stroke-width="1.5"/>
+              <text x="960" y="44" text-anchor="middle" class="text-h1" font-size="15" fill="#e0c58e">5. Human Gate</text>
+              <text x="960" y="66" text-anchor="middle" class="text-p" font-size="13">Approval for mutation</text>
+              <text x="960" y="84" text-anchor="middle" class="text-p" font-size="13">&amp; audit event log</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> In production, the model is only a computational step, wrapped by deterministic validation.</div>
+          <div>Lecture 01 • Section 8</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 18: Risk rises when AI changes systems -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="18">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Blast Radius Governance</div>
+          <div class="index-tag">18 / 22</div>
+        </div>
+        <h1 class="slide-title">Generation ≠ Execution: The Blast Radius Spectrum</h1>
+        <p class="slide-lead">Drafting text carries near-zero impact. Mutating external systems via tools introduces critical operational risk.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Tier 1: Low Risk -->
+            <g transform="translate(60, 30)">
+              <rect x="0" y="0" width="980" height="90" rx="6" fill="#14221e" stroke="#6ee7b7" stroke-width="2"/>
+              <circle cx="50" cy="45" r="20" fill="rgba(52, 211, 153, 0.2)"/>
+              <text x="50" y="51" text-anchor="middle" fill="#6ee7b7" font-size="17" font-weight="800">L1</text>
+              
+              <text x="95" y="38" class="text-h1" font-size="19" fill="#6ee7b7">Drafting &amp; Summarization (Read-Only / Human Reviewed)</text>
+              <text x="95" y="62" class="text-p">Customer email drafts, code suggestions, document summaries. The human reads and approves before sending.</text>
+              
+              <rect x="800" y="28" width="160" height="36" rx="4" fill="#07150f"/>
+              <text x="880" y="51" text-anchor="middle" fill="#6ee7b7" font-size="15" font-weight="700">Blast Radius: 10%</text>
+            </g>
+
+            <!-- Tier 2: Medium Risk -->
+            <g transform="translate(60, 140)">
+              <rect x="0" y="0" width="980" height="90" rx="6" fill="#201c15" stroke="#e0c58e" stroke-width="2"/>
+              <circle cx="50" cy="45" r="20" fill="rgba(251, 191, 36, 0.2)"/>
+              <text x="50" y="51" text-anchor="middle" fill="#e0c58e" font-size="17" font-weight="800">L2</text>
+              
+              <text x="95" y="38" class="text-h1" font-size="19" fill="#e0c58e">Internal System Queries (Structured Read Operations)</text>
+              <text x="95" y="62" class="text-p">Generated SQL SELECT statements, search across private repositories. Risks: data exfiltration, PII leaks, DB load.</text>
+              
+              <rect x="800" y="28" width="160" height="36" rx="4" fill="#1a1712"/>
+              <text x="880" y="51" text-anchor="middle" fill="#e0c58e" font-size="15" font-weight="700">Blast Radius: 45%</text>
+            </g>
+
+            <!-- Tier 3: Critical Risk -->
+            <g transform="translate(60, 250)">
+              <rect x="0" y="0" width="980" height="100" rx="6" fill="#241416" stroke="#d98585" stroke-width="2"/>
+              <circle cx="50" cy="50" r="20" fill="rgba(248, 113, 113, 0.2)"/>
+              <text x="50" y="56" text-anchor="middle" fill="#d98585" font-size="17" font-weight="800">L3</text>
+              
+              <text x="95" y="38" class="text-h1" font-size="19" fill="#d98585">State Mutation &amp; Action Execution (Side Effects)</text>
+              <text x="95" y="62" class="text-p">Disbursing refunds, deleting customer records, merging code into production, dispatching live emails.</text>
+              <text x="95" y="82" fill="#f0b0b8" font-size="15" font-weight="700">MANDATORY CONTROLS: Scoped IAM tokens, idempotent endpoints, and human sign-off gates.</text>
+              
+              <rect x="800" y="32" width="160" height="36" rx="4" fill="#1d1214"/>
+              <text x="880" y="55" text-anchor="middle" fill="#d98585" font-size="15" font-weight="800">CRITICAL RISK</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> As blast radius grows, autonomous agent authority must be constrained by engineering gates.</div>
+          <div>Lecture 01 • Section 9</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 19: Technology selection rule -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="19">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Decision Framework</div>
+          <div class="index-tag">19 / 22</div>
+        </div>
+        <h1 class="slide-title">Technology Selection Rule: The Engineering Compass</h1>
+        <p class="slide-lead">Select the component based on the structural nature of the problem, not marketing buzzwords.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Step 1 -->
+            <g transform="translate(60, 25)">
+              <rect x="0" y="0" width="420" height="70" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="24" y="30" class="text-h1" font-size="17">1. Are the rules 100% known and stable?</text>
+              <text x="24" y="52" class="text-p">Tax math, regulatory compliance, protocol parsing</text>
+              
+              <path d="M 420 35 L 560 35" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              <text x="490" y="26" text-anchor="middle" fill="#6ee7b7" font-size="15" font-weight="700">YES</text>
+              
+              <rect x="560" y="0" width="440" height="70" rx="6" fill="#14221e" stroke="#6ee7b7" stroke-width="2"/>
+              <text x="584" y="30" class="text-h1" font-size="17" fill="#6ee7b7">Standard Software / SQL Logic</text>
+              <text x="584" y="52" class="text-p">Deterministic code. Zero hallucinations, sub-millisecond.</text>
+            </g>
+
+            <!-- Step 2 -->
+            <g transform="translate(60, 115)">
+              <rect x="0" y="0" width="420" height="70" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="24" y="30" class="text-h1" font-size="17">2. Is there tabular history and a numeric target?</text>
+              <text x="24" y="52" class="text-p">Churn likelihood, price forecast, fraud score</text>
+              
+              <path d="M 420 35 L 560 35" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              <text x="490" y="26" text-anchor="middle" fill="#6ee7b7" font-size="15" font-weight="700">YES</text>
+              
+              <rect x="560" y="0" width="440" height="70" rx="6" fill="#122033" stroke="#60a5fa" stroke-width="2"/>
+              <text x="584" y="30" class="text-h1" font-size="17" fill="#60a5fa">Conventional ML (XGBoost / Random Forest)</text>
+              <text x="584" y="52" class="text-p">Fast inference, low compute footprint, explainable.</text>
+            </g>
+
+            <!-- Step 3 -->
+            <g transform="translate(60, 205)">
+              <rect x="0" y="0" width="420" height="70" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="24" y="30" class="text-h1" font-size="17">3. Does it process messy language or media?</text>
+              <text x="24" y="52" class="text-p">Ticket summaries, code generation, creative synthesis</text>
+              
+              <path d="M 420 35 L 560 35" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              <text x="490" y="26" text-anchor="middle" fill="#6ee7b7" font-size="15" font-weight="700">YES</text>
+              
+              <rect x="560" y="0" width="440" height="70" rx="6" fill="#1c1a2c" stroke="#b4a4e5" stroke-width="2"/>
+              <text x="584" y="30" class="text-h1" font-size="17" fill="#b4a4e5">Foundation Model / GenAI with Grounding</text>
+              <text x="584" y="52" class="text-p">Transformer architecture constrained by RAG context.</text>
+            </g>
+
+            <!-- Step 4 -->
+            <g transform="translate(60, 295)">
+              <rect x="0" y="0" width="420" height="70" rx="6" class="node-box" stroke="#60a5fa"/>
+              <text x="24" y="30" class="text-h1" font-size="17">4. Does it require multi-step external API loops?</text>
+              <text x="24" y="52" class="text-p">Autonomous bug fixing, multi-tool orchestration</text>
+              
+              <path d="M 420 35 L 560 35" stroke="#6ee7b7" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+              <text x="490" y="26" text-anchor="middle" fill="#6ee7b7" font-size="15" font-weight="700">YES</text>
+              
+              <rect x="560" y="0" width="440" height="70" rx="6" fill="#201c15" stroke="#e0c58e" stroke-width="2"/>
+              <text x="584" y="30" class="text-h1" font-size="17" fill="#e0c58e">AI System with Tool Calling &amp; Governance</text>
+              <text x="584" y="52" class="text-p">Agent loop governed by sandboxes and approval gates.</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> Use the simplest adequate technique that solves the business requirement.</div>
+          <div>Lecture 01 • Section 10</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 20: Do not make the model invent stored facts -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="20">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Source of Truth</div>
+          <div class="index-tag">20 / 22</div>
+        </div>
+        <h1 class="slide-title">Ask for the Source of Truth: Prevent Anti-Patterns</h1>
+        <p class="slide-lead">Do not ask the model to invent stored facts. Route queries to their authentic system of record.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- 4 Mappings -->
+            <g transform="translate(60, 30)">
+              <text x="0" y="0" fill="#94a3b8" font-size="15" font-weight="700">WHAT THE SYSTEM NEEDS</text>
+              <text x="360" y="0" fill="#60a5fa" font-size="15" font-weight="700">AUTHENTIC SOURCE OF TRUTH</text>
+              <text x="730" y="0" fill="#6ee7b7" font-size="15" font-weight="700">ENGINEERING ACTION</text>
+
+              <!-- Row 1 -->
+              <g transform="translate(0, 20)">
+                <rect x="0" y="0" width="320" height="60" rx="6" class="node-box"/>
+                <text x="20" y="28" class="text-h1" font-size="16">User balance, order status</text>
+                <text x="20" y="48" class="text-p">Transactional exact values</text>
+
+                <rect x="360" y="0" width="330" height="60" rx="6" fill="#141d2a" stroke="#60a5fa"/>
+                <text x="380" y="28" class="text-h1" font-size="16" fill="#60a5fa">Relational Database</text>
+                <text x="380" y="48" class="text-p">PostgreSQL / MySQL tables</text>
+
+                <rect x="730" y="0" width="250" height="60" rx="6" fill="#14221e" stroke="#6ee7b7"/>
+                <text x="750" y="28" class="text-h1" font-size="16" fill="#6ee7b7">Query It</text>
+                <text x="750" y="48" class="text-mono">SELECT balance FROM db</text>
+              </g>
+
+              <!-- Row 2 -->
+              <g transform="translate(0, 100)">
+                <rect x="0" y="0" width="320" height="60" rx="6" class="node-box"/>
+                <text x="20" y="28" class="text-h1" font-size="16">Company return policy</text>
+                <text x="20" y="48" class="text-p">Corporate regulatory document</text>
+
+                <rect x="360" y="0" width="330" height="60" rx="6" fill="#141d2a" stroke="#60a5fa"/>
+                <text x="380" y="28" class="text-h1" font-size="16" fill="#60a5fa">Policy Document / Wiki</text>
+                <text x="380" y="48" class="text-p">Verified knowledge base</text>
+
+                <rect x="730" y="0" width="250" height="60" rx="6" fill="#14221e" stroke="#6ee7b7"/>
+                <text x="750" y="28" class="text-h1" font-size="16" fill="#6ee7b7">Retrieve It</text>
+                <text x="750" y="48" class="text-mono">rag.retrieve(chunks)</text>
+              </g>
+
+              <!-- Row 3 -->
+              <g transform="translate(0, 180)">
+                <rect x="0" y="0" width="320" height="60" rx="6" class="node-box"/>
+                <text x="20" y="28" class="text-h1" font-size="16">Customer churn likelihood</text>
+                <text x="20" y="48" class="text-p">Historical pattern correlation</text>
+
+                <rect x="360" y="0" width="330" height="60" rx="6" fill="#141d2a" stroke="#60a5fa"/>
+                <text x="380" y="28" class="text-h1" font-size="16" fill="#60a5fa">Historical Log Dataset</text>
+                <text x="380" y="48" class="text-p">Structured analytics warehouse</text>
+
+                <rect x="730" y="0" width="250" height="60" rx="6" fill="#14221e" stroke="#6ee7b7"/>
+                <text x="750" y="28" class="text-h1" font-size="16" fill="#6ee7b7">Predict It</text>
+                <text x="750" y="48" class="text-mono">model.predict_score()</text>
+              </g>
+
+              <!-- Row 4 -->
+              <g transform="translate(0, 260)">
+                <rect x="0" y="0" width="320" height="60" rx="6" class="node-box" stroke="#b4a4e5"/>
+                <text x="20" y="28" class="text-h1" font-size="16" fill="#b4a4e5">Courteous customer reply</text>
+                <text x="20" y="48" class="text-p">Synthesizing facts into prose</text>
+
+                <rect x="360" y="0" width="330" height="60" rx="6" fill="#1c172b" stroke="#b4a4e5"/>
+                <text x="380" y="28" class="text-h1" font-size="16" fill="#b4a4e5">Retrieved Context Payload</text>
+                <text x="380" y="48" class="text-p">DB fact + verified policy snippet</text>
+
+                <rect x="730" y="0" width="250" height="60" rx="6" fill="#1c172b" stroke="#b4a4e5"/>
+                <text x="750" y="28" class="text-h1" font-size="16" fill="#b4a4e5">Synthesize It</text>
+                <text x="750" y="48" class="text-mono">llm.generate(context)</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> First query the source of truth, then inject facts into the model context for drafting.</div>
+          <div>Lecture 01 • Section 10</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 21: Controls around the model (NIST AI RMF) -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="21">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Governance &amp; NIST AI RMF</div>
+          <div class="index-tag">21 / 22</div>
+        </div>
+        <h1 class="slide-title">Controls Belong Around the Model: Defense-in-Depth</h1>
+        <p class="slide-lead">Risk management is an architectural discipline. Models are surrounded by concentric layers of deterministic checks.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Concentric Layer Rings -->
+            <g transform="translate(550, 200)">
+              <!-- Ring 6: Telemetry -->
+              <circle cx="0" cy="0" r="190" fill="#0d1424" stroke="#28374d" stroke-width="1.5"/>
+              <text x="0" y="-170" text-anchor="middle" fill="#64748b" font-size="13.5" font-weight="700">6. IMMUTABLE AUDIT LOGS &amp; DRIFT TELEMETRY</text>
+
+              <!-- Ring 5: Human Gate -->
+              <circle cx="0" cy="0" r="160" fill="#12182b" stroke="#e0c58e" stroke-width="1.5" stroke-dasharray="6 4"/>
+              <text x="0" y="-140" text-anchor="middle" fill="#e0c58e" font-size="13.5" font-weight="700">5. HUMAN-IN-THE-LOOP APPROVAL GATES (MUTATIONS)</text>
+
+              <!-- Ring 4: Least Privilege -->
+              <circle cx="0" cy="0" r="130" fill="#181d33" stroke="#d98585" stroke-width="1.5"/>
+              <text x="0" y="-110" text-anchor="middle" fill="#d98585" font-size="13.5" font-weight="700">4. LEAST PRIVILEGE IAM PERMISSIONS</text>
+
+              <!-- Ring 3: Deterministic schema -->
+              <circle cx="0" cy="0" r="100" fill="#1c243c" stroke="#6ee7b7" stroke-width="1.5"/>
+              <text x="0" y="-80" text-anchor="middle" fill="#6ee7b7" font-size="13" font-weight="700">3. PYDANTIC SCHEMAS &amp; UNIT TESTS</text>
+
+              <!-- Ring 2: Grounding -->
+              <circle cx="0" cy="0" r="70" fill="#202947" stroke="#60a5fa" stroke-width="1.5"/>
+              <text x="0" y="-50" text-anchor="middle" fill="#60a5fa" font-size="12.5" font-weight="700">2. TRUSTED RAG GROUNDING</text>
+
+              <!-- Core: Model -->
+              <circle cx="0" cy="0" r="40" fill="#221b33" stroke="#b4a4e5" stroke-width="2.5"/>
+              <text x="0" y="-4" text-anchor="middle" fill="#ffffff" font-size="13.5" font-weight="800">MODEL</text>
+              <text x="0" y="14" text-anchor="middle" fill="#b4a4e5" font-size="12.5" font-family="var(--font-mono)">CORE</text>
+            </g>
+
+            <rect x="150" y="405" width="800" height="36" rx="6" fill="#151c28" stroke="#253245"/>
+            <text x="550" y="428" text-anchor="middle" fill="#94a3b8" font-size="15">Mitigates: Hallucination • Prompt Injection • PII Data Leakage • Overautomation</text>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Takeaway:</strong> Enterprise safety is engineered outside the model weights, through layered perimeter defenses.</div>
+          <div>Lecture 01 • Section 11</div>
+        </div>
+      </section>
+
+      <!-- ======================================================= -->
+      <!-- SLIDE 22: Mental model for the rest of the course -->
+      <!-- ======================================================= -->
+      <section class="slide-page" data-slide="22">
+        <div class="slide-topbar">
+          <div class="kicker-tag">Engineering Axioms &amp; Next Steps</div>
+          <div class="index-tag">22 / 22</div>
+        </div>
+        <h1 class="slide-title">Mental Model for the Course: Task → Technique → Controls</h1>
+        <p class="slide-lead">Four foundational engineering axioms established in Lecture 01, and a preview of technical mechanics in Lecture 02.</p>
+        
+        <div class="diagram-arena">
+          <svg class="blueprint-svg" viewBox="0 0 1100 480">
+            <!-- Left: 4 Axioms -->
+            <g transform="translate(60, 20)">
+              <text x="0" y="0" fill="#60a5fa" font-size="17" font-weight="700">FOUR CORE ENGINEERING AXIOMS</text>
+
+              <rect x="0" y="15" width="440" height="68" rx="6" class="node-box" stroke="#60a5fa"/>
+              <circle cx="28" cy="49" r="12" fill="rgba(56, 189, 248, 0.15)"/>
+              <text x="28" y="54" text-anchor="middle" fill="#60a5fa" font-size="13.5" font-weight="700">1</text>
+              <text x="52" y="40" class="text-h1" font-size="17">Start from the task, not the model</text>
+              <text x="52" y="62" class="text-p">Classify the problem space before selecting libraries.</text>
+
+              <rect x="0" y="95" width="440" height="68" rx="6" class="node-box" stroke="#6ee7b7"/>
+              <circle cx="28" cy="129" r="12" fill="rgba(52, 211, 153, 0.15)"/>
+              <text x="28" y="134" text-anchor="middle" fill="#6ee7b7" font-size="13.5" font-weight="700">2</text>
+              <text x="52" y="120" class="text-h1" font-size="17">Use the simplest adequate technique</text>
+              <text x="52" y="142" class="text-p">Ordinary code beats probabilistic models in speed and cost.</text>
+
+              <rect x="0" y="175" width="440" height="68" rx="6" class="node-box" stroke="#b4a4e5"/>
+              <circle cx="28" cy="209" r="12" fill="rgba(192, 132, 252, 0.15)"/>
+              <text x="28" y="214" text-anchor="middle" fill="#b4a4e5" font-size="13.5" font-weight="700">3</text>
+              <text x="52" y="200" class="text-h1" font-size="17">Wrap models with context and checks</text>
+              <text x="52" y="222" class="text-p">Grounding facts and Pydantic schemas guarantee integrity.</text>
+
+              <rect x="0" y="255" width="440" height="68" rx="6" class="node-box" stroke="#d98585"/>
+              <circle cx="28" cy="289" r="12" fill="rgba(248, 113, 113, 0.15)"/>
+              <text x="28" y="294" text-anchor="middle" fill="#d98585" font-size="13.5" font-weight="700">4</text>
+              <text x="52" y="280" class="text-h1" font-size="17">Treat actions as production changes</text>
+              <text x="52" y="302" class="text-p">Tool execution requires least privilege and human approval.</text>
+            </g>
+
+            <line x1="540" y1="20" x2="540" y2="380" stroke="#253245" stroke-width="2"/>
+
+            <!-- Right: Preview Lecture 02 -->
+            <g transform="translate(580, 20)">
+              <text x="0" y="0" fill="#e0c58e" font-size="17" font-weight="700">PREVIEW: LECTURE 02 (LLM FUNDAMENTALS)</text>
+
+              <rect x="0" y="15" width="460" height="310" rx="8" fill="#141824" stroke="#e0c58e" stroke-width="1.5"/>
+
+              <g transform="translate(24, 40)">
+                <text x="0" y="0" fill="#e0c58e" font-size="19" font-weight="700">From Architecture to Mechanics</text>
+                <text x="0" y="28" class="text-p">Deep technical dive into token generation and retrieval:</text>
+
+                <g transform="translate(0, 50)">
+                  <rect x="0" y="0" width="412" height="46" rx="6" fill="#151c28"/>
+                  <text x="16" y="28" fill="#ffffff" font-size="15">1. Tokenization: Byte-Pair Encoding (BPE) internals</text>
+
+                  <rect x="0" y="56" width="412" height="46" rx="6" fill="#151c28"/>
+                  <text x="16" y="84" fill="#ffffff" font-size="15">2. Self-Attention mechanism &amp; context window bottlenecks</text>
+
+                  <rect x="0" y="112" width="412" height="46" rx="6" fill="#151c28"/>
+                  <text x="16" y="140" fill="#ffffff" font-size="15">3. Production Prompt Engineering &amp; System Directives</text>
+
+                  <rect x="0" y="168" width="412" height="46" rx="6" fill="#14221e" stroke="#6ee7b7"/>
+                  <text x="16" y="196" fill="#6ee7b7" font-size="15" font-weight="600">4. Hands-on RAG pipeline implementation in Python</text>
+                </g>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="slide-footer">
+          <div class="takeaway-pill"><strong>Ready:</strong> Conceptual foundation established. Students are prepared for LLM internals in Lecture 02.</div>
+          <div>Lecture 01 • Section 12</div>
+        </div>
+      </section>
+
+      <!-- Bottom Progress Track -->
+      <div class="deck-progress">
+        <div class="deck-progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Speaker Notes Drawer -->
+  <aside class="notes-drawer" id="notesDrawer">
+    <div class="notes-header">
+      <div class="notes-title">Speaker Notes</div>
+      <button class="btn-action" id="btnCloseNotes">✕</button>
+    </div>
+    <div class="notes-body" id="notesBody"></div>
+  </aside>
+
+  <!-- Slide Grid Modal -->
+  <div class="grid-overlay" id="gridOverlay">
+    <div class="grid-top">
+      <div class="grid-title">Slide Overview (22)</div>
+      <button class="btn-action" id="btnCloseGrid">Close [Esc]</button>
+    </div>
+    <div class="grid-sheet" id="gridSheet"></div>
+  </div>
+
+  
+  <!-- Discreet Bottom Mini Controls (Docked bottom-right, takes zero vertical slide space) -->
+  <div class="bottom-controls" id="deckControls">
+    <button class="btn-mini" id="btnPrev" title="Previous Slide (← / PageUp)">◀</button>
+    <span class="counter-mini" id="slideCounter">01 / 22</span>
+    <button class="btn-mini" id="btnNext" title="Next Slide (→ / Space / PageDown)">▶</button>
+    <div class="sep-mini"></div>
+    <button class="btn-mini" id="btnGrid" title="Overview Grid (G / Esc)">Grid [G]</button>
+    <button class="btn-mini" id="btnNotes" title="Speaker Notes (N)">Notes [N]</button>
+    <button class="btn-mini" id="btnFs" title="Fullscreen (F)">Fullscreen [F]</button>
+  </div>
+
+
+  <script>
+    // Speaker Notes Database (Direct, natural technical English)
+    const speakerNotes = {
+      1: {
+        goal: "Deconstruct the 'AI' buzzword. Establish classification as the core engineering lens.",
+        talkTrack: "Open by asking students what they picture when they hear 'AI'. Most think of autonomous robots or ChatGPT. Explain that in production, choosing a model first is an anti-pattern. Engineers classify the problem first: is it exact math, tabular classification, or language synthesis? The optical prism is the recurring visual anchor of the course.",
+        timing: "3-4 min"
+      },
+      2: {
+        goal: "Ground the classification in 4 distinct production system architectures.",
+        talkTrack: "Walk through the four examples. Emphasize: calculating VAT with an LLM gets you fired for hallucinations and token waste. VAT is deterministic code. Customer churn is classical tabular ML. Summarizing tickets is a transformer. Fixing bugs in CI is an agent loop with human gating.",
+        timing: "4-5 min"
+      },
+      3: {
+        goal: "Anchor the three operational verbs: Predict, Generate, and Act.",
+        talkTrack: "Point directly to the blast radius comparison. Predict is read-only scoring. Generate creates drafts for human review. Act triggers side effects in external production databases and codebases. As systems move toward Act, engineering controls must increase.",
+        timing: "4 min"
+      },
+      4: {
+        goal: "Prevent over-engineering by enforcing deterministic software as default.",
+        talkTrack: "Contrast exact math with stochastic probability. Deterministic code is free, instantaneous, and 100% testable. AI components introduce non-zero error rates, multi-second GPU latencies, and metered token billing. If a rule can be hardcoded, hardcode it.",
+        timing: "3-4 min"
+      },
+      5: {
+        goal: "Explain the classic Domingos-Chollet paradigm shift.",
+        talkTrack: "In traditional coding, the human programmer is the rule compiler. But when distinguishing spam or visual objects, writing if/else rules by hand is impossible. ML feeds inputs and ground-truth answers to an optimizer, which derives the rule parameters (weights).",
+        timing: "4-5 min"
+      },
+      6: {
+        goal: "Dispel the myth that downloading a model weights file equals a product.",
+        talkTrack: "A raw model weights file is only 15% of the engineering workload. In production, user distributions and real-world conditions shift constantly (Data Drift). Without automated monitoring and retraining loops, models degrade rapidly.",
+        timing: "4 min"
+      },
+      7: {
+        goal: "Clarify technical boundaries and eliminate category errors.",
+        talkTrack: "Review the Euler diagram. Artificial Intelligence is the broad umbrella covering symbolic search and expert systems. Machine Learning is empirical fitting. Deep Learning is hierarchical representation. Foundation models are pretrained general engines. ChatGPT is a consumer product wrapper.",
+        timing: "3-4 min"
+      },
+      8: {
+        goal: "Examine the technical iceberg of modern generative AI applications.",
+        talkTrack: "Explain that raw weights are stateless matrix tensors. Over 80% of an application's codebase consists of session persistence, vector retrieval, prompt templates, tool sandboxes, PII sanitization, and streaming infrastructure.",
+        timing: "5 min"
+      },
+      9: {
+        goal: "Demystify neural network training mechanics and gradient descent.",
+        talkTrack: "Trace the 4 steps: Forward pass -> Loss calculation -> Backpropagation -> Optimizer step. Highlight the operational contrast: training requires offline GPU clusters over weeks; inference evaluates frozen weights in milliseconds.",
+        timing: "5 min"
+      },
+      10: {
+        goal: "Define overfitting and justify the 70/15/15 dataset partition.",
+        talkTrack: "Use the exam analogy: a student who memorized last year's questions word-for-word scores 100% at home, but fails when test variables change. The test set must remain sealed until final evaluation.",
+        timing: "4 min"
+      },
+      11: {
+        goal: "Compare learning paradigms and explain why self-supervision unlocked LLMs.",
+        talkTrack: "Highlight self-supervised learning. Supervised learning hits a ceiling due to human annotation costs. Self-supervision turns raw text into its own training target by masking tokens, allowing models to scale across internet-scale datasets.",
+        timing: "4-5 min"
+      },
+      12: {
+        goal: "Explain hierarchical feature representation in deep learning.",
+        talkTrack: "Walk up the abstraction ladder: pixels -> edges -> geometric textures -> semantic parts. Deep learning eliminated hand-crafted feature engineering by learning hierarchical representations end-to-end.",
+        timing: "3-4 min"
+      },
+      13: {
+        goal: "Analyze the economic shift introduced by Foundation Models.",
+        talkTrack: "Pre-2020, companies trained siloed models for each task. Today, training a frontier foundation model costs over $100M. Industry engineers adapt existing foundation models using in-context prompt assembly, RAG, and parameter-efficient fine-tuning (LoRA).",
+        timing: "4 min"
+      },
+      14: {
+        goal: "Detail the 'Sandwich Architecture' of runtime context assembly.",
+        talkTrack: "Examine the 6 prompt ingress layers. The model is a probabilistic token engine in the center. Surrounding it with verified RAG context and deterministic Pydantic schema validators makes the system production-grade.",
+        timing: "5 min"
+      },
+      15: {
+        goal: "Broaden understanding of generative AI beyond text chat.",
+        talkTrack: "Explain how modern architectures map text, vision patches, audio spectrograms, and code syntax trees into a shared cross-attention vector space for unified multimodal reasoning.",
+        timing: "3 min"
+      },
+      16: {
+        goal: "Explain the root cause of hallucinations: Fluent != Grounded.",
+        talkTrack: "One of the most critical slides. Contrast SQL databases with autoregressive models. A database returns exact truth or NULL. An LLM predicts the most statistically probable syntax continuation. Without grounded context, fluent text can be entirely fabricated.",
+        timing: "5 min"
+      },
+      17: {
+        goal: "Contrast fragile demo scripts with production-grade workflows.",
+        talkTrack: "Walk through the 5-stage production pipeline: input guardrails, RAG retrieval, constrained schema prompt, deterministic schema verification, and human audit gating.",
+        timing: "4 min"
+      },
+      18: {
+        goal: "Introduce the blast radius spectrum for tool execution and agents.",
+        talkTrack: "Detail the three risk tiers. Drafting (L1) has minimal blast radius. Reading internal databases (L2) introduces data privacy risks. Mutating systems or transferring funds (L3) requires sandboxing and human sign-off.",
+        timing: "4 min"
+      },
+      19: {
+        goal: "Provide a practical decision tree for technology selection.",
+        talkTrack: "Step through the 4-step decision flowchart. This serves as a practical checklist for students in their projects and engineering work.",
+        timing: "4 min"
+      },
+      20: {
+        goal: "Eliminate the anti-pattern of using LLMs as relational databases.",
+        talkTrack: "Review the mapping matrix: exact balances come from SQL; policies come from RAG; churn scores come from ML; polite customer letters are synthesized via LLMs from verified facts.",
+        timing: "3-4 min"
+      },
+      21: {
+        goal: "Introduce NIST AI RMF defense-in-depth architectural controls.",
+        talkTrack: "Explain the concentric containment rings: trusted context, schema validation, regression tests, least privilege permissions, human approval, and immutable audit logs.",
+        timing: "4 min"
+      },
+      22: {
+        goal: "Summarize Lecture 01 axioms and build a bridge to Lecture 02.",
+        talkTrack: "Recap the 4 core axioms. Preview Lecture 02: BPE tokenization mechanics, transformer attention bottlenecks, prompt engineering, and building an end-to-end RAG pipeline in Python.",
+        timing: "3 min"
+      }
+    };
+
+    const slideTitles = [
+      "1. AI Is Not One Thing: Problem Spectrum",
+      "2. Four Real Tasks: Distinct Architectures",
+      "3. Predict, Generate, Act: Three Primitives",
+      "4. Automation Is Not Automatically AI",
+      "5. Traditional Programming vs Machine Learning",
+      "6. Model != Product: MLOps Lifecycle",
+      "7. Vocabulary Map: Technical Boundaries",
+      "8. Model != Product: Architecture Iceberg",
+      "9. The Training Loop: Optimization Mechanics",
+      "10. Generalization Beats Memorization (Overfitting)",
+      "11. Four Learning Patterns: Signal Sources",
+      "12. Deep Learning: Representation Learning",
+      "13. Foundation Models: Reuse Paradigm Shift",
+      "14. Application Context: Sandwich Architecture",
+      "15. Generative AI Is Broader Than Text Chat",
+      "16. Fluent Is Not Grounded: Hallucination Anatomy",
+      "17. Fragile vs Production-Grade Workflow",
+      "18. Generation != Execution: Blast Radius",
+      "19. Technology Selection Decision Tree",
+      "20. Source of Truth: Prevent Anti-Patterns",
+      "21. Layered Controls Around the Model (NIST)",
+      "22. Four Core Axioms & Preview of Lecture 02"
+    ];
+
+    // Engine
+    let current = 1;
+    const total = 22;
+
+    function initDeck() {
+      const slides = document.querySelectorAll('.slide-page');
+      const counter = document.getElementById('slideCounter');
+      const progressBar = document.getElementById('progressBar');
+      const notesDrawer = document.getElementById('notesDrawer');
+      const notesBody = document.getElementById('notesBody');
+      const gridOverlay = document.getElementById('gridOverlay');
+      const gridSheet = document.getElementById('gridSheet');
+      const btnNotes = document.getElementById('btnNotes');
+
+      function render() {
+        slides.forEach((s, idx) => {
+          if (idx + 1 === current) {
+            s.classList.add('active');
+          } else {
+            s.classList.remove('active');
+          }
+        });
+
+        if (counter) {
+          counter.textContent = `${String(current).padStart(2, '0')} / ${total}`;
+        }
+        if (progressBar) {
+          const pct = ((current - 1) / (total - 1)) * 100;
+          progressBar.style.width = `${pct}%`;
+        }
+
+        if (notesBody && speakerNotes[current]) {
+          const n = speakerNotes[current];
+          notesBody.innerHTML = `
+            <div class="notes-tag">Slide Objective</div>
+            <div style="font-weight: 700; color: #ffffff; margin-bottom: 12px;">${n.goal}</div>
+            <div class="notes-tag">Talk Track &amp; Teaching Guide</div>
+            <div>${n.talkTrack}</div>
+            <div class="notes-box">
+              ⏱ <b>Target Duration:</b> ${n.timing}
+            </div>
+          `;
+        }
+
+        document.querySelectorAll('.grid-item').forEach((item, idx) => {
+          if (idx + 1 === current) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+      }
+
+      function goto(n) {
+        if (n >= 1 && n <= total) {
+          current = n;
+          render();
+        }
+      }
+
+      function next() {
+        if (current < total) {
+          current++;
+          render();
+        }
+      }
+
+      function prev() {
+        if (current > 1) {
+          current--;
+          render();
+        }
+      }
+
+      function toggleNotes() {
+        if (notesDrawer) {
+          notesDrawer.classList.toggle('open');
+          if (btnNotes) {
+            btnNotes.classList.toggle('active', notesDrawer.classList.contains('open'));
+          }
+        }
+      }
+
+      function toggleGrid() {
+        if (gridOverlay) {
+          gridOverlay.classList.toggle('open');
+        }
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+
+      // Populate Grid
+      if (gridSheet) {
+        gridSheet.innerHTML = '';
+        slideTitles.forEach((t, i) => {
+          const card = document.createElement('div');
+          card.className = 'grid-item';
+          card.innerHTML = `
+            <div class="grid-item-num">SLIDE ${String(i + 1).padStart(2, '0')}</div>
+            <div class="grid-item-name">${t}</div>
+          `;
+          card.addEventListener('click', () => {
+            goto(i + 1);
+            if (gridOverlay) gridOverlay.classList.remove('open');
+          });
+          gridSheet.appendChild(card);
+        });
+      }
+
+      // Button listeners
+      const btnNext = document.getElementById('btnNext');
+      if (btnNext) btnNext.addEventListener('click', next);
+
+      const btnPrev = document.getElementById('btnPrev');
+      if (btnPrev) btnPrev.addEventListener('click', prev);
+
+      if (btnNotes) btnNotes.addEventListener('click', toggleNotes);
+      
+      const btnCloseNotes = document.getElementById('btnCloseNotes');
+      if (btnCloseNotes) btnCloseNotes.addEventListener('click', toggleNotes);
+
+      const btnGrid = document.getElementById('btnGrid');
+      if (btnGrid) btnGrid.addEventListener('click', toggleGrid);
+
+      const btnCloseGrid = document.getElementById('btnCloseGrid');
+      if (btnCloseGrid) btnCloseGrid.addEventListener('click', toggleGrid);
+
+      const btnFs = document.getElementById('btnFs');
+      if (btnFs) btnFs.addEventListener('click', toggleFullscreen);
+
+      // Keyboard navigation
+      window.addEventListener('keydown', (e) => {
+        if (gridOverlay && gridOverlay.classList.contains('open')) {
+          if (e.key === 'Escape' || e.key.toLowerCase() === 'g') {
+            gridOverlay.classList.remove('open');
+          }
+          return;
+        }
+
+        switch(e.key) {
+          case 'ArrowRight':
+          case ' ':
+          case 'PageDown':
+            e.preventDefault();
+            next();
+            break;
+          case 'ArrowLeft':
+          case 'PageUp':
+            e.preventDefault();
+            prev();
+            break;
+          case 'Home':
+            e.preventDefault();
+            goto(1);
+            break;
+          case 'End':
+            e.preventDefault();
+            goto(total);
+            break;
+          case 'n':
+          case 'N':
+            toggleNotes();
+            break;
+          case 'g':
+          case 'G':
+            toggleGrid();
+            break;
+          case 'f':
+          case 'F':
+            toggleFullscreen();
+            break;
+          case 'Escape':
+            if (notesDrawer && notesDrawer.classList.contains('open')) {
+              toggleNotes();
+            }
+            break;
+        }
+      });
+
+      // Touch navigation
+      let touchStartX = 0;
+      window.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, {passive: true});
+
+      window.addEventListener('touchend', (e) => {
+        const diff = touchStartX - e.changedTouches[0].screenX;
+        if (diff > 50) next();
+        else if (diff < -50) prev();
+      }, {passive: true});
+
+      // Click-to-advance on stage wrapper (clicker / presentation remote support)
+      const stage = document.querySelector('.stage-wrapper');
+      if (stage) {
+        stage.addEventListener('click', (e) => {
+          if (e.target.closest('#deckControls, #notesDrawer, #gridOverlay, button, a, svg')) {
+            return;
+          }
+          if (e.clientX < window.innerWidth * 0.15) {
+            prev();
+          } else {
+            next();
+          }
+        });
+      }
+
+      // Initial render
+      render();
+    }
+
+    // Run when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initDeck);
+    } else {
+      initDeck();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+  "category": "bug",
+  "priority": "high",
+  "summary": "Checkout fails after applying and removing a coupon, blocking order creation before Friday release.",
+  "needs_human_review": false
+}
