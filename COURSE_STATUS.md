@@ -8,7 +8,7 @@ This document tracks all production assets, delivery statuses, slide decks, inst
 
 | Lesson | Title | Status | Slide Deck | Script / Text | Demo / Workshop | Notes |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
-| **L01** | AI, ML and Generative AI Overview | ✅ READY | HTML / Vector PDF / PPTX | DOCX Full Script & Text | Homework & Runbook | Complete production package |
+| **L01** | AI, ML and Generative AI Overview | ✅ READY (90M REVAMP) | HTML (16 slides) / PDF / PPTX | MD 90-Min Script & Cheatsheet | Git Homework & Use-Case Memo | Complete 90-min production package with break & cases |
 | **L02** | LLM Fundamentals: Tokens, Prompting, N-shot, Context, Embeddings and Grounding | ⚠️ QA FIXES | HTML / Vector PDF | ❌ Missing canonical script | — | Needs canonical transcript/script |
 | **L03** | LLM API with Python: Streaming and Structured Output | ✅ DONE | [PPTX / Google Slides](https://docs.google.com/presentation/d/18INIziBaeZ9mhUW_29eqT6Dx7GpAZ1Ak/edit) | [Full Script (Google Docs)](https://docs.google.com/document/d/1Cp8WTCnvP-dGaHl1fbjS43ip2wsbtOf4/edit) | `demo_repo/` (Full runnable Python suite) | Complete artifact package imported |
 | **L04** | Image Generation and Editing APIs | ⏳ PLANNED | Google Drive | Google Drive | — | On G: Drive |
