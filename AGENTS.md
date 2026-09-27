@@ -9,9 +9,11 @@ This repository is maintained by autonomous coding agents and human instructors.
 1. **Read Rules First:** Always consult `GEMINI.md` before generating slide content, editing HTML presentations, or writing instructor scripts.
 2. **Use Specialized Skill:** For any presentation or curriculum task, activate the `.agents/skills/course-deck-producer/SKILL.md` skill.
 3. **No Fluff Guarantee:** Write like a Principal Systems Engineer at OpenAI or EPAM. Do not use motivational, generic, or conversational AI filler.
-4. **Corporate Compliance:** NEVER refer to the instructor as "Founder of Creator Tools". Always use "Architect & Developer of Creator Tools (Hands-on AI R&D pet-project)".
-5. **Anchoring Case Study:** The primary enterprise success story is **EPAM CodeMie @ Dawn Foods** (35% SDLC acceleration).
-6. **Homework Benchmark:** The reference use-case for homework is the **Glovo Food Delivery Courier** case study.
+4. **Course Mission:** GenAI Basics is a foundational track focusing on mental models, systemic vision, and essential practice. Do not overpromise senior MLOps/research depth in 16 lessons.
+5. **Corporate Compliance:** NEVER refer to the instructor as "Founder of Creator Tools" or mention voice cloning. Use "Architect & Developer of Creator Tools — AI suite for YouTube creators (Hands-on AI R&D pet-project)".
+6. **Break vs Homework Boundary:** Slide 15 (Midpoint Break) is for resting only. Do not solicit routine tasks in chat. Routine workflows belong strictly in Slide 20 (Homework Memo).
+7. **Anchoring Case Study:** The primary enterprise success story is **EPAM CodeMie @ Dawn Foods** (35% SDLC acceleration).
+8. **Homework Benchmark:** The reference use-case for homework is the **Glovo Food Delivery Courier** case study.
 
 ---
 
