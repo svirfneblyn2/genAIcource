@@ -37,7 +37,7 @@ When generating or auditing an HTML presentation deck:
 * **Instructor Credentials:**
   - Igor Rubanovich / Ihar Rubanovich (`ihar_rubanovich@epam.com`).
   - Engineering Manager II & AI Ambassador @ EPAM.
-  - Creator Tools description: "Architect & Developer of Creator Tools — AI platform for video translation and localization across 140+ languages (Hands-on AI R&D pet-project)".
+  - Creator Tools description: "Creator and architect of Creator Tools — a suite of AI tools for YouTube creators designed to save production time, streamline content workflows, and increase earnings (Hands-on AI R&D pet-project)".
 * **Case Studies:**
   - Production win: EPAM CodeMie @ Dawn Foods (35% SDLC acceleration).
   - Homework benchmark: Glovo Food Delivery Courier (routing = graph/ML, messaging = GenAI, tap-to-send, taboo on refunds/cancellations).
