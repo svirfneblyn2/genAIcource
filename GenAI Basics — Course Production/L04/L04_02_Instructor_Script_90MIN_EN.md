@@ -475,7 +475,7 @@ Below Water (90% Hidden Infrastructure):
 2. *Masks and reference signals provide hardware-level control:* Decouple style, identity, and layout conditioning.  
 3. *The 90% iceberg governs production reliability:* Object storage, Base64 decoding, audit metadata, and Human-in-the-Loop gates.  
 *Next Session Teaser:* **Lesson 05 — Video Generation Models & APIs (Runway Gen-3, Kling, Sora, Pika)**.  
-*Open Mic:* 🎙️ Microphones open — questions welcome in voice and chat!  
+*Open Mic:* 🎙 Microphones open — questions welcome in voice and chat!  
 **Progress Indicator:** `21 / 21` • 100%
 
 #### What the Speaker Says:

@@ -21,7 +21,7 @@ d:\Repos\genAIcource\
 │   ├── L02\                              # LLM Fundamentals (Tokens, Prompting, Grounding)
 │   │   ├── presentation_L02_LLM_Fundamentals.html
 │   │   ├── presentation_L02_LLM_Fundamentals.pdf
-│   │   └── STATUS.md                     # ⚠️ QA FIXES: Missing canonical script
+│   │   └── STATUS.md                     # ⚠ QA FIXES: Missing canonical script
 │   └── L03\                              # LLM API with Python: Streaming & Structured Output
 │       ├── README.md                     # Links & guide
 │       ├── L03_*.docx                    # Text, Full Instructor Script, QA report

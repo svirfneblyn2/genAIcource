@@ -9,7 +9,7 @@ This document tracks all production assets, delivery statuses, slide decks, inst
 | Lesson | Title | Status | Slide Deck | Script / Text | Demo / Workshop | Notes |
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | **L01** | AI, ML and Generative AI Overview | ✅ READY (90M REVAMP) | HTML (16 slides) / PDF / PPTX | MD 90-Min Script & Cheatsheet | Git Homework & Use-Case Memo | Complete 90-min production package with break & cases |
-| **L02** | LLM Fundamentals: Tokens, Prompting, N-shot, Context, Embeddings and Grounding | ⚠️ QA FIXES | HTML / Vector PDF | ❌ Missing canonical script | — | Needs canonical transcript/script |
+| **L02** | LLM Fundamentals: Tokens, Prompting, N-shot, Context, Embeddings and Grounding | ⚠ QA FIXES | HTML / Vector PDF | ❌ Missing canonical script | — | Needs canonical transcript/script |
 | **L03** | LLM API with Python: Streaming and Structured Output | ✅ READY (ACCESSIBLE REVAMP) | HTML (21 slides) / Vector PDF | MD Cheatsheet & Lecture Notes | Colab (`.ipynb`) & Quickstart (`.py`) | Beginner-friendly architectural walkthrough with C4 diagrams |
 | **L04** | Image Generation and Editing APIs | ✅ READY (21-SLIDE C4 REVAMP) | HTML (21 slides RU/EN) / Vector PDF | MD Cheatsheet & 90-Min Script (RU/EN) | Colab (`.ipynb`) & Demo Repo (`.py`) | Production package: C4 visuals, Base64/Inpainting, QA Scorecard, Colab Quickstart |
 | **L05** | Video Generation Models and APIs | ⏳ PLANNED | Google Drive | Google Drive | — | On G: Drive |

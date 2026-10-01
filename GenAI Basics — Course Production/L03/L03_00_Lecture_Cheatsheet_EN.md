@@ -22,7 +22,7 @@
 
 ---
 
-### ☕ Midpoint Break: 5 Minutes (55:00 — 60:00)
+### Midpoint Break: 5 Minutes (55:00 — 60:00)
 
 * **Slide 14 • 5-Minute Coffee Break:**  
   *Press the "START 5 MIN" button on screen.* Instructor announcement: "Take 5 minutes to recharge. In the second half, we will dissect network failure modes, inspect the 2026 model landscape, and execute our live Google Colab notebook." *(Strictly no chat Q&A during break—allow students to rest!)*
@@ -46,8 +46,8 @@
   - Google: `gemini-3.5-flash` and `gemini-3.8-flash` (2M+ window, native audio/video multimodal, 15 RPM free tier).
   - Open-weights: `DeepSeek-V3 / R1` and unified wrappers like `LiteLLM`.
 * **Slide 18 (74–79 min) • First AI Script Checklist (5 Rules):** Secret hygiene in `.env` $	o$ Explicit 30s timeout $	o$ Zero temperature for data extraction $	o$ Strict schema via `response_mime_type` $	o$ Audit logging of token usage.
-* **Slide 19 (79–85 min) • Homework Assignment #3 (Colab & WOW-Case):** 
+* **Slide 19 (79–85 min) • Homework Assignment #3 (Colab & Applied Production Case):** 
   - **Track A (Standard):** Triage workplace documents into strict JSON.
-  - **Track B (WOW-Effect • Creator Tools Pattern):** YouTube Video Analyzer — input any technical video/webinar URL, fetch transcripts in 1 second, pass through Lesson 02 XML template to `gemini-3.5-flash`, and generate an Executive Briefing Memo (TL;DR, key decisions, action items).
+  - **Track B (Applied Engineering Pipeline • Creator Tools Pattern):** YouTube Video Analyzer — input any technical video/webinar URL, fetch transcripts in 1 second, pass through Lesson 02 XML template to `gemini-3.5-flash`, and generate an Executive Briefing Memo (TL;DR, key decisions, action items).
   - Submit `result.json` to GitHub repository: `genai-homeworks/L03/`. Collaborator: `ihar_rubanovich@epam.com`.
 * **Slide 20 (85–90 min) • Q&A and Lesson 04 Teaser:** 3 takeaways: LLMs are web servers, prompt engineering maps to SDK parameters, multimodal schemas protect production. Next session: Module 2 (Images & Video with DALL-E 3, Midjourney, Stable Diffusion, Imagen). Open mic!
