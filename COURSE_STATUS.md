@@ -10,7 +10,7 @@ This document tracks all production assets, delivery statuses, slide decks, inst
 | :--- | :--- | :---: | :---: | :---: | :---: | :--- |
 | **L01** | AI, ML and Generative AI Overview | ✅ READY (90M REVAMP) | HTML (16 slides) / PDF / PPTX | MD 90-Min Script & Cheatsheet | Git Homework & Use-Case Memo | Complete 90-min production package with break & cases |
 | **L02** | LLM Fundamentals: Tokens, Prompting, N-shot, Context, Embeddings and Grounding | ⚠ QA FIXES | HTML / Vector PDF | ❌ Missing canonical script | — | Needs canonical transcript/script |
-| **L03** | LLM API with Python: Streaming and Structured Output | ✅ READY (ACCESSIBLE REVAMP) | HTML (21 slides) / Vector PDF | MD Cheatsheet & Lecture Notes | Colab (`.ipynb`) & Quickstart (`.py`) | Beginner-friendly architectural walkthrough with C4 diagrams |
+| **L03** | LLM API with Python: Streaming and Structured Output | ✅ READY (COLAB-ALIGNED) | HTML (25 slides RU/EN) / Vector PDF | MD Lecture Text, Instructor Script & Cheatsheets (RU/EN) | Colab `notebooks/L03_First_API_Call_and_Prompt_Patterns.ipynb` (+ Part1/Part2) | Colab is the source of truth: API & receipt, temperature/max tokens, streaming, structured output, errors; Few-Shot, CoT, XML delimiters; YouTube case |
 | **L04** | Image Generation and Editing APIs | ✅ READY (21-SLIDE C4 REVAMP) | HTML (21 slides RU/EN) / Vector PDF | MD Cheatsheet & 90-Min Script (RU/EN) | Colab (`.ipynb`) & Demo Repo (`.py`) | Production package: C4 visuals, Base64/Inpainting, QA Scorecard, Colab Quickstart |
 | **L05** | Video Generation Models and APIs | ⏳ PLANNED | Google Drive | Google Drive | — | On G: Drive |
 | **L06** | Speech and Audio AI | ⏳ PLANNED | Google Drive | Google Drive | — | On G: Drive |
