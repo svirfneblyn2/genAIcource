@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Урок 03: LLM API с Python | GenAI Basics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Calm, Clean Engineering Dark Palette - No blinding neon */
+      --bg-canvas: #0c111a;
+      --bg-surface: #121927;
+      --bg-card: #172134;
+      --bg-card-subtle: #1e2a42;
+      
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.16);
+      --border-card: rgba(148, 163, 184, 0.16);
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      /* Refined, sober accents */
+      --c4-primary: #38bdf8;
+      --c4-indigo: #818cf8;
+      --c4-success: #34d399;
+      --c4-warning: #fbbf24;
+      --c4-danger: #f87171;
+      --c4-purple: #c084fc;
+      
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    main.stage-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-canvas);
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    .slide-frame {
+      width: 96vw;
+      max-width: 1560px;
+      aspect-ratio: 16 / 9;
+      max-height: 94vh;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide-page {
+      display: none;
+      flex: 1 1 0;
+      height: 100%;
+      min-height: 0;
+      max-height: 100%;
+      flex-direction: column;
+      padding: 24px 38px 16px 38px;
+      position: relative;
+      animation: fadeIn 0.15s ease-out;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .slide-page.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.996); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Top bar */
+    .slide-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+
+    .slide-tag {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--c4-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .slide-tag::before {
+      content: '';
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--c4-primary);
+    }
+
+    .slide-module-info {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      font-weight: 500;
+    }
+
+    /* Scaled UP Typography */
+    .slide-title {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: #ffffff;
+      margin-bottom: 4px;
+      line-height: 1.2;
+      flex-shrink: 0;
+    }
+
+    .slide-lead {
+      font-size: 16.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    /* Content Arena */
+    .slide-content-arena {
+      flex: 1 1 0;
+      min-height: 0;
+      max-height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+    }
+
+    /* Visual Slides */
+    .slide-page.visual-slide {
+      padding: 16px 32px 12px 32px;
+    }
+
+    .slide-page.visual-slide .slide-topbar {
+      margin-bottom: 3px;
+    }
+
+    .slide-page.visual-slide .slide-title {
+      font-size: 27px;
+      margin-bottom: 3px;
+      line-height: 1.2;
+    }
+
+    .slide-page.visual-slide .slide-lead {
+      font-size: 15.5px;
+      margin-bottom: 8px;
+    }
+
+    .visual-container {
+      flex: 1 1 0;
+      min-height: 0;
+      max-height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      background: #090e17;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 6px;
+    }
+
+    .visual-container img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Clean Title Cover Layout (No AI-quote box) */
+    .slide-page.title-cover-slide {
+      padding: 30px 48px 20px 48px;
+      justify-content: space-between;
+    }
+
+    .title-cover-centered {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      max-width: 1000px;
+      margin: 0 auto;
+      min-height: 0;
+    }
+
+    .title-cover-centered .title-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 18px;
+      border-radius: 20px;
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--c4-primary);
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .title-cover-centered .title-main-h1 {
+      font-size: 58px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+      color: #ffffff;
+      margin-bottom: 16px;
+    }
+
+    .title-cover-centered .title-sub-h2 {
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--c4-primary);
+      line-height: 1.35;
+      margin-bottom: 24px;
+      max-width: 880px;
+    }
+
+    .title-cover-centered .title-lead-text {
+      font-size: 18px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      max-width: 820px;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      height: 100%;
+      min-height: 0;
+    }
+
+    /* Card Architecture */
+    .c4-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .c4-card.accent-cyan { border-top: 3px solid var(--c4-primary); }
+    .c4-card.accent-green { border-top: 3px solid var(--c4-success); }
+    .c4-card.accent-amber { border-top: 3px solid var(--c4-warning); }
+    .c4-card.accent-red { border-top: 3px solid var(--c4-danger); }
+    .c4-card.accent-purple { border-top: 3px solid var(--c4-purple); }
+    .c4-card.accent-indigo { border-top: 3px solid var(--c4-indigo); }
+
+    .card-label {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .card-desc {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      flex: 1;
+    }
+
+    /* Code Block Architecture */
+    .code-container {
+      background: #090e17;
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.45;
+      color: #e2e8f0;
+      white-space: pre;
+      overflow: auto;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .code-container .kw { color: #f472b6; font-weight: 600; }
+    .code-container .fn { color: #38bdf8; }
+    .code-container .str { color: #34d399; }
+    .code-container .cm { color: #64748b; font-style: italic; }
+    .code-container .num { color: #fbbf24; }
+    .code-container .hl { background: rgba(56, 189, 248, 0.14); padding: 2px 4px; border-radius: 4px; }
+
+    /* Footer Navigation */
+    .slide-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+
+    .footer-keys {
+      display: flex;
+      gap: 6px;
+      margin-left: 8px;
+    }
+
+    .key-badge {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .footer-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .progress-bar-container {
+      width: 140px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--c4-primary);
+      transition: width 0.2s ease;
+    }
+
+    .slide-counter {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--c4-primary);
+    }
+
+    /* Speaker Drawer */
+    .speaker-drawer {
+      position: fixed;
+      bottom: -320px;
+      left: 0;
+      right: 0;
+      height: 300px;
+      background: #0f1624;
+      border-top: 2px solid var(--c4-primary);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+      z-index: 999;
+      transition: bottom 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 20px 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .speaker-drawer.open {
+      bottom: 0;
+    }
+
+    .speaker-drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .speaker-drawer-title {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--c4-primary);
+    }
+
+    .speaker-notes-body {
+      flex: 1;
+      overflow-y: auto;
+      font-size: 15.5px;
+      line-height: 1.6;
+      color: #cbd5e1;
+    }
+
+    /* Grid View Modal */
+    .grid-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 15, 24, 0.94);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      padding: 30px;
+      overflow-y: auto;
+    }
+
+    .grid-modal.open {
+      display: flex;
+    }
+
+    .grid-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .grid-modal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .grid-thumb {
+      aspect-ratio: 16 / 9;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-card);
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+    }
+
+    .grid-thumb:hover {
+      border-color: var(--c4-primary);
+      transform: translateY(-2px);
+    }
+
+    .grid-thumb.active {
+      border-color: var(--c4-primary);
+      box-shadow: 0 0 14px rgba(56, 189, 248, 0.25);
+    }
+
+    .grid-thumb-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--c4-primary);
+      font-weight: 700;
+    }
+
+    .grid-thumb-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+    }
+
+    /* Interactive Countdown Timer */
+    .break-timer-card {
+      background: #111827;
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin: auto;
+      max-width: 680px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .break-timer-digits {
+      font-family: var(--font-mono);
+      font-size: 72px;
+      font-weight: 800;
+      color: var(--c4-warning);
+      letter-spacing: 0.05em;
+      margin: 16px 0;
+    }
+
+    .timer-btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .timer-btn {
+      background: var(--c4-warning);
+      color: #0c111a;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 24px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .timer-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.25);
+    }
+
+    .timer-btn.secondary {
+      background: var(--bg-card-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-strong);
+    }
+
+    /* Diagram Helpers */
+    .sys-diagram-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: #090e17;
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+
+    .sys-node {
+      background: var(--bg-card);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 16px 20px;
+      text-align: center;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sys-arrow {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--c4-primary);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+      width: 110px;
+      text-align: center;
+    }
+
+    .sys-arrow svg {
+      width: 100%;
+      height: 20px;
+      stroke: var(--c4-primary);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    @media print {
+      @page {
+        size: 16in 9in;
+        margin: 0;
+      }
+      body {
+        overflow: visible !important;
+        height: auto !important;
+        background: #0c111a !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      main.stage-wrapper {
+        padding: 0 !important;
+        margin: 0 !important;
+        overflow: visible !important;
+        display: block !important;
+        height: auto !important;
+        width: 16in !important;
+        background: none !important;
+      }
+      .slide-frame {
+        width: 16in !important;
+        max-width: none !important;
+        height: auto !important;
+        max-height: none !important;
+        aspect-ratio: auto !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        overflow: visible !important;
+        display: block !important;
+        background: transparent !important;
+      }
+      .slide-page {
+        position: relative !important;
+        inset: auto !important;
+        width: 16in !important;
+        height: 9in !important;
+        display: flex !important;
+        opacity: 1 !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        box-sizing: border-box !important;
+        background: #121927 !important;
+        border-bottom: none !important;
+      }
+      .speaker-drawer, .grid-modal, .footer-keys {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="stage-wrapper">
+    <div class="slide-frame">
+
+      <!-- SLIDE 01: Title Cover (Clean, No AI-quote) -->
+      <section class="slide-page title-cover-slide active" data-slide="1">
+        <div class="slide-topbar">
+          <div class="slide-tag">GENAI BASICS • УРОК 03</div>
+          <div class="slide-module-info">МОДУЛЬ 1 • ФУНДАМЕНТ И API</div>
+        </div>
+
+        <div class="title-cover-centered">
+          <div class="title-badge">ИНЖЕНЕРНЫЙ ПРАКТИКУМ</div>
+          <h1 class="title-main-h1">LLM API с Python</h1>
+          <h2 class="title-sub-h2">Архитектура, библиотеки и первый программный вызов</h2>
+          <p class="title-lead-text">
+            Переход от ручного копирования в веб-чате к фоновой автоматизации. Разбираем, как устроена клиент-серверная связка с моделью, зачем нужны клиентские библиотеки и как гарантировать строгие данные на выходе.
+          </p>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left">
+            <span>EPAM Systems</span>
+            <span>•</span>
+            <span>GenAI Basics</span>
+            <div class="footer-keys">
+              <span class="key-badge">← / →</span>
+              <span class="key-badge">Space</span>
+              <span class="key-badge">N Заметки</span>
+              <span class="key-badge">G Сетка</span>
+              <span class="key-badge">F Экран</span>
+            </div>
+          </div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 5%"></div></div>
+            <span class="slide-counter">01 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Приветствие. Сегодня делаем главный шаг: перестаем вручную копировать текст в веб-окно и смотрим, как программа обращается к модели напрямую через API.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 02: Visual Roadmap (Horizontal Milestone Stepper) -->
+      <section class="slide-page" data-slide="2">
+        <div class="slide-topbar">
+          <div class="slide-tag">МАРШРУТ ОБУЧЕНИЯ</div>
+          <div class="slide-module-info">16 ЗАНЯТИЙ • 6 МОДУЛЕЙ</div>
+        </div>
+        <h2 class="slide-title">Дорожная карта курса: Где мы находимся</h2>
+        <p class="slide-lead">Завершение первого модуля: переход от теории токенов к программному интерфейсу</p>
+
+        <div class="slide-content-arena">
+          <!-- Stepper Timeline -->
+          <div style="background: #090e17; border: 1px solid var(--border-card); border-radius: 12px; padding: 26px 20px; display: flex; flex-direction: column; justify-content: center; gap: 24px;">
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; position: relative;">
+              <!-- Connecting Line -->
+              <div style="position: absolute; top: 22px; left: 40px; right: 40px; height: 3px; background: rgba(255,255,255,0.1); z-index: 1;"></div>
+              <!-- Active progress line -->
+              <div style="position: absolute; top: 22px; left: 40px; width: 10%; height: 3px; background: var(--c4-primary); z-index: 2;"></div>
+
+              <!-- Node 1 (Active) -->
+              <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 15%; z-index: 3;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #0c111a; border: 3px solid var(--c4-primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; color: var(--c4-primary); margin-bottom: 10px;">01</div>
+                <div style="font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: var(--c4-primary); text-transform: uppercase;">ВЫ ЗДЕСЬ</div>
+                <div style="font-weight: 700; font-size: 14.5px; color: #fff; margin-top: 3px;">Основы и API</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">L01–L03</div>
+              </div>
+
+              <!-- Node 2 -->
+              <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 15%; z-index: 3;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #0c111a; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: var(--text-dim); margin-bottom: 10px;">02</div>
+                <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-dim); text-transform: uppercase;">СЛЕДУЮЩИЙ</div>
+                <div style="font-weight: 600; font-size: 14px; color: #cbd5e1; margin-top: 3px;">Мультимодальность</div>
+                <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">L04–L06 (Фото/Видео)</div>
+              </div>
+
+              <!-- Node 3 -->
+              <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 15%; z-index: 3;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #0c111a; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: var(--text-dim); margin-bottom: 10px;">03</div>
+                <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-dim); text-transform: uppercase;">МОДУЛЬ 3</div>
+                <div style="font-weight: 600; font-size: 14px; color: #cbd5e1; margin-top: 3px;">Среда инженера</div>
+                <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">L07–L09 (Copilot, Данные)</div>
+              </div>
+
+              <!-- Node 4 -->
+              <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 15%; z-index: 3;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #0c111a; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: var(--text-dim); margin-bottom: 10px;">04</div>
+                <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-dim); text-transform: uppercase;">МОДУЛЬ 4</div>
+                <div style="font-weight: 600; font-size: 14px; color: #cbd5e1; margin-top: 3px;">Локальный AI</div>
+                <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">L10 (Ollama, LM Studio)</div>
+              </div>
+
+              <!-- Node 5 -->
+              <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 15%; z-index: 3;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #0c111a; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: var(--text-dim); margin-bottom: 10px;">05</div>
+                <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-dim); text-transform: uppercase;">МОДУЛЬ 5</div>
+                <div style="font-weight: 600; font-size: 14px; color: #cbd5e1; margin-top: 3px;">Агенты и MCP</div>
+                <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">L11–L13 (Инструменты)</div>
+              </div>
+
+              <!-- Node 6 -->
+              <div style="display: flex; flex-direction: column; align-items: center; text-align: center; width: 15%; z-index: 3;">
+                <div style="width: 44px; height: 44px; border-radius: 50%; background: #0c111a; border: 2px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 15px; color: var(--text-dim); margin-bottom: 10px;">06</div>
+                <div style="font-size: 11px; font-family: var(--font-mono); color: var(--text-dim); text-transform: uppercase;">МОДУЛЬ 6</div>
+                <div style="font-weight: 600; font-size: 14px; color: #cbd5e1; margin-top: 3px;">Продакшен</div>
+                <div style="font-size: 12px; color: var(--text-dim); margin-top: 2px;">L14–L16 (Streamlit, Безопасность)</div>
+              </div>
+            </div>
+
+            <div style="background: rgba(56, 189, 248, 0.05); border-left: 4px solid var(--c4-primary); padding: 12px 18px; border-radius: 4px; font-size: 14px; color: var(--text-muted);">
+              <strong>Смысл сегодняшнего шага:</strong> Базовый вызов через API — это фундамент. Без него невозможно отправлять картинки в Модуле 2, подключать функции в Модуле 5 или строить автономных агентов в Модуле 6.
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 10%"></div></div>
+            <span class="slide-counter">02 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Фиксируем траекторию: мы завершаем фундамент (Модуль 1). Сегодня осваиваем прямой вызов модели через API, чтобы следующие 5 модулей опирались на понятную практику.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 03: Component Architecture (How App talks to AI) -->
+      <section class="slide-page" data-slide="3">
+        <div class="slide-topbar">
+          <div class="slide-tag">АРХИТЕКТУРА СИСТЕМЫ</div>
+          <div class="slide-module-info">КОМПОНЕНТНАЯ СХЕМА</div>
+        </div>
+        <h2 class="slide-title">Как софт общается с AI: Архитектура взаимодействия</h2>
+        <p class="slide-lead">Модель не живет внутри вашего приложения. Это удаленный сетевой сервис</p>
+
+        <div class="slide-content-arena">
+          <!-- Component Flow Diagram -->
+          <div class="sys-diagram-flow">
+            <!-- Node A: Client App -->
+            <div class="sys-node" style="border-top: 3px solid var(--c4-primary);">
+              <div style="font-size: 28px; margin-bottom: 6px;">💻</div>
+              <div style="font-weight: 700; font-size: 16px; color: #fff;">Ваше приложение</div>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Excel / 1С / Python / Бэкенд</div>
+              <div style="margin-top: 10px; background: rgba(0,0,0,0.3); border-radius: 4px; padding: 4px 10px; font-family: var(--font-mono); font-size: 11.5px; color: var(--c4-primary);">
+                Формирует текст задачи
+              </div>
+            </div>
+
+            <!-- Arrow 1 -> 2 -->
+            <div class="sys-arrow">
+              <div>1. HTTPS POST</div>
+              <svg viewBox="0 0 100 20"><path d="M 0 10 L 90 10 M 80 5 L 90 10 L 80 15"></path></svg>
+              <div style="color: var(--text-dim); font-size: 11px;">Ключ + Запрос</div>
+            </div>
+
+            <!-- Node B: API Gateway -->
+            <div class="sys-node" style="border-top: 3px solid var(--c4-warning);">
+              <div style="font-size: 28px; margin-bottom: 6px;">🛡️</div>
+              <div style="font-weight: 700; font-size: 16px; color: #fff;">API Gateway</div>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Шлюз безопасности провайдера</div>
+              <div style="margin-top: 10px; background: rgba(0,0,0,0.3); border-radius: 4px; padding: 4px 10px; font-family: var(--font-mono); font-size: 11.5px; color: var(--c4-warning);">
+                Проверка авторизации и квот
+              </div>
+            </div>
+
+            <!-- Arrow 2 -> 3 -->
+            <div class="sys-arrow">
+              <div>2. Инференс</div>
+              <svg viewBox="0 0 100 20"><path d="M 0 10 L 90 10 M 80 5 L 90 10 L 80 15"></path></svg>
+              <div style="color: var(--text-dim); font-size: 11px;">Кластер GPU</div>
+            </div>
+
+            <!-- Node C: GPU Cluster -->
+            <div class="sys-node" style="border-top: 3px solid var(--c4-success);">
+              <div style="font-size: 28px; margin-bottom: 6px;">🧠</div>
+              <div style="font-weight: 700; font-size: 16px; color: #fff;">Сервер Модели</div>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Дата-центр OpenAI / Google</div>
+              <div style="margin-top: 10px; background: rgba(0,0,0,0.3); border-radius: 4px; padding: 4px 10px; font-family: var(--font-mono); font-size: 11.5px; color: var(--c4-success);">
+                Генерация токенов
+              </div>
+            </div>
+          </div>
+
+          <!-- Return Flow note -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div class="c4-card" style="padding: 14px 18px;">
+              <div style="font-weight: 700; color: #fff; font-size: 14.5px; margin-bottom: 4px;">Что летит туда (Запрос):</div>
+              <div style="font-size: 13.5px; color: var(--text-muted); line-height: 1.45;">
+                Обычный текстовый пакет: имя модели (например <code>gpt-4o-mini</code>), инструкция и текст задачи. Плюс секретный ключ доступа в заголовке.
+              </div>
+            </div>
+
+            <div class="c4-card" style="padding: 14px 18px;">
+              <div style="font-weight: 700; color: #fff; font-size: 14.5px; margin-bottom: 4px;">Что летит обратно (Ответ):</div>
+              <div style="font-size: 13.5px; color: var(--text-muted); line-height: 1.45;">
+                Структурированный пакет: сгенерированный текст (или JSON-поля), причина остановки и финансовый чек (сколько токенов потрачено).
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 15%"></div></div>
+            <span class="slide-counter">03 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Показываем простую архитектуру: Ваша программа шлет запрос по HTTPS в шлюз, шлюз проверяет ключ и отдает в дата-центр. Ответ возвращается по проводу. Никакой магии.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 04: Anatomy of HTTP Request (Visual C4 Slide) -->
+      <section class="slide-page visual-slide" data-slide="4">
+        <div class="slide-topbar">
+          <div class="slide-tag">ПРОТОКОЛ ВЗАИМОДЕЙСТВИЯ</div>
+          <div class="slide-module-info">СХЕМА ТРАНСПОРТА</div>
+        </div>
+        <h2 class="slide-title">Анатомия HTTP-запроса: Клиент, Шлюз и Кластер</h2>
+        <p class="slide-lead">Сквозной путь прохождения сетевого пакета от скрипта через границу REST API к ускорителям инференса</p>
+
+        <div class="visual-container">
+          <img src="assets/c4_llm_api_architecture.png" alt="LLM API Integration: Client to Cloud Request Flow">
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 20%"></div></div>
+            <span class="slide-counter">04 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Обращаем внимание на границу REST API Boundary (пунктир): слева — код студента, справа — закрытая инфраструктура провайдера с GPU.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 05: Why SDK (Visual Architectural Comparison) -->
+      <section class="slide-page" data-slide="5">
+        <div class="slide-topbar">
+          <div class="slide-tag">АРХИТЕКТУРА КОДА</div>
+          <div class="slide-module-info">СЛОЙ SDK</div>
+        </div>
+        <h2 class="slide-title">Зачем нужен SDK: Защитный слой между софтом и сетью</h2>
+        <p class="slide-lead">Библиотека берет на себя 90% сетевой рутины и спасает приложение от аварийных падений</p>
+
+        <div class="slide-content-arena">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <!-- Flow 1: Raw HTTP -->
+            <div style="background: rgba(248, 113, 113, 0.05); border: 1px solid rgba(248, 113, 113, 0.25); border-radius: 8px; padding: 16px 20px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-weight: 700; color: var(--c4-danger); font-size: 14px;">❌ БЕЗ SDK: Ручной HTTP (curl / requests)</span>
+                <span style="font-family: var(--font-mono); font-size: 12px; color: var(--c4-danger);">ВЫСОКИЙ РИСК ПАДЕНИЙ</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #cbd5e1;">
+                <div style="background: var(--bg-card); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-subtle);">Ваш код</div>
+                <span>➔</span>
+                <div style="background: rgba(248, 113, 113, 0.12); padding: 8px 12px; border-radius: 4px; color: #fca5a5;">Ручные сокеты + Ручной JSON</div>
+                <span>➔</span>
+                <div style="background: rgba(248, 113, 113, 0.12); padding: 8px 12px; border-radius: 4px; color: #fca5a5;">Сбой сети / 429 ошибка</div>
+                <span>➔</span>
+                <div style="background: var(--c4-danger); color: #000; font-weight: 700; padding: 8px 12px; border-radius: 4px;">💥 Авария программы</div>
+              </div>
+            </div>
+
+            <!-- Flow 2: Official SDK -->
+            <div style="background: rgba(52, 211, 153, 0.05); border: 1px solid rgba(52, 211, 153, 0.25); border-radius: 8px; padding: 16px 20px;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <span style="font-weight: 700; color: var(--c4-success); font-size: 14px;">✅ С SDK: Официальная библиотека (openai / google-genai)</span>
+                <span style="font-family: var(--font-mono); font-size: 12px; color: var(--c4-success);">ИНЖЕНЕРНЫЙ СТАНДАРТ</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: #cbd5e1;">
+                <div style="background: var(--bg-card); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-subtle);">Ваш код</div>
+                <span>➔</span>
+                <div style="background: rgba(52, 211, 153, 0.12); padding: 8px 14px; border-radius: 4px; color: #6ee7b7; border: 1px dashed var(--c4-success);">
+                  🛡️ <strong>Защитный слой SDK:</strong> Авто-повторы при сбоях • Keep-Alive • Типизация IDE • Парсинг JSON
+                </div>
+                <span>➔</span>
+                <div style="background: var(--c4-success); color: #000; font-weight: 700; padding: 8px 12px; border-radius: 4px;">✅ Надежный результат</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; background: rgba(56, 189, 248, 0.04); border-left: 4px solid var(--c4-primary); padding: 12px 18px; border-radius: 4px; font-size: 14px; color: var(--text-muted);">
+            Библиотека — это не «усложнение», а готовая броня. Если сервер моргнул или перегружен, SDK сам сделает паузу и повторит вызов без падения вашего сервиса.
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 25%"></div></div>
+            <span class="slide-counter">05 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Показываем, почему мы используем библиотеку openai: она берет на себя ретраи и пул соединений, избавляя нас от сотен строк рутинной обработки сетевых исключений.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 06: First Code Call in Google Colab -->
+      <section class="slide-page" data-slide="6">
+        <div class="slide-topbar">
+          <div class="slide-tag">ПРАКТИКА В БРАУЗЕРЕ</div>
+          <div class="slide-module-info">GOOGLE AI STUDIO ➔ COLAB</div>
+        </div>
+        <h2 class="slide-title">Первый вызов API: От веб-песочницы к коду в Google Colab</h2>
+        <p class="slide-lead">Google AI Studio визуально настраивает модель и дает кнопку «Get Code», а Colab исполняет скрипт без утечки ключей</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-2" style="align-items: stretch;">
+            <!-- Left: Colab Cell -->
+            <div style="display: flex; flex-direction: column;">
+              <div style="background: #141c2c; border: 1px solid var(--border-card); border-top-left-radius: 8px; border-top-right-radius: 8px; padding: 8px 14px; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-family: var(--font-mono); font-size: 12px; color: var(--c4-primary); font-weight: 700;">Ячейка ноутбука Google Colab</span>
+                <span style="background: rgba(56, 189, 248, 0.1); color: var(--c4-primary); padding: 2px 8px; border-radius: 4px; font-size: 11px;">Кнопка ▶ Play</span>
+              </div>
+              <div class="code-container" style="border-top-left-radius: 0; border-top-right-radius: 0; flex: 1;">
+<span class="kw">from</span> google <span class="kw">import</span> genai
+<span class="kw">from</span> google.colab <span class="kw">import</span> userdata
+
+<span class="cm"># 1. Защита ключа: читаем из Colab Secrets (иконка 🔑 слева)</span>
+<span class="cm"># Ключ привязан к Google-аккаунту: НЕ виден на экране и НЕ попадает в запись</span>
+api_key = userdata.get(<span class="str">"GEMINI_API_KEY"</span>)
+client = genai.Client(api_key=api_key)
+
+<span class="cm"># 2. Вызываем флагманскую быструю модель 2026 года</span>
+response = client.models.generate_content(
+    model=<span class="str">"gemini-3.5-flash"</span>,
+    contents=<span class="str">"В чем суть API в 2 словах?"</span>
+)
+
+<span class="cm"># 3. Печатаем ответ напрямую</span>
+<span class="fn">print</span>(response.text)
+              </div>
+            </div>
+
+            <!-- Right: 3 Speaker Steps -->
+            <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center;">
+              <div class="c4-card accent-cyan" style="padding: 13px 18px;">
+                <div style="font-weight: 700; font-size: 15px; color: #fff;">1. Google AI Studio (Google Labs)</div>
+                <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 3px;">Песочница <code>aistudio.google.com</code>: тестируете промпты в браузере и жмете кнопку <strong>«Get Code»</strong>. Писать код с нуля вручную не требуется!</div>
+              </div>
+
+              <div class="c4-card accent-green" style="padding: 13px 18px;">
+                <div style="font-weight: 700; font-size: 15px; color: #fff;">2. Безопасность: Colab Secrets 🔑</div>
+                <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 3px;">Ключ хранится в системном сейфе <code>userdata.get()</code>. Никаких всплывающих окон <code>getpass</code> и нуль риска засветить баланс на стриме или демо.</div>
+              </div>
+
+              <div class="c4-card accent-purple" style="padding: 13px 18px;">
+                <div style="font-weight: 700; font-size: 15px; color: #fff;">3. Модель Gemini 3.5 Flash</div>
+                <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 3px;">Актуальный стандарт скорости и рассуждений (контекст 2M+ токенов, нативная поддержка видео и документов, бесплатный Free Tier).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 30%"></div></div>
+            <span class="slide-counter">06 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Акцентируем мост: Google AI Studio — это веб-конструктор, где вы пробуете промпт и жмете «Get Code». А Colab запускает его с защищенным чтением секрета. Модель gemini-3.5-flash быстрая и бесплатная.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 07: Anatomy of Response (What Server Returned) -->
+      <section class="slide-page" data-slide="7">
+        <div class="slide-topbar">
+          <div class="slide-tag">ТЕЛЕМЕТРИЯ И УЧЕТ</div>
+          <div class="slide-module-info">АНАТОМИЯ ОТВЕТА GEMINI</div>
+        </div>
+        <h2 class="slide-title">Что вернул сервер: Разбор электронного чека</h2>
+        <p class="slide-lead">Вместе с текстом сервер отдает паспорт транзакции: причину остановки и точный расход токенов</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-3">
+            <div class="c4-card accent-cyan">
+              <div class="card-label" style="color: var(--c4-primary);">ТЕКСТ ОТВЕТА</div>
+              <div class="card-title">Свойство `response.text`</div>
+              <div class="card-desc">
+                Чистый сгенерированный результат. Библиотека автоматически собирает текстовые блоки и убирает служебные заголовки.
+              </div>
+            </div>
+
+            <div class="c4-card accent-green">
+              <div class="card-label" style="color: var(--c4-success);">ПРИЧИНА ОСТАНОВКИ</div>
+              <div class="card-title">`finish_reason`</div>
+              <div class="card-desc">
+                Значение <code>STOP</code> означает штатное завершение мысли. Если там <code>MAX_TOKENS</code> — сработал лимит длины ответа, а не зависание.
+              </div>
+            </div>
+
+            <div class="c4-card accent-amber">
+              <div class="card-label" style="color: var(--c4-warning);">СЧЕТЧИК ТОКЕНОВ</div>
+              <div class="card-title">`usage_metadata`</div>
+              <div class="card-desc">
+                Учет расхода: <code>prompt_token_count</code> (вопрос) и <code>candidates_token_count</code> (ответ). Позволяет контролировать квоты Free tier и бюджет.
+              </div>
+            </div>
+          </div>
+
+          <div class="code-container" style="margin-top: 12px; padding: 10px 16px; font-size: 13px; line-height: 1.4; flex-shrink: 0; overflow: hidden;">
+<span class="cm"># Проверка электронного чека транзакции в Google Colab:</span>
+m = response.usage_metadata
+<span class="fn">print</span>(<span class="str">f"Токены: Вход={m.prompt_token_count}, Выход={m.candidates_token_count}, Всего={m.total_token_count}"</span>)
+<span class="fn">print</span>(<span class="str">f"Статус завершения: {response.candidates[0].finish_reason}"</span>)</div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 35%"></div></div>
+            <span class="slide-counter">07 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Критично: объясняем finish_reason и usage. Это не rocket science, а счетчик расхода и диагностика обрыва текста.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 08: API Key Security -->
+      <section class="slide-page" data-slide="8">
+        <div class="slide-topbar">
+          <div class="slide-tag">БЕЗОПАСНОСТЬ С ПЕРВОГО ДНЯ</div>
+          <div class="slide-module-info">ЗАЩИТА СЕКРЕТОВ</div>
+        </div>
+        <h2 class="slide-title">Безопасность API-ключей: Защита от утечек и трат</h2>
+        <p class="slide-lead">Ключ от API — это кредитная карта с прямым доступом к корпоративному или личному балансу</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-3" style="align-items: stretch;">
+            <div class="c4-card accent-red">
+              <div style="font-size: 30px; margin-bottom: 6px;">🚨</div>
+              <div class="card-title" style="color: var(--c4-danger);">Слив на GitHub за 3 секунды</div>
+              <div class="card-desc">
+                Боты круглосуточно сканируют публичные коммиты. Ключ, случайно вставленный прямо в код файла, перехватывается за секунды и опустошает баланс.
+              </div>
+            </div>
+
+            <div class="c4-card accent-green">
+              <div style="font-size: 30px; margin-bottom: 6px;">🛡️</div>
+              <div class="card-title" style="color: var(--c4-success);">Стандарт: .env и .gitignore</div>
+              <div class="card-desc">
+                Ключ хранится локально в файле <code>.env</code>. Этот файл обязательно вносится в <code>.gitignore</code>, чтобы Git не отправлял его на сервер.
+              </div>
+            </div>
+
+            <div class="c4-card accent-amber">
+              <div style="font-size: 30px; margin-bottom: 6px;">🔑</div>
+              <div class="card-title" style="color: var(--c4-warning);">Colab Secrets (Вкладка 🔑)</div>
+              <div class="card-desc">
+                В левом меню Colab нажмите иконку ключа 🔑 ➔ добавьте <code>GEMINI_API_KEY</code>. Ключ привязан к вашему Google-профилю, а не к файлу! При отправке блокнота ключ останется скрыт.
+              </div>
+            </div>
+          </div>
+
+          <div class="code-container" style="margin-top: 12px; padding: 10px 16px; font-size: 13px; line-height: 1.4; flex-shrink: 0; overflow: hidden;">
+<span class="cm"># 1. Локально: файл .gitignore блокирует утечку .env в Git:</span>
+.env  <span class="cm"># Защищает от случайного git push в публичный репозиторий</span>
+
+<span class="cm"># 2. В Google Colab: чтение из хранилища Secrets (ключ не виден на экране и в записи):</span>
+<span class="kw">from</span> google.colab <span class="kw">import</span> userdata
+api_key = userdata.get(<span class="str">"GEMINI_API_KEY"</span>)  <span class="cm"># Ключ подтягивается в память без отображения в коде</span></div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 40%"></div></div>
+            <span class="slide-counter">08 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Напоминаем: в ДЗ ни в коем случае не коммитим реальный ключ в репозиторий. Используем переменные окружения или prompt ввода.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 09: Streaming Physics (Visual Slide) -->
+      <section class="slide-page visual-slide" data-slide="9">
+        <div class="slide-topbar">
+          <div class="slide-tag">ФИЗИКА И UX</div>
+          <div class="slide-module-info">СКОРОСТЬ ВОСПРИЯТИЯ</div>
+        </div>
+        <h2 class="slide-title">Стриминг: Физика Server-Sent Events и задержка</h2>
+        <p class="slide-lead">Сравнение таймлайнов: 5 секунд гнетущей тишины против мгновенного появления первого токена (TTFT)</p>
+
+        <div class="visual-container">
+          <img src="assets/streaming_vs_blocking_timeline.png" alt="Timeline comparison of Blocking LLM API vs Streaming SSE">
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 45%"></div></div>
+            <span class="slide-counter">09 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Стриминг не ускоряет генерацию в целом, но радикально меняет восприятие интерфейса человеком (Time to First Token = 200 мс).
+        </div>
+      </section>
+
+
+      <!-- SLIDE 10: Streaming in Action -->
+      <section class="slide-page" data-slide="10">
+        <div class="slide-topbar">
+          <div class="slide-tag">ПРАКТИКА В БРАУЗЕРЕ</div>
+          <div class="slide-module-info">GENERATE_CONTENT_STREAM</div>
+        </div>
+        <h2 class="slide-title">Стриминг в коде: Разбираем потоковую генерацию</h2>
+        <p class="slide-lead">Метод `generate_content_stream` отдает текст порциями по мере вычисления, убирая ожидание</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-2" style="align-items: stretch;">
+            <div class="code-container" style="margin: auto 0; font-size: 13px; line-height: 1.45;">
+<span class="cm"># Включаем живой поток токенов (Server-Sent Events):</span>
+response = client.models.generate_content_stream(
+    model=<span class="str">"gemini-3.5-flash"</span>,
+    contents=<span class="str">"Объясни стриминг в 2 предложениях."</span>
+)
+
+<span class="cm"># Выводим кусочки текста в консоль без буферизации:</span>
+<span class="kw">for</span> chunk <span class="kw">in</span> response:
+    <span class="fn">print</span>(chunk.text, end=<span class="str">""</span>, flush=<span class="kw">True</span>)
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center;">
+              <div class="c4-card accent-cyan">
+                <div class="card-title">Что такое `chunk`?</div>
+                <div class="card-desc">
+                  Микро-пакет данных из сокета, в котором летит не весь документ, а маленькая дельта — 1 или 2 только что сгенерированных токена.
+                </div>
+              </div>
+
+              <div class="c4-card accent-green">
+                <div class="card-title">Зачем `flush=True`?</div>
+                <div class="card-desc">
+                  Принудительно сбрасывает буфер терминала или браузера, заставляя буквы появляться на экране немедленно с эффектом пишущей машинки.
+                </div>
+              </div>
+
+              <div class="c4-card accent-amber">
+                <div class="card-title">Когда стриминг НЕ нужен?</div>
+                <div class="card-desc">
+                  Для фоновых скриптов, очередей задач и парсинга в JSON стриминг вреден. Используйте синхронный вызов для атомарного ответа.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 50%"></div></div>
+            <span class="slide-counter">10 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Стриминг в google-genai реализуется через generate_content_stream. Он радикально улучшает UX для человека перед экраном, но для баз данных используем обычный вызов.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 11: Prompt Engineering in Code (Bridge to L02) -->
+      <section class="slide-page" data-slide="11">
+        <div class="slide-topbar">
+          <div class="slide-tag">ПРОМПТ-ИНЖИНИРИНГ В КОДЕ</div>
+          <div class="slide-module-info">СВЯЗКА С УРОКОМ 02</div>
+        </div>
+        <h2 class="slide-title">От чата к коду: Перенос XML и One-Shot из Урока 02 в API</h2>
+        <p class="slide-lead">Знания прошлых уроков становятся параметрами SDK: системная инструкция, XML-теги и детерминированность</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-2" style="align-items: stretch;">
+            <!-- Left: Code Snippet with L02 Techniques -->
+            <div class="code-container" style="margin: auto 0; font-size: 11.8px; line-height: 1.4; padding: 12px 14px;">
+<span class="kw">from</span> google.genai <span class="kw">import</span> types
+
+<span class="cm"># 1. Системная роль вынесена в конфигурацию (защита от взлома промпта)</span>
+config = types.GenerateContentConfig(
+    system_instruction=<span class="str">"Ты строгий аудитор. Извлекай факты без вежливости."</span>,
+    temperature=<span class="num">0.0</span>  <span class="cm"># 0.0 = максимальный детерминизм</span>
+)
+
+<span class="cm"># 2. XML-каркас и One-Shot пример из Урока 02 внутри строки:</span>
+prompt = <span class="str">f"""
+&lt;context&gt;Входящая рабочая рекламация&lt;/context&gt;
+&lt;rules&gt;Извлеки сумму ущерба и отдел&lt;/rules&gt;
+&lt;example&gt;
+  &lt;input&gt;Списали 500$ по ошибке в бухгалтерии&lt;/input&gt;
+  &lt;output&gt;отдел: биллинг | сумма: 500$&lt;/output&gt;
+&lt;/example&gt;
+&lt;document&gt;{raw_text}&lt;/document&gt;
+"""</span>
+
+response = client.models.generate_content(
+    model=<span class="str">"gemini-3.5-flash"</span>, contents=prompt, config=config
+)
+            </div>
+
+            <!-- Right: 3 Key Architectural Pillars -->
+            <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center;">
+              <div class="c4-card accent-cyan" style="padding: 12px 16px;">
+                <div style="font-weight: 700; font-size: 14.5px; color: #fff;">1. `system_instruction` в параметрах</div>
+                <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 3px;">
+                  В коде системная роль не смешивается с текстом пользователя. Это физически защищает модель от инъекций (Prompt Injection) со стороны злоумышленников.
+                </div>
+              </div>
+
+              <div class="c4-card accent-green" style="padding: 12px 16px;">
+                <div style="font-weight: 700; font-size: 14.5px; color: #fff;">2. XML-теги внутри f-строк</div>
+                <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 3px;">
+                  Теги <code>&lt;context&gt;</code>, <code>&lt;rules&gt;</code> и <code>&lt;document&gt;</code> четко разделяют инструкции от сырых входящих данных любого объема.
+                </div>
+              </div>
+
+              <div class="c4-card accent-amber" style="padding: 12px 16px;">
+                <div style="font-weight: 700; font-size: 14.5px; color: #fff;">3. One-Shot + `temperature=0.0`</div>
+                <div style="font-size: 13.5px; color: var(--text-muted); margin-top: 3px;">
+                  Один эталонный пример в промпте и нулевая температура полностью исключают лишнюю «вежливость» модели и гарантируют одинаковый результат при каждом запуске.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 55%"></div></div>
+            <span class="slide-counter">11 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Показываем прямую связь: то, что мы учили в Уроке 02 (XML-теги, системный промпт, One-Shot пример), теперь упаковывается в код Python и передается через параметры SDK.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 12: Structured Outputs Mechanics (Visual Slide) -->
+      <section class="slide-page visual-slide" data-slide="12">
+        <div class="slide-topbar">
+          <div class="slide-tag">ТЕХНОЛОГИЯ ГАРАНТИЙ</div>
+          <div class="slide-module-info">CONSTRAINED DECODING</div>
+        </div>
+        <h2 class="slide-title">Структурированный вывод: Как модель заставляют подчиняться</h2>
+        <p class="slide-lead">Constrained Decoding: грамматическая маска обнуляет вероятность недопустимых знаков при генерации</p>
+
+        <div class="visual-container">
+          <img src="assets/structured_outputs_mechanics.png" alt="Mechanics of Constrained Decoding and Structured Outputs">
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 60%"></div></div>
+            <span class="slide-counter">12 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Объясняем: сервер прямо во время генерации запрещает модели выбирать символы, которые нарушат синтаксис JSON. 100% гарантия формата.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 13: Practical JSON Extraction -->
+      <section class="slide-page" data-slide="13">
+        <div class="slide-topbar">
+          <div class="slide-tag">ПРАКТИКА В БРАУЗЕРЕ</div>
+          <div class="slide-module-info">ГАРАНТИРОВАННЫЙ JSON</div>
+        </div>
+        <h2 class="slide-title">Практический пример: Разбор входящего письма в JSON</h2>
+        <p class="slide-lead">Параметр `response_mime_type="application/json"` и температура 0.0 для жесткого контракта данных</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-2" style="align-items: stretch;">
+            <div class="code-container" style="font-size: 12px; line-height: 1.4; margin: auto 0; padding: 12px 16px;">
+<span class="kw">import</span> json
+<span class="kw">from</span> google.genai <span class="kw">import</span> types
+
+<span class="cm"># Жесткий режим: модель физически не может вернуть ничего, кроме JSON</span>
+config = types.GenerateContentConfig(
+    response_mime_type=<span class="str">"application/json"</span>,
+    temperature=<span class="num">0.0</span>  <span class="cm"># Ноль фантазии, строгий детерминизм</span>
+)
+
+prompt = <span class="str">"""
+Разбери входящую заявку в JSON:
+{
+  "category": "billing" | "technical" | "general",
+  "urgent": true | false,
+  "amount_usd": float
+}
+Заявка: Срочно! С карты дважды списали $450 за подписку, верните деньги!
+"""</span>
+
+response = client.models.generate_content(
+    model=<span class="str">"gemini-3.5-flash"</span>, contents=prompt, config=config
+)
+
+<span class="cm"># Безопасно парсим валидный JSON в словарь Python:</span>
+data = json.loads(response.text)
+<span class="fn">print</span>(data[<span class="str">"category"</span>])    <span class="cm"># -> "billing"</span>
+<span class="fn">print</span>(data[<span class="str">"amount_usd"</span>])  <span class="cm"># -> 450.0</span>
+<span class="fn">print</span>(data[<span class="str">"urgent"</span>])      <span class="cm"># -> True</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center;">
+              <div class="c4-card accent-cyan">
+                <div class="card-title">Что произошло?</div>
+                <div class="card-desc">
+                  Эмоциональное неструктурированное письмо клиента за 1 секунду превратилось в четкую карточку с готовыми данными.
+                </div>
+              </div>
+
+              <div class="c4-card accent-green">
+                <div class="card-title">Зачем `temperature=0.0`?</div>
+                <div class="card-desc">
+                  Для извлечения цифр и категорий фантазия модели опасна. Нулевая температура гарантирует максимальную детерминированность.
+                </div>
+              </div>
+
+              <div class="c4-card accent-purple">
+                <div class="card-title">Куда идут данные?</div>
+                <div class="card-desc">
+                  Поле <code>amount_usd</code> сразу идет в учетную систему, а срочная жалоба летит в финотдел без участия ручного оператора.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 65%"></div></div>
+            <span class="slide-counter">13 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Показываем реальную ценность: хаос текста превратился в аккуратную строчку таблицы. Это и есть прикладной смысл API.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 14: Midpoint Break -->
+      <section class="slide-page" data-slide="14">
+        <div class="slide-topbar">
+          <div class="slide-tag">ПЕРЕРЫВ 5 МИНУТ</div>
+          <div class="slide-module-info">ЭКВАТОР ЗАНЯТИЯ</div>
+        </div>
+
+        <div class="slide-content-arena">
+          <div class="break-timer-card">
+            <div style="font-size: 42px; margin-bottom: 6px;">☕</div>
+            <h2 style="font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 8px;">Экватор занятия: Кофе-пауза</h2>
+            <p style="font-size: 15.5px; color: var(--text-muted); max-width: 580px; line-height: 1.5;">
+              Отдохните 5 минут и переведите дыхание. Во второй части разберем сетевые ошибки, ландшафт библиотек и запустим готовый интерактивный блокнот в Google Colab.
+            </p>
+
+            <div class="break-timer-digits" id="breakTimerDisplay">05:00</div>
+
+            <div class="timer-btn-row">
+              <button class="timer-btn" id="timerToggleBtn" onclick="toggleBreakTimer()">СТАРТ 5 МИН</button>
+              <button class="timer-btn secondary" onclick="resetBreakTimer()">СБРОС</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 70%"></div></div>
+            <span class="slide-counter">14 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Включаем таймер. Никаких вопросов в чат — студенты отдыхают перед второй половиной.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 15: Handling Failures & Errors -->
+      <section class="slide-page" data-slide="15">
+        <div class="slide-topbar">
+          <div class="slide-tag">НАДЕЖНОСТЬ В СЕТИ</div>
+          <div class="slide-module-info">СЕТЕВЫЕ СБОИ</div>
+        </div>
+        <h2 class="slide-title">Что может пойти не так: 4 частые сетевые ошибки</h2>
+        <p class="slide-lead">Сеть обрывается, облака сбоят, а квоты исчерпываются. Как софт реагирует на ошибки</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-4" style="align-items: stretch;">
+            <div class="c4-card accent-red">
+              <div class="card-label" style="color: var(--c4-danger);">401 UNAUTHORIZED</div>
+              <div class="card-title">Неверный ключ</div>
+              <div class="card-desc">
+                Ключ скопирован с лишним пробелом, отозван или не задан в переменных. Решение: перепроверить значение ключа.
+              </div>
+            </div>
+
+            <div class="c4-card accent-amber">
+              <div class="card-label" style="color: var(--c4-warning);">429 RATE LIMIT</div>
+              <div class="card-title">Превышен лимит</div>
+              <div class="card-desc">
+                Слишком частые запросы в минуту или закончился баланс кредитов. Решение: пауза и экспоненциальный откат (Backoff).
+              </div>
+            </div>
+
+            <div class="c4-card accent-purple">
+              <div class="card-label" style="color: var(--c4-purple);">500 / 503 ERROR</div>
+              <div class="card-title">Сбой провайдера</div>
+              <div class="card-desc">
+                Перегрузка в дата-центре OpenAI или Google. Решение: 1–2 автоматических повтора или переход на резервную модель.
+              </div>
+            </div>
+
+            <div class="c4-card accent-cyan">
+              <div class="card-label" style="color: var(--c4-primary);">TIMEOUT</div>
+              <div class="card-title">Зависание сети</div>
+              <div class="card-desc">
+                Пакеты застряли по дороге. Без параметра <code>timeout=30.0</code> скрипт может зависнуть намертво.
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; background: rgba(56, 189, 248, 0.04); border: 1px solid rgba(56, 189, 248, 0.18); border-radius: 8px; padding: 12px 20px; font-size: 14.5px; color: var(--text-muted); display: flex; align-items: center; gap: 14px;">
+            <div style="font-size: 24px;">🛡️</div>
+            <div>
+              <strong style="color: #fff;">Встроенные ретраи:</strong> Официальный SDK уже содержит встроенную логику повторов на ошибки 429 и 500. Вам не нужно писать сложные циклы руками.
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 75%"></div></div>
+            <span class="slide-counter">15 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Успокаиваем: ошибки 429 и таймауты бывают у всех. Главное — понимать их природу и знать, что библиотека страхует базовые сбои.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 16: Tooling Ecosystem (Visual Slide) -->
+      <section class="slide-page visual-slide" data-slide="16">
+        <div class="slide-topbar">
+          <div class="slide-tag">ЭКОСИСТЕМА БИБЛИОТЕК</div>
+          <div class="slide-module-info">3 СЛОЯ ИНСТРУМЕНТОВ</div>
+        </div>
+        <h2 class="slide-title">Ландшафт библиотек: Кто есть кто в мире Python AI</h2>
+        <p class="slide-lead">От базового сетевого уровня до официальных SDK и высокоуровневых фреймворков оркестрации</p>
+
+        <div class="visual-container">
+          <img src="assets/llm_libraries_landscape.png" alt="Python LLM Tooling Ecosystem: Protocols, SDKs and Frameworks">
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 80%"></div></div>
+            <span class="slide-counter">16 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Показываем 3 слоя по схеме: Слой 1 (Сырой HTTP), Слой 2 (Официальные SDK), Слой 3 (Оркестраторы). Правило: начинать всегда со Слоя 2.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 17: Provider Portability -->
+      <section class="slide-page" data-slide="17">
+        <div class="slide-topbar">
+          <div class="slide-tag">КРУГОЗОР • СРАВНЕНИЕ</div>
+          <div class="slide-module-info">МАТРИЦА МОДЕЛЕЙ 2026</div>
+        </div>
+        <h2 class="slide-title">Сравнение провайдеров: OpenAI vs Claude vs Gemini</h2>
+        <p class="slide-lead">Разные имена методов — единая логика. Освоив один SDK, вы умеете работать со всей индустрией</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-3">
+            <div class="c4-card accent-green">
+              <div class="card-label" style="color: var(--c4-success);">OPENAI SDK (2026)</div>
+              <div class="card-title">Стандарт вызова функций</div>
+              <div style="font-family: var(--font-mono); font-size: 12.5px; color: #cbd5e1; line-height: 1.45; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; margin: 8px 0;">
+client.chat.completions.create(<br>
+&nbsp;&nbsp;model="gpt-4o",  <span class="cm"># или o3-mini</span><br>
+&nbsp;&nbsp;response_format={...}<br>
+)
+              </div>
+              <div class="card-desc">Отраслевой эталон Structured Outputs и Function Calling. Поддерживается локальными серверами (vLLM, Ollama).</div>
+            </div>
+
+            <div class="c4-card accent-amber">
+              <div class="card-label" style="color: var(--c4-warning);">ANTHROPIC SDK (2026)</div>
+              <div class="card-title">Глубокие рассуждения и код</div>
+              <div style="font-family: var(--font-mono); font-size: 12.5px; color: #cbd5e1; line-height: 1.45; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; margin: 8px 0;">
+client.messages.create(<br>
+&nbsp;&nbsp;model="claude-3-7-sonnet",<br>
+&nbsp;&nbsp;thinking={"type": "enabled"}<br>
+)
+              </div>
+              <div class="card-desc">Флагман архитектурного мышления и кодогенерации. Поддерживает нативный режим расширенного обдумывания (Thinking Mode).</div>
+            </div>
+
+            <div class="c4-card accent-cyan">
+              <div class="card-label" style="color: var(--c4-primary);">GOOGLE GENAI SDK (2026)</div>
+              <div class="card-title">Окно 2M+, видео и Free Tier</div>
+              <div style="font-family: var(--font-mono); font-size: 12.5px; color: #cbd5e1; line-height: 1.45; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; margin: 8px 0;">
+client.models.generate_content(<br>
+&nbsp;&nbsp;model="gemini-3.5-flash",<br>
+&nbsp;&nbsp;contents=[...]<br>
+)
+              </div>
+              <div class="card-desc">Флагманская скорость, нативный анализ видео и аудио, 2M+ токенов контекста и 15 бесплатных вызовов в минуту без привязки карт.</div>
+            </div>
+          </div>
+
+          <div style="margin-top: 14px; background: rgba(255, 255, 255, 0.02); border-radius: 6px; padding: 10px 18px; font-size: 14px; color: var(--text-muted); text-align: center;">
+            💡 А открытые модели <strong>DeepSeek-V3 / R1</strong> и библиотека <strong>LiteLLM</strong> позволяют переключаться между провайдерами одной строчкой кода.
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 85%"></div></div>
+            <span class="slide-counter">17 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Показываем панораму 2026 года: GPT-4o и o3 от OpenAI, Claude 3.7 Sonnet от Anthropic и Gemini 3.5 Flash от Google. Все используют одну и ту же концепцию клиент-серверного вызова.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 18: Production Checklist -->
+      <section class="slide-page" data-slide="18">
+        <div class="slide-topbar">
+          <div class="slide-tag">ИНЖЕНЕРНАЯ КУЛЬТУРА</div>
+          <div class="slide-module-info">КОНТРОЛЬНЫЙ СПИСОК</div>
+        </div>
+        <h2 class="slide-title">Чек-лист первого AI-скрипта: 5 правил инженера</h2>
+        <p class="slide-lead">Контрольный список перед тем, как отдать скрипт пользователю или запустить в проде</p>
+
+        <div class="slide-content-arena">
+          <div style="display: flex; flex-direction: column; gap: 9px; height: 100%; justify-content: center;">
+            <div class="c4-card accent-green" style="padding: 12px 18px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="font-weight: 700; font-size: 15.5px; color: #fff;">1. Гигиена ключей</div>
+                <span class="key-badge" style="color: var(--c4-success); border-color: var(--c4-success);">ОБЯЗАТЕЛЬНО</span>
+              </div>
+              <div style="font-size: 14px; color: var(--text-muted); margin-top: 3px;">
+                Ключи только в <code>.env</code> или переменных окружения. Файл <code>.env</code> обязательно проверен в <code>.gitignore</code>.
+              </div>
+            </div>
+
+            <div class="c4-card accent-cyan" style="padding: 12px 18px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="font-weight: 700; font-size: 15.5px; color: #fff;">2. Эксплицитный таймаут</div>
+                <span class="key-badge" style="color: var(--c4-primary); border-color: var(--c4-primary);">НАДЕЖНОСТЬ</span>
+              </div>
+              <div style="font-size: 14px; color: var(--text-muted); margin-top: 3px;">
+                Всегда задавать <code>timeout=30.0</code> при создании клиента, чтобы зависший сокет не парализовал приложение.
+              </div>
+            </div>
+
+            <div class="c4-card accent-amber" style="padding: 12px 18px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="font-weight: 700; font-size: 15.5px; color: #fff;">3. Температура под задачу</div>
+                <span class="key-badge" style="color: var(--c4-warning); border-color: var(--c4-warning);">ТОЧНОСТЬ</span>
+              </div>
+              <div style="font-size: 14px; color: var(--text-muted); margin-top: 3px;">
+                <code>temperature=0.0</code> для JSON, таблиц и классификации. <code>0.7+</code> только для креативных текстов.
+              </div>
+            </div>
+
+            <div class="c4-card accent-purple" style="padding: 12px 18px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="font-weight: 700; font-size: 15.5px; color: #fff;">4. Формат через `response_format`</div>
+                <span class="key-badge" style="color: var(--c4-purple); border-color: var(--c4-purple);">КОНТРАКТ</span>
+              </div>
+              <div style="font-size: 14px; color: var(--text-muted); margin-top: 3px;">
+                Никогда не надеяться на текстовую просьбу «верни JSON». Использовать строгий режим JSON-схемы от API.
+              </div>
+            </div>
+
+            <div class="c4-card accent-red" style="padding: 12px 18px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="font-weight: 700; font-size: 15.5px; color: #fff;">5. Логирование телеметрии</div>
+                <span class="key-badge" style="color: var(--c4-danger); border-color: var(--c4-danger);">КОНТРОЛЬ</span>
+              </div>
+              <div style="font-size: 14px; color: var(--text-muted); margin-top: 3px;">
+                Всегда сохранять <code>response.id</code> и потраченные <code>usage.total_tokens</code> для учета финансов.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 90%"></div></div>
+            <span class="slide-counter">18 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Резюмируем культуру разработки. Этот чек-лист защищает от типичных детских ошибок интеграции.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 19: Homework Assignment (AI-Generated Script in Colab) -->
+      <section class="slide-page" data-slide="19">
+        <div class="slide-topbar">
+          <div class="slide-tag">ДОМАШНЕЕ ЗАДАНИЕ №3</div>
+          <div class="slide-module-info">ПРАКТИКА В GOOGLE COLAB</div>
+        </div>
+        <h2 class="slide-title">Домашнее задание: Запуск в Colab и WOW-кейс с YouTube</h2>
+        <p class="slide-lead">Два трека на выбор: базовый триаж документов в JSON или автоматический конвейер анализа видео</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-2" style="align-items: stretch;">
+            <!-- Left: Track A (Standard) -->
+            <div class="c4-card accent-cyan" style="padding: 18px 22px; display: flex; flex-direction: column;">
+              <div class="card-label" style="color: var(--c4-primary); font-size: 13px;">ТРЕК А • БАЗОВЫЙ</div>
+              <div class="card-title" style="font-size: 18px; margin-bottom: 8px;">Триаж рабочего документа в JSON</div>
+              <div style="font-size: 14px; color: var(--text-muted); line-height: 1.5; flex: 1;">
+                1. Возьмите реальный фрагмент вашей рабочей переписки (письмо, баг, заявка на оплату).<br>
+                2. Запустите готовый блокнот <code>L03_Google_Colab_Quickstart.ipynb</code>.<br>
+                3. Получите структурированный <code>result.json</code> с обязательными полями (категория, сумма, приоритет).
+              </div>
+              <div style="margin-top: 12px; background: rgba(0,0,0,0.25); border-radius: 6px; padding: 8px 12px; font-family: var(--font-mono); font-size: 12.5px; color: var(--c4-primary);">
+                Фокус: Constrained Decoding & Pydantic
+              </div>
+            </div>
+
+            <!-- Right: Track B (WOW Effect) -->
+            <div class="c4-card accent-purple" style="padding: 18px 22px; display: flex; flex-direction: column;">
+              <div class="card-label" style="color: var(--c4-purple); font-size: 13px;">ТРЕК Б • WOW-ЭФФЕКТ (CREATOR TOOLS PATTERN)</div>
+              <div class="card-title" style="font-size: 18px; margin-bottom: 8px;">YouTube & Meeting Video Analyzer</div>
+              <div style="font-size: 14px; color: var(--text-muted); line-height: 1.5; flex: 1;">
+                1. Вставьте в ячейку Colab ссылку на любое техническое видео или вебинар с YouTube.<br>
+                2. Скрипт за 1 сек забирает транскрипт, упаковывает в XML-шаблон из Урока 02 и передает в <code>gemini-3.5-flash</code>.<br>
+                3. Модель выдает <strong>Executive Memo</strong>: выжимку (TL;DR), ключевые решения с таймкодами и список поручений.
+              </div>
+              <div style="margin-top: 12px; background: rgba(0,0,0,0.25); border-radius: 6px; padding: 8px 12px; font-family: var(--font-mono); font-size: 12.5px; color: var(--c4-purple);">
+                Фокус: Экономия 2 часов просмотра видео
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 12px; background: rgba(56, 189, 248, 0.08); border-radius: 6px; padding: 10px 18px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 14px; color: #fff;">
+              Репозиторий для сдачи: <strong>genai-homeworks / L03 / result.json</strong>
+            </div>
+            <div style="font-family: var(--font-mono); font-size: 12.5px; color: var(--c4-primary);">
+              Коллаборатор: ihar_rubanovich@epam.com
+            </div>
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 95%"></div></div>
+            <span class="slide-counter">19 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Предлагаем студентам выбор: либо классический разбор рабочего письма в JSON, либо конвейер Creator Tools — автоматический разбор YouTube-видео в исполнительский отчет.
+        </div>
+      </section>
+
+
+      <!-- SLIDE 20: Q&A and Next Session -->
+      <section class="slide-page" data-slide="20">
+        <div class="slide-topbar">
+          <div class="slide-tag">ФИНАЛ ЗАНЯТИЯ</div>
+          <div class="slide-module-info">ИТОГИ И СЛЕДУЮЩИЙ ШАГ</div>
+        </div>
+        <h2 class="slide-title">Вопросы и ответы: Главные итоги</h2>
+        <p class="slide-lead">Открытый микрофон и анонс второго модуля — переход к изображениям и звуку</p>
+
+        <div class="slide-content-arena">
+          <div class="grid-2">
+            <div class="c4-card accent-cyan" style="flex: 1;">
+              <div class="card-label" style="color: var(--c4-primary);">3 ГЛАВНЫХ ВЫВОДА ЗАНЯТИЯ</div>
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+                <div style="font-size: 14.5px; color: #e2e8f0; line-height: 1.5;">
+                  <strong>1. LLM — это удаленный веб-сервер.</strong> Модель не скачивается в скрипт. Вы отправляете обычный HTTP-запрос и получаете обратно токены.
+                </div>
+                <div style="font-size: 14.5px; color: #e2e8f0; line-height: 1.5;">
+                  <strong>2. Стриминг — для живых людей, батч — для систем.</strong> Потоковая выдача нужна только перед глазами пользователя; для баз данных берем полный ответ.
+                </div>
+                <div style="font-size: 14.5px; color: #e2e8f0; line-height: 1.5;">
+                  <strong>3. Структурированный JSON спасет ваш софт.</strong> Для интеграции всегда фиксируйте схему и выставляйте температуру 0.0.
+                </div>
+              </div>
+            </div>
+
+            <div class="c4-card accent-purple" style="flex: 1;">
+              <div class="card-label" style="color: var(--c4-purple);">СЛЕДУЮЩИЙ УРОК • УРОК 04</div>
+              <div class="card-title" style="font-size: 18px; margin-top: 4px;">Генерация и редактирование изображений</div>
+              <div class="card-desc" style="font-size: 14.5px; line-height: 1.55; margin-top: 8px;">
+                Переходим к <strong>Модулю 2: Мультимодальность</strong>.<br><br>
+                Разберем диффузионные модели: <strong>DALL-E 3</strong>, <strong>Midjourney</strong>, <strong>Stable Diffusion</strong> и <strong>Google Imagen</strong>. Как генерировать графику, схемы и редактировать визуал через код.
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top: 16px; text-align: center; font-size: 15px; color: var(--c4-primary); font-weight: 600;">
+            🎙️ Открываем микрофоны и ждем ваших вопросов в чате!
+          </div>
+        </div>
+
+        <div class="slide-footer">
+          <div class="footer-left"><span>EPAM Systems</span><span>•</span><span>GenAI Basics</span></div>
+          <div class="footer-right">
+            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: 100%"></div></div>
+            <span class="slide-counter">20 / 20</span>
+          </div>
+        </div>
+
+        <div class="speaker-notes" style="display:none;">
+          Завершение лекции. Открываем микрофоны, благодарим за внимание и напоминаем про дедлайн домашнего задания до следующего занятия.
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Speaker Notes Drawer -->
+  <aside class="speaker-drawer" id="speakerDrawer">
+    <div class="speaker-drawer-header">
+      <span class="speaker-drawer-title">ЗАМЕТКИ СПИКЕРА (НАЖМИТЕ N ДЛЯ ЗАКРЫТИЯ)</span>
+      <span id="speakerDrawerSlideNum" style="font-family: var(--font-mono); font-size: 12px; color: var(--c4-warning);">СЛАЙД 01 / 20</span>
+    </div>
+    <div class="speaker-notes-body" id="speakerNotesContent">
+      Заметки загружаются...
+    </div>
+  </aside>
+
+  <!-- Grid View Modal -->
+  <div class="grid-modal" id="gridModal">
+    <div class="grid-modal-header">
+      <div style="font-family: var(--font-mono); font-size: 15px; font-weight: 700; color: var(--c4-primary);">
+        ОБЗОР ВСЕХ СЛАЙДОВ (НАЖМИТЕ G ИЛИ ESC ДЛЯ ЗАКРЫТИЯ)
+      </div>
+      <button onclick="toggleGridModal()" style="background: none; border: none; color: #fff; font-size: 22px; cursor: pointer;">✕</button>
+    </div>
+    <div class="grid-modal-grid" id="gridModalContainer"></div>
+  </div>
+
+  <script>
+    let currentSlide = 1;
+    const totalSlides = 20;
+
+    function showSlide(index) {
+      if (index < 1 || index > totalSlides) return;
+      currentSlide = index;
+
+      document.querySelectorAll('.slide-page').forEach((slide) => {
+        slide.classList.remove('active');
+        if (parseInt(slide.getAttribute('data-slide')) === currentSlide) {
+          slide.classList.add('active');
+        }
+      });
+
+      // Update progress and counters
+      const progressPct = ((currentSlide / totalSlides) * 100).toFixed(2);
+      document.querySelectorAll('.slide-counter').forEach(el => {
+        el.innerText = `${currentSlide.toString().padStart(2, '0')} / ${totalSlides}`;
+      });
+      document.querySelectorAll('.progress-bar-fill').forEach(el => {
+        el.style.width = `${progressPct}%`;
+      });
+
+      // Update speaker notes
+      const activeSlide = document.querySelector(`.slide-page[data-slide="${currentSlide}"]`);
+      if (activeSlide) {
+        const notes = activeSlide.querySelector('.speaker-notes');
+        const notesContent = notes ? notes.innerHTML.trim() : 'К этому слайду нет дополнительных заметок.';
+        document.getElementById('speakerNotesContent').innerHTML = notesContent;
+        document.getElementById('speakerDrawerSlideNum').innerText = `СЛАЙД ${currentSlide.toString().padStart(2, '0')} / ${totalSlides}`;
+      }
+
+      updateGridSelection(currentSlide);
+    }
+
+    function nextSlide() {
+      if (currentSlide < totalSlides) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 1) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function toggleSpeakerNotes() {
+      const drawer = document.getElementById('speakerDrawer');
+      drawer.classList.toggle('open');
+    }
+
+    function toggleGridModal() {
+      const modal = document.getElementById('gridModal');
+      modal.classList.toggle('open');
+      if (modal.classList.contains('open')) {
+        renderGridThumbs();
+      }
+    }
+
+    function renderGridThumbs() {
+      const container = document.getElementById('gridModalContainer');
+      container.innerHTML = '';
+      document.querySelectorAll('.slide-page').forEach((slide, i) => {
+        const idx = i + 1;
+        const titleEl = slide.querySelector('.slide-title') || slide.querySelector('.title-main-h1');
+        const title = titleEl ? titleEl.innerText : `Слайд ${idx}`;
+        const thumb = document.createElement('div');
+        thumb.className = `grid-thumb ${idx === currentSlide ? 'active' : ''}`;
+        thumb.onclick = () => {
+          showSlide(idx);
+          toggleGridModal();
+        };
+        thumb.innerHTML = `
+          <div class="grid-thumb-num">СЛАЙД ${idx.toString().padStart(2, '0')} / 20</div>
+          <div class="grid-thumb-title">${title}</div>
+        `;
+        container.appendChild(thumb);
+      });
+    }
+
+    function updateGridSelection(index) {
+      document.querySelectorAll('.grid-thumb').forEach((thumb, i) => {
+        if (i + 1 === index) {
+          thumb.classList.add('active');
+        } else {
+          thumb.classList.remove('active');
+        }
+      });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key.toLowerCase() === 'n') {
+        e.preventDefault();
+        toggleSpeakerNotes();
+      } else if (e.key.toLowerCase() === 'g') {
+        e.preventDefault();
+        toggleGridModal();
+      } else if (e.key.toLowerCase() === 'f') {
+        e.preventDefault();
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      } else if (e.key === 'Escape') {
+        const modal = document.getElementById('gridModal');
+        if (modal.classList.contains('open')) {
+          toggleGridModal();
+        }
+      }
+    });
+
+    // 5-Minute Break Countdown Timer
+    let timerDuration = 5 * 60;
+    let timerRemaining = timerDuration;
+    let timerInterval = null;
+
+    function formatTime(seconds) {
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function toggleBreakTimer() {
+      const btn = document.getElementById('timerToggleBtn');
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        btn.innerText = 'СТАРТ 5 МИН';
+        btn.style.background = 'var(--c4-warning)';
+        btn.style.color = '#0c111a';
+      } else {
+        btn.innerText = 'ПАУЗА';
+        btn.style.background = 'var(--c4-danger)';
+        btn.style.color = '#fff';
+        timerInterval = setInterval(() => {
+          if (timerRemaining > 0) {
+            timerRemaining--;
+            document.getElementById('breakTimerDisplay').innerText = formatTime(timerRemaining);
+          } else {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            btn.innerText = 'ВРЕМЯ ВЫШЛО';
+            btn.style.background = 'var(--c4-success)';
+          }
+        }, 1000);
+      }
+    }
+
+    function resetBreakTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timerRemaining = timerDuration;
+      document.getElementById('breakTimerDisplay').innerText = formatTime(timerRemaining);
+      const btn = document.getElementById('timerToggleBtn');
+      btn.innerText = 'СТАРТ 5 МИН';
+      btn.style.background = 'var(--c4-warning)';
+      btn.style.color = '#0c111a';
+    }
+
+    // Check hash on load
+    const hashVal = parseInt(window.location.hash.replace('#', ''), 10);
+    if (!isNaN(hashVal) && hashVal >= 1 && hashVal <= totalSlides) {
+      showSlide(hashVal);
+    } else {
+      showSlide(1);
+    }
+
+    window.addEventListener('hashchange', () => {
+      const h = parseInt(window.location.hash.replace('#', ''), 10);
+      if (!isNaN(h) && h >= 1 && h <= totalSlides) {
+        showSlide(h);
+      }
+    });
+  </script>
+</body>
+</html>

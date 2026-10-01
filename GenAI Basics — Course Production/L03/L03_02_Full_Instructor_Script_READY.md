@@ -1,155 +1,224 @@
-# Lecture 03 — Full Instructor Script
-
-116-minute delivery path with a 90-minute compression path
-
-GenAI Basics  •  Module 03  •  Refreshed 2026-09-14
-
-# Delivery map
-
-# 0–10 min — Hook: chat answer vs software contract
-
-Instructor says: “A chat answer can be a little messy and still be useful, because a person is sitting there. Software is less forgiving. If the next line of code expects category=bug and it gets a beautiful paragraph, the model may have answered the human question while the application still failed.”
-
-Show a short support-ticket paragraph next to a typed object with category, priority, summary and needs_human_review. Do not explain structured outputs yet. Ask: “Which one can a routing service consume without guessing?” Take two or three answers.
-
-Instructor says: “That is today’s problem. We are not learning how to chat from Python. We are learning how to put a probabilistic model behind an engineering boundary that downstream code can trust enough to use.”
-
-Ask: “What can go wrong even if the text is grammatically perfect?” Guide answers toward wrong field values, missing fields, ambiguity, timeout, quota, secret leakage and no evidence for debugging. Write only keywords, not a long list.
-
-Transition: “We will build the boundary in layers: request, stream, schema, validation, failure policy and evidence.”
-
-# 10–26 min — Environment, secrets and the first request
-
-Open the repository. Start with .gitignore and .env.example before opening any API code.
-
-Instructor says: “The first GenAI engineering skill today is not prompting. It is not leaking a credential. A demo key in a screenshot is still a leaked key.”
-
-Point out that .env is ignored and .env.example contains placeholders only. Explain that the model value is also configuration because model availability and names can change. Run `python 00_preflight.py`. It should print Python/package versions, model value and whether a key is present, but it must not call the network.
-
-Run `python tests/test_contract.py` next. Say: “This test proves that the local application contract works before we pay for or depend on a remote call. It cannot prove model quality. It proves that our deterministic boundary behaves deterministically.”
-
-Open 01_first_call.py. Read it top to bottom. Do not spend time on import syntax. Point at `OpenAI(timeout=20.0, max_retries=2)` and say: “We make two operational choices visible immediately: a deadline and a bounded retry policy.”
-
-Before running, ask: “Where will the model execute?” Wait for “remote service / cloud API”. Then run the script. If it succeeds, show output_text, request_id and usage. If the environment has no working key/model access, use the prepared expected output and continue; do not troubleshoot credentials live for more than two minutes.
-
-Instructor says: “A minimal useful call is not just prompt in, text out. It has a model choice, stable instructions, task input, a deadline and evidence.”
-
-# 26–40 min — Request and response anatomy
-
-Move to the architecture slide. Trace with the pointer: Python application → SDK → HTTPS → Responses API → model → typed response. Then trace back.
-
-Instructor says: “The SDK is not the AI. It is a typed client. That distinction matters because failures can happen before the model runs, while it runs, or after we receive content that our application refuses to accept.”
-
-Ask students to name one responsibility that belongs to the application rather than the SDK. Good answers: task definition, schema, timeout budget, business validation, logging policy, side effects.
-
-Open the request code. Point out model, instructions and input. Say: “Treat instructions as stable task policy and input as the current work item. That is a useful design separation even when the API lets you express richer content.”
-
-Now show output_text, usage and `_request_id`. Instructor says: “If a user tells you ‘the AI failed at 14:03’, that is not enough to debug. A request ID plus your own correlation ID gives you an operational trail.”
-
-Mini-check: ask “Should we log every prompt in plaintext?” Expected answer: no; logging content can create security/privacy problems. Log enough metadata to operate the system, and handle sensitive payload logging explicitly.
-
-# 40–55 min — Streaming: transport behavior, not extra intelligence
-
-Open 02_stream.py. Ask students to predict what changes when `stream=True`. Do not accept “it becomes faster” without qualification.
-
-Instructor says: “The request still has to be generated. Streaming changes when the client can see parts of the output. The user may see the first text earlier even if total generation time and token usage are similar.”
-
-Run the script and point at successive `response.output_text.delta` events. On the slide, animate the conceptual sequence verbally: request accepted, first delta, more deltas, terminal completion.
-
-Ask: “Where is streaming valuable?” Collect: chat UI, CLI assistants, live summaries, progressive rendering. Then ask: “Where can it be dangerous?” Look for prematurely acting on incomplete content, broken partial UI state, treating partial output as a completed record.
-
-Instructor says: “A partial stream is display state. It is not automatically a valid final business object.”
-
-If live streaming fails, use the runbook’s pre-recorded expected event sequence. The learning point is the event contract, not watching letters appear.
-
-# 55–79 min — Structured output and validation
-
-Show `sample_ticket.txt` before code. Ask the class: “If another service must route this ticket, what fields would you require?” Gather four fields and reveal the prepared Pydantic model.
-
-Walk through each field: category and priority use Literal values, summary has a maximum length, and needs_human_review is the escape hatch for ambiguity. Explain that an ambiguity flag is often more valuable than pretending every input belongs cleanly in one class.
-
-Open 03_structured.py. Instructor says: “Notice the change. We are no longer asking politely for JSON and then hoping. We pass the schema through `text_format`, and the SDK returns a parsed typed result.”
-
-Run the clear ticket. Print the typed object. Then switch to `sample_ticket_ambiguous.txt`. Before running, ask which field is likely to be uncertain and why the correct behavior may be review=true rather than forced automation.
-
-Draw three validation layers on the board or use the slide: schema, semantic, business/action. Say: “Pydantic can reject priority=urgent if urgent is not allowed. It cannot prove that the model chose high rather than medium for the right reason. And even a semantically correct classification may still require a human before a consequential action.”
-
-Ask students for one validation rule outside the model. Examples: customer ID must exist, release date must be in the future, amount must be below an approval threshold, country must be in supported markets.
-
-Instructor says: “Structured output solves the shape problem. It does not solve truth, policy or accountability.”
-
-# 79–96 min — Failures, bounded retries and observability
-
-Open 04_observability.py. Present the failure taxonomy one row at a time: timeout, connection, rate limit, other status error, validation failure.
-
-Instructor says: “Retry is not a synonym for error handling. A retry only makes sense when the failure is plausibly transient, the operation is safe to repeat, and the latency budget can afford another attempt.”
-
-Explain that the current SDK retries selected transient failures by default; this demo sets max_retries=2 explicitly so the policy is visible. Avoid teaching the default count as a universal rule. It is an implementation detail to re-check.
-
-Show the telemetry dictionary: model, request ID, elapsed milliseconds, usage. Ask: “What is missing if this is a multi-request web application?” Expected: application request/correlation ID, user/session or tenant context where appropriate, success/failure category, perhaps feature/version—without secrets or unnecessary sensitive content.
-
-Failure exercise: ask students to choose a response for each scenario. (1) DNS/network interruption: connection category. (2) quota/rate limit: backoff/reduce concurrency. (3) invalid request/model: fix configuration; retrying the same bad request is pointless. (4) schema valid but wrong category: domain evaluation/business review, not transport retry.
-
-# 96–104 min — Model choice, usage and cost without memorizing a price card
-
-Show the conceptual model-choice slide. Say: “As of today, the official OpenAI model pages position different GPT-5.6 variants for different quality/cost points. That is a delivery-day fact, not a timeless lesson.”
-
-Instructor says: “The durable rule is: choose the cheapest model that reliably clears your quality bar for the task, and verify required feature support. Then measure usage and latency. Do not choose by model prestige.”
-
-Point at response.usage. Explain input versus output usage and that generated verbosity can be expensive. Do not put a detailed price table in the core deck; keep volatile pricing in source notes.
-
-# 104–113 min — Active workshop: build a typed router
-
-Pair students. Give each pair one input type: bug report, product feedback or event request. The artifact must include: a Pydantic schema with at least one enum, one bounded text field and a `needs_human_review` boolean; one clear example; one ambiguous example; a local validation test; and a README explaining when the application refuses automation.
-
-Instructor says: “Your goal is not the cleverest schema. Your goal is a contract a teammate could review.”
-
-At minute 109, stop coding. Ask each pair to show one ambiguity that should force review=true. Select one example to discuss. If nobody has a good ambiguity, use “export format changed; not sure if bug or intended; finance needs it tomorrow.”
-
-# 113–116 min — Debrief and close
-
-Ask three fast questions: “What does streaming change?” “What does structured output guarantee?” “What evidence would you log for an API call?”
-
-Instructor closes: “The smallest useful GenAI application boundary is now visible: secret and config → request → streamed or typed response → validation → evidence → only then a side effect. That pattern survives model changes.”
-
-Assign homework: complete the router artifact, add one failure test, capture a sample telemetry line, and write three sentences explaining the difference between schema validity and business validity. Next module reuses the same API habits for image generation and editing.
-
-# 90-minute compression path
-
-# Likely student questions and concise answers
-
-
-| Block | Time | Purpose |
-| --- | --- | --- |
-| Hook: prose vs contract | 0–10 | Make the reliability problem concrete. |
-| Setup + first call | 10–26 | Secret hygiene, environment, minimal Responses call. |
-| Request/response anatomy | 26–40 | Make the remote API boundary visible. |
-| Streaming | 40–55 | Event flow and latency semantics. |
-| Structured output | 55–79 | Typed extraction + three-level validation. |
-| Failures + observability | 79–96 | Timeouts, retries, request IDs, usage. |
-| Model/cost decisions | 96–104 | Configuration, measurement, volatile facts. |
-| Active workshop | 104–113 | Student builds a schema contract. |
-| Debrief + close | 113–116 | Consolidate the boundary and hand off homework. |
-
-
-| Keep | Compress / move |
-| --- | --- |
-| 0–8 hook | Use one example; no extended discussion. |
-| 8–20 setup + first call | Run preflight + one live request only. |
-| 20–31 architecture | Skip debugger/raw response exploration. |
-| 31–42 streaming | One run + one misconception check. |
-| 42–62 structured output | Keep clear + ambiguous ticket and three validation layers. |
-| 62–74 failure policy | Use taxonomy matrix; move detailed scenarios to homework. |
-| 74–80 model/usage | One conceptual slide; no price discussion. |
-| 80–87 workshop | Schema + ambiguous example only; tests become homework. |
-| 87–90 close | Three-question recap. |
-
-
-| Question | Answer |
-| --- | --- |
-| Why not just ask for JSON? | Valid JSON is not the same as schema adherence; a typed schema gives a stronger application contract. |
-| Does streaming make the model cheaper? | Not inherently. It changes delivery timing; usage depends on the actual request/output. |
-| Does Pydantic prove the classification is correct? | No. It validates structure and constraints, not semantic truth or business policy. |
-| Can I put a key in a notebook just for class? | Avoid it. Use environment-based secrets and assume notebooks/screenshots can be shared. |
-| Should every error retry? | No. Retry only plausibly transient failures and keep attempts bounded by the latency/side-effect budget. |
-| Do we need async Python today? | No. Synchronous code keeps the API concepts visible; concurrency is a separate application design topic. |
+# Сценарий инструктора • Урок 03: LLM API с Python (90 минут)
+**Курс:** GenAI Basics • Модуль 1 (Фундамент и Core API)  
+**Инструктор:** Игорь Рубанович (`ihar_rubanovich@epam.com`)  
+**Стек:** 20 слайдов • Живое демо в Google Colab • Тайминг 90 минут с кофе-паузой (Стандарты 2026)
+
+---
+
+## Карта проведения занятия (Хронометраж)
+
+| Слайд | Блок | Время | Формат | Фокус внимания инструктора |
+|---|---|---|---|---|
+| **01** | Титульный экран | 00:00 — 04:00 | Интро & Чат | Снять страх перед кодом; калибровка аудитории (1/2). |
+| **02** | Дорожная карта курса | 04:00 — 08:00 | Обзор степпера | Показать узел «ВЫ ЗДЕСЬ»; мост ко всем 6 модулям. |
+| **03** | Архитектура взаимодействия | 08:00 — 13:00 | Схема потока | Разрушить миф «модель на ноутбуке»; 3 узла системы. |
+| **04** | Анатомия HTTP-запроса | 13:00 — 17:00 | Схема C4 | Граница REST API Boundary; заголовок с Bearer-токеном. |
+| **05** | Зачем нужен SDK | 17:00 — 22:00 | Сравнение | Сырой HTTP vs Защитный слой SDK (ретраи, Keep-Alive). |
+| **06** | Google AI Studio ➔ Colab | 22:00 — 27:00 | Мост и код | Веб-песочница + кнопка «Get Code». `userdata.get()`, `gemini-3.5-flash`. |
+| **07** | Анатомия ответа | 27:00 — 31:00 | Электронный чек | Разбор полей: `response.text`, `finish_reason: "STOP"` и `usage_metadata`. |
+| **08** | Безопасность ключей | 31:00 — 35:00 | Предупреждение | Ключ = кредитка. Colab Secrets 🔑 защищает от утечки на стриме. |
+| **09** | Физика стриминга | 35:00 — 40:00 | Сравнение UX | 5 сек тишины vs 200 мс (TTFT). Server-Sent Events. |
+| **10** | Стриминг в коде | 40:00 — 44:00 | Разбор кода | Метод `generate_content_stream`, чанки, `flush=True`. |
+| **11** | Мост с Уроком 02: Промпты | 44:00 — 48:00 | Перенос навыков | Перенос XML `<context>`, `<rules>`, One-Shot и `system_instruction` в код. |
+| **12** | Structured Outputs | 48:00 — 51:00 | Схема C4 | Constrained Decoding: маска грамматики на токенизаторе. |
+| **13** | Практический триаж в JSON | 51:00 — 55:00 | Разбор кейса | `response_mime_type="application/json"` + `temperature=0.0`. |
+| **14** | **Экватор: Кофе-пауза** | **55:00 — 60:00** | **Таймер 5 мин** | **СТАРТ 5 МИН на слайде. Без вопросов в чат! Отдых.** |
+| **15** | Сетевые ошибки | 60:00 — 65:00 | 4 сценария | 401 (ключ), 429 (лимиты), 500/503 (дата-центр), Timeout 30s. |
+| **16** | Ландшафт библиотек | 65:00 — 70:00 | 3 слоя | HTTP ➔ Официальные SDK (база) ➔ Оркестраторы (LangChain). |
+| **17** | Матрица моделей 2026 | 70:00 — 74:00 | Сравнение | Gemini 3.5 Flash vs GPT-4o/o3 vs Claude 3.7 Sonnet vs DeepSeek. |
+| **18** | Чек-лист первого скрипта | 74:00 — 79:00 | 5 правил | Гигиена, таймаут, температура 0.0, схема, логирование. |
+| **19** | Домашка & WOW-кейс | 79:00 — 85:00 | Два трека | Триаж документов в JSON ИЛИ YouTube & Meeting Video Analyzer. |
+| **20** | Финал & Q&A | 85:00 — 90:00 | Открытый микрофон| 3 вывода, анонс Урока 04 (Изображения), открытые микрофоны. |
+
+---
+
+## Подробный сценарный план (Слайды 01 — 20)
+
+### Слайд 01 (00:00 — 04:00) • Вводная часть
+* **Действие инструктора:** Вывести Слайд 01 на экран. Проверить звук, включить запись занятия.
+* **Речь инструктора:**
+  > «Приветствую всех участников. Сегодня Урок 03 курса GenAI Basics. Тема: „LLM API с Python: Архитектура, клиентские библиотеки и первый программный вызов“.  
+  > Сразу успокаиваю тех, у кого нет глубокого опыта в программировании: сегодня никто не заставит вас писать трехэтажный код. Мы учимся понимать архитектуру взаимодействия с языковыми моделями.  
+  > Напишите в чат **1**, если уже вызывали любые API через код, и **2**, если до сегодняшнего дня вы общались с ИИ только в окне браузера».
+* **Инструкция спикеру:** Быстро оценить срез аудитории в чате. Если двоек больше 50% — подчеркнуть простоту связки Google AI Studio и Google Colab.
+
+---
+
+### Слайд 02 (04:00 — 08:00) • Дорожная карта курса
+* **Действие инструктора:** Переключить на Слайд 02.
+* **Речь инструктора:**
+  > «Посмотрим на наш маршрут. Перед вами 6 модулей курса. Мы заканчиваем Модуль 1 — фундамент.  
+  > Почему вызов через API стоит в начале программы? Потому что это база. В Модуле 2 мы будем скармливать модели картинки и чертежи — это делается через тот же API. В Модуле 5 мы будем учить модель вызывать корпоративные функции и базы данных — под капотом тот же API.  
+  > Освоив вызов сегодня, вы открываете себе дорогу ко всей оставшейся программе».
+
+---
+
+### Слайд 03 (08:00 — 13:00) • Как софт общается с AI: Архитектура взаимодействия
+* **Действие инструктора:** Переключить на Слайд 03. Лазерной указкой последовательно показать: *Ваше приложение* ➔ *API Gateway* ➔ *Сервер Модели*.
+* **Речь инструктора:**
+  > «Разберем, как физически происходит вызов. Модель не скачивается на ваш ноутбук. Она весит сотни гигабайт и крутится в облачном дата-центре.  
+  > Ваша программа — это клиент. Она формирует текстовый запрос по защищенному протоколу HTTPS POST.  
+  > Первый рубеж — API Gateway провайдера. Он проверяет ваш ключ и квоты: кто вы, есть ли у вас баланс.  
+  > Если проверка пройдена, запрос летит на кластер видеокарт GPU. Модель генерирует ответ и возвращает его обратно в виде структурированного пакета данных. Это стандартная клиент-серверная схема».
+
+---
+
+### Слайд 04 (13:00 — 17:00) • Анатомия HTTP-запроса (C4-схема)
+* **Действие инструктора:** Переключить на Слайд 04. Акцентировать пунктирную линию *REST API Boundary*.
+* **Речь инструктора:**
+  > «Взгляните на границу REST API Boundary. Слева — зона вашей ответственности: ваш скрипт и переменные среды. Справа — закрытая инфраструктура провайдера.  
+  > По кабелю летит обычный веб-запрос: адрес endpoint'а `POST /v1/chat/completions` (или Google Models API), заголовок авторизации `Authorization: Bearer <ключ>` и тело с параметрами модели и текста. Никакой магии. Обычный веб».
+
+---
+
+### Слайд 05 (17:00 — 22:00) • Зачем нужен SDK
+* **Действие инструктора:** Переключить на Слайд 05. Показать красную ветку сбоя и зеленую ветку защиты.
+* **Речь инструктора:**
+  > «Почему мы не пишем запросы на чистом `curl` или модуле `requests`?  
+  > Потому что в боевых условиях сеть сбоит. Сервер может кратковременно вернуть 429 ошибку (превышен лимит) или моргнуть сокетом. На сырых запросах ваша программа мгновенно упадет.  
+  > Официальная клиентская библиотека (SDK) — это готовая броня. Она сама перезапрашивает данные с экспоненциальной задержкой, поддерживает постоянное соединение (Keep-Alive) и безопасно разбирает пришедший ответ».
+
+---
+
+### Слайд 06 (22:00 — 27:00) • Первый вызов: Google AI Studio ➔ Colab
+* **Действие инструктора:** Переключить на Слайд 06.
+* **Речь инструктора:**
+  > «Главная новость для тех, кто боится кода: писать его с нуля не нужно!  
+  > 1. В веб-песочнице Google AI Studio (`aistudio.google.com`) вы визуально тестируете промпты и жмете кнопку **«Get Code»**.  
+  > 2. В Google Colab ключ безопасно достается из вкладки Secrets (🔑 слева): `userdata.get('GEMINI_API_KEY')`. Никаких всплывающих окон и ноль риска засветить ключ на экране.  
+  > 3. Вызываем актуальную модель `gemini-3.5-flash` через `client.models.generate_content()` и забираем ответ свойством `response.text`.  
+  > Запускается по кнопке ▶ Play в Google Colab прямо в браузере».
+
+---
+
+### Слайд 07 (27:00 — 31:00) • Анатомия ответа: Электронный чек
+* **Действие инструктора:** Переключить на Слайд 07. Обратить внимание на карточки `finish_reason` и `usage_metadata`.
+* **Речь инструктора:**
+  > «Вместе с текстом сервер отдает паспорт операции:  
+  > - `response.text`: готовый очищенный текст ответа.  
+  > - `finish_reason`: если там `STOP` — всё штатно. Если `MAX_TOKENS` — сработал лимит длины ответа.  
+  > - `usage_metadata`: входные токены, выходные токены и сумма. Это ваш финансовый и квотный счетчик. В реальных проектах логировать usage обязательно».
+
+---
+
+### Слайд 08 (31:00 — 35:00) • Безопасность API-ключей
+* **Действие инструктора:** Переключить на Слайд 08. Голос становится строгим и предупреждающим.
+* **Речь инструктора:**
+  > «Внимание. API-ключ — это кредитная карта с прямым доступом к деньгам.  
+  > Если вы случайно вставите ключ в код и сделаете git push на GitHub — боты перехватят его ровно за 3 секунды.  
+  > Правило: локально ключи хранятся в `.env`, скрытом в `.gitignore`. А в Google Colab используем иконку ключа 🔑 Secrets: ключ привязан к вашему Google-аккаунту, не светится на экране, не попадает в видеозапись вебинара и не утечет при отправке блокнота коллегам».
+
+---
+
+### Слайд 09 (35:00 — 40:00) • Физика стриминга и задержка (UX)
+* **Действие инструктора:** Переключить на Слайд 09. Сравнить верхний и нижний таймлайн.
+* **Речь инструктора:**
+  > «В обычном вызове при генерации длинного ответа пользователь видит пустой экран 5 секунд. Для человека это психологический стресс: кажется, что сайт завис.  
+  > В стриминге мы используем технологию Server-Sent Events (SSE). Модель сгенерировала первые два слова — сервер тут же отдает их на экран. Метрика TTFT (Time to First Token) падает до 200 миллисекунд. Глаз видит живой текст, мозг спокоен».
+
+---
+
+### Слайд 10 (40:00 — 44:00) • Стриминг в коде: `generate_content_stream`
+* **Действие инструктора:** Переключить на Слайд 10.
+* **Речь инструктора:**
+  > «В современном SDK стриминг вызывается методом: `client.models.generate_content_stream()`. Мы читаем чанки в цикле: `for chunk in response: print(chunk.text, end="", flush=True)`.  
+  > Помните правило: стриминг нужен только тогда, когда на экран смотрит живой человек. Для фоновой записи в базу данных или ночной выгрузки стриминг вреден — там нужен обычный блокирующий запрос».
+
+---
+
+### Слайд 11 (44:00 — 48:00) • Мост с Уроком 02: Промпт-инжиниринг в коде
+* **Действие инструктора:** Переключить на Слайд 11. Показать связку с L02.
+* **Речь инструктора:**
+  > «Посмотрите, как техники из Урока 02 становятся параметрами кода:  
+  > 1. Системную роль мы выносим в `system_instruction` — это аппаратно защищает от Prompt Injection, пользователь не может переписать системные правила.  
+  > 2. В f-строку заворачиваем наши XML-теги: `<context>`, `<rules>`, `<document>`. Модель четко видит границы данных.  
+  > 3. Добавляем One-Shot пример: образец `Input ➔ Output`. Вместе с `temperature=0.0` это исключает болтовню и дает 100% повторяемый результат».
+
+---
+
+### Слайд 12 (48:00 — 51:00) • Structured Outputs: Constrained Decoding
+* **Действие инструктора:** Переключить на Слайд 12. Показать схему отсечения токенов маской.
+* **Речь инструктора:**
+  > «Как сервер гарантирует формат на 100%? Технология Constrained Decoding.  
+  > Прямо во время генерации очередного токена серверная грамматическая маска обнуляет вероятность любых символов, которые нарушают синтаксис JSON. Модель физически не может поставить невалидный символ. Это аппаратная гарантия формата».
+
+---
+
+### Слайд 13 (51:00 — 55:00) • Практический триаж в JSON
+* **Действие инструктора:** Переключить на Слайд 13.
+* **Речь инструктора:**
+  > «Вот боевой пример на Gemini 3.5 Flash: разбор входящей претензии на $450.  
+  > Мы указываем `response_mime_type="application/json"` и ставим `temperature=0.0`.  
+  > Температура ноль означает: никакой фантазии, максимальная строгость.  
+  > За одну секунду неструктурированный текст превращается в чистый словарь Python: `category="billing"`, `amount_usd=450.0`, `urgent=True`. Данные сразу готовы к отправке в учетную систему».
+
+---
+
+### Слайд 14 (55:00 — 60:00) • ЭКВАТОР: Кофе-пауза 5 минут
+* **Действие инструктора:** Переключить на Слайд 14. **Нажать кнопку «СТАРТ 5 МИН» прямо на экране.** Включается тикающий таймер.
+* **Речь инструктора:**
+  > «Экватор занятия. Перерыв ровно 5 минут. Налейте кофе, отдохните. В чат ничего не пишем, даем голове отдохнуть. Ровно через 5 минут по таймеру продолжаем».
+
+---
+
+### Слайд 15 (60:00 — 65:00) • Сетевые ошибки: Что может пойти не так
+* **Действие инструктора:** Переключить на Слайд 15 после окончания таймера.
+* **Речь инструктора:**
+  > «Возвращаемся. Разберем 4 сетевые ошибки:  
+  > 1. 401 — опечатка в ключе или пробел.  
+  > 2. 429 — исчерпан баланс или слишком частые вызовы.  
+  > 3. 500/503 — временный сбой в дата-центре провайдера.  
+  > 4. Timeout — зависший сокет. Всегда указывайте таймаут 30 секунд».
+
+---
+
+### Слайд 16 (65:00 — 70:00) • Ландшафт инструментов Python AI
+* **Действие инструктора:** Переключить на Слайд 16. Показать 3 слоя инструментов.
+* **Речь инструктора:**
+  > «Вся экосистема делится на 3 слоя:  
+  > - Слой 1: Сырой HTTP (requests).  
+  > - Слой 2: Официальные SDK (google-genai, openai, anthropic) — наш золотой стандарт.  
+  > - Слой 3: Большие фреймворки (LangChain, LlamaIndex).  
+  > Правило инженера: решайте задачи на Слое 2. Не тащите тяжелые фреймворки без реальной необходимости».
+
+---
+
+### Слайд 17 (70:00 — 74:00) • Матрица моделей 2026
+* **Действие инструктора:** Переключить на Слайд 17.
+* **Речь инструктора:**
+  > «Ландшафт 2026 года:  
+  > - Google Gemini 3.5 Flash / 3.8 Flash: 2M+ контекст, нативное видео, бесплатный Free Tier.  
+  > - OpenAI GPT-4o и o3: эталон вызова функций и схем.  
+  > - Anthropic Claude 3.7 Sonnet: режим Thinking, мощный кодинг и рассуждения.  
+  > - Открытый DeepSeek-V3 / R1: запуск по протоколу OpenAI в разы дешевле. А библиотека LiteLLM переключает их одной строкой».
+
+---
+
+### Слайд 18 (74:00 — 79:00) • Чек-лист первого AI-скрипта
+* **Действие инструктора:** Переключить на Слайд 18.
+* **Речь инструктора:**
+  > «Контрольный чек-лист перед запуском в продакшен:  
+  > 1. Ключ в .env или Colab Secrets.  
+  > 2. Таймаут 30 сек.  
+  > 3. Температура 0.0 для таблиц.  
+  > 4. Схема через response_mime_type.  
+  > 5. Логирование usage для учета бюджета».
+
+---
+
+### Слайд 19 (79:00 — 85:00) • Домашнее задание №3 & WOW-кейс
+* **Действие инструктора:** Переключить на Слайд 19.
+* **Речь инструктора:**
+  > «Домашнее задание: запускаем всё в Google Colab. У вас два трека на выбор:  
+  > **Трек А (Базовый):** Разбор реального рабочего письма или тикета в валидный JSON.  
+  > **Трек Б (WOW-кейс из практики Creator Tools):** YouTube & Meeting Video Analyzer! Вставляете ссылку на любое видео с YouTube или запись встречи — скрипт за секунду вытягивает транскрипт, упаковывает в наш XML-промпт и через Gemini 3.5 Flash выдает готовый Executive Briefing Memo с решениями и таймкодами.  
+  > Сохраняете `result.json` и пушите в репозиторий `genai-homeworks/L03/` на GitHub».
+
+---
+
+### Слайд 20 (85:00 — 90:00) • Финал & Открытый микрофон
+* **Действие инструктора:** Переключить на Слайд 20.
+* **Речь инструктора:**
+  > «Три главных вывода: модель — это удаленный сервер; промпты переходят в параметры SDK; мультимодальность и строгий JSON открывают путь к автоматизации.  
+  > В следующий раз переходим к Модулю 2: генерация изображений через DALL-E, Midjourney, Stable Diffusion и Google Imagen.  
+  > А сейчас открываем микрофоны! Задавайте вопросы».

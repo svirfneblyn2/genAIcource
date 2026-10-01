@@ -92,12 +92,25 @@ def generate_vertex_image(
         method="POST",
     )
 
-    try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8")
-        raise RuntimeError(f"Vertex AI HTTP {e.code}: {body}") from e
+    import time
+    max_retries = 4
+    data = None
+    for attempt in range(max_retries):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+                break
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < max_retries - 1:
+                wait_sec = 15 * (attempt + 1)
+                print(f"Vertex AI rate limited (429). Retrying in {wait_sec}s (attempt {attempt + 1}/{max_retries})...")
+                time.sleep(wait_sec)
+                # refresh token just in case
+                token, _ = get_vertex_token(sa_path)
+                req.headers["Authorization"] = f"Bearer {token}"
+                continue
+            body = e.read().decode("utf-8")
+            raise RuntimeError(f"Vertex AI HTTP {e.code}: {body}") from e
 
     candidates = data.get("candidates", [])
     if not candidates:

@@ -93,3 +93,6 @@ $RECYCLE.BIN/
 *.tmp
 *.bak
 *.orig
+screenshot_*.png
+__TMP_*
+test.pdf

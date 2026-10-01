@@ -1,0 +1,16 @@
+{
+  "subject": "speckled ceramic coffee mug; exact shape preserved",
+  "environment": "warm modern studio with pale travertine and soft foliage",
+  "composition": "single hero object; clean negative space; presentation-safe crop",
+  "camera": "eye-level product photography; shallow depth of field",
+  "lighting": "warm side light; soft shadow; natural highlights",
+  "style": "premium natural editorial photography; not a 3D render",
+  "constraints": [
+    "single mug",
+    "no text",
+    "no watermark",
+    "no extra handle",
+    "preserve proportions"
+  ],
+  "output": "16:9, 2K"
+}
