@@ -1170,19 +1170,15 @@ response = client.models.generate_content(model=MODEL,
         <p class="slide-lead">Оба параметра живут в GenerateContentConfig и задаются в каждом вызове</p>
 
         <div class="slide-content-arena">
-          <div class="dg-split l" style=""><div class="dg-col"><div class="dg" style="justify-content:center;"><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">ЧТО РЕГУЛИРУЕТ TEMPERATURE</div><div class="t">Выбор следующего токена</div><div class="d">Модель выдает вероятности кандидатов; <code>temperature</code> решает, насколько смело выбирать не первый</div><div class="dg-bars"><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Brew</span><i style="width:62%"></i><em>0.62</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Bean</span><i style="width:21%"></i><em>0.21</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Byte</span><i style="width:11%"></i><em>0.11</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Gear</span><i style="width:6%"></i><em>0.06</em></div></div></div><div class="dg-row" style=""><div class="dg-node " style="--nc:var(--c4-primary);"><div class="k">ДЛЯ JSON И КЛАССИФИКАЦИИ</div><div class="t">temperature = 0.0</div><div class="d">Берем самый вероятный токен. 3 запуска ➔ один ответ.</div><pre class="dg-code">run 1: RoboBrew
-run 2: RoboBrew
-run 3: RoboBrew</pre></div><div style="flex:0 0 14px"></div><div class="dg-node " style="--nc:var(--c4-purple);"><div class="k">ДЛЯ КРЕАТИВА</div><div class="t">temperature = 1.5</div><div class="d">Распределение «сплющивается», выпадают менее вероятные токены. 3 запуска ➔ 3 ответа.</div><pre class="dg-code">run 1: Byte &amp; Bean
-run 2: Circuit Café
-run 3: The Gear Grind</pre></div></div></div></div><div class="dg-col"><div class="dg" style=""><div class="dg-node " style="--nc:var(--c4-danger);"><div class="k">ПРЕДЕЛ ДЛИНЫ</div><div class="t">max_output_tokens = 40</div><div class="d">Ответ «на 300 слов» обрезается на 40 токенах ➔ <code>finish_reason = MAX_TOKENS</code>. Это предохранитель длины и стоимости.</div></div><pre class="dg-code" style="font-size: 13.5px;"><span class="cm"># 1.1a: helper ask() из урока передает temperature</span>
-ask(creative_prompt, temperature=<span class="num">0.0</span>)   <span class="cm"># повторяемо</span>
-ask(creative_prompt, temperature=<span class="num">1.5</span>)   <span class="cm"># креатив</span>
+          <div class="dg-split l" style=""><div class="dg-col"><div class="dg" style="justify-content:center;"><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">ЧТО РЕГУЛИРУЕТ TEMPERATURE</div><div class="t">Выбор следующего токена</div><div class="d">Модель выдает вероятности кандидатов; <code>temperature</code> решает, насколько смело выбирать не первый</div><div class="dg-bars"><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Brew</span><i style="width:62%"></i><em>0.62</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Bean</span><i style="width:21%"></i><em>0.21</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Byte</span><i style="width:11%"></i><em>0.11</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Gear</span><i style="width:6%"></i><em>0.06</em></div></div></div><div class="dg-row" style=""><div class="dg-node " style="--nc:var(--c4-primary);"><div class="k">КЛАССИЧЕСКОЕ ПРАВИЛО</div><div class="t">0.0 — повторяемо, 1.0+ — креатив</div><div class="d">Так настраивают многие модели других провайдеров: ниже — чаще самый вероятный токен, выше — больше разброса.</div></div><div style="flex:0 0 14px"></div><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">GEMINI 3.X • РЕКОМЕНДАЦИЯ GOOGLE</div><div class="t">temperature = 1.0 (по умолчанию)</div><div class="d">Ниже 1.0 возможны зацикливание и более слабые рассуждения. Повторяемость дают схема (Шаг 1.3) и примеры (Шаг 2).</div></div></div></div></div><div class="dg-col"><div class="dg" style=""><div class="dg-node " style="--nc:var(--c4-danger);"><div class="k">ПРЕДЕЛ ДЛИНЫ</div><div class="t">max_output_tokens = 40</div><div class="d">Ответ «на 300 слов» обрезается на 40 токенах ➔ <code>finish_reason = MAX_TOKENS</code>. Это предохранитель длины и стоимости.</div></div><pre class="dg-code" style="font-size: 13.5px;"><span class="cm"># 1.1a: тот же промпт, 3 запуска на каждом значении</span>
+ask(creative_prompt)                    <span class="cm"># 1.0 по умолчанию</span>
+ask(creative_prompt, temperature=<span class="num">2.0</span>)   <span class="cm"># больше разброса</span>
 
 <span class="cm"># 1.1b</span>
 config=types.GenerateContentConfig(
     max_output_tokens=<span class="num">40</span>,             <span class="cm"># предел длины ➔ MAX_TOKENS</span>
     thinking_config=types.ThinkingConfig(
-        thinking_level=<span class="str">"minimal"</span>))       <span class="cm"># minimal…high</span></pre><div class="dg-note"><b>Правило:</b> <code>0.0</code> — точность и повторяемость; <code>0.7–1.0+</code> — тексты и идеи. <b>thinking_level</b> — сколько модель «думает» молча; эти токены тоже оплачиваются.</div></div></div></div>
+        thinking_level=<span class="str">"minimal"</span>))       <span class="cm"># minimal…high</span></pre><div class="dg-note"><b>Правило для Gemini 3:</b> <code>temperature</code> не трогаем — формат держит схема, а не <code>0.0</code>. <b>thinking_level</b> — сколько модель «думает» молча; эти токены тоже оплачиваются.</div></div></div></div>
         </div>
 
         <div class="slide-footer">
@@ -1194,7 +1190,7 @@ config=types.GenerateContentConfig(
         </div>
 
         <div class="speaker-notes" style="display:none;">
-          Шаг 1.1a: промпт «придумай название кофейни роботов» через ask() — 3 раза при 0.0 и 3 раза при 1.5, видно, как температура меняет разброс. Шаг 1.1b: max_output_tokens=40 обрезает длинный ответ, finish_reason становится MAX_TOKENS. Вероятности и названия на слайде — иллюстрация.
+          Шаг 1.1a: промпт «придумай название кофейни роботов» — 3 раза при 1.0 (по умолчанию) и 3 раза при 2.0. Главное: для Gemini 3 Google настоятельно рекомендует оставлять temperature = 1.0; ниже — риск зацикливания и слабее рассуждения. Повторяемый формат даем схемой (1.3) и примерами (Шаг 2). Шаг 1.1b: max_output_tokens=40 обрезает ответ, finish_reason = MAX_TOKENS. Вероятности на слайде — иллюстрация.
         </div>
       </section>
 
@@ -1372,8 +1368,7 @@ t0, ttft = time.time(), <span class="kw">None</span>
 
 config = types.GenerateContentConfig(
     response_mime_type=<span class="str">"application/json"</span>,
-    response_schema=TicketTriage,
-    temperature=<span class="num">0.0</span>)
+    response_schema=TicketTriage)   <span class="cm"># temperature — по умолчанию 1.0</span>
 triage = client.models.generate_content(
     model=MODEL, contents=..., config=config).parsed</pre></div><div class="dg-col"><div class="dg" style="gap:10px;"><div class="dg-node flat" style="--nc:var(--c4-danger);"><div class="t">Просьба «верни JSON» в промпте</div><div class="d">Пожелание: модель может добавить ```json, вежливую фразу или свои ключи</div></div><div class="dg-node flat" style="--nc:var(--c4-success);"><div class="t">response_schema + Pydantic</div><div class="d">Контракт: поля, типы и допустимые значения соблюдаются при генерации</div></div></div></div></div></div>
         </div>
@@ -1673,10 +1668,11 @@ cost = u.prompt_token_count * PRICE_IN / <span class="num">1e6</span> + out * PR
   timeout=60_000,
   retry_options=
   HttpRetryOptions(
-    attempts=5))</pre><span class="dg-chip">Шаг 0</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">3 • НАСТРОЙКИ</div><div class="t">Температура под задачу</div><pre class="dg-code" style="font-size:12.8px;">temperature=0.0
-# JSON, классиф.
-temperature=0.7+
-# креатив</pre><span class="dg-chip">Шаг 1.1</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-purple);"><div class="k">4 • КОНТРАКТ</div><div class="t">Схема, а не просьба</div><pre class="dg-code" style="font-size:12.8px;">response_mime_type=
+    attempts=5))</pre><span class="dg-chip">Шаг 0</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">3 • НАСТРОЙКИ</div><div class="t">Настройки под модель</div><pre class="dg-code" style="font-size:12.8px;">thinking_level=
+  "minimal"…"high"
+max_output_tokens
+# temperature:
+# Gemini 3 → 1.0</pre><span class="dg-chip">Шаг 1.1</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-purple);"><div class="k">4 • КОНТРАКТ</div><div class="t">Схема, а не просьба</div><pre class="dg-code" style="font-size:12.8px;">response_mime_type=
   "application/json"
 response_schema=
   TicketTriage</pre><span class="dg-chip">Шаг 1.3</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-danger);"><div class="k">5 • ЛОГ</div><div class="t">Чек каждого вызова</div><pre class="dg-code" style="font-size:12.8px;">usage_metadata
@@ -1694,7 +1690,7 @@ candidates[0]
         </div>
 
         <div class="speaker-notes" style="display:none;">
-          Идем по пути вызова слева направо. Под каждым правилом — точная строка кода и шаг ноутбука, где она уже работает: ключ и надежный клиент (Шаг 0), температура (1.1), схема (1.3), учет токенов вместе с thinking и finish_reason (1 и 5.2).
+          Идем по пути вызова слева направо. Под каждым правилом — точная строка кода и шаг ноутбука, где она уже работает: ключ и надежный клиент (Шаг 0), настройки модели (1.1), схема (1.3), учет токенов вместе с thinking и finish_reason (1 и 5.2).
         </div>
       </section>
 
@@ -1759,7 +1755,7 @@ candidates[0]
                   <strong>1. LLM — это удаленный веб-сервер.</strong> Модель не скачивается в скрипт. Вы отправляете обычный HTTP-запрос и получаете обратно токены.
                 </div>
                 <div style="font-size: 14.5px; color: #e2e8f0; line-height: 1.5;">
-                  <strong>2. Настройки — часть кода.</strong> <code>temperature</code>, лимит токенов, таймаут, ретраи и <code>response_schema</code> задаются явно в каждом вызове или клиенте.
+                  <strong>2. Настройки — часть кода.</strong> <code>thinking_level</code>, лимит токенов, таймаут, ретраи и <code>response_schema</code> задаются явно в каждом вызове или клиенте; <code>temperature</code> для Gemini 3 — по умолчанию 1.0.
                 </div>
                 <div style="font-size: 14.5px; color: #e2e8f0; line-height: 1.5;">
                   <strong>3. Промпт-паттерны — это код, и проверяются кодом.</strong> Few-Shot задает формат, CoT делает расчет видимым, XML отделяет данные; <code>validate()</code>, эталон и проверка таймкодов ловят ошибки модели.

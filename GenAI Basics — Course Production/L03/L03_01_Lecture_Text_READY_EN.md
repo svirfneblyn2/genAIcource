@@ -158,6 +158,8 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 > from google import genai
 > from google.genai import types
 > from google.colab import userdata
+> import logging
+> logging.getLogger("google_genai").setLevel(logging.ERROR)   # hide SDK notices (e.g. about automatic function calling) — they are not errors
 >
 > MODEL = "gemini-3.5-flash-lite"   # one place to change the model for the whole notebook
 >
@@ -184,6 +186,8 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 > If Colab asks *‘Grant access to GEMINI_API_KEY?’* — click **Grant access**.
 >
 > Three things in this cell. First: `MODEL` is the one place where the model is set for the whole notebook. If Google renames the model, you change one line. Second: the key is not typed into the code — `userdata.get` pulls it from the vault, and if the secret is not found, the cell honestly tells you what to check. Third: the client is created **reliable** from the start — a timeout and automatic retries. We'll go through this in detail on the errors slide.
+>
+> Two small things so you don't get alarmed. During the install a red `ERROR: pip's dependency resolver… google-auth` line may flash by — it is a harmless version notice from Colab's own packages, not a failure; what matters is that the cell ends with `✅ Client ready`. And the `logging` line hides SDK notices — they are not errors and only clutter the output.
 >
 > **Node 3 — the call.** This is **Step 1**. The whole call is one function with two required arguments:
 >
@@ -281,7 +285,7 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 >     prompt   – the text you send (user message)
 >     system   – optional system instruction (the model's role / standing rules)
 >     thinking – how much the model may 'think' silently: minimal | low | medium | high
->     temperature – randomness of the answer: 0.0 = repeatable, 1.0+ = creative (None = model default)
+>     temperature – randomness of the answer (None = model default; for Gemini 3 keep the default 1.0)
 >     """
 >     config = types.GenerateContentConfig(
 >         system_instruction=system,
@@ -293,12 +297,12 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 > print(ask("Reply with exactly: helper works").text)
 > ```
 >
-> We'll use the helper's three options for the whole lesson: `system` — the system instruction (we'll need it in Part C), `thinking` — the level of hidden thinking, `temperature` — randomness. Remember the receipt fields: in Step 5.2 we'll multiply them by the price list and calculate the cost in dollars — thinking tokens included.”
+> We'll use the helper's three options for the whole lesson: `system` — the system instruction (we'll need it in Part C), `thinking` — the level of hidden thinking, `temperature` — randomness (the default `None` means the model's own value; for Gemini 3 that is 1.0, and we leave it alone — the next slide shows why). Remember the receipt fields: in Step 5.2 we'll multiply them by the price list and calculate the cost in dollars — thinking tokens included.”
 
 ---
 
 ### Slide 08 (21:00 — 26:00) • Generation Settings: temperature and max_output_tokens (Step 1.1)
-**On screen:** On the left — the “What temperature controls” block: bars with the probabilities of candidates for the next token (`Brew 0.62`, `Bean 0.21`, `Byte 0.11`, `Gear 0.06`). Two lanes: **temperature = 0.0** (for JSON and classification — take the most likely token, 3 runs ➔ one answer: `RoboBrew` / `RoboBrew` / `RoboBrew`) and **temperature = 1.5** (for creative text — the distribution flattens, 3 runs ➔ 3 answers: `Byte & Bean` / `Circuit Café` / `The Gear Grind`). The “Length cap” block: `max_output_tokens = 40` ➔ a “300-word” answer is cut ➔ `finish_reason = MAX_TOKENS`. Code at the bottom: `ask(creative_prompt, temperature=0.0)` / `ask(creative_prompt, temperature=1.5)` (1.1a) and `types.GenerateContentConfig(max_output_tokens=40, thinking_config=types.ThinkingConfig(thinking_level="minimal"))` (1.1b). Rule: 0.0 for accuracy and repeatability; 0.7–1.0+ for prose and ideas; `thinking_level` — how much the model thinks silently; those tokens are billed too. Probabilities and names on the slide are illustrative.  
+**On screen:** On the left — the “What temperature controls” block: bars with the probabilities of candidates for the next token (`Brew 0.62`, `Bean 0.21`, `Byte 0.11`, `Gear 0.06`). Two lanes: **THE CLASSIC RULE** — 0.0 — repeatable, 1.0+ — creative (how many other providers' models are tuned) and **GEMINI 3.X • GOOGLE'S GUIDANCE** — `temperature = 1.0` (the default): below 1.0 you risk looping and weaker reasoning; repeatability comes from a schema (Step 1.3) and examples (Step 2). The “Length cap” block: `max_output_tokens = 40` ➔ a “300-word” answer is cut ➔ `finish_reason = MAX_TOKENS`. Code at the bottom: `ask(creative_prompt)  # default 1.0` / `ask(creative_prompt, temperature=2.0)  # more variety` (1.1a) and `types.GenerateContentConfig(max_output_tokens=40, thinking_config=types.ThinkingConfig(thinking_level="minimal"))` (1.1b). Rule: “The rule for Gemini 3: leave temperature alone — the schema holds the format, not 0.0. `thinking_level` — how much the model thinks silently; those tokens are billed too.” Probabilities on the slide are illustrative.  
 **Progress indicator:** `08 / 25` • 32%
 
 #### What the speaker says:
@@ -306,23 +310,28 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 >
 > Remember Lesson 02: the model does not choose a word, it outputs probabilities for all candidates for the next token. Look at the bars on the left: `Brew` — 0.62, `Bean` — 0.21, `Byte` — 0.11, `Gear` — 0.06. The **`temperature`** parameter decides how boldly the model picks something other than the most likely option.
 >
+> The classic rule — you'll find it in many providers' docs — is the top lane of the slide: a low temperature, down to 0.0, for data extraction and classification, where you need repeatability; 1.0 and above for creative work.
+>
+> Now the important caveat — the bottom lane. For **Gemini 3** models Google's official documentation says it plainly: keep `temperature` at its default value of **1.0**. Lowering it below 1.0 may cause unexpected behavior — looping or degraded performance, especially in math and reasoning tasks. The model is tuned to work at 1.0, and the “classic” zero is more likely to hurt it than help.
+>
 > Let's check it with live code, cell 1.1a. Our `ask()` helper is already at work here:
 >
 > ```python
-> # 1.1a temperature: the same creative prompt, 3 runs at 0.0 and 3 runs at 1.5
+> # 1.1a temperature: the same creative prompt, 3 runs at the default (1.0) and 3 runs at 2.0
 > creative_prompt = "Invent a name for a coffee shop run by robots. Reply with the name only."
 >
-> for temp in [0.0, 1.5]:
->     print(f"=== temperature={temp} (3 runs) ===")
+> for temp in [None, 2.0]:   # None = model default (1.0 for Gemini 3)
+>     print(f"=== temperature={temp or 'default 1.0'} (3 runs) ===")
 >     for run in range(3):
 >         print(f"  run {run + 1}: {ask(creative_prompt, temperature=temp).text.strip()}")
 >     print()
-> # Expected: at 0.0 the runs are (almost) identical; at 1.5 the names differ.
+> # Expected: some variety at the default, usually more at 2.0. For Gemini 3 keep the default —
+> # repeatable FORMAT comes from a schema (Step 1.3) and examples (Step 2), not from temperature=0.
 > ```
 >
-> The same prompt — invent a name for a coffee shop run by robots — we run three times at `temperature=0.0` and three times at `1.5`. At zero temperature the model takes the most likely token every time, and the three answers are practically identical. Note the word “practically”: on real hardware small differences are possible, so zero means “as repeatable as possible”, not a mathematical guarantee. At 1.5 the distribution flattens, unlikely tokens start getting picked — and you get three different names.
+> The same prompt — invent a name for a coffee shop run by robots — we run three times at the default temperature and three times at 2.0. To be honest: the difference may turn out small, sometimes not even the one the textbook predicts. In the dry run before this lesson temperature had no clear effect at all: names sometimes matched and sometimes didn't, regardless of the value. That is exactly the lesson: on Gemini 3 you don't get a repeatable **format** from the `temperature` knob. You get it from `response_schema` — in Step 1.3 — and from Few-Shot examples — in Step 2.
 >
-> Hence the rule, it's at the bottom of the slide: **0.0 for JSON, data extraction and classification**, wherever you need accuracy and repeatability. **0.7–1.0 and above for creative work**: texts, ideas, names. Remember it — in Step 1.3 we'll set `temperature=0.0` when extracting data from an email.
+> Hence the rule, it's at the bottom of the slide: **for Gemini 3, leave `temperature` alone — the schema holds the format, not 0.0.** If you work with another provider's model, read that model's docs: the advice there may differ.
 >
 > The second knob is **`max_output_tokens`**, cell 1.1b:
 >
@@ -530,7 +539,7 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 ---
 
 ### Slide 14 (44:00 — 49:00) • Email ➔ JSON: a Data Contract via response_schema (Step 1.3)
-**On screen:** A flow from left to right: CHAOS — a customer email (`URGENT! My card was charged $450 twice…`) ➔ `response_schema` ➔ CONSTRAINED DECODING — model server (a mask blocks tokens outside the schema) ➔ `JSON` ➔ STRICT JSON (`{"category": "billing", "urgent": true, "amount_usd": 450.0}`) ➔ `response.parsed` ➔ INTO THE SYSTEM — a Python object (amount ➔ ledger, urgent ➔ billing team). Below the flow — code: the `TicketTriage(BaseModel)` class, `types.GenerateContentConfig(response_mime_type="application/json", response_schema=TicketTriage, temperature=0.0)`, the call `client.models.generate_content(model=MODEL, ...)` with `.parsed`. On the right — a comparison of two panels: “Asking ‘return JSON’ in the prompt — a wish: the model may add ```` ```json ````, a polite phrase or its own keys” and “`response_schema` + Pydantic — a contract: fields, types and allowed values are enforced during generation”.  
+**On screen:** A flow from left to right: CHAOS — a customer email (`URGENT! My card was charged $450 twice…`) ➔ `response_schema` ➔ CONSTRAINED DECODING — model server (a mask blocks tokens outside the schema) ➔ `JSON` ➔ STRICT JSON (`{"category": "billing", "urgent": true, "amount_usd": 450.0}`) ➔ `response.parsed` ➔ INTO THE SYSTEM — a Python object (amount ➔ ledger, urgent ➔ billing team). Below the flow — code: the `TicketTriage(BaseModel)` class, `types.GenerateContentConfig(response_mime_type="application/json", response_schema=TicketTriage)   # temperature — default 1.0`, the call `client.models.generate_content(model=MODEL, ...)` with `.parsed`. On the right — a comparison of two panels: “Asking ‘return JSON’ in the prompt — a wish: the model may add ```` ```json ````, a polite phrase or its own keys” and “`response_schema` + Pydantic — a contract: fields, types and allowed values are enforced during generation”.  
 **Progress indicator:** `14 / 25` • 56%
 
 #### What the speaker says:
@@ -558,7 +567,7 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 >     config=types.GenerateContentConfig(
 >         response_mime_type="application/json",   # the answer must be JSON…
 >         response_schema=TicketTriage,            # …that matches this schema
->         temperature=0.0,                         # extraction → no creativity
+>         # temperature stays at the default 1.0 (Google's advice for Gemini 3): the schema, not temperature, fixes the format
 >         thinking_config=types.ThinkingConfig(thinking_level="minimal"),
 >     ),
 > )
@@ -579,7 +588,7 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 >
 > The panels on the right answer the main question: **why a schema, if you can ask for ‘return JSON’ in the prompt?** A request is a wish. The model may wrap the answer in ```` ```json ````, add a polite “Here is your JSON:” or invent its own key `"type"` instead of `"category"` — and `json.loads()` brings down your pipeline. In the second part, in Step 2, you'll see this with your own eyes. `response_schema` is a contract that the server enforces during generation.
 >
-> **Third — `temperature=0.0`.** The rule from Step 1.1: when extracting amounts and categories, imagination is not allowed. Plus `thinking_level="minimal"` — the task is simple, no need to think long.
+> **Third — what is NOT in the config: `temperature`.** We leave the default 1.0, as Google recommends for Gemini 3. The schema guarantees the format, not the temperature; `thinking_level="minimal"` keeps it fast — the task is simple, no need to think long.
 >
 > **Fourth — `.parsed` (1.3b).** The SDK itself checks the JSON against the schema and returns a ready Python object. No manual `json.loads()`. Look at the result: `category: billing | urgent: True | amount_usd: 450.0`. This is the right edge of the diagram: the amount goes straight into the ledger, and the urgent complaint goes to the billing team without an operator.
 >
@@ -590,10 +599,10 @@ At the bottom, a panel: retries with exponential backoff and a timeout in `googl
 >
 > “And now — hands-on. For six minutes we run all of Part A together in your notebooks. Open Colab, go top to bottom, cell by cell — the ▶ button to the left of a cell or **Shift + Enter**.
 >
-> - **Step 0.** Key in AI Studio, the `GEMINI_API_KEY` secret, Notebook access, run the cell. Wait for the `Client ready` line. If you see `Could not read GEMINI_API_KEY`, check the secret name and the toggle.
+> - **Step 0.** Key in AI Studio, the `GEMINI_API_KEY` secret, Notebook access, run the cell. Wait for the `Client ready` line; a red pip line about `google-auth` during the install is harmless. If you see `Could not read GEMINI_API_KEY`, check the secret name and the toggle.
 > - **Step 1.** The first call and the receipt. Write in the chat how many prompt, output and thinking tokens you got and what the latency was. Everyone's numbers will be slightly different — that's normal: model answers are probabilistic.
 > - **Under the hood** — optional, for those who have time. The `ask()` helper — you must run it, nothing after it works without it.
-> - **Step 1.1.** Compare the coffee shop names at 0.0 and 1.5 and find `MAX_TOKENS` in 1.1b.
+> - **Step 1.1.** Compare the coffee shop names at the default temperature and at 2.0 — the difference may be small, that's fine — and find `MAX_TOKENS` in 1.1b.
 > - **Step 1.2.** Compare the time to first character for the blocking call and for streaming.
 > - **Step 1.3.** Get `.parsed` — write in the chat what you have in `amount_usd`.
 > - **Step 1.4.** Make sure `404 NOT_FOUND` is caught and the script did not crash.
@@ -1025,7 +1034,7 @@ At the bottom, a panel: open DeepSeek-V4 models accept OpenAI-format requests (`
 **On screen:** A horizontal call path of 5 nodes; under each — a line of code and the notebook step:  
 1 • KEY — “Key outside code”: `userdata.get("GEMINI_API_KEY")`, locally `.env` + `.gitignore` • Step 0 ➔  
 2 • CLIENT — “Timeout & retries”: `HttpOptions(timeout=60_000, retry_options=HttpRetryOptions(attempts=5))` • Step 0 ➔  
-3 • SETTINGS — “Temperature per task”: `temperature=0.0` (JSON, classification), `temperature=0.7+` (creative) • Step 1.1 ➔  
+3 • SETTINGS — “Settings per model”: `thinking_level="minimal"…"high"`, `max_output_tokens`, `# temperature: Gemini 3 → 1.0` • Step 1.1 ➔  
 4 • CONTRACT — “Schema, not a plea”: `response_mime_type="application/json"`, `response_schema=TicketTriage` • Step 1.3 ➔  
 5 • LOG — “Receipt of every call”: `usage_metadata` (+ thinking), `candidates[0].finish_reason` • Steps 1, 5.2.  
 Caption at the bottom: “Every rule is a line of code from the notebook.”  
@@ -1036,7 +1045,7 @@ Caption at the bottom: “Every rule is a line of code from the notebook.”
 >
 > 1. **Key outside code (Step 0):** no plain-text keys in the script. In Colab — Secrets and `userdata.get`; locally — a `.env` file listed in `.gitignore`.
 > 2. **Timeout and retries in the client (Step 0):** the client is created with `HttpOptions(timeout=60_000, retry_options=HttpRetryOptions(attempts=5, initial_delay=2))`. Remember: `google-genai` itself does not retry by default — without this setting there are neither retries nor a time limit.
-> 3. **Temperature per task (Step 1.1):** for data extraction, classification and JSON — `temperature=0.0`. A high temperature (0.7+) is for creative texts.
+> 3. **Settings per model (Step 1.1):** `thinking_level` for the task, `max_output_tokens` as a cap on length and cost. `temperature` — for Gemini 3 keep the default 1.0; other providers may advise low values for extraction — read the specific model's docs.
 > 4. **Schema, not a plea (Step 1.3):** don't rely on a text request to “return JSON”. Set a schema: `response_mime_type="application/json"` + `response_schema` with a Pydantic class.
 > 5. **Receipt of every call (Steps 1 and 5.2):** for every call, save `usage_metadata` — **including thinking tokens** — and `finish_reason`. The first is your budget, the second is diagnostics: `MAX_TOKENS` instead of `STOP` means the answer was cut off.
 >
@@ -1104,14 +1113,14 @@ Common finish: Step 7 ➔ FILE `result.json` (the Step 7 cell collects both trac
 ---
 
 ### Slide 25 (88:00 — 90:00) • Q&A: Core Takeaways & Next Session
-**On screen:** On the left: 3 core takeaways of the session (1. LLM is a remote cloud server; 2. Settings are part of the code: `temperature`, token limit, timeout, retries and `response_schema` are set explicitly on every call or client; 3. Prompt patterns are code — and are checked by code: Few-Shot sets the format, CoT makes the math visible, XML separates data; `validate()`, ground truth and timestamp checks catch model mistakes). On the right: the Lesson 04 teaser (“Image Generation: Services and Prompt Techniques” — ChatGPT Images, Nano Banana (Gemini), Midjourney, Kling, Grok Imagine; structured prompts, “change only X” edits, a consistent character, a product photo shoot). At the bottom, an invitation to open mic.  
+**On screen:** On the left: 3 core takeaways of the session (1. LLM is a remote cloud server; 2. Settings are part of the code: `thinking_level`, token limit, timeout, retries and `response_schema` are set explicitly; `temperature` — consciously (for Gemini 3, the default 1.0); 3. Prompt patterns are code — and are checked by code: Few-Shot sets the format, CoT makes the math visible, XML separates data; `validate()`, ground truth and timestamp checks catch model mistakes). On the right: the Lesson 04 teaser (“Image Generation: Services and Prompt Techniques” — ChatGPT Images, Nano Banana (Gemini), Midjourney, Kling, Grok Imagine; structured prompts, “change only X” edits, a consistent character, a product photo shoot). At the bottom, an invitation to open mic.  
 **Progress indicator:** `25 / 25` • 100%
 
 #### What the speaker says:
 > “Let's sum up the three main takeaways of today's session:
 >
 > 1. **An LLM is a remote web server.** The model is not downloaded into your script. You send an ordinary HTTP request — URL with the model, key in a header, JSON in the body — and get back tokens together with a receipt: input, output, hidden thinking and the stop reason.
-> 2. **Settings are part of the code.** `temperature`, the `max_output_tokens` token limit, the thinking level, timeout, retries and `response_schema` are not taken “by default” — you set them explicitly: in the `GenerateContentConfig` of each call or in the client's `HttpOptions`. Retries in `google-genai` will not turn themselves on.
+> 2. **Settings are part of the code.** The thinking level `thinking_level`, the `max_output_tokens` token limit, timeout, retries and `response_schema` are not taken “by default” — you set them explicitly: in the `GenerateContentConfig` of each call or in the client's `HttpOptions`. `temperature` — consciously: for Gemini 3 that means the default 1.0. Retries in `google-genai` will not turn themselves on.
 > 3. **Prompt patterns are code, and they are checked by code.** Few-Shot sets the format, Chain-of-Thought makes the calculation visible, the XML boundary separates data from instructions. And `validate()`, the Python ground truth and the timestamp check catch model mistakes before they reach the user.
 >
 > **What's next in the next session?**  

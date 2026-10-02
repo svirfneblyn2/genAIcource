@@ -17,13 +17,13 @@
 | **05** | Why use an SDK | 11:00 — 14:00 | Comparison | Step 0 | Raw HTTP vs `google-genai`; retries and timeout via one `HttpOptions` setting in Step 0 (no retries by default). |
 | **06** | First API call: from key to answer in three steps | 14:00 — 18:00 | Live demo | **Steps 0–1** | AI Studio → Colab Secrets → `genai.Client(... HttpOptions(timeout=60_000, retry_options=HttpRetryOptions(attempts=5, initial_delay=2)))` → first call. |
 | **07** | Anatomy of the response object | 18:00 — 21:00 | Output walkthrough | **Step 1** + Under the hood | `response.text`, `finish_reason`, `usage_metadata`: prompt / output / **thinking** / total + latency; the same call via `requests`. |
-| **08** | Generation settings: `temperature`, `max_output_tokens`, `thinking_level` | 21:00 — 26:00 | Live demo | **Step 1.1** | `ask()` helper; 0.0 → 3 identical answers, 1.5 → 3 different ones; `max_output_tokens=40` → `MAX_TOKENS`. |
+| **08** | Generation settings: `temperature`, `max_output_tokens`, `thinking_level` | 21:00 — 26:00 | Live demo | **Step 1.1** | `ask()` helper; the classic rule vs Google's guidance for Gemini 3 (`temperature` = default 1.0); default vs 2.0 — the difference may be small; `max_output_tokens=40` → `MAX_TOKENS`. |
 | **09** | Error codes and a reliable client | 26:00 — 30:00 | Live demo | **Steps 0, 1.4** | 400/404 — no retry; 429/503/timeout — retried by the Step 0 client; `errors.APIError` → `404 NOT_FOUND`. |
 | **10** | Key security | 30:00 — 33:00 | 3 lanes | Step 0 | Key in code → leak; Colab Secrets; `.env` + `.gitignore`. |
 | **11** | Streaming physics (SSE) | 33:00 — 36:00 | Diagram | — | 5 seconds of silence vs a fast first token (TTFT). |
 | **12** | Streaming in code | 36:00 — 40:00 | Live demo | **Step 1.2** | Blocking call vs `generate_content_stream`; TTFT, `flush=True`, usage in the last chunk. |
 | **13** | Constrained Decoding | 40:00 — 44:00 | Diagram | — | Grammar mask at every generation step — the mechanics behind Step 1.3. |
-| **14** | Email → JSON via `response_schema` | 44:00 — 49:00 | Live demo | **Step 1.3** | `TicketTriage` + `response_schema` + `temperature=0.0` → `.parsed`: `billing / True / 450.0`. |
+| **14** | Email → JSON via `response_schema` | 44:00 — 49:00 | Live demo | **Step 1.3** | `TicketTriage` + `response_schema` (temperature — default 1.0) → `.parsed`: `billing / True / 450.0`. |
 | *(no slide)* | **Live Part A run-through with students** | **49:00 — 55:00** | Practice + Q&A | **Steps 0–1.4** | Students create a key, add it to Secrets and run Part A themselves; the instructor answers questions and helps with 429 / SecretNotFoundError. |
 | **15** | **Midpoint: Coffee Break** | **55:00 — 60:00** | **5-min timer** | — | **START 5 MIN on the slide. No questions in chat! Rest only.** |
 | **16** | Zero-Shot vs Few-Shot + `validate()` | 60:00 — 64:00 | Live demo | **Step 2** | 2.1 Zero-Shot → `REJECTED`; 2.2 Few-Shot → `ACCEPTED: BILLING_DISPUTE / P1`. |
@@ -33,7 +33,7 @@
 | **20** | Part C: comment triage + cost | 76:00 — 80:00 | Live demo | **Step 5.2** | Few-Shot + XML + one JSON per line → pandas table; injection in comment 6; cost of Part C. |
 | **21** | Library landscape | 80:00 — 81:00 | 3 layers | — | HTTP → official SDKs (the baseline) → orchestration (LangChain/LangGraph, LlamaIndex, agent SDKs, LiteLLM). |
 | **22** | Provider comparison | 81:00 — 83:00 | Comparison | — | Snapshot as of 02.10.2026: OpenAI Responses API + GPT-6, Anthropic Claude 5.5 + `effort`, Google Gemini 3.x (`generate_content` — legacy but supported; new work goes to the Interactions API); prices per 1M tokens. |
-| **23** | Checklist: 5 rules along the call path | 83:00 — 85:00 | 5 nodes | Steps 0, 0, 1.1, 1.3, 1/5.2 | Key → client (timeout + retries) → temperature → `response_schema` → log usage + thinking and `finish_reason`. |
+| **23** | Checklist: 5 rules along the call path | 83:00 — 85:00 | 5 nodes | Steps 0, 0, 1.1, 1.3, 1/5.2 | Key → client (timeout + retries) → settings per model → `response_schema` → log usage + thinking and `finish_reason`. |
 | **24** | Homework | 85:00 — 88:00 | Two tracks | **Steps 1.3, 6, 7** | Track A — your own email in Step 1.3; Track B — your own transcript in Step 6; Step 7 → `result.json`. |
 | **25** | Wrap-up & Q&A | 88:00 — 90:00 | Open mic | — | 3 takeaways, preview of Lesson 04 (Images), open mics. |
 
@@ -43,9 +43,10 @@
 
 * **The day before the session:** create a key in Google AI Studio (`aistudio.google.com/apikey`) and add it to Colab Secrets **in advance** (key icon → Add new secret → `GEMINI_API_KEY` → enable Notebook access). During the session the key is never typed or shown on screen.
 * **30–60 minutes before start:** open `L03_First_API_Call_and_Prompt_Patterns.ipynb` and run **the whole notebook top to bottom, except Step 6 and Step 7** (those are shown to students as the homework template). Confirm that:
-  * **Step 0:** prints `✅ Client ready. Model for this lesson: gemini-3.5-flash-lite`;
+  * **Step 0:** prints `✅ Client ready. Model for this lesson: gemini-3.5-flash-lite`. During the install a red `ERROR: pip's dependency resolver… google-auth` line may appear — a harmless version notice from Colab's own packages; what matters is the final `✅ Client ready` line;
   * **Step 1:** shows `=== MODEL RESPONSE ===` and the `=== TOKEN RECEIPT ===` with `Thinking tokens` and `Latency` lines; the Under the hood cell prints `HTTP status: 200` and the raw `usageMetadata`; the helper prints `helper works`;
-  * **Step 1.1:** at `temperature=0.0` the three answers are (nearly) identical, at `1.5` they differ. The names will not match slide 08 (the slide is an illustration) — that is expected; in 1.1b `Finish reason: MAX_TOKENS`. If it prints `(no visible text: the limit was spent before the answer started)` instead of text, that is also expected — what matters is `MAX_TOKENS`;
+  * **Step 1.1:** three names at the default temperature (`temperature=default 1.0`) and three at `2.0`. The difference may be small — that is fine and is the teaching point: a repeatable format comes from a schema and examples, not from `temperature`; in 1.1b `Finish reason: MAX_TOKENS`. If it prints `(no visible text: the limit was spent before the answer started)` instead of text, that is also expected — what matters is `MAX_TOKENS`;
+  * **Step 1.2:** streaming TTFT is lower than the blocking time. If TTFT comes out **larger** than the blocking time (a busy free tier / a retry in the middle), re-run the cell once before showing it: on the dry run on 2 Oct 2026 streaming showed 23.8 s TTFT vs 2.7 s blocking because of server load;
   * **Step 1.3:** `category: billing | urgent: True | amount_usd: 450.0`;
   * **Step 1.4:** `Caught API error → HTTP 404 (NOT_FOUND)`. This is the **expected result**, not a failure — the cell deliberately calls a non-existent model;
   * **Step 2:** 2.1 → `❌ REJECTED`, 2.2 → `✅ ACCEPTED: {'code': 'BILLING_DISPUTE', 'tier': 'P1'}`;
@@ -125,7 +126,7 @@
          ),
      )
      ```
-     Output: `✅ Client ready. Model for this lesson: gemini-3.5-flash-lite`.
+     Output: `✅ Client ready. Model for this lesson: gemini-3.5-flash-lite`. A red pip line about `google-auth` during the install is a harmless notice; the `logging` line in the cell hides SDK notices, which are not errors.
   2. **Step 1:** run the first call with the prompt `"What is an API? Answer in one simple sentence for a beginner."`. Output: `=== MODEL RESPONSE ===` with one sentence. Only glance at the `=== TOKEN RECEIPT ===` block for now — we cover it on the next slide.
 * **Instructor speech:**
   > "The main news for those afraid of code: you don't need to write it from scratch.  
@@ -149,25 +150,25 @@
   > - `finish_reason`: `STOP` — everything normal; `MAX_TOKENS` — the length limit kicked in. In a minute we will trigger `MAX_TOKENS` on purpose.  
   > - `usage_metadata` — the receipt: input, output and **thinking**. Gemini 3.x models silently 'think' before answering; you don't see these tokens, but you pay for them as output. In real projects, logging usage is mandatory.  
   > Now the same call without the SDK — with the `requests` library: a URL with the model name, the key in the `x-goog-api-key` header, the prompt in JSON. HTTP 200, the answer and the same receipt, just in raw form. The SDK is only a convenient wrapper over HTTP; any language that speaks HTTP can talk to Gemini.  
-  > From here on we only change the prompt, so we wrapped the call in an `ask()` helper — it supports `system`, `thinking` and `temperature`."
+  > From here on we only change the prompt, so we wrapped the call in an `ask()` helper — it supports `system`, `thinking` and `temperature` (by default the model's own value; for Gemini 3 that is 1.0)."
 
 ---
 
 ### Slide 08 (21:00 — 26:00) • Generation Settings: `temperature` and `max_output_tokens` • **Colab: Step 1.1**
-* **Instructor action:** Switch to Slide 08. Show the next-token probability bars (Brew / Bean / Byte / Gear), the two columns — `0.0` and `1.5`, the `max_output_tokens = 40` block and the code. Go to Colab, read the settings table in the Step 1.1 markdown cell together, and run cells 1.1a and 1.1b.
+* **Instructor action:** Switch to Slide 08. Show the next-token probability bars (Brew / Bean / Byte / Gear), the two lanes — “The classic rule” (0.0 — repeatable, 1.0+ — creative) and “Gemini 3.x • Google's guidance” (`temperature = 1.0`, the default), the `max_output_tokens = 40` block and the code. Go to Colab, read the settings table in the Step 1.1 markdown cell together, and run cells 1.1a and 1.1b.
 * **Live demo:**
-  1. **1.1a `temperature`:** `creative_prompt = "Invent a name for a coffee shop run by robots. Reply with the name only."` — 3 times via `ask(creative_prompt, temperature=0.0)` and 3 times via `ask(creative_prompt, temperature=1.5)`.
+  1. **1.1a `temperature`:** `creative_prompt = "Invent a name for a coffee shop run by robots. Reply with the name only."` — 3 times via `ask(creative_prompt)` (default 1.0) and 3 times via `ask(creative_prompt, temperature=2.0)`.
   2. **1.1b `max_output_tokens`:** `"Explain how HTTPS works in 300 words."` with `GenerateContentConfig(max_output_tokens=40, thinking_config=ThinkingConfig(thinking_level="minimal"))`.
 * **What to show in the output:**
-  1. `=== temperature=0.0 (3 runs) ===` — three lines `run 1/2/3` with a (nearly) identical name.
-  2. `=== temperature=1.5 (3 runs) ===` — three different names. The names will not match the slide: the slide is an illustration, and the mismatch itself demonstrates randomness.
+  1. `=== temperature=default 1.0 (3 runs) ===` — three lines `run 1/2/3`, usually with some variety.
+  2. `=== temperature=2.0 (3 runs) ===` — three names, usually with more variety. The difference may turn out small — that is fine and is the teaching point.
   3. 1.1b — the text is cut off, followed by `Finish reason: MAX_TOKENS` and `Output tokens` around 40.
 * **Instructor speech:**
   > "Now the knobs available on every call. They all live in `types.GenerateContentConfig`.  
-  > `temperature`: at each step the model outputs probabilities for the next-token candidates; temperature decides how boldly to pick a less likely one. At `0.0` — three runs, one answer. At `1.5` — three runs, three different names. Rule: `0.0` for JSON, extraction, classification; `0.7–1.0+` for prose and ideas.  
+  > `temperature`: at each step the model outputs probabilities for the next-token candidates; temperature decides how boldly to pick a less likely one. The classic rule many providers use: a low temperature, down to `0.0`, for extraction and classification, `1.0+` for creative work. But for Gemini 3 Google strongly recommends keeping the default `1.0`: lower values risk looping and weaker reasoning. We compare the default with `2.0` — the difference may be small, and that is the lesson: on Gemini 3 a repeatable format comes from `response_schema` (Step 1.3) and Few-Shot examples (Step 2), not from temperature.  
   > `max_output_tokens`: we ask for 300 words and cap it at 40 tokens. The answer is cut, and `finish_reason` honestly says `MAX_TOKENS`. This is a guard on length and cost.  
   > And the third one — `thinking_level`: how much the model thinks silently, from `minimal` to `high`. These tokens are billed too, so for simple tasks we set `minimal`. The set of levels depends on the model: `gemini-3.8-flash` has no `minimal` — if you change `MODEL`, use `low`."
-* **Speaker note:** If one of the three answers at `0.0` differs slightly, say it plainly: "0.0 is practically deterministic, but not a cryptographic guarantee; for a strict format there is `response_schema` from Step 1.3."
+* **Speaker note:** If there is no visible difference between the default and `2.0` (or it goes "the wrong way"), do not re-run for effect — say it plainly: "on Gemini 3 temperature is not a repeatability tool; the format is held by `response_schema` from Step 1.3."
 
 ---
 
@@ -232,14 +233,14 @@
 
 ### Slide 14 (44:00 — 49:00, then practice until 55:00) • Email ➔ JSON: a Data Contract via `response_schema` • **Colab: Step 1.3**
 * **Instructor action:** Switch to Slide 14, walk the flow "email → `response_schema` → server (mask) → strict JSON → `.parsed` → system," go through the `TicketTriage` class and the config, then run the Step 1.3 cell in Colab.
-* **Live demo:** the email `"URGENT! My card was charged $450 twice for the annual subscription. Refund the duplicate today."` goes to `gemini-3.5-flash-lite` with `GenerateContentConfig(response_mime_type="application/json", response_schema=TicketTriage, temperature=0.0, thinking_config=ThinkingConfig(thinking_level="minimal"))`.
+* **Live demo:** the email `"URGENT! My card was charged $450 twice for the annual subscription. Refund the duplicate today."` goes to `gemini-3.5-flash-lite` with `GenerateContentConfig(response_mime_type="application/json", response_schema=TicketTriage, thinking_config=ThinkingConfig(thinking_level="minimal"))` — no `temperature`, it stays at the default 1.0.
 * **What to show in the output:**
   1. `=== 1.3a RAW JSON FROM THE API ===` — clean JSON with no ```` ```json ```` and no "Here is your JSON".
   2. `=== 1.3b PARSED OBJECT (ready for a database) ===` — `category: billing | urgent: True | amount_usd: 450.0`.
 * **Instructor speech:**
   > "A real-world example: triaging a $450 complaint.  
   > The data contract is the Pydantic class `TicketTriage`: `category` — only `billing`, `technical` or `general`; `urgent` — a boolean; `amount_usd` — a number, or `None` if the email mentions no money.  
-  > Asking 'return JSON' in the prompt is a wish: the model may add ```` ```json ````, a polite phrase or its own keys — we will see this in the second part of the lesson. `response_schema` is a contract the server enforces during generation. `temperature=0.0` is the rule from Step 1.1: no creativity during extraction.  
+  > Asking 'return JSON' in the prompt is a wish: the model may add ```` ```json ````, a polite phrase or its own keys — we will see this in the second part of the lesson. `response_schema` is a contract the server enforces during generation. `temperature` is not in the config — we leave the default 1.0, as Google recommends for Gemini 3: the schema guarantees the format, and `thinking_level="minimal"` keeps it fast.  
   > `.parsed` returns a ready Python object without a manual `json.loads()`: `billing`, `True`, `450.0` — straight into the ledger.  
   > Remember this cell: in homework Track A you will put your own email here."
 * **49:00 — 55:00 • Live Part A run-through with students (no separate slide):** keep Slide 14 or Colab on screen. Ask everyone to open the notebook via the link, create a key in AI Studio, put it into Secrets and run Part A themselves (Steps 0 → 1.4). Answer questions in the chat. Typical issues: `Could not read GEMINI_API_KEY` / `SecretNotFoundError` → the secret name must be exactly `GEMINI_API_KEY` and Notebook access must be enabled; `429` → the client retries on its own, otherwise wait a minute; `NameError` → Runtime → Run all. Anyone who doesn't finish can complete it during the break or at home.
@@ -374,7 +375,7 @@
   > "The control checklist before you hand a script to users or put it on a schedule:  
   > 1. **Key** outside the code: `userdata.get("GEMINI_API_KEY")` in Colab or `.env` + `.gitignore` locally — Step 0.  
   > 2. **Client** with a timeout and retries: `HttpOptions(timeout=60_000, retry_options=HttpRetryOptions(attempts=5))` — also Step 0. Remember: retries are not on by themselves.  
-  > 3. **Temperature** per task: `0.0` for JSON and classification, `0.7+` for creative work — Step 1.1.  
+  > 3. **Settings** per model: `thinking_level` for the task, `max_output_tokens` as a cap; `temperature` — for Gemini 3 keep the default 1.0 (other providers may advise low values for extraction — read the model's docs) — Step 1.1.  
   > 4. **Contract** via `response_schema` together with `response_mime_type="application/json"`, not a 'return JSON' plea — Step 1.3.  
   > 5. **Log** every call: `usage_metadata` — including thinking tokens — and `candidates[0].finish_reason` — Step 1 and the cost calculation in 5.2."
 
@@ -396,7 +397,7 @@
 * **Instructor speech:**
   > "Three key takeaways:  
   > 1. An LLM is a remote web server. The model is not downloaded into your script: you send an ordinary HTTP request and get back an answer and a token receipt.  
-  > 2. Settings are part of the code. `temperature`, the token limit, timeout, retries and `response_schema` are set explicitly — on every call or once in the client. None of this is on 'by itself.'  
+  > 2. Settings are part of the code. `thinking_level`, the token limit, timeout, retries and `response_schema` are set explicitly — on every call or once in the client; `temperature` — consciously (for Gemini 3, the default 1.0). None of this is on 'by itself.'  
   > 3. Prompt patterns are code, and they are checked by code. Few-Shot sets the format, Chain-of-Thought makes the calculation visible, XML separates data; and `validate()`, the Python ground truth and the timestamp check catch model mistakes.  
   > Next time — Lesson 04 and Module 2: image generation — ChatGPT Images, Nano Banana (Gemini), Midjourney, Kling and Grok Imagine; structured prompts, 'change only X' edits, a consistent character and a product photo shoot.  
   > And now the mics are open! Ask your questions. And a reminder: the homework is due before the next session."

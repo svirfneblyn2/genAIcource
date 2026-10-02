@@ -1169,19 +1169,15 @@ response = client.models.generate_content(model=MODEL,
         <p class="slide-lead">Both parameters live in GenerateContentConfig and are set on every call</p>
 
         <div class="slide-content-arena">
-          <div class="dg-split l" style=""><div class="dg-col"><div class="dg" style="justify-content:center;"><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">WHAT TEMPERATURE CONTROLS</div><div class="t">Picking the next token</div><div class="d">The model outputs candidate probabilities; <code>temperature</code> decides how boldly to pick beyond the first</div><div class="dg-bars"><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Brew</span><i style="width:62%"></i><em>0.62</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Bean</span><i style="width:21%"></i><em>0.21</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Byte</span><i style="width:11%"></i><em>0.11</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Gear</span><i style="width:6%"></i><em>0.06</em></div></div></div><div class="dg-row" style=""><div class="dg-node " style="--nc:var(--c4-primary);"><div class="k">FOR JSON &amp; CLASSIFICATION</div><div class="t">temperature = 0.0</div><div class="d">Take the most likely token. 3 runs ➔ one answer.</div><pre class="dg-code">run 1: RoboBrew
-run 2: RoboBrew
-run 3: RoboBrew</pre></div><div style="flex:0 0 14px"></div><div class="dg-node " style="--nc:var(--c4-purple);"><div class="k">FOR CREATIVE TEXT</div><div class="t">temperature = 1.5</div><div class="d">The distribution flattens, less likely tokens get picked. 3 runs ➔ 3 answers.</div><pre class="dg-code">run 1: Byte &amp; Bean
-run 2: Circuit Café
-run 3: The Gear Grind</pre></div></div></div></div><div class="dg-col"><div class="dg" style=""><div class="dg-node " style="--nc:var(--c4-danger);"><div class="k">LENGTH CAP</div><div class="t">max_output_tokens = 40</div><div class="d">A "300-word" answer is cut at 40 tokens ➔ <code>finish_reason = MAX_TOKENS</code>. A guard on length and cost.</div></div><pre class="dg-code" style="font-size: 13.5px;"><span class="cm"># 1.1a: the lesson's ask() helper passes temperature</span>
-ask(creative_prompt, temperature=<span class="num">0.0</span>)   <span class="cm"># repeatable</span>
-ask(creative_prompt, temperature=<span class="num">1.5</span>)   <span class="cm"># creative</span>
+          <div class="dg-split l" style=""><div class="dg-col"><div class="dg" style="justify-content:center;"><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">WHAT TEMPERATURE CONTROLS</div><div class="t">Picking the next token</div><div class="d">The model outputs candidate probabilities; <code>temperature</code> decides how boldly to pick beyond the first</div><div class="dg-bars"><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Brew</span><i style="width:62%"></i><em>0.62</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Bean</span><i style="width:21%"></i><em>0.21</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Byte</span><i style="width:11%"></i><em>0.11</em></div><div class="dg-bar" style="--nc:var(--c4-warning)"><span>Gear</span><i style="width:6%"></i><em>0.06</em></div></div></div><div class="dg-row" style=""><div class="dg-node " style="--nc:var(--c4-primary);"><div class="k">THE CLASSIC RULE</div><div class="t">0.0 — repeatable, 1.0+ — creative</div><div class="d">How many other providers’ models are tuned: lower — the most likely token more often, higher — more spread.</div></div><div style="flex:0 0 14px"></div><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">GEMINI 3.X • GOOGLE’S GUIDANCE</div><div class="t">temperature = 1.0 (default)</div><div class="d">Below 1.0 you risk looping and weaker reasoning. Repeatability comes from a schema (Step 1.3) and examples (Step 2).</div></div></div></div></div><div class="dg-col"><div class="dg" style=""><div class="dg-node " style="--nc:var(--c4-danger);"><div class="k">LENGTH CAP</div><div class="t">max_output_tokens = 40</div><div class="d">A "300-word" answer is cut at 40 tokens ➔ <code>finish_reason = MAX_TOKENS</code>. A guard on length and cost.</div></div><pre class="dg-code" style="font-size: 13.5px;"><span class="cm"># 1.1a: same prompt, 3 runs per value</span>
+ask(creative_prompt)                    <span class="cm"># default 1.0</span>
+ask(creative_prompt, temperature=<span class="num">2.0</span>)   <span class="cm"># more spread</span>
 
 <span class="cm"># 1.1b</span>
 config=types.GenerateContentConfig(
     max_output_tokens=<span class="num">40</span>,             <span class="cm"># length cap ➔ MAX_TOKENS</span>
     thinking_config=types.ThinkingConfig(
-        thinking_level=<span class="str">"minimal"</span>))       <span class="cm"># minimal…high</span></pre><div class="dg-note"><b>Rule:</b> <code>0.0</code> for accuracy and repeatability; <code>0.7–1.0+</code> for prose and ideas. <b>thinking_level</b> — how much the model thinks silently; those tokens are billed too.</div></div></div></div>
+        thinking_level=<span class="str">"minimal"</span>))       <span class="cm"># minimal…high</span></pre><div class="dg-note"><b>Gemini 3 rule:</b> leave <code>temperature</code> alone — the schema, not <code>0.0</code>, holds the format. <b>thinking_level</b> — how much the model thinks silently; those tokens are billed too.</div></div></div></div>
         </div>
 
         <div class="slide-footer">
@@ -1193,7 +1189,7 @@ config=types.GenerateContentConfig(
         </div>
 
         <div class="speaker-notes" style="display:none;">
-          Step 1.1a: the prompt 'name a coffee shop run by robots' via ask() — 3 runs at 0.0 and 3 at 1.5, temperature visibly changes the spread. Step 1.1b: max_output_tokens=40 cuts a long answer and finish_reason becomes MAX_TOKENS. Probabilities and names on the slide are illustrative.
+          Step 1.1a: the prompt 'name a coffee shop run by robots' — 3 runs at 1.0 (default) and 3 at 2.0. Key point: for Gemini 3 Google strongly recommends keeping temperature = 1.0; lower values risk looping and weaker reasoning. A repeatable format comes from the schema (1.3) and examples (Step 2). Step 1.1b: max_output_tokens=40 cuts the answer, finish_reason = MAX_TOKENS. Probabilities on the slide are illustrative.
         </div>
       </section>
 
@@ -1371,8 +1367,7 @@ t0, ttft = time.time(), <span class="kw">None</span>
 
 config = types.GenerateContentConfig(
     response_mime_type=<span class="str">"application/json"</span>,
-    response_schema=TicketTriage,
-    temperature=<span class="num">0.0</span>)
+    response_schema=TicketTriage)   <span class="cm"># temperature stays at default 1.0</span>
 triage = client.models.generate_content(
     model=MODEL, contents=..., config=config).parsed</pre></div><div class="dg-col"><div class="dg" style="gap:10px;"><div class="dg-node flat" style="--nc:var(--c4-danger);"><div class="t">Asking "return JSON" in the prompt</div><div class="d">A wish: the model may add ```json, a polite phrase or its own keys</div></div><div class="dg-node flat" style="--nc:var(--c4-success);"><div class="t">response_schema + Pydantic</div><div class="d">A contract: fields, types and allowed values are enforced during generation</div></div></div></div></div></div>
         </div>
@@ -1672,10 +1667,11 @@ cost = u.prompt_token_count * PRICE_IN / <span class="num">1e6</span> + out * PR
   timeout=60_000,
   retry_options=
   HttpRetryOptions(
-    attempts=5))</pre><span class="dg-chip">Step 0</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">3 • SETTINGS</div><div class="t">Temperature per task</div><pre class="dg-code" style="font-size:12.8px;">temperature=0.0
-# JSON, classif.
-temperature=0.7+
-# creative</pre><span class="dg-chip">Step 1.1</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-purple);"><div class="k">4 • CONTRACT</div><div class="t">Schema, not a plea</div><pre class="dg-code" style="font-size:12.8px;">response_mime_type=
+    attempts=5))</pre><span class="dg-chip">Step 0</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-warning);"><div class="k">3 • SETTINGS</div><div class="t">Settings per model</div><pre class="dg-code" style="font-size:12.8px;">thinking_level=
+  "minimal"…"high"
+max_output_tokens
+# temperature:
+# Gemini 3 → 1.0</pre><span class="dg-chip">Step 1.1</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-purple);"><div class="k">4 • CONTRACT</div><div class="t">Schema, not a plea</div><pre class="dg-code" style="font-size:12.8px;">response_mime_type=
   "application/json"
 response_schema=
   TicketTriage</pre><span class="dg-chip">Step 1.3</span></div><div class="dg-arrow" style="--ac:var(--c4-primary)"><svg viewBox="0 0 54 14"><path d="M1 7H50M44 2L51 7L44 12"/></svg></div><div class="dg-node " style="--nc:var(--c4-danger);"><div class="k">5 • LOG</div><div class="t">Receipt of every call</div><pre class="dg-code" style="font-size:12.8px;">usage_metadata
@@ -1693,7 +1689,7 @@ candidates[0]
         </div>
 
         <div class="speaker-notes" style="display:none;">
-          Walk the call path left to right. Under each rule is the exact code line and the notebook step where it already runs: key and reliable client (Step 0), temperature (1.1), schema (1.3), token logging incl. thinking and finish_reason (1 and 5.2).
+          Walk the call path left to right. Under each rule is the exact code line and the notebook step where it already runs: key and reliable client (Step 0), model settings (1.1), schema (1.3), token logging incl. thinking and finish_reason (1 and 5.2).
         </div>
       </section>
 
@@ -1758,7 +1754,7 @@ candidates[0]
                   <strong>1. LLM is a remote cloud server.</strong> No models are downloaded locally; you exchange tokens over standard HTTPS.
                 </div>
                 <div style="font-size: 14.5px; color: #e2e8f0; line-height: 1.5;">
-                  <strong>2. Settings are part of the code.</strong> <code>temperature</code>, token limit, timeout, retries and <code>response_schema</code> are set explicitly on every call or client.
+                  <strong>2. Settings are part of the code.</strong> <code>thinking_level</code>, token limit, timeout, retries and <code>response_schema</code> are set explicitly on every call or client; for Gemini 3 <code>temperature</code> stays at the default 1.0.
                 </div>
                 <div style="font-size: 14.5px; color: #e2e8f0; line-height: 1.5;">
                   <strong>3. Prompt patterns are code — and are checked by code.</strong> Few-Shot sets the format, CoT makes the math visible, XML separates data; <code>validate()</code>, ground truth and timestamp checks catch model mistakes.
