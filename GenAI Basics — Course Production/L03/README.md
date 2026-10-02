@@ -26,7 +26,7 @@ Checked against official docs on 2026-10-02:
 | Anthropic | Claude 5.5 (`claude-sonnet-5-5` $2/$10, `claude-opus-5-5` $4/$20); adaptive thinking + `effort` | platform.claude.com/docs |
 | Open models | DeepSeek-V4, OpenAI-compatible `base_url=https://api.deepseek.com` | api-docs.deepseek.com |
 
-Rate limits of the free tier are not published as numbers; they are shown in Google AI Studio (aistudio.google.com/rate-limit).
+Free-tier rate limits are not published in the docs; AI Studio → Rate Limit (aistudio.google.com/rate-limit) showed on 2026-10-02: `gemini-3.5-flash-lite` 15 RPM / 250K TPM / 500 RPD, `gemini-3.8-flash` 5 RPM / 20 RPD. A full notebook run is ≈ 25 requests — run cells one by one in the demo; "Run all" exceeds 15 RPM and returns `429 RESOURCE_EXHAUSTED` from Step 4 on.
 
 ## Slide map
 | # | Part | Slides |
