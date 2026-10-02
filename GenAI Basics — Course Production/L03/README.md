@@ -1,35 +1,41 @@
-# Lesson 03: LLM API with Python: Streaming and Structured Output
+# Lesson 03: LLM API with Python
 
-## Status: DONE
+## Status: READY (facts checked 2026-10-02)
 
 ## Overview
-Hands-on engineering lecture and live workshop on integrating frontier LLMs using modern Python SDKs. Focuses on streaming responses, strict JSON Schema / Pydantic structured output, observability, error handling, and local integration testing.
+Hands-on lesson on calling an LLM from code with Google's official `google-genai` SDK in Google Colab: the first call and its token receipt, generation settings (`temperature`, `max_output_tokens`, `thinking_level`), errors and a reliable client (timeout + retries), API-key hygiene, streaming (TTFT), structured output via `response_schema` + Pydantic, then prompt patterns in code (Few-Shot, Chain-of-Thought, XML delimiters against prompt injection) checked by code, and a real YouTube creator's assistant case with a cost estimate.
 
 ## Source of Truth
-- **Colab notebook:** `notebooks/L03_First_API_Call_and_Prompt_Patterns.ipynb` ([open in Colab](https://colab.research.google.com/github/svirfneblyn2/genAIcource/blob/main/notebooks/L03_First_API_Call_and_Prompt_Patterns.ipynb)); copy in this folder. Part A = Steps 0–1.4 (connect, receipt, temperature/max tokens, streaming, structured output, errors), Part B = Steps 2–4 (Few-Shot, CoT, XML delimiters), Part C = Steps 5.1–5.2 (YouTube case), Step 6 (your turn), Step 7 (`result.json`). Split versions: `L03_Part1_First_API_Call.ipynb` (Part A), `L03_Part2_Prompt_Patterns_in_Code.ipynb` (Parts B + C). Model: `gemini-3.5-flash-lite`.
-- **Slide decks aligned with the notebook (2026-10-01):** `presentation_L03_LLM_API_EN.html` / `presentation_L03_LLM_API.html` (25 slides, diagram-first) + PDFs.
-- **Legacy (not aligned, OpenAI-based):** `LECTURE_TEXT_60MIN.md`, the `*_READY.docx` / `.pptx` files below, `demo_repo/`, `quickstart_simple.py`.
+- **Colab notebook:** `notebooks/L03_First_API_Call_and_Prompt_Patterns.ipynb` ([open in Colab](https://colab.research.google.com/github/svirfneblyn2/genAIcource/blob/main/notebooks/L03_First_API_Call_and_Prompt_Patterns.ipynb)); copy in this folder. Part A = Steps 0–1.4, Part B = Steps 2–4, Part C = Steps 5.1–5.2, Step 6 (your turn), Step 7 (`result.json` for homework). Split versions: `L03_Part1_First_API_Call.ipynb` (Part A), `L03_Part2_Prompt_Patterns_in_Code.ipynb` (Parts B + C). Model: `gemini-3.5-flash-lite`.
+- **Slide decks (25 slides, RU/EN):** `presentation_L03_LLM_API.html` / `presentation_L03_LLM_API_EN.html` + PDFs. All diagrams are native HTML (no raster images except `assets/streaming_vs_blocking_timeline.png` and `assets/structured_outputs_mechanics.png`). Keys: ←/→, N — speaker notes, G — grid, `#N` in the URL opens slide N.
+- **Lecture text (slide-by-slide speech):** `L03_01_Lecture_Text_READY.md` / `L03_01_Lecture_Text_READY_EN.md`.
+- **Instructor script (timing, live-demo checklist, actions):** `L03_02_Full_Instructor_Script_READY.md` / `L03_02_Full_Instructor_Script_READY_EN.md`.
+- **One-page cheatsheet:** `L03_00_Lecture_Cheatsheet.md` / `L03_00_Lecture_Cheatsheet_EN.md`.
 
-## Canonical Cloud Links
-- **Slide Deck (Google Slides / PPTX):** [L03 Slide Deck READY](https://docs.google.com/presentation/d/18INIziBaeZ9mhUW_29eqT6Dx7GpAZ1Ak/edit)
-- **Full Instructor Script (Google Docs):** [Full Instructor Script READY](https://docs.google.com/document/d/1Cp8WTCnvP-dGaHl1fbjS43ip2wsbtOf4/edit)
+## Volatile facts (re-check before each delivery)
+Checked against official docs on 2026-10-02:
 
-## Production Deliverables
-- `L03_01_Lecture_Text_READY.docx` — Complete lecture narrative and theory
-- `L03_02_Full_Instructor_Script_READY.docx` — Word-by-word instructor delivery script
-- `L03_03_Slide_Deck_READY.pptx` — 16:9 Presentation slide deck
-- `L03_04_Live_Demo_Runbook_READY.docx` — Live demo step-by-step instructions
-- `L03_05_Workshop_and_Homework_READY.docx` — Practical exercises and student assignment
-- `L03_06_Agent_Runbook_READY.docx` — Automated generation and execution guide
-- `L03_07_QA_Review_Report_READY.docx` — QA audit and verification report
-- `L03_08_Source_Notes_READY.docx` — Source references and citations
-- `L03_09_Demo_Repo_READY.zip` — Packaged live code demo
-- `demo_repo/` — Unpacked runnable Python demo suite:
-  - `00_preflight.py` — Environment and API key verification
-  - `01_first_call.py` — Baseline non-streaming chat completion
-  - `02_stream.py` — Token streaming with latency / TTFT tracking
-  - `03_structured.py` — Pydantic typed schema enforcement
-  - `04_observability.py` — Request/response logging and usage tracking
-  - `05_local_validation.py` — Local validation without burning cloud credits
-  - `contracts.py` — Data models and validation schemas
-  - `tests/test_contract.py` — Unit test suite
+| Fact | Value used | Source |
+|---|---|---|
+| Lesson model | `gemini-3.5-flash-lite` (stable), $0.30 / $2.50 per 1M in/out, thinking billed as output, free tier | ai.google.dev/gemini-api/docs/pricing |
+| Thinking levels | Flash-Lite: minimal/low/medium/high; `gemini-3.8-flash`: low/medium/high only | ai.google.dev/gemini-api/docs/thinking |
+| SDK | `google-genai` 2.27.0; `HttpOptions.timeout` in ms; no retries unless `retry_options` | pypi.org/project/google-genai, github.com/googleapis/python-genai |
+| `generate_content` | labeled legacy but fully supported; new features ship in the Interactions API | ai.google.dev/gemini-api/docs/interactions |
+| Invalid key | docs: `401`; in practice often `400 API_KEY_INVALID` — slides say `400/401` | ai.google.dev/gemini-api/docs/api-errors |
+| OpenAI | Responses API; GPT-6 (`gpt-6-luna` $0.10/$0.50, `gpt-6-astra` $10/$50); timeout in seconds, 2 retries by default | developers.openai.com/api/docs/models |
+| Anthropic | Claude 5.5 (`claude-sonnet-5-5` $2/$10, `claude-opus-5-5` $4/$20); adaptive thinking + `effort` | platform.claude.com/docs |
+| Open models | DeepSeek-V4, OpenAI-compatible `base_url=https://api.deepseek.com` | api-docs.deepseek.com |
+
+Rate limits of the free tier are not published as numbers; they are shown in Google AI Studio (aistudio.google.com/rate-limit).
+
+## Slide map
+| # | Part | Slides |
+|---|---|---|
+| 1–2 | Intro | title, course roadmap |
+| 3–5 | How an LLM API works | architecture, HTTP request anatomy, why an SDK |
+| 6–10 | Part A | first call (Steps 0–1), response object, generation settings (1.1), errors and reliable client (0, 1.4), key security |
+| 11–14 | Part A | streaming physics, streaming in code (1.2), constrained decoding, email ➔ JSON (1.3); then live run of Part A |
+| 15 | Break | 5-minute timer |
+| 16–18 | Part B | Zero-Shot vs Few-Shot (2), Chain-of-Thought (3), XML delimiters (4) |
+| 19–20 | Part C | YouTube publishing package (5.1), comment triage + cost (5.2) |
+| 21–25 | Wrap-up | library landscape, providers (Oct 2026), checklist, homework (1.3, 6, 7), Q&A |

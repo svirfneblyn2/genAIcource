@@ -22,12 +22,13 @@ d:\Repos\genAIcource\
 │   │   ├── presentation_L02_LLM_Fundamentals.html
 │   │   ├── presentation_L02_LLM_Fundamentals.pdf
 │   │   └── STATUS.md                     # ⚠ QA FIXES: Missing canonical script
-│   └── L03\                              # LLM API with Python: Streaming & Structured Output
-│       ├── README.md                     # Links & guide
-│       ├── L03_*.docx                    # Text, Full Instructor Script, QA report
-│       ├── L03_03_Slide_Deck_READY.pptx
-│       ├── L03_09_Demo_Repo_READY.zip
-│       └── demo_repo\                    # Runnable Python live demo suite
+│   └── L03\                              # LLM API with Python (Gemini API, google-genai, Colab)
+│       ├── README.md                     # Source of truth & links
+│       ├── presentation_L03_LLM_API(_EN).html / .pdf   # 25-slide decks RU/EN
+│       ├── L03_01_Lecture_Text_READY.md (+ _EN)        # Full lecture text
+│       ├── L03_02_Full_Instructor_Script_READY.md (+ _EN)
+│       ├── L03_00_Lecture_Cheatsheet(_EN).md
+│       └── L03_First_API_Call_and_Prompt_Patterns.ipynb  # copy of notebooks/ (Colab)
 │
 └── Advanced GenAI — Course Production\   # Advanced engineering course (M01 - M07)
     ├── assets\                           # SVG blueprints, diagrams, imagery
@@ -74,16 +75,9 @@ python -c "import build; build.build()"
 
 ## Python Live Demos
 
-- **GenAI Basics L03 (Streaming & Structured Output):**
-  ```powershell
-  cd "GenAI Basics — Course Production\L03\demo_repo"
-  python 00_preflight.py
-  python 01_first_call.py
-  python 02_stream.py
-  python 03_structured.py
-  python 04_observability.py
-  python 05_local_validation.py
-  ```
+- **GenAI Basics L03 (LLM API with Python):** run in Google Colab —
+  [notebooks/L03_First_API_Call_and_Prompt_Patterns.ipynb](https://colab.research.google.com/github/svirfneblyn2/genAIcource/blob/main/notebooks/L03_First_API_Call_and_Prompt_Patterns.ipynb)
+  (needs a `GEMINI_API_KEY` in Colab Secrets).
 
 - **Advanced GenAI M03 (Vector Stores and RAG):**
   ```powershell

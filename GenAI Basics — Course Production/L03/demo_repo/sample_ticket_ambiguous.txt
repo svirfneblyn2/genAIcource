@@ -1,3 +1,0 @@
-Subject: Export behavior question
-
-The CSV export has changed since last week. I am not sure whether this is intended or a bug. The finance team needs the file tomorrow and the current output may break an existing spreadsheet. Can someone confirm the expected behavior?

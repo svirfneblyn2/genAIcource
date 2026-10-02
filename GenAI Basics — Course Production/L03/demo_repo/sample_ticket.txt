@@ -1,3 +1,0 @@
-Subject: Checkout fails after coupon removal
-
-After I apply a coupon, remove it, and try to pay, the checkout page returns an error and the order is not created. This happens on Chrome and Firefox. I can reproduce it every time. Please investigate before the Friday release.
