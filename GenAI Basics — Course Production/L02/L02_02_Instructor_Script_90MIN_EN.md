@@ -477,7 +477,7 @@ Target JSON schema:
    git commit -m "feat: complete homework 02 - support ticket classifier"
    git push origin main
    ```
-4. Verify repository access and ensure I am invited as a collaborator: `ihar_rubanovich@epam.com`. Detailed step-by-step instructions are available in `L02_03_Homework_Guide_EN.md`."
+4. Verify repository access and ensure I am invited as a collaborator: `ihar_rubanovich@epam.com`. Detailed step-by-step instructions are available in `L02_Homework_Guide_EN.md`."
 
 ---
 

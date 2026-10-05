@@ -585,7 +585,7 @@
    git commit -m "feat: complete homework 02 - support ticket classifier"
    git push origin main
    ```
-4. Убедитесь, что репозиторий доступен и я добавлен в Collaborators: `ihar_rubanovich@epam.com`. Подробное пошаговое руководство с готовыми шаблонами лежит в файле `L02_03_Homework_Guide.md`».
+4. Убедитесь, что репозиторий доступен и я добавлен в Collaborators: `ihar_rubanovich@epam.com`. Подробное пошаговое руководство с готовыми шаблонами лежит в файле `L02_Homework_Guide.md`».
 
 ---
 
