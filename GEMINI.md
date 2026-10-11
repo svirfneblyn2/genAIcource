@@ -87,3 +87,25 @@ Every lesson must maintain 100% parity across two language suites:
 * **Multi-page Vector PDFs:** Compiled via headless Edge with zero margins.
 * **90-Minute Instructor Scripts:** `LXX_02_Instructor_Script_90MIN.md` and `_EN.md`.
 * **1-Page Speaker Cheatsheets:** `LXX_00_Lecture_Cheatsheet.md` and `_EN.md`.
+
+## Image and video generation: genai-assets (shared local service)
+
+Do not call Vertex / Gemini / OpenAI image or video APIs directly for new generation work.
+Use the shared service in `D:\Repos\genai-assets` (README there). It tries subscriptions
+first (ChatGPT via Codex → Google via Antigravity) and pays Vertex last. Video is Vertex Veo.
+
+- Python: `pip install -e D:\Repos\genai-assets` or `sys.path.insert(0, r"D:\Repos\genai-assets")`, then
+  `from genai_assets.client import GenaiAssets` and
+  `GenaiAssets().image("...", client="<project>", aspect_ratio="16:9", references=[...], out=r"D:\...\x.png")`
+  or `.video("...", client="<project>", references=[still], duration_seconds=4, out=r"D:\...\x.mp4")`.
+- CLI, from `D:\Repos\genai-assets`:
+  `python -m genai_assets generate --client <project> --prompt "..." --out D:\...\x.png`
+  (add `--kind video --duration 4 --ref still.png` for video, `--no-paid` to stay on subscriptions).
+- Nothing to start by hand. The client starts the server on demand (`127.0.0.1:8765`), and the
+  server exits after 30 minutes idle. Manual commands: `python -m genai_assets ensure | providers | spend | stop`.
+- `client` = your project name; paid spend is tracked per client. Caps: $2 per request,
+  $5 per day. Images are 1K by default; 2K/4K go straight to Vertex.
+- Several projects share the server: never kill or restart it while jobs run. Use
+  `python -m genai_assets stop` (drains), then `ensure`.
+- Does not apply inside `D:\Repos\genai-assets` itself: its own Codex/Antigravity attempts
+  generate directly.
