@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 05: Генерация видео — Модели, студии и управление движением | GenAI Basics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg: #0b0f17;
+  --surface: #101622;
+  --surface-card: #131d2e;
+  --line: rgba(148, 163, 184, 0.16);
+  --fg: #f1f5f9;
+  --muted: #94a3b8;
+  --dim: #64748b;
+  --cyan: #38bdf8;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --violet: #c084fc;
+  --font-display: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --font-body: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: #05080e; color: var(--fg); font-family: var(--font-body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+.stage {
+  position: absolute; left: 50%; top: 50%;
+  width: 1600px; height: 900px;
+  transform: translate(-50%, -50%) scale(var(--s, 1));
+  transform-origin: center;
+  background: var(--bg);
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.7);
+}
+.slide {
+  position: absolute; inset: 0;
+  padding: 38px 60px 42px;
+  display: none; flex-direction: column;
+}
+.slide.active { display: flex; }
+
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; flex-shrink: 0; }
+.kicker {
+  font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--k, var(--cyan));
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.idx-badge { font-family: var(--font-mono); font-size: 13px; color: var(--dim); font-weight: 700; }
+.title {
+  font-family: var(--font-display); font-weight: 800; font-size: 38px;
+  line-height: 1.15; letter-spacing: -0.02em; color: #ffffff; flex-shrink: 0;
+}
+.lead {
+  font-size: 17px; line-height: 1.35; color: var(--muted);
+  margin-top: 4px; flex-shrink: 0; max-width: 1450px;
+}
+
+.body {
+  flex: 1 1 0; min-height: 0; margin-top: 16px;
+  display: flex; flex-direction: column; justify-content: center;
+  position: relative;
+}
+.foot {
+  position: absolute; left: 60px; right: 60px; bottom: 16px;
+  display: flex; justify-content: space-between;
+  font-family: var(--font-mono); font-size: 12px; color: var(--dim);
+}
+
+.row { display: grid; gap: 20px; flex: 1 1 0; min-height: 0; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.c12 { grid-template-columns: 1fr 1.6fr; }
+.c21 { grid-template-columns: 1.6fr 1fr; }
+.c55_45 { grid-template-columns: 1.35fr 1fr; }
+.c45_55 { grid-template-columns: 1fr 1.35fr; }
+.stack { display: flex; flex-direction: column; gap: 12px; min-height: 0; min-width: 0; }
+.center { justify-content: center; }
+
+.card-box {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 8px;
+  min-height: 0;
+}
+.card-box.active { border-color: var(--cyan); background: rgba(56,189,248,.04); }
+.card-box.success { border-color: var(--green); background: rgba(52,211,153,.04); }
+.card-box.warn { border-color: var(--amber); background: rgba(251,191,36,.04); }
+.card-box.danger { border-color: var(--red); background: rgba(248,113,113,.04); }
+.card-label {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em;
+  text-transform: uppercase; font-weight: 700; color: var(--k, var(--cyan));
+}
+.ch { font-size: 19px; font-weight: 700; line-height: 1.25; color: #fff; }
+.cd { font-size: 14.5px; line-height: 1.45; color: var(--muted); }
+.cd b { color: var(--fg); font-weight: 600; }
+
+.pic-card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  min-height: 0;
+}
+.pic-frame {
+  flex: 1 1 auto; min-height: 180px; border-radius: 8px; overflow: hidden;
+  background: #000; display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.pic-frame img {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+}
+.pic-frame.cover img { object-fit: cover; }
+.pic-cap { font-size: 14px; line-height: 1.35; color: var(--muted); flex-shrink: 0; }
+.pic-cap b { color: var(--fg); font-weight: 600; }
+
+.aspect-16-9 {
+  width: 100%; aspect-ratio: 16/9; overflow: hidden; border-radius: 8px;
+  background: #070c14; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line); flex-shrink: 0;
+}
+.aspect-16-9 img {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+}
+
+.cam-svg {
+  width: 100%; height: 96px; display: block;
+  background: #070c14; border-radius: 6px; border: 1px solid rgba(148,163,184,0.1);
+  margin-bottom: 6px; flex-shrink: 0;
+}
+
+.flow-banner {
+  margin-top: 12px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.metric-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 5px 0; border-bottom: 1px dashed rgba(148,163,184,0.12);
+  font-size: 13.5px;
+}
+.metric-row:last-child { border-bottom: none; }
+.metric-k { color: var(--muted); font-size: 13px; }
+.metric-v { color: var(--fg); font-weight: 600; font-family: var(--font-mono); font-size: 13px; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 4px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.badge-cyan { background: rgba(56,189,248,.15); color: var(--cyan); border: 1px solid var(--cyan); }
+.badge-green { background: rgba(52,211,153,.15); color: var(--green); border: 1px solid var(--green); }
+.badge-amber { background: rgba(251,191,36,.15); color: var(--amber); border: 1px solid var(--amber); }
+.badge-red { background: rgba(248,113,113,.15); color: var(--red); border: 1px solid var(--red); }
+.badge-violet { background: rgba(192,132,252,.15); color: var(--violet); border: 1px solid var(--violet); }
+
+.prompt-box {
+  font-family: var(--font-mono); font-size: 14px; line-height: 1.5;
+  background: #080d16; border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 18px; color: #dbe4f0; white-space: pre-wrap;
+}
+.prompt-box .s { color: var(--cyan); font-weight: 700; }
+.prompt-box .g { color: var(--green); font-weight: 700; }
+.prompt-box .m { color: var(--amber); }
+.prompt-box .x { color: var(--red); font-weight: 700; }
+.prompt-box .v { color: var(--violet); font-weight: 700; }
+
+.stepper { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.step-item {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px;
+}
+.step-item.active { border-color: var(--cyan); background: rgba(56,189,248,.08); }
+.step-item.done { border-color: var(--green); }
+.step-num { font-family: var(--font-mono); font-size: 12px; color: var(--dim); font-weight: 700; }
+.step-item.active .step-num { color: var(--cyan); }
+.step-item.done .step-num { color: var(--green); }
+.step-title { font-size: 14.5px; font-weight: 700; color: #fff; }
+.step-sub { font-size: 12.5px; color: var(--muted); line-height: 1.3; }
+
+table.dense-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+table.dense-table th {
+  text-align: left; font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--dim);
+  padding: 8px 12px; border-bottom: 1px solid var(--line);
+}
+table.dense-table td {
+  padding: 9px 12px; border-bottom: 1px solid var(--line);
+  color: var(--muted); vertical-align: middle; line-height: 1.4;
+}
+table.dense-table td:first-child { color: var(--fg); font-weight: 600; white-space: nowrap; }
+
+.slide.cover { padding: 0; }
+.cover-bg {
+  position: absolute; inset: 0; display: grid;
+  grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 4px;
+  opacity: .32;
+}
+.cover-bg img { width: 100%; height: 100%; object-fit: cover; }
+.cover-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, rgba(11,15,23,0.98) 0%, rgba(11,15,23,0.92) 58%, rgba(11,15,23,0.65) 100%);
+}
+.cover-content {
+  position: relative; padding: 60px 80px; height: 100%;
+  display: flex; flex-direction: column; justify-content: center; max-width: 1150px;
+}
+
+.drawer {
+  position: fixed; right: 0; top: 0; bottom: 0; width: 440px;
+  background: #0f172a; border-left: 1px solid #334155;
+  transform: translateX(100%); transition: transform .25s ease;
+  z-index: 1000; padding: 28px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto;
+}
+.drawer.open { transform: translateX(0); }
+.drawer .hd { font-family: var(--font-mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
+.drawer .tx { font-size: 15.5px; line-height: 1.5; color: #cbd5e1; }
+
+.grid {
+  position: fixed; inset: 0; background: rgba(5,8,14,.95);
+  backdrop-filter: blur(10px); display: none;
+  grid-template-columns: repeat(7, 1fr); gap: 12px; padding: 36px;
+  z-index: 2000; overflow-y: auto;
+}
+.grid.open { display: grid; }
+.grid button {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 8px; padding: 12px; color: var(--fg);
+  text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 6px; font-family: var(--font-body);
+}
+.grid button:hover { border-color: var(--cyan); }
+.grid button.cur { border-color: var(--cyan); background: rgba(56,189,248,.1); }
+.grid button span { font-family: var(--font-mono); font-size: 11px; color: var(--cyan); }
+
+@media print {
+  @page { size: 1600px 900px; margin: 0; }
+  body { overflow: visible; background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .stage { position: static; transform: none; width: 1600px; height: auto; border-radius: 0; box-shadow: none; overflow: visible; }
+  .slide { position: relative; display: flex !important; width: 1600px; height: 900px; break-after: page; page-break-after: always; }
+  .drawer, .grid, button { display: none !important; }
+}
+
+</style>
+</head>
+<body>
+
+<main class="stage" id="stage">
+
+<!-- SLIDE 01: TITLE COVER -->
+<section class="slide cover active" data-n="1">
+  <div class="cover-bg">
+    <img src="assets/showcase/shot1_cafe_pickup.png" alt="">
+    <img src="assets/showcase/shot2_bike_rain.png" alt="">
+    <img src="assets/showcase/shot3_map_route.png" alt="">
+    <img src="assets/showcase/d0_packshot.png" alt="">
+    <img src="assets/ui/chatgpt_final_keyframe.png" alt="">
+    <img src="assets/showcase/kling_mamacat_shot2.jpg" alt="">
+    <img src="assets/ui/kling_ui_video_player.png" alt="">
+    <img src="assets/showcase/motion_brush_demo.png" alt="">
+  </div>
+  <div class="cover-overlay"></div>
+  <div class="cover-content">
+    <div class="kicker">GenAI Basics • Урок 05 • Модуль 2: Мультимодальность</div>
+    <h1 class="title" style="font-size:52px;line-height:1.08;margin-top:12px;">Генерация видео: от статики к управлению пространством и временем</h1>
+    <p class="lead" style="font-size:22px;color:var(--cyan);margin-top:10px;">Модели, интерфейсы студий, кинематографические промпты и контроль движения</p>
+    <div style="margin-top:32px;display:flex;flex-direction:column;gap:16px;">
+      <div class="card-box" style="border-color:var(--cyan);background:rgba(56,189,248,.06);max-width:980px;padding:20px 24px;">
+        <div class="card-label">АКСИОМА 10/90 В ГЕНЕРАЦИИ ВИДЕО</div>
+        <div style="font-size:18px;line-height:1.45;color:#fff;">Диффузионная модель генерации межкадровых латентов — лишь <b>10% решения</b>.<br>Остальные <b>90%</b> — это подготовка ключевого кадра (I2V), векторы траектории камеры, локальные маски (Motion Brush) и монтажная склейка шотов.</div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:13px;color:var(--dim);">← → навигация • N заметки спикера • G обзор слайдов • F полный экран</div>
+    </div>
+  </div>
+  <template class="notes">Приветствие. Открываем вторую половину Модуля 2. Мы переходим от статических картинок к управлению движением во времени. Главный посыл: генерация видео — это не рулетка, а строгий продакшн-пайплайн.</template>
+</section>
+
+<!-- SLIDE 02: HOOK QUIZ -->
+<section class="slide" data-n="2">
+  <div class="topbar">
+    <div class="kicker" style="--k:var(--amber)">Визуальная калибровка • Интерактивный квиз</div>
+    <div class="idx-badge">02 / 17</div>
+  </div>
+  <h2 class="title">Угадайте: где съемка на камеру, а где диффузионный ИИ?</h2>
+  <p class="lead">Внимательно посмотрите на 4 стоп-кадра. Напишите в чат буквы тех кадров, которые сняты реальной оптикой!</p>
+  <div class="body">
+    <div class="row c4" style="gap:16px;">
+      <div class="pic-card">
+        <div class="pic-frame cover"><img src="assets/showcase/shot2_bike_rain.png" alt="A"></div>
+        <div class="pic-cap">
+          <span class="badge badge-cyan">[ A ]</span> <b>Поездка под дождем</b>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.35;">Оптика: Блики в лужах, мокрая брусчатка, динамичный трекинг</div>
+          <div style="font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.3;">Маркер ИИ: Идеальная форма спиц колеса при движении на скорости</div>
+        </div>
+      </div>
+      <div class="pic-card">
+        <div class="pic-frame cover"><img src="assets/showcase/d0_packshot.png" alt="B"></div>
+        <div class="pic-cap">
+          <span class="badge badge-amber">[ B ]</span> <b>Пакшот кружки (120fps)</b>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.35;">Оптика: Студийный контровой свет, пар над кофе, облет 360°</div>
+          <div style="font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.3;">Маркер ИИ: Непрерывная турбулентность пара без разрыва латентов</div>
+        </div>
+      </div>
+      <div class="pic-card">
+        <div class="pic-frame cover"><img src="assets/showcase/shot1_cafe_pickup.png" alt="C"></div>
+        <div class="pic-cap">
+          <span class="badge badge-green">[ C ]</span> <b>Забор заказа в кафе</b>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.35;">Оптика: Курьер берет крафтовый пакет у бариста, боке f/2.8</div>
+          <div style="font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.3;">Маркер ИИ: Микросдвиги пальцев в точке контакта с бумагой</div>
+        </div>
+      </div>
+      <div class="pic-card">
+        <div class="pic-frame cover"><img src="assets/showcase/kling_mamacat_shot2.jpg" alt="D"></div>
+        <div class="pic-cap">
+          <span class="badge badge-violet">[ D ]</span> <b>Нарезка на кухне</b>
+          <div style="font-size:13px;color:var(--muted);margin-top:4px;line-height:1.35;">Оптика: Тёрка, кабачок, деревянная доска, свет из окна</div>
+          <div style="font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.3;">Маркер ИИ: Физика стружки и пальцев при быстром возвратно-поступательном движении</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner" style="border-color:var(--amber);background:rgba(251,191,36,.05);">
+      <div style="font-size:14.5px;line-height:1.45;color:#fff;max-width:1280px;">
+        <b style="color:var(--amber);">РАЗГАДКА КВИЗА:</b> Все 4 ролика — на 100% сгенерированы ИИ! Архитектура Diffusion Transformers (DiT) безупречно моделирует физику жидкостей (пар, брызги) и диффузные отражения. Единственный демаскирующий признак — микросдвиги в точках тактильного контакта.
+      </div>
+      <span class="badge badge-amber">DIT ARCHITECTURE 2026</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>02 / 17</span></div>
+  <template class="notes">Visual calibration hook quiz. All 4 clips are AI. Explain fluid dynamics vs contact slip.</template>
+</section>
+
+<!-- SLIDE 03: 3 ECOSYSTEM TIERS -->
+<section class="slide" data-n="3">
+  <div class="topbar">
+    <div class="kicker">Индустриальная архитектура • 3 уровня продакшна</div>
+    <div class="idx-badge">03 / 17</div>
+  </div>
+  <h2 class="title">Три уровня экосистемы видео-ИИ: Чат, Студия и Cloud API</h2>
+  <p class="lead">Как устроен ландшафт генерации видео: от быстрых концептов в чате до студийных канвасов и облачных конвейеров</p>
+  <div class="body">
+    <div class="row c3" style="gap:20px;">
+      <div class="card-box active" style="padding:16px 18px;">
+        <div class="card-label">TIER 1 • ПОТРЕБИТЕЛЬСКИЕ ЧАТЫ</div>
+        <div class="ch" style="font-size:20px;margin:2px 0 8px;">ChatGPT 4o & Sora Chat</div>
+        <div class="metric-row"><span class="metric-k">Интерфейс:</span><span class="metric-v">Одно окно текстового промпта</span></div>
+        <div class="metric-row"><span class="metric-k">Глубина контроля:</span><span class="metric-v">Низкая (Стохастический сэмплинг)</span></div>
+        <div class="metric-row"><span class="metric-k">Входные модальности:</span><span class="metric-v">Только текст / грубый эскиз</span></div>
+        <div class="metric-row"><span class="metric-k">Кинематика камеры:</span><span class="metric-v">Нет (Случайный дрейф ракурса)</span></div>
+        <div class="metric-row"><span class="metric-k">Стабильность героя:</span><span class="metric-v">Мутирует между дублями</span></div>
+        <div class="metric-row"><span class="metric-k">Формат и кадрирование:</span><span class="metric-v">Фиксированные 16:9 / 9:16</span></div>
+        <div class="metric-row"><span class="metric-k">Задержка и стоимость:</span><span class="metric-v">60–120 сек • $20/мес фикс</span></div>
+        <div class="metric-row"><span class="metric-k">Роль в продакшне:</span><span class="metric-v">Брейншторм, концепты, идеи</span></div>
+        <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(148,163,184,0.2);"><b>Критическое бутылочное горлышко:</b> Дрифт персонажей между дублями, отсутствие контроля камеры, нулевая воспроизводимость в продакшне.</div>
+        <div style="background:#070d18;border:1px solid rgba(56,189,248,0.2);border-radius:6px;padding:8px 10px;margin-top:8px;">
+          <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:var(--cyan);letter-spacing:.05em;">ОПЕРАЦИОННЫЙ ПРОФИЛЬ</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">• <b>Стек:</b> ChatGPT 4o, Sora Web, Claude<br>• <b>Паттерн:</b> Диалоговый подбор мудборда и идей<br>• <b>Экономика:</b> $20/мес фикс без посекундной тарификации<br>• <b>Архитектурный барьер:</b> Стохастический дрифт между сидами</div>
+        </div>
+      </div>
+
+      <div class="card-box warn" style="padding:16px 18px;">
+        <div class="card-label" style="--k:var(--amber)">TIER 2 • ТВОРЧЕСКИЕ ВЕБ-СТУДИИ</div>
+        <div class="ch" style="font-size:20px;margin:2px 0 8px;">Kling AI, Runway & Luma</div>
+        <div class="metric-row"><span class="metric-k">Интерфейс:</span><span class="metric-v">Интерактивный веб-канвас</span></div>
+        <div class="metric-row"><span class="metric-k">Глубина контроля:</span><span class="metric-v">Высокая (I2V, маски, сплайны)</span></div>
+        <div class="metric-row"><span class="metric-k">Входные модальности:</span><span class="metric-v">Ключевые кадры, Motion Brush</span></div>
+        <div class="metric-row"><span class="metric-k">Кинематика камеры:</span><span class="metric-v">6-DOF траектории, облет, зум</span></div>
+        <div class="metric-row"><span class="metric-k">Стабильность героя:</span><span class="metric-v">Зафиксирована через I2V (t=0)</span></div>
+        <div class="metric-row"><span class="metric-k">Формат и кадрирование:</span><span class="metric-v">16:9, 9:16, 1:1, до 1080p</span></div>
+        <div class="metric-row"><span class="metric-k">Задержка и стоимость:</span><span class="metric-v">30–90 сек • $0.15–$0.50/ролик</span></div>
+        <div class="metric-row"><span class="metric-k">Роль в продакшне:</span><span class="metric-v">Рекламные промо, B-roll, монтаж</span></div>
+        <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(148,163,184,0.2);"><b>Критическое бутылочное горлышко:</b> Требует ручной работы в UI; кредитная модель оплаты за каждую генерацию.</div>
+        <div style="background:#070d18;border:1px solid rgba(251,191,36,0.2);border-radius:6px;padding:8px 10px;margin-top:8px;">
+          <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:var(--amber);letter-spacing:.05em;">ОПЕРАЦИОННЫЙ ПРОФИЛЬ</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">• <b>Стек:</b> Kling AI 1.5/2.0, Runway Gen-3/4, Luma<br>• <b>Паттерн:</b> Визуальный таймлайн, маски, управление камерой<br>• <b>Экономика:</b> Пакеты кредитов ($0.15–$0.50 за дубль)<br>• <b>Архитектурный барьер:</b> Ручной UI-труд, сложность масштабирования</div>
+        </div>
+      </div>
+
+      <div class="card-box" style="border-color:var(--violet);background:rgba(192,132,252,.04);padding:16px 18px;">
+        <div class="card-label" style="--k:var(--violet)">TIER 3 • ОБЛАЧНЫЕ API И ВЕСА</div>
+        <div class="ch" style="font-size:20px;margin:2px 0 8px;">Google Veo 3.1 & Wan 2.2</div>
+        <div class="metric-row"><span class="metric-k">Интерфейс:</span><span class="metric-v">REST / gRPC headless API</span></div>
+        <div class="metric-row"><span class="metric-k">Глубина контроля:</span><span class="metric-v">Полная (Сиды, тензоры, LoRA)</span></div>
+        <div class="metric-row"><span class="metric-k">Входные модальности:</span><span class="metric-v">JSON-контракты, пакетные урлы</span></div>
+        <div class="metric-row"><span class="metric-k">Кинематика камеры:</span><span class="metric-v">Матричные трансформации в коде</span></div>
+        <div class="metric-row"><span class="metric-k">Стабильность героя:</span><span class="metric-v">Детерминизм через LoRA и веса</span></div>
+        <div class="metric-row"><span class="metric-k">Формат и кадрирование:</span><span class="metric-v">Произвольные битрейты и кадры</span></div>
+        <div class="metric-row"><span class="metric-k">Задержка и стоимость:</span><span class="metric-v">Милисекунды–минуты • Посекундно</span></div>
+        <div class="metric-row"><span class="metric-k">Роль в продакшне:</span><span class="metric-v">Массовая генерация каталогов</span></div>
+        <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:6px;padding-top:6px;border-top:1px dashed rgba(148,163,184,0.2);"><b>Критическое бутылочное горлышко:</b> Требует бэкенд-инфраструктуры, строгих контрактов данных и контроля задержек GPU.</div>
+        <div style="background:#070d18;border:1px solid rgba(192,132,252,0.2);border-radius:6px;padding:8px 10px;margin-top:8px;">
+          <div style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;color:var(--violet);letter-spacing:.05em;">ОПЕРАЦИОННЫЙ ПРОФИЛЬ</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">• <b>Стек:</b> Google Veo 3.1, Wan 2.2, CogVideoX<br>• <b>Паттерн:</b> Headless JSON-контракты, параллельные очереди GPU<br>• <b>Экономика:</b> Посекундная оплата инференса GPU ($/сек)<br>• <b>Архитектурный барьер:</b> Требует валидации схем и оркестрации</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14.5px;color:var(--fg);"><b>ПАЙПЛАЙН ИНДУСТРИИ:</b> [Tier 1: Концепт и мудборд в чате] ➔ [Tier 2: Режиссерская сборка шотов в студии] ➔ [Tier 3: Масштабирование через Cloud API]</div>
+      <span class="badge badge-cyan">ARCHITECTURAL BLUEPRINT</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>03 / 17</span></div>
+  <template class="notes">Three tiers architecture: Consumer chat, Creative Web Studios, and Cloud APIs.</template>
+</section>
+
+<!-- SLIDE 04: PIPELINE & BUDGET ECONOMY -->
+<section class="slide" data-n="4">
+  <div class="topbar">
+    <div class="kicker">Инженерия продакшна • Таймлайн и экономика</div>
+    <div class="idx-badge">04 / 17</div>
+  </div>
+  <h2 class="title">Пайплайн создания видео и экономика GPU-кредитов</h2>
+  <p class="lead">Дисциплинированный 90-минутный рабочий процесс коммерческого продакшна против фатальной экономики наивного Text-to-Video</p>
+  <div class="body">
+    <div class="row c2" style="gap:24px;align-items:stretch;">
+      <div class="stack" style="gap:10px;">
+        <table class="dense-table" style="background:var(--surface);border-radius:10px;border:1px solid var(--line);">
+          <thead>
+            <tr>
+              <th style="width:48px;">#</th>
+              <th>Фаза продакшна</th>
+              <th>Рабочий инструмент</th>
+              <th style="width:72px;">Время</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="badge badge-cyan">01</span></td><td>Визуальные референсы и якоря стиля</td><td>ArtStation, Pinterest</td><td>10 min</td></tr>
+            <tr><td><span class="badge badge-cyan">02</span></td><td>Утверждение ключевого кадра в Chat UI</td><td>ChatGPT 4o / Midjourney</td><td>10 min</td></tr>
+            <tr><td><span class="badge badge-amber">03</span></td><td>Анимация движения шота через I2V</td><td>Kling AI / Runway Studio</td><td>15 min</td></tr>
+            <tr><td><span class="badge badge-violet">04</span></td><td>Генерация звуковых дорожек и Foley FX</td><td>Suno AI & ElevenLabs (Урок 06)</td><td>15 min</td></tr>
+            <tr><td><span class="badge badge-green">05</span></td><td>Монтаж на таймлайне и склейка сцен</td><td>CapCut / Premiere / FFmpeg</td><td>20 min</td></tr>
+            <tr><td><span class="badge badge-green">06</span></td><td>Проверка водяных знаков и аудит C2PA</td><td>SynthID и аудит C2PA</td><td>5 min</td></tr>
+            <tr><td><span class="badge badge-green">07</span></td><td>Финальный рендер и экспорт форматов</td><td>16:9 Landscape / 9:16 Reels</td><td>15 min</td></tr>
+          </tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-family:var(--font-mono);font-size:13px;">
+          <span>Сквозной хронометраж продакшна:</span>
+          <span class="badge badge-green">~90 МИН (1 ИНЖЕНЕР = ЦЕЛАЯ СТУДИЯ)</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
+        <div class="card-box danger" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--red)">-$50 ДО -$100 СЛИВ БЮДЖЕТА НА ШОТ</div>
+          <div class="ch" style="font-size:16.5px;margin:2px 0 4px;">Слив кредитов в наивном Text-to-Video (T2V)</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;">• <b>80%+ брака:</b> Текстовый ввод порождает деформацию лиц, случайные цвета волос и геометрический хаос.<br>
+• <b>Сгорание баланса:</b> 20 пустых перегенераций по $2.50 = <b>$50 слито</b> в корзину за пару минут.<br>
+• <b>Срыв дедлайнов:</b> Бесконечный стохастический перебор без гарантии сходимости.</div>
+        </div>
+
+        <div class="card-box warn" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--amber)">МАТЕМАТИЧЕСКИЙ БАРЬЕР</div>
+          <div class="ch" style="font-size:16.5px;margin:2px 0 4px;">Обратная задача пространства-времени (Проклятие t=0)</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;">• <b>Некорректная задача:</b> Одновременный поиск геометрии и движения из шума математически недоопределен.<br>
+• <b>Неконтролируемый дрейф:</b> Без заморозки t=0 внимание модели мутирует логотипы и освещение между кадрами.<br>
+• <b>Множитель затрат:</b> Подбор промпта в видео стоит в 50–100 раз дороже, чем в генерации картинок.</div>
+        </div>
+
+        <div class="card-box success" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--green)">+$2 ДО +$5 ИТОГО (ЭКОНОМИЯ В 10-20 РАЗ)</div>
+          <div class="ch" style="font-size:16.5px;margin:2px 0 4px;">Дисциплинированная I2V экономика</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;">• <b>Копеечный якорь:</b> Доводка ключевого кадра в ChatGPT стоит <b>~$0.04</b> до запуска видеомодели.<br>
+• <b>Фиксация геометрии:</b> Утвержденный кадр замораживает пространственные латенты.<br>
+• <b>Промышленная надежность:</b> Экономия в 10 раз, ускорение в 4 раза, 100% защита бренда.</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14.5px;color:var(--fg);"><b>ЗОЛОТОЕ ПРАВИЛО:</b> Никогда не сжигайте GPU-кредиты видео, пока статический ключевой кадр не утвержден на 100%!</div>
+      <span class="badge badge-cyan">COST CONTROL</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>04 / 17</span></div>
+  <template class="notes">Pipeline stages, timing breakdown, credit economics, and the mathematical root cause of the t=0 curse.</template>
+</section>
+
+<!-- SLIDE 05: PHASE 1: REFERENCES -->
+<section class="slide" data-n="5">
+  <div class="topbar">
+    <div class="kicker">Фаза 1 • Якоря стиля и визуальная связность</div>
+    <div class="idx-badge">05 / 17</div>
+  </div>
+  <h2 class="title">Почему генерация без визуальных референсов обречена на провал</h2>
+  <p class="lead">Сбор 5–10 якорей стиля для фиксации оптики, освещения и палитры до запуска диффузии видео</p>
+  <div class="body">
+    <div class="row c2" style="gap:24px;align-items:stretch;">
+      <div class="pic-card" style="display:flex;flex-direction:column;height:100%;">
+        <div class="pic-frame contain" style="flex:1;background:#060a12;display:flex;align-items:center;justify-content:center;">
+          <img src="assets/showcase/courier_sheet.png" alt="Character Turnaround" style="max-height:100%;object-fit:contain;">
+        </div>
+        <div class="pic-cap" style="padding:10px 14px;">
+          <b>Референс-лист персонажа и позы</b><br>
+          <span style="font-size:12.5px;color:var(--dim);">Фиксация одежды, палитры, пропорций и ракурсов перед запуском видеогенератора</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
+        <div class="card-box active" style="padding:12px 16px;flex:1;">
+          <div class="card-label">ЧЕТЫРЕ ОПОРНЫХ ЯКОРЯ РЕФЕРЕНСА</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>1. Анатомия героя:</b> Точные черты лица, цвет кожи, прическа и комплекция курьера.<br>
+• <b>2. Фирменный стиль:</b> Желтая куртка (#fbbf24) и бирюзовый терморюкзак (#38bdf8).<br>
+• <b>3. Физика света:</b> Утренний рассеянный свет 5600K, блики на мокрой брусчатке.<br>
+• <b>4. Оптика камеры:</b> 24mm широкоугольный трекинг, глубина резкости f/2.8.<br>
+• <b>5. Биометрический замок:</b> Черты лица заморожены против стохастического дрейфа.</div>
+        </div>
+
+        <div class="card-box warn" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--amber)">ПРИНЦИП ИНЖЕНЕРИИ • ПОДАВЛЕНИЕ ДИСПЕРСИИ</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;font-style:italic;">• <b>Физика диффузии:</b> Модели видео — это интерполяторы распределений, а не телепаты. Промпт без референса сэмплирует бесконечную дисперсию в пространстве латентов.<br>
+• <b>Схлопывание многообразия:</b> Референс-лист из 4 ракурсов сужает вариативность латентов на 80%+ и удерживает генерацию на целевом многообразии бренда.</div>
+        </div>
+
+        <div class="card-box success" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--green)">ПРАКТИЧЕСКИЙ РЕГЛАМЕНТ СБОРА</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Шаг 1:</b> Сбор 5–10 эталонных кадров из Pinterest, ArtStation или брендбука клиента.<br>
+• <b>Шаг 2:</b> Синтез кругового листа персонажа в Midjourney (--cref) или ChatGPT 4o.<br>
+• <b>Шаг 3:</b> Прикрепление референс-листа в Kling AI / Runway как пространственного якоря.<br>
+• <b>Шаг 4:</b> Валидация всех 4 ракурсов (анфас, профиль, 3/4, спина) на сохранение логотипов.</div>
+        </div>
+
+        <div class="card-box danger" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--red)">АНТИПАТТЕРН • СУБЪЕКТИВНЫЕ ЭПИТЕТЫ</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Ловушка мусорных слов:</b> Слова «фотореалистичный», «эпичный», «шедевр 8k» игнорируются моделями или вносят шум.<br>
+• <b>Конкретные физические дескрипторы:</b> Задавайте физические сущности:<br>
+  <b>ПЛОХО:</b> <i>«эпичный фотореалистичный курьер едет на велосипеде»</i><br>
+  <b>ХОРОШО:</b> <i>«24mm f/2.8, свет 5600K, куртка рипстоп нейлон #fbbf24, мокрый асфальт»</i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>05 / 17</span></div>
+  <template class="notes">Why reference anchors prevent stochastic drift: turnaround sheets and mathematical variance reduction.</template>
+</section>
+
+<!-- SLIDE 06: PHASE 2: KEYFRAME REFINEMENT DIAGRAM -->
+<section class="slide" data-n="6">
+  <div class="topbar">
+    <div class="kicker">Фаза 2 • Доводка кадра в Chat UI</div>
+    <div class="idx-badge">06 / 17</div>
+  </div>
+  <h2 class="title">Итеративное уточнение ключевого кадра: от спрайта к якорю 16:9</h2>
+  <p class="lead">Реальный кейс: загрузка 2D спрайта в ChatGPT 4o и доводка до кинематографичного кадра через текстовый диалог</p>
+  <div class="body">
+    <div class="row c3" style="gap:20px;">
+      <div class="card-box active" style="padding:14px 16px;">
+        <div>
+          <div class="card-label">ШАГ 1: ВХОДНОЙ 2D СПРАЙТ</div>
+          <div class="ch" style="font-size:18px;margin:2px 0 6px;">2D Спрайт и ТЗ промпта</div>
+          <div style="background:#070d18;border:1px solid rgba(56,189,248,0.3);border-radius:8px;height:140px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;overflow:hidden;">
+            <img src="assets/workflow/knight_2d_sprite.png" alt="2D Sprite" style="height:120px;image-rendering:pixelated;object-fit:contain;">
+          </div>
+        </div>
+        <div style="background:#070d18;border:1px solid rgba(56,189,248,0.25);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:11.5px;color:#94a3b8;line-height:1.4;margin-bottom:8px;">
+          <span style="color:var(--cyan);font-weight:700;">СПЕЦИФИКАЦИЯ ПРОМПТА:</span><br>
+          «Роль: концепт-артист кино. Вход: спрайт героя. Задача: реалистичная 16:9 сцена 4K, естественный свет, сохранение костюма»
+        </div>
+        <div class="cd" style="font-size:13px;line-height:1.35;">• <b>Загрузка:</b> 2D пиксельный спрайт героя прикреплен в диалог.<br>
+• <b>Промпт:</b> Запрос фотореалистичной 16:9 сцены с сохранением цветов и костюма.<br>
+• <b>Результат:</b> Модель выдает черновой кинематографичный рендер.</div>
+      </div>
+
+      <div class="card-box warn" style="padding:14px 16px;">
+        <div>
+          <div class="card-label" style="--k:var(--amber)">ШАГ 2: КРИТИКА ДЕФЕКТОВ</div>
+          <div class="ch" style="font-size:18px;margin:2px 0 6px;">Поиск ошибок и правка</div>
+          <div style="background:#070d18;border:1px solid rgba(251,191,36,0.3);border-radius:8px;height:140px;position:relative;overflow:hidden;margin-bottom:8px;">
+            <img src="assets/workflow/knight_draft_render.png" alt="Draft Render" style="width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;bottom:4px;left:4px;background:rgba(239,68,68,0.85);color:#fff;font-family:var(--font-mono);font-size:10.5px;padding:2px 6px;border-radius:4px;font-weight:700;">Дефект: броня на руках; шлем-котелок</div>
+          </div>
+        </div>
+        <div style="background:#070d18;border:1px solid rgba(251,191,36,0.25);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:11.5px;color:#94a3b8;line-height:1.4;margin-bottom:8px;">
+          <span style="color:var(--amber);font-weight:700;">АУДИТ ДЕФЕКТОВ:</span><br>
+          • Ошибка 1: Лишние стальные латы на руках<br>• Ошибка 2: Шлем искажен в сферу<br>• Правка: «Убрать латы, накидка в шашечку, плоский шлем»
+        </div>
+        <div class="cd" style="font-size:13px;line-height:1.35;">• <b>Аудит:</b> Модель добавила лишние латы на руки и исказила форму шлема.<br>
+• <b>Правка:</b> «У мечника нет брони на руках, накидка в шашечку, плоский шлем-котелок».<br>
+• <b>Скорость:</b> Мгновенная перегенерация через естественный диалог за $0.04.</div>
+      </div>
+
+      <div class="card-box success" style="padding:14px 16px;">
+        <div>
+          <div class="card-label" style="--k:var(--green)">ШАГ 3: УТВЕРЖДЕННЫЙ КАДР</div>
+          <div class="ch" style="font-size:18px;margin:2px 0 6px;">Замороженный ключевой кадр 16:9</div>
+          <div style="background:#070d18;border:1px solid rgba(52,211,153,0.3);border-radius:8px;height:140px;position:relative;overflow:hidden;margin-bottom:8px;">
+            <img src="assets/workflow/knight_approved_render.png" alt="Approved Keyframe" style="width:100%;height:100%;object-fit:cover;">
+            <div style="position:absolute;bottom:4px;left:4px;background:rgba(16,185,129,0.85);color:#fff;font-family:var(--font-mono);font-size:10.5px;padding:2px 6px;border-radius:4px;font-weight:700;">Утверждено: правильный костюм, шлем, замок</div>
+          </div>
+        </div>
+        <div style="background:#070d18;border:1px solid rgba(52,211,153,0.25);border-radius:6px;padding:8px 10px;font-family:var(--font-mono);font-size:11.5px;color:#94a3b8;line-height:1.4;margin-bottom:8px;">
+          <span style="color:var(--green);font-weight:700;">ИНВАРИАНТ ГРАНИЦЫ (t=0):</span><br>
+          • Личность: Накидка в шашечку и плоский шлем зафиксированы<br>• Окружение: Замок и горы привязаны к геометрии<br>• Статус: Заморожен как якорь I2V (Брак: 0%)
+        </div>
+        <div class="cd" style="font-size:13px;line-height:1.35;">• <b>Верификация:</b> Идеальная анатомия, накидка в шашечку, замок и горы на фоне.<br>
+• <b>Фиксация:</b> Заморожен как граничное условие (t=0) для генерации видео.<br>
+• <b>Стабильность:</b> Гарантирует сохранение героя во всех дублях видео.</div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14px;color:var(--fg);"><b>ЭКОНОМИКА ЭТАПА:</b> Диалоговая доводка кадра в Chat UI занимает 3 минуты и стоит $0.04. Подбор промпта в видеомодели сжег бы $25+ и 40 минут времени.</div>
+      <span class="badge badge-green">FAST CONVERGENCE</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>06 / 17</span></div>
+  <template class="notes">Keyframe refinement workflow: 2D sprite input, conversational critique, and approved 16:9 boundary tensor.</template>
+</section>
+
+<!-- SLIDE 07: T2V TRAINWRECK VS I2V -->
+<section class="slide" data-n="7">
+  <div class="topbar">
+    <div class="kicker" style="--k:var(--red)">Антипаттерн • Ловушка свободного текста</div>
+    <div class="idx-badge">07 / 17</div>
+  </div>
+  <h2 class="title">T2V Trainwreck против I2V: физика ошибок и геометрия</h2>
+  <p class="lead">Наглядное сравнение: наивный текстовый «поток сознания» против дисциплинированного кадра Image-to-Video</p>
+  <div class="body">
+    <div class="row c2" style="gap:28px;">
+      <div class="stack" style="gap:10px;">
+        <div class="aspect-16-9">
+          <img src="assets/showcase/t2v_trainwreck_giono.jpg" alt="T2V Fail">
+        </div>
+        <div class="card-box danger">
+          <div class="card-label" style="--k:var(--red)">ТРЕШ TEXT-TO-VIDEO (T2V) • Авторегрессионный дрифт и мутация бренда</div>
+          <div class="cd" style="font-size:14px;line-height:1.45;">• <b>Подмена персонажа:</b> Вместо темноволосой героини сгенерировалась случайная блондинка.<br>
+• <b>Мутация бренда:</b> Логотип Glovo расплылся в нечитаемый мусор «Giono».<br>
+• <b>Причина сбоя:</b> При генерации из чистого шума модель сэмплирует и форму, и движение одновременно без 3D-тензора геометрии — топология рвется!</div>
+        </div>
+      </div>
+
+      <div class="stack" style="gap:10px;">
+        <div class="aspect-16-9">
+          <img src="assets/showcase/shot1_cafe_pickup.png" alt="I2V Success">
+        </div>
+        <div class="card-box success">
+          <div class="card-label" style="--k:var(--green)">СТАНДАРТ IMAGE-TO-VIDEO (I2V) • Граничное условие и фиксация геометрии</div>
+          <div class="cd" style="font-size:14px;line-height:1.45;">• <b>Нулевой дрифт внешности:</b> 100% сохранение черт лица, кудрей и сережки из Урока 04.<br>
+• <b>Стабильная физика:</b> Пальцы четко держат крафтовый пакет без расплавления.<br>
+• <b>Причина успеха:</b> Первый кадр заморожен как граничный инвариант (t=0). Модель вычисляет только вектор скорости движения (dx/dt)!</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14px;color:var(--fg);"><b>ФУНДАМЕНТАЛЬНЫЙ ПРИНЦИП:</b> Text-to-Video — это некорректно поставленная обратная задача (одновременный поиск структуры и времени). Image-to-Video — корректная задача Коши (структура заморожена при t=0, решается только кинематика).</div>
+      <span class="badge badge-cyan">INITIAL VALUE BOUNDARY</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>07 / 17</span></div>
+  <template class="notes">T2V Trainwreck vs I2V control: uncropped 16:9 frames. Autoregressive drift vs boundary condition.</template>
+</section>
+
+<!-- SLIDE 08: DIRECTOR'S PROMPT -->
+<section class="slide" data-n="8">
+  <div class="topbar">
+    <div class="kicker">Промпт-инжиниринг • Кинематический контроль</div>
+    <div class="idx-badge">08 / 17</div>
+  </div>
+  <h2 class="title">Режиссерский промпт: формула 6 слотов движения</h2>
+  <p class="lead">Структурированная спецификация пространства и времени исключает физические галлюцинации более чем на 85%</p>
+  <div class="body">
+    <div class="row c55_45" style="gap:20px;height:100%;">
+      <div style="display:flex;flex-direction:column;gap:10px;justify-content:space-between;">
+        <table class="dense-table" style="background:var(--surface);border-radius:10px;border:1px solid var(--line);font-size:12.5px;">
+          <thead>
+            <tr>
+              <th style="width:110px;">Слот</th>
+              <th style="width:105px;">Назначение</th>
+              <th>Пример ключевых слов</th>
+              <th>Инженерный смысл</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="badge badge-cyan">[1. Scene]</span></td>
+              <td>Контекст среды</td>
+              <td>Sunlit cafe interior, daylight</td>
+              <td>Задает границы геометрии</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-green">[2. Character]</span></td>
+              <td>Якорь героя</td>
+              <td>Courier in yellow jacket</td>
+              <td>Связывает латенты с I2V</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-amber">[3. Delta dx/dt]</span></td>
+              <td>Физика движения</td>
+              <td>Smoothly lifts bag, turns</td>
+              <td>Глаголы действия, не эпитеты!</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-violet">[4. Camera]</span></td>
+              <td>Траектория</td>
+              <td>Tracking shot, dolly pull-back</td>
+              <td>Синхронизирует параллакс</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-cyan">[5. Optics]</span></td>
+              <td>Глубина и частицы</td>
+              <td>24fps blur, dust motes, bokeh</td>
+              <td>Маскирует шум DiT модели</td>
+            </tr>
+            <tr>
+              <td><span class="badge badge-red">[6. Negative]</span></td>
+              <td>Отсечение брака</td>
+              <td>no morphing of hands, steady</td>
+              <td>Подавляет коллапсы формы</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;">
+          <span><b>ЭФФЕКТИВНОСТЬ ФОРМУЛЫ:</b> Структура из 6 слотов снижает физические галлюцинации в DiT-моделях на 85%.</span>
+          <span class="badge badge-cyan">85% PRECISION</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;justify-content:space-between;">
+        <div class="prompt-box" style="font-size:12px;line-height:1.4;padding:12px 14px;"><span class="s">[1. Сцена / Окружение]:</span> Утренний свет сквозь высокие окна кофейни, дубовая барная стойка.
+<span class="g">[2. Персонаж]:</span> Улыбающаяся девушка-курьер в желтой куртке и шлеме, стоящая у стойки.
+<span class="m">[3. Вектор действия (dx/dt)]:</span> Плавно поднимает крафтовый пакет двумя руками, разворачивается к выходу.
+<span class="v">[4. Движение камеры]:</span> Medium tracking shot на уровне глаз, мягкий отъезд параллельно движению.
+<span class="s">[5. Оптика и частицы]:</span> 24fps cinema motion blur, взвесь пылинок в солнечном луче, глубина резкости f/2.8.
+<span class="x">[6. Negative Constraints]:</span> no morphing of hands, no backwards motion, no text glitches, steady camera.</div>
+        <div class="card-box active" style="padding:12px 16px;">
+          <div class="card-label">ТРИ ПРАВИЛА РЕЖИССЕРСКОГО ПРОМПТА</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.4;margin-top:4px;">• <b>1. Глаголы вместо прилагательных:</b> Пишите «поднимает пакет, шагает влево», а не «динамичный, эффектный». Модели понимают векторы скорости.<br>
+• <b>2. Ноль тавтологии с ключевым кадром:</b> Не переописывайте одежду и цвета, уже замороженные в I2V. Описывайте строго дельту во времени (dx/dt).<br>
+• <b>3. Обязательные негативные границы:</b> Всегда отсекайте паразитное вращение назад, деформацию пальцев и дрожание линзы.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>08 / 17</span></div>
+  <template class="notes">6-slot kinematic prompt framework: 2-column balanced breakdown with table and concrete specification.</template>
+</section>
+
+<!-- SLIDE 09: CAMERA MOVEMENTS -->
+<section class="slide" data-n="9">
+  <div class="topbar">
+    <div class="kicker">Кинематография • Язык оператора</div>
+    <div class="idx-badge">09 / 17</div>
+  </div>
+  <h2 class="title">8 стандартных движений камеры: 3D-траектории и оптика</h2>
+  <p class="lead">Видеомодели обучены на профессиональных кинодатасетах. Стандартные термины дают точный пространственный параллакс</p>
+  <div class="body">
+    <div class="row c4" style="gap:12px;">
+      <div class="card-box" style="padding:10px 12px;">
+        <svg viewBox="0 0 160 95" class="cam-svg">
+      <defs>
+        <radialGradient id="gStatic" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#38bdf8" stop-opacity="0.3"/><stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/></radialGradient>
+      </defs>
+      <circle cx="80" cy="38" r="26" fill="url(#gStatic)"/>
+      <path d="M62 64 L80 40 L98 64 M80 40 L80 66" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+      <rect x="68" y="26" width="24" height="15" rx="3" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+      <polygon points="92,29 104,24 104,43 92,38" fill="#38bdf8"/>
+      <circle cx="80" cy="33" r="3" fill="#34d399"/>
+      <rect x="25" y="74" width="110" height="16" rx="3" fill="#0b1322" stroke="rgba(56,189,248,0.4)" stroke-width="1"/>
+      <text x="80" y="86" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">LOCKED AT (0,0,0)</text>
+    </svg>
+        <div>
+          <div class="ch" style="font-size:15px;color:var(--cyan);">Штатив (Static)</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">
+            <div><b>•</b> Ось: Фиксирована в (0,0,0)</div>
+            <div><b>•</b> Оптика: Статичная глубина, 0 параллакса</div>
+            <div style="color:var(--fg);margin-top:2px;"><b>•</b> Применение: Диалоги, интервью, UI-демо</div>
+          </div>
+          <div style="background:#070d18;border:1px solid rgba(56,189,248,0.2);border-radius:4px;padding:3px 6px;font-family:var(--font-mono);font-size:10px;color:var(--cyan);margin-top:5px;">
+            <b>DIRECTIVE:</b> "Static camera, locked tripod, zero pan"
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box" style="padding:10px 12px;">
+        <svg viewBox="0 0 160 95" class="cam-svg">
+      <defs>
+        <marker id="arrCyan" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0,0 6,3 0,6" fill="#38bdf8"/></marker>
+        <marker id="arrCyanL" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto"><polygon points="6,0 0,3 6,6" fill="#38bdf8"/></marker>
+      </defs>
+      <path d="M66 64 L80 42 L94 64" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+      <rect x="68" y="28" width="24" height="14" rx="3" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+      <polygon points="92,31 102,26 102,44 92,39" fill="#38bdf8"/>
+      <path d="M26 20 Q80 6 134 20" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="4 2" marker-end="url(#arrCyan)" marker-start="url(#arrCyanL)"/>
+      <rect x="18" y="74" width="124" height="16" rx="3" fill="#0b1322" stroke="rgba(56,189,248,0.4)" stroke-width="1"/>
+      <text x="80" y="86" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">HORIZONTAL YAW (L / R)</text>
+    </svg>
+        <div>
+          <div class="ch" style="font-size:15px;color:var(--cyan);">Панорама (Pan L/R)</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">
+            <div><b>•</b> Ось: Вращение по оси рыскания (Yaw)</div>
+            <div><b>•</b> Оптика: Планарный параллакс фона</div>
+            <div style="color:var(--fg);margin-top:2px;"><b>•</b> Применение: Панорама города, слежение</div>
+          </div>
+          <div style="background:#070d18;border:1px solid rgba(56,189,248,0.2);border-radius:4px;padding:3px 6px;font-family:var(--font-mono);font-size:10px;color:var(--cyan);margin-top:5px;">
+            <b>DIRECTIVE:</b> "Horizontal pan left to right, 24mm prime"
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box" style="padding:10px 12px;">
+        <svg viewBox="0 0 160 95" class="cam-svg">
+      <defs>
+        <marker id="arrGreen" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0,0 6,3 0,6" fill="#34d399"/></marker>
+        <marker id="arrGreenL" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto"><polygon points="6,0 0,3 6,6" fill="#34d399"/></marker>
+      </defs>
+      <line x1="28" y1="66" x2="68" y2="26" stroke="#334155" stroke-width="1.5" stroke-dasharray="2 2"/>
+      <line x1="132" y1="66" x2="92" y2="26" stroke="#334155" stroke-width="1.5" stroke-dasharray="2 2"/>
+      <line x1="46" y1="50" x2="114" y2="50" stroke="#334155" stroke-width="1"/>
+      <line x1="58" y1="36" x2="102" y2="36" stroke="#334155" stroke-width="1"/>
+      <line x1="80" y1="66" x2="80" y2="20" stroke="#34d399" stroke-width="2.5" marker-end="url(#arrGreen)" marker-start="url(#arrGreenL)"/>
+      <rect x="68" y="30" width="24" height="14" rx="3" fill="#1e293b" stroke="#34d399" stroke-width="2"/>
+      <polygon points="92,33 102,28 102,46 92,41" fill="#34d399"/>
+      <rect x="25" y="74" width="110" height="16" rx="3" fill="#0b1322" stroke="rgba(52,211,153,0.4)" stroke-width="1"/>
+      <text x="80" y="86" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">Z-AXIS TRANSLATION</text>
+    </svg>
+        <div>
+          <div class="ch" style="font-size:15px;color:var(--green);">Наезд тележки (Dolly)</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">
+            <div><b>•</b> Ось: Смещение по оси глубины Z (Δz)</div>
+            <div><b>•</b> Оптика: Глубокий пространственный параллакс</div>
+            <div style="color:var(--fg);margin-top:2px;"><b>•</b> Применение: Драматический акцент, эмоции</div>
+          </div>
+          <div style="background:#070d18;border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:3px 6px;font-family:var(--font-mono);font-size:10px;color:var(--green);margin-top:5px;">
+            <b>DIRECTIVE:</b> "Dolly-in push along Z-axis toward subject"
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box" style="padding:10px 12px;">
+        <svg viewBox="0 0 160 95" class="cam-svg">
+      <defs>
+        <marker id="arrTruck" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0,0 6,3 0,6" fill="#34d399"/></marker>
+        <marker id="arrTruckL" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto"><polygon points="6,0 0,3 6,6" fill="#34d399"/></marker>
+      </defs>
+      <line x1="18" y1="58" x2="142" y2="58" stroke="#334155" stroke-width="3"/>
+      <line x1="18" y1="64" x2="142" y2="64" stroke="#334155" stroke-width="3"/>
+      <line x1="26" y1="18" x2="134" y2="18" stroke="#34d399" stroke-width="2.5" marker-end="url(#arrTruck)" marker-start="url(#arrTruckL)"/>
+      <rect x="68" y="34" width="24" height="14" rx="3" fill="#1e293b" stroke="#34d399" stroke-width="2"/>
+      <polygon points="92,37 102,32 102,50 92,45" fill="#34d399"/>
+      <circle cx="74" cy="54" r="3" fill="#64748b"/>
+      <circle cx="86" cy="54" r="3" fill="#64748b"/>
+      <rect x="20" y="74" width="120" height="16" rx="3" fill="#0b1322" stroke="rgba(52,211,153,0.4)" stroke-width="1"/>
+      <text x="80" y="86" fill="#34d399" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">X-AXIS LATERAL TRACK</text>
+    </svg>
+        <div>
+          <div class="ch" style="font-size:15px;color:var(--green);">Слежение сбоку (Truck)</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">
+            <div><b>•</b> Ось: Смещение по оси ширины X (Δx)</div>
+            <div><b>•</b> Оптика: Линейный параллакс окружения</div>
+            <div style="color:var(--fg);margin-top:2px;"><b>•</b> Применение: Бег, езда курьера на велосипеде</div>
+          </div>
+          <div style="background:#070d18;border:1px solid rgba(52,211,153,0.2);border-radius:4px;padding:3px 6px;font-family:var(--font-mono);font-size:10px;color:var(--green);margin-top:5px;">
+            <b>DIRECTIVE:</b> "Truck left tracking parallel to bicycle"
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box" style="padding:10px 12px;">
+        <svg viewBox="0 0 160 95" class="cam-svg">
+      <defs>
+        <marker id="arrAmber" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0,0 6,3 0,6" fill="#fbbf24"/></marker>
+      </defs>
+      <circle cx="80" cy="38" r="8" fill="#fbbf24" fill-opacity="0.25" stroke="#fbbf24" stroke-width="2"/>
+      <circle cx="80" cy="38" r="3" fill="#fbbf24"/>
+      <ellipse cx="80" cy="38" rx="54" ry="22" fill="none" stroke="#fbbf24" stroke-width="2" stroke-dasharray="4 2"/>
+      <path d="M134 38 A54 22 0 0 1 80 60" fill="none" stroke="#fbbf24" stroke-width="2.5" marker-end="url(#arrAmber)"/>
+      <rect x="28" y="28" width="20" height="13" rx="2" fill="#1e293b" stroke="#fbbf24" stroke-width="1.5"/>
+      <polygon points="48,31 56,27 56,42 48,38" fill="#fbbf24"/>
+      <rect x="26" y="74" width="108" height="16" rx="3" fill="#0b1322" stroke="rgba(251,191,36,0.4)" stroke-width="1"/>
+      <text x="80" y="86" fill="#fbbf24" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">360° CIRCULAR ARC</text>
+    </svg>
+        <div>
+          <div class="ch" style="font-size:15px;color:var(--amber);">Круговой облет (Orbit)</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">
+            <div><b>•</b> Ось: Облет по кругу радиуса R (r, θ)</div>
+            <div><b>•</b> Оптика: Центростремительное смещение бликов</div>
+            <div style="color:var(--fg);margin-top:2px;"><b>•</b> Применение: Пакшоты товаров, презентация авто</div>
+          </div>
+          <div style="background:#070d18;border:1px solid rgba(251,191,36,0.2);border-radius:4px;padding:3px 6px;font-family:var(--font-mono);font-size:10px;color:var(--amber);margin-top:5px;">
+            <b>DIRECTIVE:</b> "360-degree orbital arc circling product"
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box" style="padding:10px 12px;">
+        <svg viewBox="0 0 160 95" class="cam-svg">
+      <defs>
+        <marker id="arrTiltU" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0,0 6,3 0,6" fill="#fbbf24"/></marker>
+        <marker id="arrTiltD" markerWidth="6" markerHeight="6" refX="1" refY="3" orient="auto"><polygon points="6,0 0,3 6,6" fill="#fbbf24"/></marker>
+      </defs>
+      <path d="M64 64 L78 42 L92 64" stroke="#64748b" stroke-width="2" stroke-linecap="round"/>
+      <g transform="rotate(-25 78 34)">
+        <rect x="66" y="27" width="24" height="14" rx="3" fill="#1e293b" stroke="#fbbf24" stroke-width="2"/>
+        <polygon points="90,30 100,25 100,43 90,38" fill="#fbbf24"/>
+      </g>
+      <path d="M120 16 Q136 36 120 56" fill="none" stroke="#fbbf24" stroke-width="2.5" marker-start="url(#arrTiltU)" marker-end="url(#arrTiltD)"/>
+      <rect x="20" y="74" width="120" height="16" rx="3" fill="#0b1322" stroke="rgba(251,191,36,0.4)" stroke-width="1"/>
+      <text x="80" y="86" fill="#fbbf24" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">PITCH AXIS (UP / DOWN)</text>
+    </svg>
+        <div>
+          <div class="ch" style="font-size:15px;color:var(--amber);">Вертикальный наклон</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">
+            <div><b>•</b> Ось: Вращение по оси тангажа (Pitch)</div>
+            <div><b>•</b> Оптика: Вертикальная монументальность</div>
+            <div style="color:var(--fg);margin-top:2px;"><b>•</b> Применение: Небоскребы, осмотр снизу вверх</div>
+          </div>
+          <div style="background:#070d18;border:1px solid rgba(251,191,36,0.2);border-radius:4px;padding:3px 6px;font-family:var(--font-mono);font-size:10px;color:var(--amber);margin-top:5px;">
+            <b>DIRECTIVE:</b> "Vertical tilt upward from street to skyline"
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box" style="padding:10px 12px;">
+        <svg viewBox="0 0 160 95" class="cam-svg">
+      <defs>
+        <marker id="arrCrane" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0,0 6,3 0,6" fill="#c084fc"/></marker>
+      </defs>
+      <line x1="24" y1="66" x2="42" y2="66" stroke="#64748b" stroke-width="3"/>
+      <line x1="33" y1="66" x2="33" y2="46" stroke="#64748b" stroke-width="2.5"/>
+      <line x1="33" y1="46" x2="98" y2="22" stroke="#94a3b8" stroke-width="2.5"/>
+      <path d="M112 56 Q132 38 112 20" fill="none" stroke="#c084fc" stroke-width="2.5" marker-end="url(#arrCrane)"/>
+      <rect x="98" y="16" width="20" height="12" rx="2" fill="#1e293b" stroke="#c084fc" stroke-width="1.5"/>
+      <polygon points="118,19 126,15 126,29 118,25" fill="#c084fc"/>
+      <rect x="25" y="74" width="110" height="16" rx="3" fill="#0b1322" stroke="rgba(192,132,252,0.4)" stroke-width="1"/>
+      <text x="80" y="86" fill="#c084fc" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">Y-AXIS ELEVATION</text>
+    </svg>
+        <div>
+          <div class="ch" style="font-size:15px;color:var(--violet);">Подъем крана (Crane)</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">
+            <div><b>•</b> Ось: Смещение по вертикали Y (Δy)</div>
+            <div><b>•</b> Оптика: Раскрытие сцены от земли к птичьему виду</div>
+            <div style="color:var(--fg);margin-top:2px;"><b>•</b> Применение: Открывающие и закрывающие шоты</div>
+          </div>
+          <div style="background:#070d18;border:1px solid rgba(192,132,252,0.2);border-radius:4px;padding:3px 6px;font-family:var(--font-mono);font-size:10px;color:var(--violet);margin-top:5px;">
+            <b>DIRECTIVE:</b> "Jib crane boom rising vertically, vista reveal"
+          </div>
+        </div>
+      </div>
+
+      <div class="card-box" style="padding:10px 12px;">
+        <svg viewBox="0 0 160 95" class="cam-svg">
+      <defs>
+        <marker id="arrFPV" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><polygon points="0,0 6,3 0,6" fill="#c084fc"/></marker>
+      </defs>
+      <path d="M22 60 Q58 66 86 42 T136 20" fill="none" stroke="#c084fc" stroke-width="2.5" stroke-dasharray="4 2"/>
+      <path d="M110 26 L138 20" fill="none" stroke="#c084fc" stroke-width="2.5" marker-end="url(#arrFPV)"/>
+      <g transform="translate(86, 40) rotate(-28)">
+        <rect x="-10" y="-5" width="20" height="10" rx="2" fill="#1e293b" stroke="#c084fc" stroke-width="1.5"/>
+        <line x1="-14" y1="-7" x2="-6" y2="-7" stroke="#38bdf8" stroke-width="2"/>
+        <line x1="6" y1="-7" x2="14" y2="-7" stroke="#38bdf8" stroke-width="2"/>
+        <line x1="-14" y1="7" x2="-6" y2="7" stroke="#38bdf8" stroke-width="2"/>
+        <line x1="6" y1="7" x2="14" y2="7" stroke="#38bdf8" stroke-width="2"/>
+      </g>
+      <rect x="20" y="74" width="120" height="16" rx="3" fill="#0b1322" stroke="rgba(192,132,252,0.4)" stroke-width="1"/>
+      <text x="80" y="86" fill="#c084fc" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" text-anchor="middle">6-DOF DYNAMIC DIVE</text>
+    </svg>
+        <div>
+          <div class="ch" style="font-size:15px;color:var(--violet);">Полет FPV-дрона</div>
+          <div style="font-size:12px;color:var(--muted);line-height:1.35;margin-top:3px;">
+            <div><b>•</b> Ось: Динамика по 6 степеням свободы (6-DOF)</div>
+            <div><b>•</b> Оптика: Сверхвысокая угловая скорость и крен</div>
+            <div style="color:var(--fg);margin-top:2px;"><b>•</b> Применение: Экстремальный спорт, погони</div>
+          </div>
+          <div style="background:#070d18;border:1px solid rgba(192,132,252,0.2);border-radius:4px;padding:3px 6px;font-family:var(--font-mono);font-size:10px;color:var(--violet);margin-top:5px;">
+            <b>DIRECTIVE:</b> "Dynamic FPV drone dive banking into alley"
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>09 / 17</span></div>
+  <template class="notes">8 virtual camera movements: clear visual schematics with 3D coordinate axes and motion vectors.</template>
+</section>
+
+<!-- SLIDE 10: CREATIVE WEB STUDIOS -->
+<section class="slide" data-n="10">
+  <div class="topbar">
+    <div class="kicker">Творческие веб-студии • Матрица выбора инструментов</div>
+    <div class="idx-badge">10 / 17</div>
+  </div>
+  <h2 class="title">Ведущие видеостудии: Kling, Runway, Luma и Leonardo</h2>
+  <p class="lead">Сравнение ключевых творческих веб-интерфейсов для коммерческого продакшна и режиссуры движения</p>
+  <div class="body">
+    <div class="row c4" style="gap:16px;">
+      <div class="card-box active" style="padding:14px 16px;">
+        <div>
+          <div class="card-label">KLING AI 1.5 / 2.0</div>
+          <div class="ch" style="font-size:17.5px;margin:2px 0 6px;">Эталон кинематики людей</div>
+          <div class="cd" style="font-size:12px;line-height:1.35;margin-bottom:6px;">• <b>Моторика рук:</b> Лучшая в индустрии анатомия пальцев и походка человека.<br>
+• <b>Motion Brush:</b> Точные векторы скорости для локальных зон кадра.<br>
+• <b>Продление шотов:</b> Нативное увеличение длительности до 10 сек без срывов.</div>
+        </div>
+        <div style="background:#070d18;border:1px solid rgba(56,189,248,0.2);border-radius:6px;padding:6px 8px;margin-bottom:8px;">
+          <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--cyan);letter-spacing:.05em;">РЕЖИССЕРСКИЕ ВОЗМОЖНОСТИ</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.35;margin-top:2px;">• <b>Motion Brush:</b> 6 слоев с (X,Y,Z) векторами<br>• <b>Freeze Mask:</b> Скорость 0.0 для лиц и логотипов<br>• <b>Камера:</b> 6-осевые пресеты траекторий</div>
+        </div>
+        <div>
+          <div class="metric-row"><span class="metric-k">Архитектура:</span><span class="metric-v">DiT Spatiotemporal</span></div>
+          <div class="metric-row"><span class="metric-k">Макс. длина:</span><span class="metric-v">5s (Extend 10s)</span></div>
+          <div class="metric-row"><span class="metric-k">Контроль камеры:</span><span class="metric-v">Motion Brush + 6-Axis</span></div>
+          <div class="metric-row"><span class="metric-k">Разрешение:</span><span class="metric-v">1080p @ 30fps</span></div>
+          <div class="metric-row"><span class="metric-k">Задержка:</span><span class="metric-v">45–90 seconds</span></div>
+          <div class="metric-row"><span class="metric-k">Модель доступа:</span><span class="metric-v">Daily Free Credits</span></div>
+        </div>
+      </div>
+
+      <div class="card-box warn" style="padding:14px 16px;">
+        <div>
+          <div class="card-label" style="--k:var(--amber)">RUNWAY GEN-4 / GEN-3</div>
+          <div class="ch" style="font-size:17.5px;margin:2px 0 6px;">Режиссерские сплайны</div>
+          <div class="cd" style="font-size:12px;line-height:1.35;margin-bottom:6px;">• <b>3D Сплайны:</b> Профессиональные кривые движения виртуальной камеры.<br>
+• <b>First/Last Frame:</b> Точная интерполяция между двумя ключевыми кадрами.<br>
+• <b>Режиссура:</b> Высокоуровневый кинематографический контроль сцены.</div>
+        </div>
+        <div style="background:#070d18;border:1px solid rgba(251,191,36,0.2);border-radius:6px;padding:6px 8px;margin-bottom:8px;">
+          <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--amber);letter-spacing:.05em;">РЕЖИССЕРСКИЕ ВОЗМОЖНОСТИ</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.35;margin-top:2px;">• <b>3D Splines:</b> Мультикамерные кривые Безье<br>• <b>First/Last Frame:</b> Интерполяция между 2 кадрами<br>• <b>Director Mode:</b> Ползунки скорости и кинематографики</div>
+        </div>
+        <div>
+          <div class="metric-row"><span class="metric-k">Архитектура:</span><span class="metric-v">Latent Diffusion</span></div>
+          <div class="metric-row"><span class="metric-k">Макс. длина:</span><span class="metric-v">5s / 10s Keyframes</span></div>
+          <div class="metric-row"><span class="metric-k">Контроль камеры:</span><span class="metric-v">3D Splines + First/Last</span></div>
+          <div class="metric-row"><span class="metric-k">Разрешение:</span><span class="metric-v">1080p / 4K Upscale</span></div>
+          <div class="metric-row"><span class="metric-k">Задержка:</span><span class="metric-v">60–120 seconds</span></div>
+          <div class="metric-row"><span class="metric-k">Модель доступа:</span><span class="metric-v">Subscription Tiers</span></div>
+        </div>
+      </div>
+
+      <div class="card-box success" style="padding:14px 16px;">
+        <div>
+          <div class="card-label" style="--k:var(--green)">LUMA DREAM MACHINE</div>
+          <div class="ch" style="font-size:17.5px;margin:2px 0 6px;">Скорость и геометрия 3D</div>
+          <div class="cd" style="font-size:12px;line-height:1.35;margin-bottom:6px;">• <b>Скорость диффузии:</b> Самый быстрый рендеринг среди коммерческих DiT.<br>
+• <b>Твердые тела:</b> Высокая устойчивость жестких 3D-объектов и упаковки.<br>
+• <b>Orbit 360:</b> Чистый непрерывный круговой облет товаров без деформации.</div>
+        </div>
+        <div style="background:#070d18;border:1px solid rgba(52,211,153,0.2);border-radius:6px;padding:6px 8px;margin-bottom:8px;">
+          <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--green);letter-spacing:.05em;">РЕЖИССЕРСКИЕ ВОЗМОЖНОСТИ</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.35;margin-top:2px;">• <b>Orbit 360:</b> Устойчивый круговой облет товаров<br>• <b>Быстрая диффузия:</b> Рендер 30с для быстрых итераций<br>• <b>Rigid Bodies:</b> Высокая устойчивость жестких 3D тел</div>
+        </div>
+        <div>
+          <div class="metric-row"><span class="metric-k">Архитектура:</span><span class="metric-v">Transformer DiT</span></div>
+          <div class="metric-row"><span class="metric-k">Макс. длина:</span><span class="metric-v">5s Fast Render</span></div>
+          <div class="metric-row"><span class="metric-k">Контроль камеры:</span><span class="metric-v">Keyframe Orbit</span></div>
+          <div class="metric-row"><span class="metric-k">Разрешение:</span><span class="metric-v">1080p @ 24/30fps</span></div>
+          <div class="metric-row"><span class="metric-k">Задержка:</span><span class="metric-v">30–60 seconds</span></div>
+          <div class="metric-row"><span class="metric-k">Модель доступа:</span><span class="metric-v">Free Tier + Pro</span></div>
+        </div>
+      </div>
+
+      <div class="card-box" style="border-color:var(--violet);background:rgba(192,132,252,.04);padding:14px 16px;">
+        <div>
+          <div class="card-label" style="--k:var(--violet)">LEONARDO AI MOTION</div>
+          <div class="ch" style="font-size:17.5px;margin:2px 0 6px;">Интегрированный арт-канвас</div>
+          <div class="cd" style="font-size:12px;line-height:1.35;margin-bottom:6px;">• <b>Единый канвас:</b> Прямой мост от генерации 2D концептов к видео шотам.<br>
+• <b>Motion Slider:</b> Тонкая шкала силы движения (1–10) для микро-анимации.<br>
+• <b>Генерация звука:</b> Встроенный синтез базовых звуковых дорожек.</div>
+        </div>
+        <div style="background:#070d18;border:1px solid rgba(192,132,252,0.2);border-radius:6px;padding:6px 8px;margin-bottom:8px;">
+          <div style="font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--violet);letter-spacing:.05em;">РЕЖИССЕРСКИЕ ВОЗМОЖНОСТИ</div>
+          <div style="font-size:11.5px;color:var(--muted);line-height:1.35;margin-top:2px;">• <b>Единый канвас:</b> Прямой мост от 2D-слоев к видео<br>• <b>Motion Slider:</b> Шкала силы движения 1–10<br>• <b>Встроенный звук:</b> Прямой синтез эмбиент-дорожки</div>
+        </div>
+        <div>
+          <div class="metric-row"><span class="metric-k">Архитектура:</span><span class="metric-v">Multimodal Canvas</span></div>
+          <div class="metric-row"><span class="metric-k">Макс. длина:</span><span class="metric-v">4s Ambient Loops</span></div>
+          <div class="metric-row"><span class="metric-k">Контроль камеры:</span><span class="metric-v">Motion Strength 1–10</span></div>
+          <div class="metric-row"><span class="metric-k">Разрешение:</span><span class="metric-v">720p / 1080p Upscale</span></div>
+          <div class="metric-row"><span class="metric-k">Задержка:</span><span class="metric-v">30–60 seconds</span></div>
+          <div class="metric-row"><span class="metric-k">Модель доступа:</span><span class="metric-v">Daily Token Wallet</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14px;color:var(--fg);"><b>СТРАТЕГИЯ ВЫБОРА:</b> Используйте Kling AI для людей и вело-экшена; используйте Runway для кинематографичных сплайнов; используйте Luma для пакшотов товаров.</div>
+      <span class="badge badge-amber">TOOL SELECTION MATRIX</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>10 / 17</span></div>
+  <template class="notes">Creative Web Studios matrix: Kling, Runway, Luma, and Leonardo feature comparison.</template>
+</section>
+
+<!-- SLIDE 11: MOTION BRUSH & FREEZE MASK -->
+<section class="slide" data-n="11">
+  <div class="topbar">
+    <div class="kicker">Контроль динамики • Motion Brush и маски</div>
+    <div class="idx-badge">11 / 17</div>
+  </div>
+  <h2 class="title">Motion Brush: разделение траекторий колес, воды и лица</h2>
+  <p class="lead">Решение проблемы паразитного движения: назначаем раздельные векторы скорости разным зонам кадра</p>
+  <div class="body">
+    <div class="row c2" style="gap:24px;align-items:stretch;">
+      <div class="pic-card" style="display:flex;flex-direction:column;height:100%;">
+        <div class="pic-frame cover" style="flex:1;">
+          <img src="assets/showcase/motion_brush_demo.png" alt="Motion Brush">
+        </div>
+        <div class="pic-cap" style="padding:10px 14px;">
+          <b>Карта масок движения (Motion Brush)</b><br>
+          <span style="font-size:12.5px;color:var(--dim);">Синяя: колеса (X = +4) • Желтая: брызги луж (Y = +3) • Зеленая: лицо и сумка (Speed = 0)</span>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
+        <div class="card-box active" style="padding:12px 16px;flex:1;">
+          <div class="card-label">КИСТЬ 1 • ВРАЩЕНИЕ КОЛЕС (ВЕКТОР +X)</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Зона маскирования:</b> Обода колес, спицы, цепь и педали велосипеда.<br>
+• <b>Физический вектор:</b> Вектор смещения вперед (X = +4.0, Y = 0.0).<br>
+• <b>Настройки UI:</b> Кисть 1 • Жесткий край • Линейное смещение.<br>
+• <b>Результат:</b> Колеса крутятся реалистично, геометрия рамы сохранена.</div>
+        </div>
+        <div class="card-box warn" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--amber)">КИСТЬ 2 • БРЫЗГИ ВОДЫ (ВЕКТОР +Y)</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Зона маскирования:</b> Мокрая брусчатка под шинами и зона контакта с водой.<br>
+• <b>Физический вектор:</b> Гидродинамический всплеск вверх (X = +1.5, Y = +3.0).<br>
+• <b>Настройки UI:</b> Кисть 2 • Мягкий градиент • Турбулентная дисперсия.<br>
+• <b>Результат:</b> Капли воды разлетаются по реалистичной параболической дуге.</div>
+        </div>
+        <div class="card-box success" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--green)">СТАТИЧЕСКАЯ МАСКА • ЗАМОРОЗКА (СКОРОСТЬ = 0)</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Зона маскирования:</b> Лицо курьера, глаза, шлем и логотип рюкзака Glovo.<br>
+• <b>Физический вектор:</b> Скорость строго заблокирована (Скорость = 0.0).<br>
+• <b>Настройки UI:</b> Static Freeze Mask • Полная фиксация координат.<br>
+• <b>Результат:</b> 100% защита от деформации анатомии лица и мутации логотипа.</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14px;color:var(--fg);"><b>РЕЖИССЕРСКОЕ ПРАВИЛО:</b> Всегда сначала закрашивайте лицо и бренд маской Freeze Mask (Speed=0), и только потом задавайте векторы окружению!</div>
+      <span class="badge badge-green">LOCALIZED VECTOR CONTROL</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>11 / 17</span></div>
+  <template class="notes">Motion Brush masks and Speed-0 freeze mask. How directional velocity vectors isolate kinetics.</template>
+</section>
+
+<!-- SLIDE 12: MIDPOINT BREAK -->
+<section class="slide" data-n="12">
+  <div class="topbar">
+    <div class="kicker" style="--k:var(--amber)">Экватор занятия • Перерыв</div>
+    <div class="idx-badge">12 / 17</div>
+  </div>
+  <h2 class="title">5 минут на кофе и отдых для глаз</h2>
+  <p class="lead">Строгое правило: ноль задач в чате и ноль вопросов во время паузы. Полная перезагрузка внимания перед второй частью</p>
+  <div class="body">
+    <div class="stack center" style="align-items:center;gap:24px;">
+      <div id="clock" style="font-family:var(--font-mono);font-size:124px;font-weight:800;color:var(--cyan);letter-spacing:.04em;line-height:1;text-shadow:0 0 30px rgba(56,189,248,0.25);">05:00</div>
+      <div style="display:flex;gap:16px;">
+        <button id="timerStart" style="font-family:var(--font-mono);font-size:16px;font-weight:700;padding:12px 28px;border-radius:8px;background:var(--cyan);color:#0b0f17;border:none;cursor:pointer;">СТАРТ 5 МИН</button>
+        <button id="timerReset" style="font-family:var(--font-mono);font-size:16px;font-weight:700;padding:12px 28px;border-radius:8px;background:var(--surface);color:var(--fg);border:1px solid var(--line);cursor:pointer;">СБРОС</button>
+      </div>
+      <div class="card-box" style="border-color:var(--amber);max-width:880px;text-align:center;padding:18px 24px;">
+        <div style="font-size:16.5px;line-height:1.45;color:var(--fg);"><b>Во второй части:</b> Матрица монтажной раскадровки (кейс Glovo 4+4+3), границы ответственности Blast Radius, цифровые водяные знаки SynthID и C2PA, алгоритм выбора технологий и разбор домашнего задания.</div>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:13px;color:var(--dim);">Смените фокус зрения: посмотрите в окно на далекие предметы • Никаких обсуждений в чате</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>12 / 17</span></div>
+  <template class="notes">5-minute break timer. Strictly rest only. No chat tasks.</template>
+</section>
+
+<!-- SLIDE 13: PRODUCTION STORYBOARD MATRIX -->
+<section class="slide" data-n="13">
+  <div class="topbar">
+    <div class="kicker">Монтажное производство • Матрица раскадровки</div>
+    <div class="idx-badge">13 / 17</div>
+  </div>
+  <h2 class="title">Матрица шотов: как собирается 3-шотовый рекламный ролик</h2>
+  <p class="lead">Дисциплина монтажа: вместо одного нестабильного 15-секундного дубля мы генерируем 3 коротких идеальных шота</p>
+  <div class="body">
+    <div class="row c3" style="gap:20px;">
+      <div class="pic-card" style="justify-content:space-between;">
+        <div class="pic-frame cover"><img src="assets/showcase/shot1_animated_frame.jpg" alt="Shot 1"></div>
+        <div class="pic-cap" style="margin-top:4px;">
+          <span class="badge badge-cyan">ШОТ 1 • ЗАБОР ЗАКАЗА (4 СЕК)</span>
+          <div class="ch" style="font-size:17px;margin:4px 0 6px;">Кафе, бариста, крафтовый пакет</div>
+          <div class="metric-row"><span class="metric-k">Крупность плана:</span><span class="metric-v">Medium Shot (MS)</span></div>
+          <div class="metric-row"><span class="metric-k">Таймкод шота:</span><span class="metric-v">00:00 – 00:04 (4s)</span></div>
+          <div class="metric-row"><span class="metric-k">Вектор камеры:</span><span class="metric-v">Dolly-Out (Z = -2)</span></div>
+          <div class="metric-row"><span class="metric-k">Foley & Саунд-дизайн:</span><span class="metric-v">Звон чашек, джаз</span></div>
+          <div class="metric-row"><span class="metric-k">Физика движения:</span><span class="metric-v">Подъем пакета двумя руками</span></div>
+        </div>
+      </div>
+
+      <div class="pic-card" style="justify-content:space-between;">
+        <div class="pic-frame cover"><img src="assets/showcase/shot2_animated_frame.jpg" alt="Shot 2"></div>
+        <div class="pic-cap" style="margin-top:4px;">
+          <span class="badge badge-amber">ШОТ 2 • ДОЖДЬ И ДОРОГА (4 СЕК)</span>
+          <div class="ch" style="font-size:17px;margin:4px 0 6px;">Динамичная поездка по авеню</div>
+          <div class="metric-row"><span class="metric-k">Крупность плана:</span><span class="metric-v">Tracking Close-Up (CU)</span></div>
+          <div class="metric-row"><span class="metric-k">Таймкод шота:</span><span class="metric-v">00:04 – 00:08 (4s)</span></div>
+          <div class="metric-row"><span class="metric-k">Вектор камеры:</span><span class="metric-v">Truck Left (X = +3)</span></div>
+          <div class="metric-row"><span class="metric-k">Foley & Саунд-дизайн:</span><span class="metric-v">Шум шин, ливень</span></div>
+          <div class="metric-row"><span class="metric-k">Физика движения:</span><span class="metric-v">Вращение колес + брызги</span></div>
+        </div>
+      </div>
+
+      <div class="pic-card" style="justify-content:space-between;">
+        <div class="pic-frame cover"><img src="assets/showcase/shot3_animated_frame.jpg" alt="Shot 3"></div>
+        <div class="pic-cap" style="margin-top:4px;">
+          <span class="badge badge-green">ШОТ 3 • GPS-НАВИГАЦИЯ (3 СЕК)</span>
+          <div class="ch" style="font-size:17px;margin:4px 0 6px;">3D-маршрут на смартфоне</div>
+          <div class="metric-row"><span class="metric-k">Крупность плана:</span><span class="metric-v">Isometric Macro (ECU)</span></div>
+          <div class="metric-row"><span class="metric-k">Таймкод шота:</span><span class="metric-v">00:08 – 00:11 (3s)</span></div>
+          <div class="metric-row"><span class="metric-k">Вектор камеры:</span><span class="metric-v">Push-In (Z = +2)</span></div>
+          <div class="metric-row"><span class="metric-k">Foley & Саунд-дизайн:</span><span class="metric-v">UI клик, бип GPS</span></div>
+          <div class="metric-row"><span class="metric-k">Физика движения:</span><span class="metric-v">Отрисовка нити пути</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14.5px;color:var(--fg);"><b>МОНТАЖНАЯ ФРАЗА 4+4+3:</b> Три шота собираются в CapCut или Premiere за 1 минуту со склейкой кроссфейд 0.3 сек. 100% стабильность без галлюцинаций длинных дублей!</div>
+      <span class="badge badge-cyan">TIMELINE ASSEMBLY</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>13 / 17</span></div>
+  <template class="notes">Storyboard matrix: 3 bounded shots (4+4+3) with framing metadata, camera vectors, and Foley audio cues.</template>
+</section>
+
+<!-- SLIDE 14: RISK GOVERNANCE & PROVENANCE -->
+<section class="slide" data-n="14">
+  <div class="topbar">
+    <div class="kicker">Управление рисками • Blast Radius и C2PA</div>
+    <div class="idx-badge">14 / 17</div>
+  </div>
+  <h2 class="title">Светофор рисков и цифровая подлинность: SynthID и C2PA</h2>
+  <p class="lead">Где видео-ИИ безопасен и запрещен, и как криптографические манифесты подтверждают происхождение видео</p>
+  <div class="body">
+    <div class="row c2" style="gap:24px;align-items:stretch;">
+      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
+        <div class="card-box success" style="padding:12px 16px;flex:1;">
+          <div class="ch" style="font-size:15.5px;color:var(--green);">ЗЕЛЕНАЯ ЗОНА • АВТОНОМНАЯ ГЕНЕРАЦИЯ</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Сфера применения:</b> Фоновые B-roll футажи, видеоциклы для веб-сайтов, питч-аниматики.<br>
+• <b>Разрешенные модели:</b> Kling Standard, Runway Gen-3, Luma Dream Machine.<br>
+• <b>Протокол проверки:</b> Автоматический фильтр на запрещенные бренды; ручной аппрув не требуется.<br>
+• <b>Юридическая ответственность:</b> Нулевой коммерческий риск; материалы для внутреннего пользования.</div>
+        </div>
+
+        <div class="card-box warn" style="padding:12px 16px;flex:1;">
+          <div class="ch" style="font-size:15.5px;color:var(--amber);">ЖЕЛТАЯ ЗОНА • ОБЯЗАТЕЛЬНЫЙ КОНТРОЛЬ ЧЕЛОВЕКА</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Сфера применения:</b> Коммерческая реклама брендов, пакшоты товаров e-commerce, маркетинг в соцсетях.<br>
+• <b>Обязательный аудит:</b> Покадровый чек-лист (пальцы, зубы, отражения, геометрия логотипа).<br>
+• <b>Ворота согласования:</b> Обязательная подпись Creative Director или Lead QA перед сдачей клиенту.<br>
+• <b>Вектор риска:</b> Репутационный ущерб от расплавленных пальцев или искажения логотипа бренда.</div>
+        </div>
+
+        <div class="card-box danger" style="padding:12px 16px;flex:1;">
+          <div class="ch" style="font-size:15.5px;color:var(--red);">КРАСНАЯ ЗОНА • КАТЕГОРИЧЕСКИЙ ЗАПРЕТ ГЕНЕРАЦИИ</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Запрещенные сферы:</b> Новостные сюжеты, инструкции по охране труда (SOP), медицина, клонирование лиц.<br>
+• <b>Юридические риски:</b> Уголовная и гражданская ответственность по EU AI Act (Статьи 50/52).<br>
+• <b>Штрафы:</b> До €35 млн или 7% мирового годового оборота компании.<br>
+• <b>Регламент защиты:</b> Блокировка на уровне CI/CD репозитория, немедленная эскалация в EPAM Legal.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
+        <div class="card-box active" style="padding:12px 16px;flex:1;">
+          <div class="card-label">GOOGLE SYNTHID • НЕВИДИМЫЙ ВОДЯНОЙ ЗНАК</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Механизм:</b> Псевдослучайное невидимое возмущение, внедряемое прямо в латентное пространство диффузии.<br>
+• <b>Стойкость:</b> Выдерживает сжатие MP4/HEVC, перекодирование битрейта, кадрирование и цветокоррекцию.<br>
+• <b>Верификация:</b> Нейросетевой детектор вычисляет калиброванную вероятность (0.00–1.00) без доступа к оригиналу.</div>
+        </div>
+
+        <div class="card-box" style="border-color:var(--violet);background:rgba(192,132,252,.04);padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--violet)">C2PA CONTENT CREDENTIALS • КРИПТОГРАФИЧЕСКИЙ МАНИФЕСТ</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Стандарт:</b> Открытый консорциум C2PA (Adobe, Google, Microsoft, EPAM) для подтверждения подлинности медиа.<br>
+• <b>Криптографическая привязка:</b> Хеш видео (SHA-256) подписывается сертификатом X.509 и упаковывается в MP4.<br>
+• <b>Линейка происхождения:</b> Фиксирует версию базовой модели, сид, хеш кадра, инструменты и таймстамп.</div>
+        </div>
+
+        <div class="card-box" style="border-color:var(--cyan);background:rgba(56,189,248,.04);padding:12px 16px;flex:1;">
+          <div class="card-label">ПРОМЫШЛЕННЫЙ ТУЛЧЕЙН ВЕРИФИКАЦИИ</div>
+          <div class="cd" style="font-size:13px;line-height:1.35;margin-top:2px;">• <b>Автоматический аудит:</b> Вызов CLI c2patool в пайплайне CI/CD перед публикацией видео в CDN.<br>
+• <b>Визуальный фильтр:</b> Чек-лист из 5 пунктов: (1) контакт пальцев, (2) отражения, (3) логотипы, (4) дрожание границ, (5) липсинк.<br>
+• <b>Репозиторий артефактов:</b> Хранение мастер-рендеров, исходных сидов и подписанных манифестов C2PA в архиве.</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14px;color:var(--fg);"><b>РЕГУЛЯТОРНЫЙ КОМПЛАЕНС:</b> Статья 52 EU AI Act требует машиночитаемой маркировки и подтверждения подлинности для синтетических медиа.</div>
+      <span class="badge badge-amber">COMPLIANCE PROTOCOL</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>14 / 17</span></div>
+  <template class="notes">Risk Governance: Green/Yellow/Red traffic light, Google SynthID, and C2PA Content Credentials metadata manifest.</template>
+</section>
+
+<!-- SLIDE 15: DECISION TREE -->
+<section class="slide" data-n="15">
+  <div class="topbar">
+    <div class="kicker">Инженерный фреймворк • Дерево решений</div>
+    <div class="idx-badge">15 / 17</div>
+  </div>
+  <h2 class="title">Дерево решений: выбор оптимальной видеомодальности</h2>
+  <p class="lead">4 диагностических вопроса для экономии часов GPU-рендеринга и предотвращения слива бюджета</p>
+  <div class="body">
+    <div class="row c2" style="gap:24px;align-items:stretch;">
+      <div style="display:flex;flex-direction:column;gap:8px;height:100%;">
+        <div class="card-box active" style="padding:10px 14px;flex:1;">
+          <div class="card-label">КРИТЕРИЙ 1: ТРЕБУЕТСЯ ЛИ РЕЧЬ / ДИАЛОГ?</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Диагностика:</b> Нужна ли точная артикуляция губ под дикторский текст или дубляж?<br>
+• <b>Маршрут:</b> ДА ➔ HeyGen / Hedra (Lip-Sync). Запрещена диффузия всего тела!<br>
+• <b>Экономия:</b> Экономит 95% GPU-вычислений и исключает деформацию челюсти.</div>
+        </div>
+
+        <div class="card-box warn" style="padding:10px 14px;flex:1;">
+          <div class="card-label" style="--k:var(--amber)">КРИТЕРИЙ 2: КОНКРЕТНЫЙ ПРОДУКТ ИЛИ ГЕРОЙ?</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Диагностика:</b> Присутствует ли в кадре постоянный персонаж или брендовый товар?<br>
+• <b>Маршрут:</b> ДА ➔ Строго Image-to-Video (I2V). Заморозьте 2D-кадр в Chat UI ($0.04)!<br>
+• <b>Результат:</b> Снижение брака с 80% до менее 15%; ноль мутаций логотипа.</div>
+        </div>
+
+        <div class="card-box success" style="padding:10px 14px;flex:1;">
+          <div class="card-label" style="--k:var(--green)">КРИТЕРИЙ 3: АБСТРАКТНЫЙ ФОН ИЛИ B-ROLL ПРИРОДЫ?</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Диагностика:</b> Сцена изображает облака, волны, дым или абстрактный B-roll?<br>
+• <b>Маршрут:</b> ДА ➔ Разрешен Text-to-Video (T2V) по 6-слотовой формуле промпта.<br>
+• <b>Обоснование:</b> У природных сред нет жестких инвариантов топологии и геометрии.</div>
+        </div>
+
+        <div class="card-box" style="border-color:var(--violet);background:rgba(192,132,252,.04);padding:10px 14px;flex:1;">
+          <div class="card-label" style="--k:var(--violet)">КРИТЕРИЙ 4: МАССОВЫЙ ПРОГРАММНЫЙ ПАЙПЛАЙН?</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Диагностика:</b> Требуется ли программная генерация 500+ каталожных видео в CI/CD?<br>
+• <b>Маршрут:</b> ДА ➔ Cloud API (Google Veo 3.1 / Wan 2.2) с детерминированными сидами.<br>
+• <b>Требование:</b> Строгие JSON-схемы, валидация данных и очереди задач GPU.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;height:100%;">
+        <div class="card-box active" style="padding:10px 14px;flex:1;">
+          <div class="card-label">HEYGEN / HEDRA (LIP-SYNC)</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Архитектура:</b> Деформация ориентиров лица по звуковой спектрограмме.<br>
+• <b>Сфера:</b> Аватары, онбординг, мультиязычный дубляж курсов без пересъемки.<br>
+• <b>Плюс:</b> Идеальная синхронизация губ, ноль морфинга тела, рендер за 30 сек.</div>
+        </div>
+
+        <div class="card-box warn" style="padding:10px 14px;flex:1;">
+          <div class="card-label" style="--k:var(--amber)">KLING AI 1.5 / RUNWAY GEN-3</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Архитектура:</b> DiT с кондиционированием на замороженный тензор кадра t=0.<br>
+• <b>Сфера:</b> Рекламные шоты, экшен курьера, коммерческие презентации брендов.<br>
+• <b>Плюс:</b> 100% сохранение анатомии лица, костюма и логотипа компании.</div>
+        </div>
+
+        <div class="card-box success" style="padding:10px 14px;flex:1;">
+          <div class="card-label" style="--k:var(--green)">LUMA DREAM MACHINE & LEONARDO</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Архитектура:</b> Быстрая диффузия с кинематическим промпт-приором движения.<br>
+• <b>Сфера:</b> B-roll перебивки, видео-обложки веб-сайтов, абстрактные переходы.<br>
+• <b>Плюс:</b> 30-секундный рендер, непрерывная динамика жидкостей и частиц.</div>
+        </div>
+
+        <div class="card-box" style="border-color:var(--violet);background:rgba(192,132,252,.04);padding:10px 14px;flex:1;">
+          <div class="card-label" style="--k:var(--violet)">GOOGLE VEO 3.1 & WAN 2.2</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Архитектура:</b> Headless REST / gRPC эндпоинты с параллелизацией на GPU.<br>
+• <b>Сфера:</b> Программные каталоги товаров e-commerce, персонализация медиа.<br>
+• <b>Плюс:</b> Автоматическое масштабирование, корпоративные SLA, логирование.</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14px;color:var(--fg);"><b>ИНЖЕНЕРНЫЙ ПРОТОКОЛ:</b> Всегда проверяйте кинематику шотов в веб-студиях до развертывания облачных API-конвейеров.</div>
+      <span class="badge badge-cyan">DECISION BLUEPRINT</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>15 / 17</span></div>
+  <template class="notes">Engineering decision tree: 4 diagnostic questions mapping to the optimal video generation modality.</template>
+</section>
+
+<!-- SLIDE 16: HOMEWORK ASSIGNMENT #5 -->
+<section class="slide" data-n="16">
+  <div class="topbar">
+    <div class="kicker">Практическое задание • Домашняя работа #5</div>
+    <div class="idx-badge">16 / 17</div>
+  </div>
+  <h2 class="title">Домашнее задание: анимация героя или товарного пакшота</h2>
+  <p class="lead">Сдача в genai-homeworks/L05/. Дедлайн: до следующего занятия. Коллаборатор: ihar_rubanovich@epam.com</p>
+  <div class="body">
+    <div class="row c2" style="gap:24px;align-items:stretch;">
+      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
+        <div class="card-box active" style="padding:12px 16px;flex:1;">
+          <div class="card-label">ТРЕК A: ТОВАРНЫЙ ПАКШОТ ДЛЯ E-COMMERCE</div>
+          <div class="ch" style="font-size:16px;margin:2px 0 4px;">Круговой облет кружки Orbit 360</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;">• <b>ТЗ:</b> Рекламный пакшот брендированной керамической кружки (d0_packshot.png из L04).<br>
+• <b>Движение:</b> Плавный круговой облет Orbit 360, пар над кофе, блики света по керамике.<br>
+• <b>Инвариант:</b> Логотип бренда обязан оставаться идеально четким на всем 5с клипе!<br>
+• <b>Инструмент:</b> Luma Dream Machine (режим Orbit) или Kling AI Image-to-Video.</div>
+        </div>
+
+        <div class="card-box warn" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--amber)">РЕГЛАМЕНТ ПРОДАКШНА</div>
+          <div class="ch" style="font-size:16px;margin:2px 0 4px;">Дисциплинированный 4-шаговый пайплайн</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;">• <b>1. Кадр:</b> Выбор утвержденного 2D-кадра из L04 или доводка в Chat UI ($0.04).<br>
+• <b>2. Промпт:</b> Составление 6-слотового режиссерского промпта с активными глаголами.<br>
+• <b>3. Маски:</b> В Kling/Runway настройка Motion Brush для активных зон и Freeze Mask для логотипа.<br>
+• <b>4. Аудит:</b> Рендеринг в 2 разных инструментах и заполнение отчета контроля качества.</div>
+        </div>
+
+        <div class="card-box success" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--green)">ТРЕК B: ПОЕЗДКА КУРЬЕРА GLOVO</div>
+          <div class="ch" style="font-size:16px;margin:2px 0 4px;">Динамичный трекинг под дождем</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;">• <b>ТЗ:</b> Динамичный проезд курьера под дождем (shot2_bike_rain.png или герой из L04).<br>
+• <b>Движение:</b> Трекинг Truck Left параллельно скорости велосипеда, брызги луж на асфальте.<br>
+• <b>Инвариант:</b> Маска Speed-0 Freeze Mask на лицо и рюкзак курьера против мутаций бренда.<br>
+• <b>Инструмент:</b> Kling AI 1.5 (Pro mode) или Runway Gen-3 Alpha.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
+        <div class="card-box active" style="padding:12px 16px;flex:1;">
+          <div class="card-label">СТРУКТУРА РЕПОЗИТОРИЯ И ФАЙЛЫ</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>videos/:</b> 2 MP4 видеофайла, сравнивающих 2 инструмента (Kling AI vs Runway / Luma).<br>
+• <b>video_spec.md:</b> 6-слотовые промпты, векторы камеры, сиды, хронометраж шотов.<br>
+• <b>video_qa.md:</b> Сравнительная таблица аудита дефектов по 5 параметрам качества.
+<div style="margin-top:8px;padding:6px 10px;background:rgba(0,0,0,0.35);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);line-height:1.45;">
+genai-homeworks/L05/<br>
+├── videos/<br>
+│   ├── track_a_kling.mp4 &nbsp;&nbsp;&nbsp;&nbsp;[5s, 1080p, Orbit 360]<br>
+│   └── track_a_runway.mp4 &nbsp;&nbsp;&nbsp;[5s, 1080p, Orbit 360]<br>
+├── video_spec.md &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Промпты, сиды, векторы]<br>
+└── video_qa.md &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[Таблица аудита артефактов]
+</div></div>
+        </div>
+
+        <div class="card-box warn" style="padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--amber)">КРИТЕРИИ ОЦЕНКИ (100 БАЛЛОВ)</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>40 баллов — Верность кадру:</b> Ноль дрифта лица и логотипа между L04 и L05.<br>
+• <b>30 баллов — Траектория камеры:</b> Точное следование заданному движению (Orbit 360 / Truck Left).<br>
+• <b>20 баллов — Физика сред:</b> Правдоподобная гидродинамика жидкостей (пар, брызги луж).<br>
+• <b>10 баллов — Сравнительный отчет:</b> Аргументированный технический анализ в video_qa.md.
+<div style="margin-top:8px;padding:6px 10px;background:rgba(0,0,0,0.35);border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);line-height:1.45;">
+git checkout -b homework/L05-&lt;фамилия&gt;<br>
+git add videos/ video_spec.md video_qa.md<br>
+git commit -m "feat(L05): multi-tool video synthesis benchmark"<br>
+git push origin homework/L05-&lt;фамилия&gt; &amp;&amp; gh pr create
+</div></div>
+        </div>
+
+        <div class="card-box" style="border-color:var(--line);background:rgba(255,255,255,0.02);padding:10px 14px;">
+          <div class="cd" style="font-size:12.5px;line-height:1.35;"><b>Внимание:</b> Написание кода не требуется! Вся генерация видео выполняется через Web UI и Chat UI. Сдавайте PR в genai-homeworks/L05/ до следующего урока.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>16 / 17</span></div>
+  <template class="notes">Homework assignment: Track A (Product Packshot Orbit 360) and Track B (Glovo courier tracking ride). 100-point rubric.</template>
+</section>
+
+<!-- SLIDE 17: SUMMARY & TEASER L06 -->
+<section class="slide" data-n="17">
+  <div class="topbar">
+    <div class="kicker">Финал занятия • Мост к звуку</div>
+    <div class="idx-badge">17 / 17</div>
+  </div>
+  <h2 class="title">Четыре правила видео и анонс Урока 06: Звук и Речь</h2>
+  <p class="lead">Сегодня все наши ролики были абсолютно немыми. На следующем занятии мы вдохнем в них жизнь звуком!</p>
+  <div class="body">
+    <div class="row c2" style="gap:24px;align-items:stretch;">
+      <div style="display:flex;flex-direction:column;gap:8px;height:100%;">
+        <div class="card-box" style="padding:10px 14px;flex:1;">
+          <div class="ch" style="font-size:15px;color:var(--cyan);">1. Аксиома ключевого кадра (I2V)</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Принцип:</b> Коммерческое видео всегда начинается с утвержденного 2D-кадра из Chat UI ($0.04).<br>
+• <b>Механика:</b> Фиксация начального тензора t=0 снижает энтропию латентов на 80%+ и устраняет брак.</div>
+        </div>
+        <div class="card-box" style="padding:10px 14px;flex:1;">
+          <div class="ch" style="font-size:15px;color:var(--green);">2. Принцип дельты (dx/dt)</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Принцип:</b> Промпт направляет исключительно кинематику и векторы скорости во времени.<br>
+• <b>Правило:</b> Не переописывайте внешность, фон или одежду, уже замороженные в ключевом кадре.</div>
+        </div>
+        <div class="card-box" style="padding:10px 14px;flex:1;">
+          <div class="ch" style="font-size:15px;color:var(--amber);">3. Дисциплина монтажа (4+4+3)</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Принцип:</b> Склеивайте 3 коротких стабильных шота (3–5 сек) через склейку 0.3с на таймлайне.<br>
+• <b>Отказ:</b> Никогда не пытайтесь генерировать 15-секундный непрерывный ролик в одном промпте.</div>
+        </div>
+        <div class="card-box" style="padding:10px 14px;flex:1;">
+          <div class="ch" style="font-size:15px;color:var(--violet);">4. Бюджетная экономика</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:2px;">• <b>Принцип:</b> Дисциплинированный I2V обходится в $2–$5 за готовый коммерческий ролик.<br>
+• <b>Ловушка:</b> Слепой Text-to-Video сжигает $50–$100 на случайных рероллах с 80%+ процентом брака.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;height:100%;">
+        <div class="pic-card" style="flex:1;display:flex;flex-direction:column;">
+          <div class="pic-frame cover" style="flex:1;"><img src="assets/ui/suno_audio_ui.png" alt="Suno UI"></div>
+          <div class="pic-cap" style="font-size:12.5px;padding:8px 12px;"><span class="badge badge-violet">ТИЗЕР L06 • ИНТЕРФЕЙС SUNO AI</span> <b>Генерация саундтреков и Foley</b></div>
+        </div>
+        <div class="card-box" style="border-color:var(--violet);background:rgba(192,132,252,.04);padding:12px 16px;flex:1;">
+          <div class="card-label" style="--k:var(--violet)">СЛЕДУЮЩИЙ УРОК • L06: РЕЧЬ И АУДИО-ИИ</div>
+          <div class="cd" style="font-size:12.5px;line-height:1.35;margin-top:4px;">• <b>ElevenLabs:</b> клонирование голоса и управление эмоциями спикера.<br>
+• <b>Suno & Udio:</b> генерация музыки по стилям без авторских прав.<br>
+• <b>Foley Sound FX:</b> шум дождя, шуршание шин, звон чашек в кафе.<br>
+• <b>Lip-Sync:</b> точная синхронизация губ курьера под речевую дорожку!</div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-banner">
+      <div style="font-size:14.5px;color:var(--fg);"><b>ОТКРЫТЫЙ МИКРОФОН:</b> Задавайте вопросы по генерации видео в чате или подключайтесь голосом!</div>
+      <span class="badge badge-violet">УВИДИМСЯ НА УРОКЕ 06</span>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>17 / 17</span></div>
+  <template class="notes">Conclusion, 4 golden rules, open mic, and Lesson 06 Audio preview.</template>
+</section>
+
+</main>
+
+<aside class="drawer" id="drawer"><div class="hd"></div><div class="tx"></div></aside>
+<div class="grid" id="grid"></div>
+
+<script>
+window.L_LANG = "RU";
+
+const T = {
+  start: 'СТАРТ 5 МИН',
+  pause: 'ПАУЗА',
+  done: 'ВРЕМЯ ВЫШЛО',
+  notes: 'ЗАМЕТКИ СПИКЕРА'
+};
+
+(function () {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  const drawer = document.getElementById('drawer');
+  const grid = document.getElementById('grid');
+  let cur = 1;
+
+  function fit() {
+    const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900) * 0.98;
+    stage.style.setProperty('--s', s);
+  }
+
+  function show(n) {
+    if (n < 1 || n > total) return;
+    cur = n;
+    slides.forEach((el, i) => el.classList.toggle('active', i + 1 === n));
+    const notes = slides[n - 1].querySelector('.notes');
+    drawer.querySelector('.hd').textContent = `${T.notes} • ${String(n).padStart(2, '0')} / ${total}`;
+    drawer.querySelector('.tx').innerHTML = notes ? notes.innerHTML : '';
+    if (location.hash !== '#' + n) history.replaceState(null, '', '#' + n);
+    grid.querySelectorAll('button').forEach((b, i) => b.classList.toggle('cur', i + 1 === n));
+  }
+
+  slides.forEach((el, i) => {
+    const b = document.createElement('button');
+    const t = el.querySelector('.title, h1');
+    b.innerHTML = `<span>${String(i + 1).padStart(2, '0')}</span>${t ? t.textContent.slice(0, 36) : ''}...`;
+    b.onclick = () => { show(i + 1); grid.classList.remove('open'); };
+    grid.appendChild(b);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(cur - 1); }
+    else if (e.key === 'Home') show(1);
+    else if (e.key === 'End') show(total);
+    else if (e.key.toLowerCase() === 'n') drawer.classList.toggle('open');
+    else if (e.key.toLowerCase() === 'g') grid.classList.toggle('open');
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    } else if (e.key === 'Escape') { grid.classList.remove('open'); drawer.classList.remove('open'); }
+  });
+
+  stage.addEventListener('click', (e) => {
+    if (e.target.closest('button')) return;
+    const r = stage.getBoundingClientRect();
+    show(e.clientX > r.left + r.width / 3 ? cur + 1 : cur - 1);
+  });
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', () => show(parseInt(location.hash.slice(1), 10) || 1));
+
+  let left = 300, timer = null;
+  const clock = document.getElementById('clock');
+  const startBtn = document.getElementById('timerStart');
+  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  if (startBtn) {
+    startBtn.onclick = () => {
+      if (timer) { clearInterval(timer); timer = null; startBtn.textContent = T.start; return; }
+      startBtn.textContent = T.pause;
+      timer = setInterval(() => {
+        left = Math.max(0, left - 1); if (clock) clock.textContent = fmt(left);
+        if (!left) { clearInterval(timer); timer = null; startBtn.textContent = T.done; }
+      }, 1000);
+    };
+    const resetBtn = document.getElementById('timerReset');
+    if (resetBtn) {
+      resetBtn.onclick = () => {
+        clearInterval(timer); timer = null; left = 300; if (clock) clock.textContent = fmt(left); startBtn.textContent = T.start;
+      };
+    }
+  }
+
+  fit();
+  show(parseInt(location.hash.slice(1), 10) || 1);
+})();
+
+</script>
+</body>
+</html>
