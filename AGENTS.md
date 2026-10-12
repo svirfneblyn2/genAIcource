@@ -7,7 +7,7 @@ This repository is maintained by autonomous coding agents and human instructors.
 ## 1. Operating Instructions
 
 1. **Read Rules First:** Always consult `GEMINI.md` before generating slide content, editing HTML presentations, or writing instructor scripts.
-2. **Use Specialized Skill:** For any presentation or curriculum task, activate the `.agents/skills/course-deck-producer/SKILL.md` skill.
+2. **Use Specialized Skill:** For any presentation or curriculum task, activate the `.agents/skills/course-deck-producer/SKILL.md` skill. For deck layout, typography, media and visual QA, follow `.claude/skills/course-deck-design/SKILL.md` (v2 standard, reference: `L05/deck_v2/`).
 3. **No Fluff Guarantee:** Write like a Principal Systems Engineer at OpenAI or EPAM. Do not use motivational, generic, or conversational AI filler.
 4. **Course Mission:** GenAI Basics is a foundational track focusing on mental models, systemic vision, and essential practice. Do not overpromise senior MLOps/research depth in 16 lessons.
 5. **Corporate Compliance:** NEVER refer to the instructor as "Founder of Creator Tools" or mention voice cloning. Use "Architect & Developer of Creator Tools — AI suite for YouTube creators (Hands-on AI R&D pet-project)".
