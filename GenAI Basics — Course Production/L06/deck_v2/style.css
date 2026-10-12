@@ -389,3 +389,21 @@ table.cost.tight td.m small { font-size: 16px; }
 .vopt { padding: 24px 24px; gap: 14px; }
 .tx { font-size: 25px; }
 .task { grid-template-columns: 250px 1fr; }
+.steps { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: nowrap; }
+.steps span { display: inline-flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 600; color: var(--dim); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px 4px 5px; white-space: nowrap; }
+.steps span i { font-style: normal; font-family: var(--mono); font-size: 14px; font-weight: 800; width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; background: rgba(255,255,255,.08); color: var(--muted); }
+.steps span.on { color: var(--fg); border-color: var(--cyan); background: rgba(56,189,248,.12); }
+.steps span.on i { background: var(--cyan); color: #0b0f17; }
+.steps.big span { font-size: 20px; padding: 7px 18px 7px 7px; } .steps.big span i { width: 28px; height: 28px; font-size: 16px; }
+.nocode { font-size: 20px; line-height: 1.45; color: var(--muted); background: rgba(52,211,153,.06); border: 1px solid rgba(52,211,153,.45); border-radius: 12px; padding: 12px 18px; }
+.nocode b { color: var(--green); }
+
+/* L06: minimum 18 px for every visible text element (author rule) */
+.kicker, .prompt-label, table.sb th, table.cost th, .layer dt, .tx small, .btn, .foot { font-size: 18px; }
+.flow .box small, .stem .lab small, .lane .lat small, .mk .task-h small, table.cost td.m small, .mchip small,
+table.cost.tight td.m small, .badge, .fail .fd, .cap, .cam .cp, .cam .ct span, .vid .pl, .aud .pl, .steps span, .steps span i { font-size: 18px; }
+.steps span i { width: 26px; height: 26px; }
+.cover .keys { font-size: 18px; }
+.drawer .hd { font-size: 14px; }
+.task { grid-template-columns: 1fr; gap: 10px; align-content: start; }
+.task .io span { font-size: 19px; padding: 6px 12px; }
