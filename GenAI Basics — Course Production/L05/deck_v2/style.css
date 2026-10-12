@@ -286,3 +286,29 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
   .vid video { display: none !important; }
   .vid img.pp, .vid .pl { display: block; }
 }
+
+/* v3: access layers */
+.layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.layer { background: var(--surface-card); border: 1px solid var(--line); border-top: 4px solid var(--k); border-radius: 12px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.layer .lh { font-family: var(--display); font-size: 30px; font-weight: 700; color: var(--k); }
+.layer .ls { font-size: 19px; color: var(--muted); margin-top: -8px; }
+.tchips { display: flex; flex-wrap: wrap; gap: 8px; }
+.tchip { font-size: 19px; font-weight: 600; color: var(--fg); background: rgba(255,255,255,.05); border: 1px solid var(--line); border-radius: 8px; padding: 5px 11px; white-space: nowrap; }
+.layer dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 14px; margin-top: 4px; }
+.layer dt { font-family: var(--mono); font-size: 15px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); padding-top: 3px; }
+.layer dd { font-size: 19px; line-height: 1.35; color: var(--fg); }
+
+/* v3: storyboard and cost tables */
+table.sb, table.cost { width: 100%; border-collapse: collapse; }
+table.sb th, table.cost th { font-family: var(--mono); font-size: 15px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--dim); text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+table.sb td { font-size: 20px; line-height: 1.3; color: var(--fg); padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+table.sb td.n { font-family: var(--display); font-size: 34px; font-weight: 800; color: var(--cyan); width: 50px; }
+table.sb td.im { width: 210px; } table.sb td.im img { width: 190px; border-radius: 8px; display: block; border: 1px solid var(--line); }
+table.sb td.tm { font-family: var(--mono); font-size: 19px; color: var(--amber); white-space: nowrap; }
+table.sb td.f code { font-size: 16px; }
+table.cost th:not(:first-child), table.cost td:not(:first-child) { text-align: right; }
+table.cost td { font-family: var(--mono); font-size: 24px; color: var(--fg); padding: 11px 12px; border-bottom: 1px solid var(--line); }
+table.cost td.m { font-family: var(--body); font-size: 23px; font-weight: 600; }
+table.cost td.m small { display: block; font-size: 17px; font-weight: 400; color: var(--muted); }
+table.cost td.h { color: var(--amber); font-weight: 700; }
+table.cost td.h3 { color: var(--red); font-weight: 700; }
