@@ -1,0 +1,185 @@
+{
+  "source_video": "L05/demo_veo_showcase/courier_delivery_final.mp4 (Veo 3.1, 23 s)",
+  "music_prompt": "calm lo-fi hip hop beat, soft electric piano, light rain mood, 85 bpm, no vocals",
+  "music_model": "facebook/musicgen-small (CC-BY-NC-4.0), seed 7",
+  "langs": {
+    "en": {
+      "lines": [
+        {
+          "start": 0.6,
+          "end": 4.5,
+          "display": "6:42. Order 417 is picked up, still hot.",
+          "spoken": "Six forty-two. Order four one seven is picked up, still hot."
+        },
+        {
+          "start": 8.4,
+          "end": 11.09,
+          "display": "Rain on the avenue. The route skips the bridge.",
+          "spoken": "Rain on the avenue. The route skips the bridge."
+        },
+        {
+          "start": 16.2,
+          "end": 18.85,
+          "display": "12 minutes to the door. Anna is on her way.",
+          "spoken": "Twelve minutes to the door. Anna is on her way."
+        }
+      ],
+      "mix": {
+        "lufs": -14.0,
+        "true_peak_dbfs": -1.1
+      },
+      "voice_only": {
+        "lufs": -19.2,
+        "true_peak_dbfs": -3.1
+      },
+      "transcript": [
+        {
+          "start": 0.0,
+          "end": 1.0,
+          "text": "Here's your order."
+        },
+        {
+          "start": 1.0,
+          "end": 2.0,
+          "text": "642."
+        },
+        {
+          "start": 2.0,
+          "end": 8.43,
+          "text": "Order 417 is picked up, still hot."
+        },
+        {
+          "start": 8.43,
+          "end": 16.2,
+          "text": "Rain on the Avenue, the route skips the bridge."
+        },
+        {
+          "start": 16.2,
+          "end": 18.76,
+          "text": "12 minutes to the door, Anna is on her way."
+        }
+      ],
+      "wer": 0.226,
+      "wer_vs_display": 0.185,
+      "ref_words": 31,
+      "critical_terms": [
+        {
+          "term": "6:42",
+          "ok": false
+        },
+        {
+          "term": "417",
+          "ok": true
+        },
+        {
+          "term": "12 minutes",
+          "ok": true
+        },
+        {
+          "term": "Anna",
+          "ok": true
+        }
+      ]
+    },
+    "ru": {
+      "lines": [
+        {
+          "start": 0.6,
+          "end": 4.42,
+          "display": "6:42. Заказ 417 забран, ещё горячий.",
+          "spoken": "Шесть сорок две. Заказ четыреста семнадцать забран, ещё горячий."
+        },
+        {
+          "start": 8.4,
+          "end": 10.93,
+          "display": "На проспекте дождь. Маршрут в обход моста.",
+          "spoken": "На проспекте дождь. Маршрут в обход моста."
+        },
+        {
+          "start": 16.2,
+          "end": 18.53,
+          "display": "До двери 12 минут. Анна уже в пути.",
+          "spoken": "До двери двенадцать минут. Анна уже в пути."
+        }
+      ],
+      "mix": {
+        "lufs": -14.0,
+        "true_peak_dbfs": -1.1
+      },
+      "voice_only": {
+        "lufs": -21.0,
+        "true_peak_dbfs": -3.1
+      },
+      "transcript": [
+        {
+          "start": 0.0,
+          "end": 4.4,
+          "text": "Часть 42. Заказ 417 забран. Ещё горячий."
+        },
+        {
+          "start": 8.26,
+          "end": 10.76,
+          "text": "На проспекте дождь. Маршрут в обход моста."
+        },
+        {
+          "start": 16.15,
+          "end": 18.65,
+          "text": "До двери 12 минут. Оно уже в пути."
+        }
+      ],
+      "wer": 0.292,
+      "wer_vs_display": 0.143,
+      "ref_words": 24,
+      "critical_terms": [
+        {
+          "term": "6:42",
+          "ok": false
+        },
+        {
+          "term": "417",
+          "ok": true
+        },
+        {
+          "term": "12 минут",
+          "ok": true
+        },
+        {
+          "term": "Анна",
+          "ok": false
+        }
+      ]
+    }
+  },
+  "veo_native": {
+    "lufs": -22.8,
+    "true_peak_dbfs": -0.5
+  },
+  "veo_shot1": {
+    "transcript": [
+      {
+        "start": 0.0,
+        "end": 1.28,
+        "text": "Here's your order."
+      },
+      {
+        "start": 1.28,
+        "end": 2.12,
+        "text": "Thank you."
+      },
+      {
+        "start": 2.12,
+        "end": 2.96,
+        "text": "Have a good day."
+      }
+    ]
+  },
+  "veo_trainwreck": {
+    "transcript": [
+      {
+        "start": 0.0,
+        "end": 4.8,
+        "text": "Continue straight for 200 meters, then your destination is on the left."
+      }
+    ]
+  }
+}
