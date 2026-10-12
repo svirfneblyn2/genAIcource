@@ -1,63 +1,51 @@
-# Speaker Cheatsheet (1 Page) • Lesson 04 (21 Slides • 90 Minutes)
+# 1-Page Speaker Cheatsheet • Lesson 04 (27 Slides • 90 Minutes)
 *Speaker: Igor Rubanovich (EPAM Systems • ihar_rubanovich@epam.com)*  
-*Topic: Image Generation and Editing APIs: From Random Pixels to Controlled Production Pipelines (2026 Standard)*
+*Topic: Image Generation — Services, Prompt Techniques, and Control Patterns*  
+*Presentation: `presentation_L04_Image_Generation_Services_and_Prompts_EN_v2.html` (PDF: `presentation_L04_Image_Generation_Services_and_Prompts_EN_v2.pdf`)*  
+*Models (October 2026): Nano Banana 2 / Pro (`gemini-3.1-flash-image`, `gemini-3-pro-image`), GPT Image 2 / 2.5 (ChatGPT Images), Midjourney V8.2, FLUX.2, Leonardo.ai, Kling IMAGE 3.0*  
+*Colab: `notebooks/L04_Image_Generation_Prompts_and_Patterns.ipynb` • Homework: `L04_05_Homework_EN.md` • Live Demo Copybook: `L04_04_Live_Demo_Runbook_READY_EN.md`*
 
 ---
 
-### Part 1: Diffusion Physics, Primitives & Controlled Prompting (00:00 — 50:00)
+### Part 1: Hook, Market Map & Prompting (00:00 — 47:00)
 
-* **Slide 01 (00–04 min) • Title Cover:** Image Generation and Editing APIs. Core thesis: "Image generation becomes useful when it stops being a slot machine." Anyone can generate pretty art in Midjourney. Engineering begins when results are reproducible, protect product geometry, and integrate into automated pipelines. Chat check: who has called Image APIs programmatically (1) vs browser UI only (2)?
-* **Slide 02 (04–07 min) • Speaker Bio:** Igor Rubanovich (Engineering Manager II & AI Ambassador @ EPAM). Hands-on AI R&D: creator and architect of Creator Tools — a suite of AI tools for YouTube creators (pet-project). Homework submission email: `ihar_rubanovich@epam.com`.
-* **Slide 03 (07–10 min) • Curriculum Roadmap:** Moving into **Module 2: Multimodality (Lessons 04–06)** marked as **"YOU ARE HERE"**. Moving beyond text tokens into visual modalities: images (L04), video (L05), speech & audio (L06).
-* **Slide 04 (10–13 min) • GitHub Workflow:** Directory structure in `genai-homeworks/L04/`. Required files: `brief.md`, `references/`, `prompt_v1.txt`, `prompt_v2.txt`, `candidates/`, `qa.md`, `selected/`. Invite instructor `ihar_rubanovich@epam.com` as collaborator.
-* **Slide 05 (13–17 min) • The Trap: Pretty ≠ Usable:** In text, flaws are obvious. In graphics, an image can look stunning yet be completely useless for business: mug shape morphed, brand logo distorted, label proportions drifted, extra fingers hallucinated, unclear IP rights, zero reproducibility.
-* **Slide 06 (17–21 min) • Modality Shift: Diffusion Physics & Latent Space:** Why images are not BPE tokens. Autoregressive LLMs predict the next token, whereas Diffusion Models and Visual Transformers (DiT) operate in latent space (VAE): forward Gaussian noise injection and reverse iterative denoising steps guided by CLIP/T5 text embeddings.
-* **Slide 07 (21–25 min) • Mental Model: Generation as a Pipeline (C4 Diagram):** The model is only one node. Production pipeline: `Source Assets (Product Photo + Alpha Mask)` ➔ `API Gateway (quotas, 16:9 ratio, seed)` ➔ `Inference Cluster` ➔ `Base64 Decoder` ➔ `Cloud Storage (S3/GCS)` ➔ `Metadata DB (prompt, hash, seed, model, cost)` ➔ `Human Review Gate`.
-* **Slide 08 (25–29 min) • The 6 Visual Primitives:**
-  1. *Text-to-Image* — generation from scratch via text brief.
-  2. *Image-to-Image* — transformation of an input reference image.
-  3. *Inpainting* — targeted editing strictly inside a mask.
-  4. *Outpainting* — expanding the canvas beyond existing borders.
-  5. *Reference Conditioning* — guiding style, composition, or object identity.
-  6. *Negative Constraints* — strictly prohibiting unwanted artifacts.
-* **Slide 09 (29–33 min) • Prompt Anatomy: An Engineering Brief, Not a Poem:** Image API prompts are structured specifications: Subject ➔ Composition & Camera Angle ➔ Environment & Lighting ➔ Style ➔ Sacred Attributes ➔ Acceptance Criteria. The most critical line: **what must NEVER change**.
-* **Slide 10 (33–37 min) • Before / After: Weak Prompt vs Production Brief:** Side-by-side contrast. Weak: *"Make a nice ad for this mug"* ➔ distorted handle, hallucinated extra mugs. Production: *"Use photo as protected reference. Preserve mug shape, glaze, and handle geometry 100%. Replace background only with pale sunlit travertine. Eye-level, 16:9, no text, no people. Return 3 variants"*.
-* **Slide 11 (37–41 min) • Reference Signals & Multimodal Control (C4 Diagram):** A reference is a control vector, not vague inspiration. Decoupling: 1) *Identity Reference* (IP-Adapter — facial features, exact product geometry); 2) *Style Reference* (color palette, lighting tone); 3) *Layout/Pose Reference* (ControlNet — Depth Map, OpenPose wireframes, Canny edge detection).
-* **Slide 12 (41–45 min) • Inpainting & Masking Mechanics (Diagram):** Under the hood of inpainting. Binary alpha mask divides canvas into two zones: Black (0) = frozen pixels, White (255) = active denoising zone. Mask edge feathering for natural light and shadow blending.
-* **Slide 13 (45–48 min) • API Lifecycle & Network Payloads:** What traverses the wire. Request: Multipart form-data or JSON payload with `data:image/png;base64`. Response: raw Base64 bytes or ephemeral CDN URL. Synchronous responses vs Asynchronous job queues (Job ID + Webhook/Polling for heavy generation batches).
-* **Slide 14 (48–50 min) • Provider Landscape Without Hype:**
-  - *OpenAI*: GPT-Image-2 / DALL-E (generation and editing via Images / Responses API).
-  - *Google*: Gemini 3.1 Flash Image / Imagen 3/4 (multimodal conversational editing in single context).
-  - *Adobe Firefly*: Image5 / Photoshop API v2 (commercial indemnity, production-grade inpainting, vector support).
-  - *Open Source*: FLUX.1 / SDXL (self-hosted inference on RunPod/ComfyUI with full weight control).
+* **Slide 01 (00–02 min) • Cover:** Opening Module 2 (Multimodality). Practical craft, how the tools are built, and controllable results. All slide images are real generations without retouching; interface panels are schematics, not screenshots.
+* **Slide 02 (02–05 min) • Hook Quiz (6 Portraits):** Portraits [A]–[F]. Chat question: *"Which are real humans, and which are AI generated?"*. Give 30–45 seconds. Ears in B, plastic skin in C, rim light in D, wrinkles in E, date stamp in F.
+* **Slide 03 (05–07 min) • The Reveal 2014–2025:** All 6 are AI — reconstructions of each era's style, all generated in 2026. GAN 2014 (64×64) ➔ StyleGAN 2018 ➔ SD 1.5 2022 ➔ MJ v5 2023 ➔ FLUX.1 2024 ➔ Nano Banana Pro 2025. Indistinguishable by eye — but SynthID can tell. The 2026 challenge is **controllability**.
+* **Slide 04 (07–09 min) • Course Roadmap:** Module 1 (L01–L03) completed. L04 Images, L05 Video, L06 Audio. Prompting fundamentals from L02 transfer; reference images replace text few-shots.
+* **Slide 05 (09–12 min) • Three Layers of the Ecosystem:** Layer 1 — foundation models & APIs (OpenAI, Google, BFL, Stability, ByteDance) ➔ Layer 2 — creative studios (Leonardo and Kling run their own models + third-party; Krea, Sintx aggregate; Midjourney: own model, no API) ➔ Layer 3 — multimodal chat (ChatGPT, Gemini, Grok). Model ≠ service.
+* **Slide 06 (12–16 min) • How Models Draw:** Diffusion (from noise in 20–50 steps; seed / guidance / negative prompt) vs autoregression (patch by patch, like text; strong at text and edits). GPT Image / Nano Banana architectures are not fully disclosed; many are hybrids.
+* **Slide 07 (16–19 min) • Layer 1: Foundation Providers & APIs:** Nano Banana 2 / Pro / 2 Lite (`gemini-3.1-flash-image`, `gemini-3-pro-image`, `gemini-3.1-flash-lite-image`), GPT Image 2 / 2.5 (`gpt-image-2`, `gpt-image-2.5-flare` / `-sunburst`), FLUX.2 → FLUX 3, Stability SD 3.5, Midjourney V8.2 + Edit Model (no API). ≈ $0.02–0.06 per 1K image on fast models.
+* **Slide 08 (19–22 min) • Market, October 2026:** Table: GPT Image 2/2.5, Nano Banana 2/Pro, Grok Imagine 2.0, Midjourney V8.2, FLUX.2/3, Kling IMAGE 3.0, Seedream 5, Ideogram 4 (JSON prompts), Recraft V4 (SVG). Arena 08.2026: GPT-Image-2 #1, Grok 2.0 #2.
+* **Slide 09 (22–25 min) • Layer 2: Why a Creative Studio:** Own + third-party models (FLUX, GPT Image, Nano Banana, SDXL) in one subscription, canvas, brush masks (inpainting), outpainting, LoRAs, guidance / seed. The left panel is an interface schematic, not a screenshot.
+* **Slide 10 (25–28 min) • Canvas vs Editing in Words:** One task (mug ➔ iced latte). Studio: mask + area prompt + seed. Chat: "replace only the mug" — the model finds the object itself (edit by instruction).
+* **Slide 11 (28–31 min) • Selection Matrix:** Entry barrier, targeted edits, text, consistency, 500+ batch. Per image: Nano Banana 2 Lite ≈ $0.034, legacy Nano Banana ≈ $0.039, Grok ≈ $0.02–0.06. Concepts/text ➔ chat; mask retouching ➔ studio; catalog ➔ API script (slide 24).
+* **Slide 12 (31–34 min) • Freeform Prompt (`A1_free`):** "a cozy coffee shop in the morning" ➔ the model fills the gaps with averages: rain, patrons, a cat, a fireplace.
+* **Slide 13 (34–39 min) • Six Slots (`A2_structured`):** Subject, Setting, Camera, Lighting, Style, Constraints; pins 1–4 on the frame. 35mm = natural, moderately wide angle. Negatives depend on the model: Gemini/GPT prefer positive phrasing ("empty coffee shop" instead of "no people"); `--no` / negative prompt are for MJ and SD/FLUX.
+* **Slide 14 (39–43 min) • Details & Text (`A3_details`):** Must-have block + an honest acceptance checklist: ✅ text "FLAT WHITE 3.50 / OPEN 7:00", ✅ croissant, ⚠️ lavender on the right, not the left, ❌ extra text on the menu board. Failed ➔ targeted edit, not a reroll.
+* **Slide 15 (43–47 min) • Photographer's Lexicon:** 85mm f/1.8 (portrait bokeh), top-down/flat lay, low-angle, golden hour. Aspect ratio via service parameter, not words.
 
 ---
 
-### ☕ Equator: Midpoint Break 5 Minutes (50:00 — 55:00)
+### Lecture Equator: 5-Minute Break (47:00 — 52:00)
 
-* **Slide 15 • Midpoint Break:**  
-  *Click "Start 5 Min" button on slide.* Say: "Colleギes, 5 minutes for coffee and rest. In the second half, we will explore the 10/90 Computer Vision iceberg, Blast Radius governance, run live code, and unpack the homework assignment." *(Zero work discussion in chat — full cognitive rest).*
+* **Slide 16 (47–52 min) • Coffee Break:** Click "START 5 MIN". "In Part 2 — targeted edits by instruction, the courier, and the product shoot." *(Pure rest, no chat tasks!)* Verify Leonardo/ChatGPT/Gemini tabs.
 
 ---
 
-### Part 2: Production Iceberg, Blast Radius, Live Demo & Homework (55:00 — 90:00)
+### Part 2: Control Patterns, Code, Risks & Homework (52:00 — 90:00)
 
-* **Slide 16 (55–60 min) • The 10/90 Iceberg in Computer Vision (C4 Diagram):** The 10% tip of the iceberg is `client.images.generate()`. The 90% submerged engineering is Base64 decoding, S3/GCS bucket uploads with CDN signed URLs, PII & NSFW moderation gates, concurrency rate limits, async polling workers, and audit metadata (hash, seed, prompt, latency, cost).
-* **Slide 17 (60–65 min) • Blast Radius Governance in Image AI (Traffic Light):**
-  - 🟢 **Green Zone (Autonomous):** Internal moodboards, synthetic test data, concept art, exploratory sketches.
-  - 🟡 **Yellow Zone (Human-in-the-Loop):** E-commerce product backgrounds, marketing banners, YouTube thumbnails. Model generates 3–4 candidates, human grants final sign-off.
-  - 🔴 **Red Zone (Taboo for AI Autonomy):** Legal evidence, medical diagnostics, direct packaging printing with certified claims, official brand trademark modifications.
-* **Slide 18 (65–73 min) • Live Demo: From Chaos to Control (Code):**
-  - Round 1: `01_generate.py` — hero generation from text spec, Base64 decoding, saving to `out/`.
-  - Round 2: `02_edit.py --mode vague` vs `--mode controlled` — side-by-side demonstration: vague prompt destroys mug proportions; controlled prompt preserves 100% geometry while seamlessly swapping background.
-  - Round 3: `03_build_prompt.py` — assembling structured visual prompts from `visual_spec.json`.
-* **Slide 19 (73–78 min) • Decision Framework: GenAI vs Classical CV vs Deterministic Tools:**
-  - Need exact vector logos or crisp typography? ➔ **Figma / Adobe Illustrator / SVG ($0 cost, 0ms latency, 100% accuracy)**.
-  - Need barcode detection, defect inspection, or edge alignment? ➔ **Classical Computer Vision (OpenCV, YOLO, Canny)**.
-  - Need scene replacement, visual variation, and concept generation? ➔ **Generative AI Image APIs**.
-* **Slide 20 (78–85 min) • Homework Assignment: Reproducible Image Workflow Pack:**
-  - Select a concrete business scenario (E-commerce catalog item, YouTube thumbnail, Event announcement banner).
-  - Fill Visual Generation Canvas (`brief.md`): business objective, sacred attributes, negative constraints, QA criteria.
-  - Generate 2 candidates, evaluate via rubric in `qa.md`, select final approved asset into `selected/`.
-  - Push repository to `genai-homeworks/L04/`.
-* **Slide 21 (85–90 min) • Wrap-up, Q&A & Lesson 05 Teaser:** Core takeaways: 1) Image generation is a specification, not roulette; 2) References and masks provide hardware-level control; 3) The 90% iceberg demands storage, metadata, and review. Next session: **Lesson 05 — Video Generation Models & APIs (Runway Gen-3, Kling, Sora, Pika)**. Microphones open!
+* **Slide 17 (52–55 min) • The Edit Loop:** Draft ➔ select by must-haves ➔ one edit ("only X") ➔ check "what drifted?" ➔ finalize. After ~5–8 edits drift becomes visible — fresh chat from the best frame.
+* **Slide 18 (55–60 min) • Pattern 1: Edit by Instruction (`B1`, `B2`, `E2`):** From `A2`: `B1` mug ➔ iced latte; `B2` light ➔ rainy evening; `E2` style ➔ vector. No mask needed in ChatGPT/Gemini/Kling; inpainting (hand-painted mask) is the Leonardo way.
+* **Slide 19 (60–64 min) • Pattern 2: Courier Master Sheet (`C1_sheet`):** 4 angles on grey, 5 locked anchors, runnable prompt. In Midjourney references go through the Edit Model (up to 4; replaced `--cref`/`--oref` in 08.2026).
+* **Slide 20 (64–67 min) • Pattern 2B: A Real Person as Reference:** 2–3 photos + "do not beautify" ➔ 4-angle sheet. The face is recognizable, but small features can drift — check by eye. Own photos or with consent only.
+* **Slide 21 (67–71 min) • Courier in Scenes & Bridge to Video:** `C2` rain 16:9, `C3` door, `C4` bench. Frame `C2` becomes the First Frame (t₀) in Kling 3.0 / Veo 3.1: face and outfit noticeably more stable than from scratch; still check frames for drift.
+* **Slide 22 (71–74 min) • Pattern 3: Product Photoshoot (`D0`–`D4`):** Packshot ➔ lifestyle, flat lay, in hands, banner. Reference `D0` + "do not change the shape" keep the mug noticeably more stable; a human signs off.
+* **Slide 23 (74–77 min) • Pattern 4: Multi-Reference Composition (`E1`):** "Combine these" creates mush. Image 1 = hero, Image 2 = mug.
+* **Slide 24 (77–80 min) • Batch Generation via SDK:** Same `google-genai` SDK, loop over a CSV; take the part with `inline_data` (loop over `parts`, not `parts[0]`). Estimate: ~50 cards in ~10 minutes for ~$2–3.
+* **Slide 25 (80–84 min) • Risks & Blast Radius:** Hands and small text; drift after ~5–8 edits; US: Thaler (Supreme Court declined to hear it on 02.03.2026), Disney/Universal v. Midjourney; SynthID (Google, OpenAI since 05.2026) + C2PA. Traffic light: green / yellow / red zones.
+* **Slide 26 (84–87 min) • Homework Assignment #4:** Track A — product photoshoot (4 shots); Track B — Glovo courier (sheet + 3 scenes + 1 edit by instruction). Compare 1 prompt across 2 tools ➔ `genai-homeworks/L04/` (`prompts.md`, `qa.md`). Invite: `ihar_rubanovich@epam.com`.
+* **Slide 27 (87–90 min) • Summary & Lesson 05 (Video) Teaser:** 4 engineering principles. Today's courier frames become the first frames for Kling and Veo — our courier will start riding! Q&A.
+
+---
+**Pre-flight Checklist:** Log in to Leonardo.ai, ChatGPT, and Google AI Studio / Gemini • open `L04_04_Live_Demo_Runbook_READY_EN.md` (for instant prompt copy-pasting) • open presentation in fullscreen (F) • countdown timer ready on Slide 16.

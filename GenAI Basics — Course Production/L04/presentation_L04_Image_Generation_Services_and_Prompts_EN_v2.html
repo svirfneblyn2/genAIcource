@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 04: Image Generation | GenAI Basics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f17;
+  --surface: #121a28;
+  --surface-card: #0f1624;
+  --line: rgba(148, 163, 184, 0.18);
+  --fg: #f1f5f9;
+  --muted: #9aa8bc;
+  --dim: #5f6e84;
+  --cyan: #38bdf8;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --violet: #c084fc;
+  --display: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --body: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --mono: 'JetBrains Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: #05080e; color: var(--fg); font-family: var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+.stage { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform: translate(-50%, -50%) scale(var(--s, 1)); transform-origin: center; background: var(--bg); overflow: hidden; border-radius: 6px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.slide { position: absolute; inset: 0; padding: 52px 76px 60px; display: none; flex-direction: column; }
+.slide.active { display: flex; }
+
+.kicker { font-family: var(--mono); font-size: 15px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--k, var(--cyan)); margin-bottom: 12px; }
+.title { font-family: var(--display); font-weight: 700; font-size: 52px; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; max-width: 1400px; }
+.lead { font-size: 23px; line-height: 1.38; color: var(--muted); margin-top: 12px; max-width: 1300px; text-wrap: balance; }
+.body { flex: 1 1 0; min-height: 0; margin-top: 28px; display: flex; flex-direction: column; justify-content: center; }
+.foot { position: absolute; left: 76px; right: 76px; bottom: 22px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+.row { display: grid; gap: 40px; flex: 1 1 0; min-height: 0; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.c5 { grid-template-columns: repeat(5, 1fr); }
+.c6 { grid-template-columns: repeat(6, 1fr); }
+.img-l { grid-template-columns: 1.5fr 1fr; }
+.img-r { grid-template-columns: 1fr 1.5fr; }
+.stack { display: flex; flex-direction: column; gap: 20px; min-height: 0; min-width: 0; }
+.center { justify-content: center; }
+
+.pic { display: flex; flex-direction: column; gap: 8px; min-height: 0; min-width: 0; height: 100%; }
+.stack > .pic { flex: 1 1 0; height: auto; }
+.pic .frame { flex: 1 1 0; min-height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+.pic img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; border-radius: 10px; }
+.pic.cover .frame img { width: 100%; height: 100%; object-fit: cover; }
+.pic .cap { font-size: 19px; line-height: 1.3; color: var(--muted); }
+.pic .cap b { color: var(--fg); font-weight: 600; }
+
+.pt { display: flex; flex-direction: column; gap: 6px; }
+.pt .h { font-size: 28px; font-weight: 700; line-height: 1.25; }
+.pt .d { font-size: 21px; line-height: 1.4; color: var(--muted); }
+.pt .d b { color: var(--fg); font-weight: 600; }
+.mark { color: var(--k, var(--cyan)); }
+.say { font-family: var(--display); font-size: 34px; font-weight: 600; line-height: 1.3; text-wrap: balance; }
+.say em { font-style: normal; color: var(--k, var(--cyan)); }
+.note { font-size: 21px; line-height: 1.45; color: var(--muted); border-left: 3px solid var(--k, var(--cyan)); padding: 4px 0 4px 18px; }
+.note b { color: var(--fg); }
+code, .code-inline { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; color: #e2e8f0; }
+ul.list { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+ul.list li { font-size: 24px; line-height: 1.4; color: var(--muted); padding-left: 26px; position: relative; }
+ul.list li::before { content: ''; position: absolute; left: 4px; top: 13px; width: 8px; height: 8px; border-radius: 50%; background: var(--k, var(--cyan)); }
+ul.list li b { color: var(--fg); font-weight: 600; }
+
+.prompt { font-family: var(--mono); font-size: 16px; line-height: 1.48; background: var(--surface); border-radius: 12px; padding: 14px 18px; color: #dbe4f0; white-space: pre-wrap; border: 1px solid var(--line); }
+.prompt .s { color: var(--cyan); font-weight: 700; }
+.prompt .g { color: var(--green); font-weight: 700; }
+.prompt .m { color: var(--amber); }
+.prompt .x { color: var(--red); font-weight: 700; }
+.prompt-label { font-family: var(--mono); font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 21px; }
+table.t th { text-align: left; font-family: var(--mono); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 700; padding: 0 14px 12px; border-bottom: 1px solid var(--line); }
+table.t td { padding: 14px 14px; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: top; line-height: 1.35; }
+table.t td:first-child { color: var(--fg); font-weight: 600; white-space: nowrap; }
+table.t td.c { text-align: center; } table.t th.c { text-align: center; }
+table.t code { font-size: 18px; }
+
+.card-box { background: var(--surface-card); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.card-box .ch { font-size: 24px; font-weight: 700; color: var(--fg); }
+.card-box .cd { font-size: 18px; line-height: 1.45; color: var(--muted); }
+.badge-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-family: var(--mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; line-height: 1; }
+.badge-naive { background: rgba(248,113,113,0.18); color: var(--red); border: 1px solid var(--red); }
+.badge-eng { background: rgba(52,211,153,0.18); color: var(--green); border: 1px solid var(--green); }
+.badge-workflow { background: rgba(56,189,248,0.18); color: var(--cyan); border: 1px solid var(--cyan); }
+
+.hook-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; flex: 1 1 0; min-height: 0; }
+.hook-card { display: flex; flex-direction: column; gap: 10px; background: var(--surface-card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-height: 0; }
+.hook-card .himg { flex: 1 1 0; min-height: 0; border-radius: 8px; overflow: hidden; display: flex; background: #000; }
+.hook-card .himg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hook-card .hbadge { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--k, var(--cyan)); display: flex; align-items: center; justify-content: space-between; }
+.hook-card .hsub { font-size: 15px; color: var(--muted); line-height: 1.25; }
+
+.cover { padding: 0; }
+.cover .mosaic { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 4px; opacity: .5; }
+.cover .mosaic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,23,.98) 0%, rgba(11,15,23,.95) 58%, rgba(11,15,23,.5) 100%); }
+.cover .txt { position: relative; padding: 0 76px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 1060px; }
+.cover h1 { font-family: var(--display); font-size: 88px; font-weight: 800; line-height: 1; letter-spacing: -0.035em; }
+.cover h2 { font-size: 32px; font-weight: 500; line-height: 1.3; color: var(--cyan); margin-top: 22px; text-wrap: balance; }
+.cover p { font-size: 21px; line-height: 1.5; color: var(--muted); margin-top: 22px; max-width: 820px; }
+.cover .keys { position: absolute; left: 76px; bottom: 26px; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+.road { display: grid; grid-template-columns: repeat(6, 1fr); position: relative; margin-top: 36px; }
+.road::before { content: ''; position: absolute; left: 30px; right: 30px; top: 28px; height: 3px; background: var(--line); }
+.road .m { position: relative; display: flex; flex-direction: column; gap: 10px; padding-right: 18px; }
+.road .dot { width: 60px; height: 60px; border-radius: 50%; background: var(--bg); border: 3px solid #2b3648; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 18px; color: var(--dim); }
+.road .m.done .dot { border-color: var(--green); color: var(--green); }
+.road .m.here .dot { border-color: var(--cyan); color: var(--bg); background: var(--cyan); }
+.road .nm { font-size: 21px; font-weight: 700; }
+.road .sub { font-size: 19px; color: var(--muted); line-height: 1.35; }
+.road .m.future .nm { color: var(--muted); }
+
+.brk { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }
+.brk h2 { font-size: 56px; font-weight: 700; }
+.brk p { font-size: 24px; color: var(--muted); max-width: 900px; line-height: 1.45; }
+.brk .clock { font-family: var(--mono); font-size: 140px; font-weight: 700; color: var(--amber); line-height: 1; margin: 8px 0; }
+.btn { font-family: var(--mono); font-size: 17px; font-weight: 700; padding: 12px 26px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.btn.primary { background: var(--amber); color: #0b0f17; border-color: var(--amber); }
+
+pre.code { font-family: var(--mono); font-size: 19px; line-height: 1.5; background: var(--surface); border-radius: 12px; padding: 22px 26px; color: #dbe4f0; white-space: pre; overflow: hidden; border: 1px solid var(--line); }
+pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str { color: #86efac; } pre.code .cm { color: #64748b; font-style: italic; }
+
+.drawer { position: fixed; left: 0; right: 0; bottom: 0; max-height: 40vh; overflow-y: auto; background: #0f1624; border-top: 2px solid var(--cyan); padding: 18px 28px; font-size: 16px; line-height: 1.6; color: #cbd5e1; transform: translateY(100%); transition: transform .2s ease; z-index: 10; }
+.drawer.open { transform: none; }
+.drawer .hd { font-family: var(--mono); font-size: 12px; color: var(--cyan); letter-spacing: .08em; margin-bottom: 8px; }
+.grid { position: fixed; inset: 0; background: rgba(5,8,14,.96); z-index: 11; display: none; padding: 30px; overflow-y: auto; }
+.grid.open { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; align-content: start; }
+.grid button { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.35; cursor: pointer; min-height: 96px; }
+.grid button span { display: block; font-family: var(--mono); font-size: 12px; color: var(--cyan); margin-bottom: 6px; }
+.grid button.cur { border-color: var(--cyan); }
+.navhint { position: fixed; right: 14px; bottom: 10px; font-family: var(--mono); font-size: 11px; color: #3b475a; z-index: 5; }
+
+@media print {
+  @page { size: 1600px 900px; margin: 0; }
+  body { overflow: visible; background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .stage { position: static; transform: none; width: 1600px; height: auto; border-radius: 0; box-shadow: none; overflow: visible; }
+  .slide { position: relative; display: flex !important; width: 1600px; height: 900px; break-after: page; page-break-after: always; }
+  .drawer, .grid, .navhint, .btn { display: none !important; }
+}
+
+.pic .frame.shot { border-radius: 12px; border: 1px solid var(--line); background: #0b0f17; }
+.thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.thumbs img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; border-bottom: 4px solid var(--k, var(--cyan)); display: block; }
+
+/* ===== v2 additions (2026-10-12) ===== */
+.badge-tag { font-size: 14px; padding: 4px 9px; }
+.pic.contain .frame { background: #05080e; }
+.pic.contain .frame img { width: 100%; height: 100%; object-fit: contain; }
+.thumbs img.contain { object-fit: contain; background: #000; }
+.small-cap { font-size: 15px; line-height: 1.35; color: var(--muted); }
+.small-cap b { color: var(--fg); }
+.mini-h { font-size: 15px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--k, var(--cyan)); }
+.schematic-tag { display: inline-block; font-size: 14px; color: var(--dim); border: 1px dashed rgba(148,163,184,.35); border-radius: 6px; padding: 2px 8px; }
+
+/* layer diagram (slide: three layers) */
+.layers { display: flex; flex-direction: column; gap: 12px; flex: 1 1 0; min-height: 0; justify-content: center; }
+.layer { display: grid; grid-template-columns: 330px 1fr; gap: 24px; align-items: center; background: var(--surface-card); border: 1px solid var(--line); border-left: 5px solid var(--k); border-radius: 12px; padding: 18px 24px; }
+.layer .ln { font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--k); }
+.layer .lt { font-size: 27px; font-weight: 700; line-height: 1.2; margin-top: 2px; }
+.layer .ld { font-size: 17px; line-height: 1.38; color: var(--muted); margin-top: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { background: #0b111c; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 20px; font-weight: 600; color: var(--fg); line-height: 1.25; }
+.chip small { display: block; font-size: 15px; font-weight: 400; color: var(--muted); margin-top: 2px; }
+.chip.own { border-color: rgba(52,211,153,.55); }
+.chip.agg { border-style: dashed; }
+.layer-arrow { text-align: center; color: var(--dim); font-size: 15px; line-height: 1; }
+.legend { display: flex; gap: 22px; font-size: 15px; color: var(--muted); align-items: center; flex-wrap: wrap; }
+.legend .sw { display: inline-block; width: 26px; height: 16px; border-radius: 4px; border: 1px solid var(--line); vertical-align: -3px; margin-right: 6px; background: #0b111c; }
+.legend .sw.own { border-color: rgba(52,211,153,.8); }
+.legend .sw.agg { border-style: dashed; border-color: rgba(148,163,184,.7); }
+
+/* how models draw */
+.howgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; flex: 1 1 0; min-height: 0; }
+.howcol { display: flex; flex-direction: column; gap: 12px; min-height: 0; background: var(--surface-card); border: 1px solid var(--line); border-top: 4px solid var(--k); border-radius: 12px; padding: 16px 20px; }
+.howcol .hh { font-size: 26px; font-weight: 700; color: var(--k); }
+.frames4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 10px; width: 470px; max-width: 100%; align-self: center; }
+.frames4 figure { display: flex; flex-direction: column; gap: 4px; }
+.frames4 img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; display: block; border: 1px solid var(--line); }
+.frames4 figcaption { font-size: 14px; color: var(--muted); text-align: center; }
+.howcol ul.list { gap: 8px; }
+.howcol ul.list li { font-size: 18px; line-height: 1.38; }
+.howcol ul.list li::before { top: 10px; }
+.wholine { font-size: 16px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; margin-top: auto; }
+.wholine b { color: var(--fg); }
+
+/* compact table */
+table.t.compact { font-size: 18px; }
+table.t.compact td { padding: 10px 12px; line-height: 1.3; }
+table.t.compact th { padding: 0 12px 8px; }
+table.t.compact td:first-child { white-space: normal; }
+table.t.compact td small { display: block; font-size: 15px; color: var(--dim); font-weight: 400; }
+
+/* UI schematics */
+.mock { display: flex; flex-direction: column; background: #0a0f19; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; min-height: 0; height: 100%; }
+.mock .mbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--line); background: #0f1624; font-size: 15px; color: var(--muted); }
+.mock .dots i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #2b3648; margin-right: 5px; }
+.mock .mbody { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 190px 1fr 200px; }
+.mock .side { padding: 12px; display: flex; flex-direction: column; gap: 8px; border-right: 1px solid var(--line); font-size: 15px; color: var(--muted); }
+.mock .side.r { border-right: 0; border-left: 1px solid var(--line); }
+.mock .side .sh { font-size: 15px; font-weight: 700; color: var(--fg); }
+.mock .opt { border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; color: var(--fg); font-size: 15px; line-height: 1.25; }
+.mock .opt small { display: block; color: var(--dim); font-size: 14px; }
+.mock .opt.on { border-color: var(--green); background: rgba(52,211,153,.10); }
+.mock .slider { display: flex; flex-direction: column; gap: 4px; }
+.mock .slider .tr { height: 6px; border-radius: 3px; background: #2b3648; position: relative; }
+.mock .slider .tr i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--cyan); }
+.mock .canvas { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 12px; min-height: 0; }
+.mock .canvas .imgwrap { position: relative; width: 100%; aspect-ratio: 1376 / 768; }
+.mock .canvas img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
+.maskblob { position: absolute; border-radius: 46%; background: rgba(248,113,113,.38); border: 2px dashed #f87171; }
+.mock .tools { display: flex; gap: 8px; }
+.mock .tools span { background: rgba(11,15,23,.88); border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; font-size: 15px; color: var(--fg); }
+.mock .tools span.on { border-color: var(--red); color: #fecaca; }
+.mock .pbar { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line); background: #0f1624; }
+.mock .pbar .in { flex: 1; font-family: var(--mono); font-size: 14px; color: #dbe4f0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+.mock .pbar .go { font-size: 14px; font-weight: 700; color: #0b0f17; background: var(--green); border-radius: 8px; padding: 6px 12px; }
+
+/* chat scene */
+.chat { display: flex; flex-direction: column; gap: 12px; padding: 14px; flex: 1 1 0; min-height: 0; justify-content: center; }
+.bub { max-width: 88%; border-radius: 14px; padding: 10px 12px; display: flex; gap: 12px; align-items: center; font-size: 16px; line-height: 1.35; }
+.bub.user { align-self: flex-end; background: #16314a; border: 1px solid rgba(56,189,248,.45); color: var(--fg); }
+.bub.bot { align-self: flex-start; background: #121a28; border: 1px solid var(--line); color: var(--fg); }
+.bub img { width: 190px; aspect-ratio: 1376 / 768; object-fit: cover; border-radius: 8px; flex: none; }
+.bub .who { display: block; font-size: 14px; color: var(--muted); margin-bottom: 2px; }
+
+/* acceptance checklist */
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.checklist li { font-size: 20px; line-height: 1.35; color: var(--muted); display: grid; grid-template-columns: 34px 1fr; }
+.checklist li b { color: var(--fg); font-weight: 600; }
+.checklist .ok { color: var(--green); font-weight: 700; }
+.checklist .warn { color: var(--amber); font-weight: 700; }
+.checklist .bad { color: var(--red); font-weight: 700; }
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+
+<!-- SLIDE 01: COVER -->
+<section class="slide cover" data-n="1">
+  <div class="mosaic">
+    <img src="assets/examples/web/A2_structured.jpg" alt="">
+    <img src="assets/examples/web/C2_rain.jpg" alt="">
+    <img src="assets/examples/web/D2_flatlay.jpg" alt="">
+    <img src="assets/examples/web/B2_relight.jpg" alt="">
+    <img src="assets/examples/web/C4_break.jpg" alt="">
+    <img src="assets/examples/web/D3_hands.jpg" alt="">
+    <img src="assets/examples/web/E1_compose.jpg" alt="">
+    <img src="assets/examples/web/E2_style.jpg" alt="">
+  </div>
+  <div class="shade"></div>
+  <div class="txt">
+    <div class="kicker">GenAI Basics • Lesson 04 • Module 2: Multimodality</div>
+    <h1>Image Generation</h1>
+    <h2>Services, Prompt Techniques, and Control Patterns</h2>
+    <p>ChatGPT, Nano Banana, Leonardo.ai, Midjourney, Kling, and FLUX. From an interactive quiz and the market map to e-commerce packshots, edits by instruction, and a character who stays recognizable in every scene.</p>
+  </div>
+  <div class="keys">← → navigate • N speaker notes • G slide grid • F fullscreen</div>
+  <template class="notes">Welcome. Opening Module 2 — Multimodality. Today is not about abstract art, but engineering craft: how models draw, which providers power the ecosystem, why creative studios like Leonardo exist, how to structure prompts with 6 distinct slots, and how to maintain character consistency across scenes.</template>
+</section>
+
+<!-- SLIDE 02: INTERACTIVE HOOK (QUIZ) -->
+<section class="slide" data-n="2">
+  <div class="kicker" style="--k:var(--amber)">Interactive Hook • Warm-up Quiz</div>
+  <h2 class="title">Guess: Which is a real human, and which is AI?</h2>
+  <div class="lead">Six portrait images. Post the letters of those you believe are genuine photographs vs. AI generated in chat.</div>
+  <div class="body">
+    <div class="hook-grid">
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ A ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_1_gan2014.jpg" alt="A"></div>
+        <div class="hsub">Portrait A</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ B ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_2_stylegan2018.jpg" alt="B"></div>
+        <div class="hsub">Portrait B</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ C ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_3_sd2022.jpg" alt="C"></div>
+        <div class="hsub">Portrait C</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ D ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_4_mj2023.jpg" alt="D"></div>
+        <div class="hsub">Portrait D</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ E ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_5_flux2024.jpg" alt="E"></div>
+        <div class="hsub">Portrait E</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ F ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_6_banana2026.jpg" alt="F"></div>
+        <div class="hsub">Portrait F</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="prompt" style="font-size:18px;"><b>Chat Poll:</b> Enter your guesses. For example: <span class="m">"A and B are AI, E and F are real"</span> or <span class="g">"Only F is real"</span>. What visual clues are you looking at?</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>02 / 27</span></div>
+  <template class="notes">Give the audience 30–45 seconds. Ask: What clues caught your attention? Usually people spot ear artifacts in B, plastic skin in C, cinematic rim lighting in D, wrinkles/pores in E, and natural smartphone optics/date stamp in F. Next slide reveals the truth.</template>
+</section>
+
+<!-- SLIDE 03: THE REVEAL & 10-YEAR EVOLUTION -->
+<section class="slide" data-n="3">
+  <div class="kicker" style="--k:var(--green)">The Reveal • 2014–2025</div>
+  <h2 class="title">All 6 are AI generated. A decade of evolution</h2>
+  <div class="lead">Not a single real photograph. A reconstruction of each era's style (all frames generated in 2026): how generative models crossed the uncanny valley.</div>
+  <div class="body">
+    <div class="hook-grid">
+      <div class="hook-card" style="--k:var(--dim)">
+        <div class="hbadge"><span>2014</span><span style="font-size:14px;color:var(--dim)">GAN</span></div>
+        <div class="himg"><img src="assets/hook/hook_1_gan2014.jpg" alt="2014"></div>
+        <div class="hsub"><b>Goodfellow GAN</b><br>64×64 px grayscale noise blobs. The birth of deep generative models.</div>
+      </div>
+      <div class="hook-card" style="--k:var(--amber)">
+        <div class="hbadge"><span>2018</span><span style="font-size:14px;color:var(--amber)">StyleGAN</span></div>
+        <div class="himg"><img src="assets/hook/hook_2_stylegan2018.jpg" alt="2018"></div>
+        <div class="hsub"><b>NVIDIA StyleGAN</b><br>Early photorealism, but melting earrings, ears, and warped backgrounds.</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>2022</span><span style="font-size:14px;color:var(--cyan)">SD 1.5</span></div>
+        <div class="himg"><img src="assets/hook/hook_3_sd2022.jpg" alt="2022"></div>
+        <div class="hsub"><b>Stable Diffusion</b><br>Open-source diffusion explosion. Glossy, plastic skin and vacant gaze.</div>
+      </div>
+      <div class="hook-card" style="--k:var(--violet)">
+        <div class="hbadge"><span>2023</span><span style="font-size:14px;color:var(--violet)">MJ v5</span></div>
+        <div class="himg"><img src="assets/hook/hook_4_mj2023.jpg" alt="2023"></div>
+        <div class="hsub"><b>Midjourney v5</b><br>Cinematic aesthetic victory. Studio lighting, dramatic chiaroscuro.</div>
+      </div>
+      <div class="hook-card" style="--k:var(--green)">
+        <div class="hbadge"><span>2024</span><span style="font-size:14px;color:var(--green)">FLUX.1</span></div>
+        <div class="himg"><img src="assets/hook/hook_5_flux2024.jpg" alt="2024"></div>
+        <div class="hsub"><b>FLUX.1 Dev/Pro</b><br>Authentic skin pores, micro-imperfections, natural teeth and anatomy.</div>
+      </div>
+      <div class="hook-card" style="--k:#34d399">
+        <div class="hbadge"><span>2025</span><span style="font-size:14px;color:#34d399">NB Pro</span></div>
+        <div class="himg"><img src="assets/hook/hook_6_banana2026.jpg" alt="2026"></div>
+        <div class="hsub"><b>Nano Banana Pro</b><br>Smartphone optics, bokeh, sensor grain. Indistinguishable by eye.</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="note"><b>Engineering Takeaway:</b> Modern models generate beauty effortlessly. The central problem of 2026 is <b>controllability</b>: how to steer models to generate exact specifications and maintain subject identity across 10 scenes.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>03 / 27</span></div>
+  <template class="notes">All 6 are AI! Note: these are reconstructions of each era's style, all generated in 2026. Emphasize the pace: from 64 blurry pixels in 2014 to a 2025 shot (Nano Banana Pro) you cannot tell from a photo by eye. SynthID — the invisible watermark — can tell, though; we come back to it in the risks block. This frames the lecture: moving from random aesthetic gambling to deterministic engineering control.</template>
+</section>
+
+<!-- SLIDE 04: ROADMAP -->
+<section class="slide" data-n="4">
+  <div class="kicker">Course Roadmap</div>
+  <h2 class="title">Module 1 Completed. Entering Pixels</h2>
+  <div class="body">
+    <div class="road">
+      <div class="m done"><div class="dot">01</div><div class="nm">Foundations & API</div><div class="sub">L01–L03</div></div>
+      <div class="m here"><div class="dot">02</div><div class="nm">Multimodality</div><div class="sub">L04 Images<br>L05 Video • L06 Audio</div></div>
+      <div class="m future"><div class="dot">03</div><div class="nm">Engineer Environment</div><div class="sub">L07–L09</div></div>
+      <div class="m future"><div class="dot">04</div><div class="nm">Local AI</div><div class="sub">L10</div></div>
+      <div class="m future"><div class="dot">05</div><div class="nm">Agents & MCP</div><div class="sub">L11–L13</div></div>
+      <div class="m future"><div class="dot">06</div><div class="nm">Production</div><div class="sub">L14–L16</div></div>
+    </div>
+    <div style="margin-top:80px;">
+      <div class="note"><b>Carried over from Module 1:</b> Prompt engineering principles from L02 apply directly to vision models. Specificity beats buzzwords, slot separation prevents collision. But instead of text few-shots, we now supply <b>visual reference images</b>.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>04 / 27</span></div>
+  <template class="notes">Bridge from L01-L03. We mastered token mechanics, temperature, and REST SDKs. Now we manipulate pixels with the same architectural rigor.</template>
+</section>
+
+<!-- SLIDE 05: THE 3 LAYERS OF VISUAL AI -->
+<section class="slide" data-n="5">
+  <div class="kicker" style="--k:var(--cyan)">Architecture • Industry Overview</div>
+  <h2 class="title">Three Layers of the Image Generation Ecosystem</h2>
+  <div class="lead">Model ≠ service. The same model can live in an API, in a creative studio, and in a chat.</div>
+  <div class="body" style="margin-top:18px;">
+    <div class="layers">
+      <div class="layer" style="--k:var(--cyan)">
+        <div><div class="ln">Layer 3</div><div class="lt">Multimodal Chat</div><div class="ld">The model reasons in text, draws, and remembers the dialogue. Best place for edits and in-image text.</div></div>
+        <div class="chips">
+          <div class="chip own">ChatGPT<small>GPT Image 2.5</small></div>
+          <div class="chip own">Gemini<small>Nano Banana 2 / Pro</small></div>
+          <div class="chip own">Grok<small>Grok Imagine 2.0 (Aurora model)</small></div>
+        </div>
+      </div>
+      <div class="layer-arrow">▲ build on models and APIs from the layer below ▲</div>
+      <div class="layer" style="--k:var(--green)">
+        <div><div class="ln">Layer 2</div><div class="lt">Creative Studios</div><div class="ld">Canvas, masks, layers, upscaling, presets. Own models and/or third-party models via API.</div></div>
+        <div class="chips">
+          <div class="chip own">Leonardo.ai<small>own Phoenix / Lucid + third-party</small></div>
+          <div class="chip own">Kling<small>own IMAGE 3.0 / O1 → video</small></div>
+          <div class="chip own">Midjourney<small>own V8.2, Web / Discord only</small></div>
+          <div class="chip agg">Krea, Sintx<small>aggregate third-party models</small></div>
+        </div>
+      </div>
+      <div class="layer-arrow">▲ build on models and APIs from the layer below ▲</div>
+      <div class="layer" style="--k:var(--amber)">
+        <div><div class="ln">Layer 1</div><div class="lt">Foundation Models &amp; APIs</div><div class="ld">Train the weights, run the GPUs, and expose REST / Python APIs for automation.</div></div>
+        <div class="chips">
+          <div class="chip">OpenAI<small>GPT Image 2 / 2.5</small></div>
+          <div class="chip">Google<small>Nano Banana: Gemini API, Vertex</small></div>
+          <div class="chip">Black Forest Labs<small>FLUX.2 / FLUX 3</small></div>
+          <div class="chip">Stability AI<small>SD 3.5 / SDXL</small></div>
+          <div class="chip">ByteDance<small>Seedream 5.0</small></div>
+        </div>
+      </div>
+      <div class="legend"><span><i class="sw own"></i>service on its own models</span><span><i class="sw agg"></i>aggregator of third-party models</span><span>One vendor can sit on several layers: Google is both an API (Layer 1) and the Gemini chat (Layer 3).</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>05 / 27</span></div>
+  <template class="notes">Students often confuse a model with a service. Separate three layers. Layer 1 trains weights and exposes APIs: OpenAI, Google, BFL, Stability, ByteDance. Layer 2 is creative studios: Leonardo and Kling run their own models (Leonardo Phoenix/Lucid plus third-party, Kling IMAGE 3.0/O1), while Krea and Sintx mostly aggregate other vendors' models. Midjourney is special: its own model, but no public API. Layer 3 is chat: ChatGPT on GPT Image, Gemini on Nano Banana, Grok on its own Aurora model. From here on we only use the terms "Layer 1/2/3".</template>
+</section>
+
+<!-- SLIDE 06: HOW MODELS DRAW (NEW) -->
+<section class="slide" data-n="6">
+  <div class="kicker" style="--k:var(--violet)">Under the Hood • Two Ways to Draw</div>
+  <h2 class="title">How Models Draw: Diffusion vs Autoregression</h2>
+  <div class="body" style="margin-top:22px;">
+    <div class="howgrid">
+      <div class="howcol" style="--k:var(--cyan)">
+        <div class="hh">Diffusion: from noise, everywhere at once</div>
+        <div class="frames4">
+          <figure><img src="assets/examples/web/denoise_0.jpg" alt=""><figcaption>start: noise</figcaption></figure>
+          <figure><img src="assets/examples/web/denoise_1.jpg" alt=""><figcaption>→ shapes</figcaption></figure>
+          <figure><img src="assets/examples/web/denoise_2.jpg" alt=""><figcaption>→ details</figcaption></figure>
+          <figure><img src="assets/examples/web/denoise_3.jpg" alt=""><figcaption>final</figcaption></figure>
+        </div>
+        <ul class="list" style="--k:var(--cyan)">
+          <li>Starts from pure noise and removes it over 20–50 steps <b>across the whole image at once</b>; the prompt steers every step.</li>
+          <li>Different <b>seed</b> = different noise = different image. Hence the studio knobs: <b>seed, guidance, steps, negative prompt</b>.</li>
+        </ul>
+        <div class="wholine"><b>Who:</b> Stable Diffusion / SDXL, FLUX, Midjourney, most studio models.</div>
+      </div>
+      <div class="howcol" style="--k:var(--green)">
+        <div class="hh">Autoregression: patch by patch, like text</div>
+        <div class="frames4">
+          <figure><img src="assets/v2/ar_0.jpg" alt=""><figcaption>first patches</figcaption></figure>
+          <figure><img src="assets/v2/ar_1.jpg" alt=""><figcaption>→ 40%</figcaption></figure>
+          <figure><img src="assets/v2/ar_2.jpg" alt=""><figcaption>→ 70%</figcaption></figure>
+          <figure><img src="assets/v2/ar_3.jpg" alt=""><figcaption>done</figcaption></figure>
+        </div>
+        <ul class="list" style="--k:var(--green)">
+          <li>An image is a sequence of <b>patch tokens</b>; the model predicts the next one, like the next word in a sentence.</li>
+          <li>The same multimodal LLM that reads the prompt does the drawing → strong at <b>text, instructions and edits</b>. Often a hybrid.</li>
+        </ul>
+        <div class="wholine"><b>Who:</b> GPT Image, Grok Aurora; Nano Banana — architecture not disclosed.</div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:14px;font-size:19px;"><b>In practice:</b> diffusion — sliders and seed; chat models — prompt as a spec and edits in words. The techniques in this lesson work for both.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>06 / 27</span></div>
+  <template class="notes">Short theory, no formulas. Diffusion: start from noise and "develop" the whole picture over dozens of steps — that is why seed and guidance matter so much in studios. Autoregression: the image is split into patch tokens and the model writes them one by one, like text — that is why chat models follow instructions and render text well. Honest caveat: GPT Image and Nano Banana architectures are not fully disclosed, and many current models are hybrids. The right-hand visual is a schematic (40×40 px patches), not the real generation order of any specific model.</template>
+</section>
+
+<!-- SLIDE 07: FOUNDATION PROVIDERS & TOP MODELS -->
+<section class="slide" data-n="7">
+  <div class="kicker" style="--k:var(--amber)">Layer 1 • Foundation Providers</div>
+  <h2 class="title">Who Trains Foundation Models &amp; Exposes APIs</h2>
+  <div class="lead">The same providers you already called in L03 via the SDK also expose image generation endpoints.</div>
+  <div class="body">
+    <div class="row c3" style="gap:22px;">
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--cyan);font-weight:700">GOOGLE</div>
+        <div class="ch">Nano Banana 2 / Pro / 2 Lite</div>
+        <div class="cd"><code>gemini-3.1-flash-image</code>, <code>gemini-3-pro-image</code>, <code>gemini-3.1-flash-lite-image</code>.<br><b>Strengths:</b> speed, world knowledge and Search grounding, multi-reference input, same SDK as L03.</div>
+      </div>
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--green);font-weight:700">OPENAI</div>
+        <div class="ch">GPT Image 2 / 2.5</div>
+        <div class="cd"><code>gpt-image-2</code>, <code>gpt-image-2.5-flare</code> (fast), <code>gpt-image-2.5-sunburst</code> (precise edits).<br><b>Strengths:</b> in-image text, strict instruction following, conversational edits.</div>
+      </div>
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--violet);font-weight:700">BLACK FOREST LABS</div>
+        <div class="ch">FLUX.2 (Pro / Flex / Dev) → FLUX 3</div>
+        <div class="cd">API: BFL, Replicate, fal.ai. FLUX.2 Dev / Klein are open weights, up to 10 references. FLUX 3 (07.2026) is multimodal.<br><b>Strengths:</b> photorealism, hex color control, local hosting.</div>
+      </div>
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--amber);font-weight:700">STABILITY AI</div>
+        <div class="ch">Stable Diffusion 3.5 / SDXL</div>
+        <div class="cd">Open-weights ecosystem staple. API access and local hosting (L10).<br><b>Strengths:</b> thousands of community fine-tunes and style LoRAs.</div>
+      </div>
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:#f472b6;font-weight:700">MIDJOURNEY</div>
+        <div class="ch">Midjourney V8.2 + Edit Model</div>
+        <div class="cd">Web and Discord only, no public API. Edit Model (08.2026): edits, inpaint / outpaint, up to 4 references.<br><b>Strengths:</b> aesthetics and cinematic style.</div>
+      </div>
+      <div class="card-box" style="background:#141f33;border-color:var(--cyan)">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--cyan);font-weight:700">PROGRAMMATIC ACCESS</div>
+        <div class="ch">Direct API Calls</div>
+        <div class="cd"><code>POST /v1/images/generations</code> or <code>client.models.generate_content</code>.<br><b>Cost:</b> ≈ $0.02–0.06 per 1K image on fast models; Pro and 4K cost more. Latency: 3–15 s.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>07 / 27</span></div>
+  <template class="notes">Same foundation as L03: same keys, same auth headers. In the Gemini API we request IMAGE in response_modalities. Current line-ups as of October 2026: OpenAI — GPT Image 2 and 2.5 (flare and sunburst variants); Google — Nano Banana 2, Pro and 2 Lite; BFL — FLUX.2 and the new FLUX 3. Midjourney V8.2 still has no official REST API, so it cannot be wired into an enterprise pipeline; references now go through its Edit Model.</template>
+</section>
+
+<!-- SLIDE 08: MARKET OCT 2026 (NEW) -->
+<section class="slide" data-n="8">
+  <div class="kicker" style="--k:var(--cyan)">Market • October 2026</div>
+  <h2 class="title">The Image Generation Market: October 2026</h2>
+  <div class="body" style="margin-top:20px;justify-content:flex-start;">
+    <table class="t compact">
+      <thead><tr><th style="width:21%">Model · vendor</th><th style="width:34%">Strength</th><th style="width:19%">References</th><th>Access &amp; price</th></tr></thead>
+      <tbody>
+        <tr><td>GPT Image 2 / 2.5<small>OpenAI</small></td><td>Text and infographics, instruction following, conversational edits; <span style="color:var(--green)">#1 Arena</span></td><td>up to 16 (2.5; sources disagree)</td><td>ChatGPT (incl. Free); API ≈ $30 / 1M image output tokens</td></tr>
+        <tr><td>Nano Banana 2 / Pro / 2 Lite<small>Google</small></td><td>Speed, world knowledge and Search, 4K, in-image text translation</td><td>NB 2: up to 14 objects + 5 characters</td><td>Gemini app; API: 2 Lite ≈ $0.034 / 1K image</td></tr>
+        <tr><td>Grok Imagine Image 2.0<small>xAI / SpaceXAI</small></td><td>Magic Wand selection, templates (product, headshot); <span style="color:var(--green)">#2 Arena</span></td><td>up to 5</td><td>Grok app; API ≈ $0.02–0.06</td></tr>
+        <tr><td>Midjourney V8.2<small>Midjourney</small></td><td>Aesthetics and style: <code>--sref</code>, moodboards, personalization</td><td>Edit Model: up to 4</td><td>$10–120 / month; no API</td></tr>
+        <tr><td>FLUX.2 / FLUX 3<small>Black Forest Labs</small></td><td>Open weights (Dev, Klein), 4 MP, exact hex colors</td><td>up to 10</td><td>API: BFL / fal / Replicate; local (L10)</td></tr>
+        <tr><td>Kling IMAGE 3.0 / O1<small>Kuaishou</small></td><td>Cinematic framing, image series, direct bridge to Kling video</td><td>up to 10</td><td>kling.ai (credits), API</td></tr>
+        <tr><td>Seedream 5.0<small>ByteDance</small></td><td>4K, Search in Lite; Pro splits a render into PNG layers</td><td>up to 10 (Flash)</td><td>API, partner platforms</td></tr>
+        <tr><td>Ideogram 4.0<small>Ideogram</small></td><td>Typography; official <b style="color:var(--fg)">JSON prompts</b>; open weights 9.3B</td><td>—</td><td>ideogram.ai; Apache 2.0 weights</td></tr>
+        <tr><td>Recraft V4<small>Recraft</small></td><td>Native editable <b style="color:var(--fg)">SVG</b> output, brand styles</td><td>style sets</td><td>recraft.ai, API</td></tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:14px;font-size:17px;"><b>Arena, 08.2026:</b> GPT-Image-2 is #1, Grok Imagine 2.0 is #2 (Text-to-Image and Image Edit). Limits and prices change monthly — re-check before class.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>08 / 27</span></div>
+  <template class="notes">A handout map of the market as of October 2026, not a "best model" ranking. Read it by column: what each model is for and how many references it accepts. Key points: GPT Image and Nano Banana are all-rounders with text and conversational edits; Midjourney is aesthetics without an API; FLUX and Ideogram ship open weights; Recraft is the one with native SVG; Kling if you need video next. Reference counts depend on the surface (app vs API), and sources disagree for GPT Image 2.5. Prices are indicative — re-check before class.</template>
+</section>
+
+<!-- SLIDE 09: CREATIVE STUDIOS & AGGREGATORS -->
+<section class="slide" data-n="9">
+  <div class="kicker" style="--k:var(--green)">Layer 2 • Creative Studios &amp; Aggregators</div>
+  <h2 class="title">Why Use a Creative Studio Instead of a Raw API?</h2>
+  <div class="lead">Leonardo.ai, Kling, Krea, Sintx: canvas, masks, and presets on top of their own and third-party models.</div>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.45fr 1fr;gap:36px;align-items:center;">
+      <div style="height:500px;min-height:0;">
+        <div class="mock">
+          <div class="mbar"><span class="dots"><i></i><i></i><i></i></span><span>Interface schematic of a creative studio (generic, not a screenshot)</span></div>
+          <div class="mbody">
+            <div class="side">
+              <div class="sh">Model</div>
+              <div class="opt on">Phoenix<small>studio's own model</small></div>
+              <div class="opt">FLUX.2 Pro<small>via BFL API</small></div>
+              <div class="opt">GPT Image 2<small>via OpenAI API</small></div>
+              <div class="opt">Nano Banana 2<small>via Google API</small></div>
+              <div class="opt">SDXL + LoRA<small>open weights</small></div>
+            </div>
+            <div class="canvas">
+              <div class="tools"><span class="on">Mask brush</span><span>Outpaint</span><span>Layers</span></div>
+              <div class="imgwrap"><img src="assets/examples/web/A2_structured.jpg" alt=""><div class="maskblob" style="left:64%;top:55%;width:16%;height:34%;"></div></div>
+            </div>
+            <div class="side r">
+              <div class="sh">Parameters</div>
+              <div class="slider">Guidance: 7.0<div class="tr"><i style="width:58%"></i></div></div>
+              <div class="slider">Steps: 30<div class="tr"><i style="width:40%"></i></div></div>
+              <div class="opt">Seed: 41872 🔒</div>
+              <div class="opt">Style: Editorial</div>
+              <div class="opt">Negative: text, logo</div>
+            </div>
+          </div>
+          <div class="pbar"><span class="in">Inpaint: tall glass of iced latte</span><span class="go">Generate</span></div>
+        </div>
+      </div>
+      <div class="stack center" style="gap:16px;">
+        <ul class="list" style="--k:var(--green);gap:14px;">
+          <li style="font-size:20px;"><b>Own + third-party models:</b> Leonardo (Phoenix, Lucid) and Kling (IMAGE 3.0) run their own; FLUX, GPT Image, Nano Banana, SDXL sit alongside — one subscription instead of five API keys.</li>
+          <li style="font-size:20px;"><b>Canvas:</b> layers, brush masks (inpainting), extending the frame (outpainting).</li>
+          <li style="font-size:20px;"><b>Presets &amp; LoRAs:</b> brand style or "product shoot" in one click.</li>
+          <li style="font-size:20px;"><b>Control knobs:</b> guidance, seed, ControlNet by pose or edges.</li>
+        </ul>
+        <div class="note" style="font-size:19px;"><b>Definition:</b> a creative studio is a visual shell over models (its own and third-party) that turns generation into a workflow.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>09 / 27</span></div>
+  <template class="notes">The left panel is a schematic, not a screenshot of a real product: this is what a typical creative studio looks like. Model picker on the left (the studio's own model plus third-party models via API), canvas with a mask over the mug in the middle, diffusion sliders on the right. Important: Leonardo and Kling are not "just proxies" — they have their own models; Krea and Sintx mostly aggregate others. Midjourney cannot be officially plugged into such aggregators — it has no public API. Why do studios thrive if others train many of the models? Because most design work is not pressing a button but composing, masking out what is unwanted, and repeating the brand style.</template>
+</section>
+
+<!-- SLIDE 10: TWO WORLDS: CANVAS VS CHAT -->
+<section class="slide" data-n="10">
+  <div class="kicker" style="--k:var(--cyan)">Two Paradigms • Workflow</div>
+  <h2 class="title">Canvas &amp; Sliders vs Editing in Words</h2>
+  <div class="lead">One task — swap the mug for an iced latte — in two paradigms.</div>
+  <div class="body">
+    <div class="row c2" style="gap:40px;">
+      <div class="stack" style="gap:14px;">
+        <div class="mock" style="height:330px;flex:none;">
+          <div class="mbar"><span class="dots"><i></i><i></i><i></i></span><span>Schematic: creative studio (e.g. Leonardo)</span></div>
+          <div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 40px 1fr;align-items:center;padding:14px;gap:6px;">
+            <div style="position:relative;"><img src="assets/examples/web/A2_structured.jpg" alt="" style="width:100%;border-radius:8px;display:block;"><div class="maskblob" style="left:64%;top:55%;width:16%;height:34%;"></div></div>
+            <div style="text-align:center;color:var(--green);font-size:28px;">➔</div>
+            <div><img src="assets/examples/web/B1_replace.jpg" alt="" style="width:100%;border-radius:8px;display:block;"></div>
+          </div>
+          <div class="pbar" style="gap:8px;"><span class="schematic-tag" style="color:#fecaca;border-color:var(--red)">brush mask</span><span class="schematic-tag">prompt for the area</span><span class="schematic-tag">negative prompt</span><span class="schematic-tag">seed 41872 🔒</span></div>
+        </div>
+        <div class="pt" style="--k:var(--amber)">
+          <div class="h">Creative studio: a graphics editor</div>
+          <div class="d"><b>You drive the process:</b> paint a mask over the mug (inpainting), write a prompt for that area, lock seed and guidance. Pixel-level control at the cost of manual work.</div>
+        </div>
+      </div>
+      <div class="stack" style="gap:14px;">
+        <div class="mock" style="height:330px;flex:none;">
+          <div class="mbar"><span class="dots"><i></i><i></i><i></i></span><span>Dialogue schematic: ChatGPT / Gemini</span></div>
+          <div class="chat">
+            <div class="bub user"><img src="assets/examples/web/A2_structured.jpg" alt=""><span><span class="who">You</span>Replace <b>only</b> the mug with a tall glass of iced latte. Keep the light, counter and background.</span></div>
+            <div class="bub bot"><img src="assets/examples/web/B1_replace.jpg" alt=""><span><span class="who">Model</span>Done: mug replaced, everything else unchanged.</span></div>
+          </div>
+        </div>
+        <div class="pt" style="--k:var(--cyan)">
+          <div class="h">Chat model: talking to a director</div>
+          <div class="d"><b>No mask needed:</b> the model finds the object from the description (edit by instruction). Fast, but precision depends on your wording — and on checking the result.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>10 / 27</span></div>
+  <template class="notes">Both panels are workflow schematics, not product screenshots; frames A2 and B1 are our real generations from this lesson. Left, the studio: paint a mask over the mug, write a prompt for that area, keep the seed. Right, the chat: attach the frame and write "replace only the mug" — the model segments the object itself. Need pixel-level control and a hand-drawn mask — use a studio. Need fast semantic object swaps and text work — use a chat model.</template>
+</section>
+
+<!-- SLIDE 11: TRADEOFF MATRIX -->
+<section class="slide" data-n="11">
+  <div class="kicker">Engineering Evaluation • Selection Matrix</div>
+  <h2 class="title">Selection Matrix: Studio vs Chat vs API</h2>
+  <div class="body">
+    <table class="t" style="font-size:19px;">
+      <thead>
+        <tr>
+          <th style="width:19%">Criterion</th>
+          <th style="width:24%">Creative studio (Leonardo, Krea)</th>
+          <th style="width:25%">Multimodal chat (ChatGPT, Gemini)</th>
+          <th>API (Python SDK / Vertex / fal)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Entry barrier</td>
+          <td>Moderate (interface, sliders, layers)</td>
+          <td><span style="color:var(--green)">Minimal</span> (plain language)</td>
+          <td>High (code, keys, pipelines)</td>
+        </tr>
+        <tr>
+          <td>Targeted edits</td>
+          <td><span style="color:var(--green)">Brush mask / canvas</span> (inpainting)</td>
+          <td>Edit by instruction (in words)</td>
+          <td>Mask in the request or edit by instruction</td>
+        </tr>
+        <tr>
+          <td>In-image text</td>
+          <td>Depends on the selected model</td>
+          <td><span style="color:var(--green)">Excellent</span> (GPT Image 2.x, Nano Banana)</td>
+          <td><span style="color:var(--green)">Excellent</span> (GPT Image 2.x, Nano Banana, FLUX.2)</td>
+        </tr>
+        <tr>
+          <td>Character consistency</td>
+          <td>Character reference, seed lock</td>
+          <td>Multi-reference (Nano Banana 2: up to 14 objects + 5 characters)</td>
+          <td>References in request <code>contents</code></td>
+        </tr>
+        <tr>
+          <td>Batch (500+ items)</td>
+          <td>Impractical (clicks, credit limits)</td>
+          <td>Impossible (manual chat)</td>
+          <td><span style="color:var(--green)">Optimal</span>: script + DB. Per image: Nano Banana 2 Lite ≈ $0.034 (1K), legacy Nano Banana ≈ $0.039, Grok ≈ $0.02–0.06</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:24px;">
+      <div class="note"><b>Engineering rule:</b> concepts and quick text ➔ <b>chat</b>. Commercial art with a hand mask ➔ <b>studio</b>. Mass banner generation from a catalog ➔ <b>API script</b>.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>11 / 27</span></div>
+  <template class="notes">This is a handout table. Students often try to generate 100 products by hand in a chat — that is a mistake. Prototype in the chat, fix details with a mask in a studio, and ship the Python script from slide 24 to production. Per-image prices are indicative as of October 2026 and differ several-fold between models.</template>
+</section>
+
+<!-- SLIDE 12: PROMPT STEP 1 (FREE PROMPT) -->
+<section class="slide" data-n="12">
+  <div class="kicker" style="--k:var(--amber)">Part 3 • Prompt Engineering • Step 1</div>
+  <h2 class="title">Six Words — Model Makes Every Creative Decision</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.75fr 1fr;gap:44px;">
+      <div class="pic">
+        <div class="frame">
+          <svg viewBox="0 0 1376 768" style="width:100%;height:100%;border-radius:12px" preserveAspectRatio="xMidYMid meet">
+            <image href="assets/examples/web/A1_free.jpg" x="0" y="0" width="1376" height="768" preserveAspectRatio="xMidYMid meet"/>
+            <circle cx="165" cy="246" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="165" y="255" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">1</text>
+            <rect x="203" y="218" width="170" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="221" y="255" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">rain</text>
+            <circle cx="399" cy="422" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="399" y="431" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">2</text>
+            <rect x="437" y="394" width="152" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="455" y="431" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">patrons</text>
+            <circle cx="303" cy="384" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="303" y="393" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">3</text>
+            <rect x="131" y="356" width="134" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="149" y="393" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">cat</text>
+            <circle cx="1280" cy="553" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="1280" y="562" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">4</text>
+            <rect x="1040" y="525" width="200" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="1058" y="562" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">fireplace</text>
+            <circle cx="1004" cy="292" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="1004" y="301" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">5</text>
+            <rect x="1042" y="264" width="206" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="1060" y="301" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">barista</text>
+          </svg>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="prompt-label">Complete Vague Prompt</div>
+        <div class="prompt" style="font-size:22px;">a cozy coffee shop in the morning</div>
+        <div class="say" style="font-size:28px;margin-top:10px;">Morning? Outside it's raining. Strangers, a cat, and a fireplace were <em>never requested</em> — the model filled empty latent space with training data averages.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>12 / 27</span></div>
+  <template class="notes">Explain how diffusion models interpolate unmentioned attributes by sampling the dataset prior.</template>
+</section>
+
+<!-- SLIDE 13: PROMPT STEP 2 (STRUCTURED PROMPT) -->
+<section class="slide" data-n="13">
+  <div class="kicker" style="--k:var(--green)">Part 3 • Prompt Engineering • Slot Anatomy</div>
+  <h2 class="title">Six Slots — What Controls What</h2>
+  <div class="body" style="margin-top:20px;">
+    <div style="display:grid;grid-template-columns:1fr 1.08fr;gap:32px;flex:1;min-height:0;align-items:stretch;">
+      <div class="stack" style="gap:14px;min-height:0;justify-content:center;">
+        <div>
+          <div class="prompt-label" style="display:flex;justify-content:space-between;align-items:baseline;">
+            <span>Runnable slot prompt (copy &amp; run)</span>
+            <span style="font-family:var(--body);color:var(--green);font-weight:700;text-transform:none;letter-spacing:0;font-size:15px;">high scene control</span>
+          </div>
+          <div class="prompt" style="font-size:16px;line-height:1.5;"><span class="s">Subject:</span> a speckled cream ceramic mug of black coffee with steam, on worn oak counter in right third.
+<span class="s">Setting:</span> empty Scandinavian coffee shop at 7 a.m., chairs up on tables, brass espresso machine on left.
+<span class="s">Camera:</span> eye-level, 35mm lens, f/2.0, shallow depth of field.
+<span class="s">Lighting:</span> low warm morning sunlight from left window, long soft shadows.
+<span class="s">Style:</span> realistic editorial photography.
+<span class="x">Constraints:</span> no text, no logos.</div>
+        </div>
+        <div class="card-box" style="padding:14px 18px;gap:6px;border-color:var(--amber);">
+          <div class="mini-h" style="--k:var(--amber)">Negatives depend on the model</div>
+          <div style="font-size:17px;line-height:1.4;color:var(--muted)"><b style="color:var(--fg)">Gemini and GPT</b> follow positive phrasing better: <i>"empty coffee shop"</i> instead of <i>"no people"</i>. Negations via <code>--no</code> / negative prompt are for <b style="color:var(--fg)">Midjourney and SD / FLUX</b> in studios.</div>
+        </div>
+        <div class="note" style="font-size:17px;">Instead of "cozy, 4k, masterpiece" — physical details: time, optics, light.</div>
+      </div>
+      <div class="stack" style="gap:12px;min-height:0;">
+        <div class="pic" style="flex:1 1 0;min-height:0;height:auto;">
+          <div class="frame">
+            <svg viewBox="0 0 1376 768" style="width:100%;height:100%;border-radius:10px" preserveAspectRatio="xMidYMid meet">
+              <image href="assets/examples/web/A2_structured.jpg" x="0" y="0" width="1376" height="768" preserveAspectRatio="xMidYMid meet"/>
+              <circle cx="991" cy="553" r="30" fill="#38bdf8" stroke="#0b0f17" stroke-width="4"/><text x="991" y="563" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#0b0f17">1</text>
+              <rect x="1031" y="523" width="200" height="60" rx="10" fill="rgba(11,15,23,.86)"/><text x="1049" y="564" style="font-family:Onest,sans-serif;font-size:34px;font-weight:600;fill:#f1f5f9">subject</text>
+              <circle cx="716" cy="230" r="30" fill="#38bdf8" stroke="#0b0f17" stroke-width="4"/><text x="716" y="240" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#0b0f17">2</text>
+              <rect x="756" y="200" width="180" height="60" rx="10" fill="rgba(11,15,23,.86)"/><text x="774" y="241" style="font-family:Onest,sans-serif;font-size:34px;font-weight:600;fill:#f1f5f9">setting</text>
+              <circle cx="248" cy="538" r="30" fill="#38bdf8" stroke="#0b0f17" stroke-width="4"/><text x="248" y="548" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#0b0f17">3</text>
+              <rect x="288" y="508" width="380" height="60" rx="10" fill="rgba(11,15,23,.86)"/><text x="306" y="549" style="font-family:Onest,sans-serif;font-size:34px;font-weight:600;fill:#f1f5f9">camera: soft blur</text>
+              <circle cx="138" cy="169" r="30" fill="#38bdf8" stroke="#0b0f17" stroke-width="4"/><text x="138" y="179" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#0b0f17">4</text>
+              <rect x="178" y="139" width="270" height="60" rx="10" fill="rgba(11,15,23,.86)"/><text x="196" y="180" style="font-family:Onest,sans-serif;font-size:34px;font-weight:600;fill:#f1f5f9">light from left</text>
+            </svg>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:16px;line-height:1.4;color:var(--muted);">
+          <div><b style="color:var(--cyan)">1 Subject</b> — main object, texture, placement in frame (right third).</div>
+          <div><b style="color:var(--cyan)">2 Setting</b> — time and context: "7 a.m., chairs up" removes random people.</div>
+          <div><b style="color:var(--cyan)">3 Camera</b> — 35mm (natural, moderately wide angle), f/2.0 — soft bokeh.</div>
+          <div><b style="color:var(--cyan)">4 Lighting</b> — low light from the left adds volume and long shadows.</div>
+          <div><b style="color:var(--cyan)">5 Style</b> — editorial photo instead of a glossy 3D render.</div>
+          <div><b style="color:var(--red)">6 Constraints</b> — what to exclude: text, logos.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>13 / 27</span></div>
+  <template class="notes">Read the prompt slot by slot and point at the frame where each one worked: subject in the right third, empty room with chairs up, 35mm and f/2.0 give a natural angle and soft background blur, light from the left. Three typical beginner mistakes: adjectives instead of details ("cozy" — and the model paints a fireplace and a cat), filler tags like "4k, masterpiece", forgotten constraints. A 2026 nuance: Google explicitly recommends positive phrasing for Gemini — "empty street" instead of "no cars"; negations via --no and negative prompts are a Midjourney and SD/FLUX tool.</template>
+</section>
+
+<!-- SLIDE 14: MUST-HAVE DETAILS & TYPOGRAPHY -->
+<section class="slide" data-n="14">
+  <div class="kicker" style="--k:var(--green)">Part 3 • Prompt Engineering • Step 3</div>
+  <h2 class="title">Critical Details &amp; Text as an Explicit Block</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.35fr 1fr;gap:40px;">
+      <div class="pic">
+        <div class="frame"><img src="assets/examples/web/A3_details.jpg" alt="A3 details"></div>
+        <div class="cap">Frame A3 — the result of the prompt on the right. Check it against a checklist, not "by eye".</div>
+      </div>
+      <div class="stack center" style="gap:16px;">
+        <div class="prompt" style="font-size:16px;"><span class="g">Must-have:</span>
+• chalkboard sign with text exactly <span class="m">"FLAT WHITE 3.50"</span> and <span class="m">"OPEN 7:00"</span>
+• one fresh croissant behind the mug
+• small glass vase with lavender to the left of the mug
+• no other text</div>
+        <div class="card-box" style="padding:14px 18px;gap:8px;border-color:var(--green);">
+          <div class="mini-h" style="--k:var(--green)">Acceptance checklist for frame A3</div>
+          <ul class="checklist">
+            <li><span>✅</span><span><b>Text</b> "FLAT WHITE 3.50" and "OPEN 7:00" — no typos</span></li>
+            <li><span>✅</span><span><b>One croissant</b> behind the mug</span></li>
+            <li><span>⚠️</span><span><b>Lavender</b> is there, but on the right, not the left</span></li>
+            <li><span>❌</span><span><b>Extra text:</b> menu board at the top</span></li>
+          </ul>
+        </div>
+        <div class="note" style="font-size:18px;"><b>Rules:</b> text in quotes with the word <code>exactly</code>; quantities as numbers; positions stated explicitly. Failed → <b>targeted edit</b>, not a reroll.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>14 / 27</span></div>
+  <template class="notes">Compare with the previous slide: same scene, plus details and text. Review the result honestly against the checklist: the text is rendered without errors — a strength of current chat models; one croissant behind the mug; but the lavender ended up on the right, and a menu board with extra text appeared on the wall. This is normal: must-have items are an acceptance checklist, and open items are fixed with a targeted edit (next part of the lesson), not by regenerating the whole frame.</template>
+</section>
+
+<!-- SLIDE 15: PHOTOGRAPHER'S LEXICON -->
+<section class="slide" data-n="15">
+  <div class="kicker">Part 3 • Photographer's Vocabulary</div>
+  <h2 class="title">One Subject — Six Lens and Light Coordinates</h2>
+  <div class="body">
+    <div class="row c3" style="grid-template-rows:1fr 1fr;gap:18px 24px;">
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V1_low.jpg" alt=""></div><div class="cap"><code>low angle</code> heroic perspective</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V2_top.jpg" alt=""></div><div class="cap"><code>top-down</code> flat lay arrangement</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V3_wide.jpg" alt=""></div><div class="cap"><code>24mm wide</code> subject + environment</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V4_85.jpg" alt=""></div><div class="cap"><code>85mm f/1.8</code> portrait optical bokeh</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V5_golden.jpg" alt=""></div><div class="cap"><code>golden hour</code> warm backlight</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V6_studio.jpg" alt=""></div><div class="cap"><code>softbox studio</code> balanced commercial light</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>15 / 27</span></div>
+  <template class="notes">Handout cheatsheet for photography terminology.</template>
+</section>
+
+<!-- SLIDE 16: MIDPOINT BREAK -->
+<section class="slide" data-n="16">
+  <div class="brk">
+    <div class="kicker" style="--k:var(--amber)">Lecture Equator</div>
+    <h2 class="title">5-Minute Break</h2>
+    <div class="clock" id="clock">05:00</div>
+    <div style="display:flex;gap:14px;">
+      <button class="btn primary" id="timerStart">START 5 MIN</button>
+      <button class="btn" id="timerReset">RESET</button>
+    </div>
+    <p>Coming next: targeted edits by instruction, a consistent courier character, and a commercial product photoshoot.</p>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>16 / 27</span></div>
+  <template class="notes">Start timer. Pure rest, no chat chores.</template>
+</section>
+
+<!-- SLIDE 17: THE EDIT LOOP -->
+<section class="slide" data-n="17">
+  <div class="kicker" style="--k:var(--green)">Part 4 • Control Methodology</div>
+  <h2 class="title">Iterate in Loops — Never Reroll the Whole Dice</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.1fr 1fr;gap:40px;">
+      <div style="min-height:0;display:flex;align-items:center;">
+        <svg viewBox="-210 -50 850 540" style="width:100%;height:100%;overflow:visible">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(148,163,184,.7)"/></marker></defs>
+          <path d="M253.5,65.1 A154.8,154.8 0 0 1 345.7,132.1" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <path d="M369.5,205.3 A154.8,154.8 0 0 1 334.3,313.7" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <path d="M272.0,358.9 A154.8,154.8 0 0 1 158.0,358.9" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <path d="M95.7,313.7 A154.8,154.8 0 0 1 60.5,205.3" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <path d="M84.3,132.1 A154.8,154.8 0 0 1 176.5,65.1" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <circle cx="215.0" cy="60.2" r="34" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><text x="215.0" y="68.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#38bdf8">1</text><text x="215.0" y="-11.8" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Draft</text><text x="215.0" y="20.2" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">2–4 candidates</text>
+          <circle cx="362.2" cy="167.2" r="34" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><text x="362.2" y="175.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#38bdf8">2</text><text x="414.2" y="165.2" text-anchor="start" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Select</text><text x="414.2" y="197.2" text-anchor="start" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">by must-haves</text>
+          <circle cx="306.0" cy="340.2" r="34" fill="#0b0f17" stroke="#34d399" stroke-width="3"/><text x="306.0" y="348.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#34d399">3</text><text x="358.0" y="338.2" text-anchor="start" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Single Edit</text><text x="358.0" y="370.2" text-anchor="start" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">"only X to Y"</text>
+          <circle cx="124.0" cy="340.2" r="34" fill="#0b0f17" stroke="#fbbf24" stroke-width="3"/><text x="124.0" y="348.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#fbbf24">4</text><text x="72.0" y="338.2" text-anchor="end" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Diff Check</text><text x="72.0" y="370.2" text-anchor="end" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">what drifted?</text>
+          <circle cx="67.8" cy="167.2" r="34" fill="#0b0f17" stroke="#c084fc" stroke-width="3"/><text x="67.8" y="175.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#c084fc">5</text><text x="15.8" y="165.2" text-anchor="end" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Finalize</text><text x="15.8" y="197.2" text-anchor="end" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">save prompt</text>
+        </svg>
+      </div>
+      <div class="stack center">
+        <div class="prompt-label">Engineering Refinement Template</div>
+        <div class="prompt" style="font-size:19px;">Edit this image. Modify <span class='m'>only</span> object X to Y.
+<span class='g'>Preserve:</span> angle, lighting, background, and shadows.
+<span class='x'>Do not change:</span> surrounding room geometry.</div>
+        <ul class="list" style="--k:var(--green)">
+          <li><b>One edit per step</b> (equivalent to an atomic git commit).</li>
+          <li><b>Explicitly declare protected regions</b> to preserve context.</li>
+          <li><b>After ~5–8 edits</b> drift becomes visible — start a fresh chat from the best frame.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>17 / 27</span></div>
+  <template class="notes">Teach students to avoid rerolling. Surgical atomic iterations yield reliable production outcomes.</template>
+</section>
+
+<!-- SLIDE 18: PATTERN 1 (EDIT BY INSTRUCTION) -->
+<section class="slide" data-n="18">
+  <div class="kicker" style="--k:var(--green)">Part 4 • Pattern 1 • Edit by Instruction</div>
+  <h2 class="title">One Master Frame — Three Targeted Edits</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.15fr 1fr;gap:34px;align-items:stretch;">
+      <div class="row c2" style="grid-template-rows:1fr 1fr;gap:12px 16px;min-height:0;">
+        <div class="pic"><div class="frame"><img src="assets/examples/web/A2_structured.jpg" alt="A2"></div><div class="cap" style="font-size:16px;"><b>Original A2:</b> morning coffee shop, mug</div></div>
+        <div class="pic"><div class="frame"><img src="assets/examples/web/B1_replace.jpg" alt="B1"></div><div class="cap" style="font-size:16px;"><b>Object (B1):</b> mug ➔ iced latte</div></div>
+        <div class="pic"><div class="frame"><img src="assets/examples/web/B2_relight.jpg" alt="B2"></div><div class="cap" style="font-size:16px;"><b>Lighting (B2):</b> rainy evening outside</div></div>
+        <div class="pic"><div class="frame"><img src="assets/examples/web/E2_style.jpg" alt="E2"></div><div class="cap" style="font-size:16px;"><b>Style (E2):</b> flat vector illustration</div></div>
+      </div>
+      <div class="stack center" style="gap:12px;">
+        <div class="card-box" style="padding:12px 16px;gap:4px;border-color:var(--cyan);">
+          <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-workflow">Formula</span><b style="font-size:17px;color:var(--fg)">Frame A2 + one edit per step</b></div>
+          <div style="font-size:16px;color:var(--muted)">"Replace <span class="m">only X with Y</span>. Keep: camera angle, lighting, background, geometry."</div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:4px;">Prompt B1: object swap</div>
+          <div class="prompt" style="font-size:15px;line-height:1.45;padding:10px 14px;">Edit this photo. Replace <span class="m">only</span> the ceramic mug with a tall glass of iced latte with visible coffee and milk layers and ice cubes. <span class="g">Keep everything else exactly the same:</span> camera angle, counter, espresso machine, background, light direction and shadows.</div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:4px;">Prompt B2: lighting and weather</div>
+          <div class="prompt" style="font-size:15px;line-height:1.45;padding:10px 14px;">Edit this photo. Change <span class="m">only the time of day</span> to a rainy evening: dark dusk outside window, raindrops on glass, warm interior pendant lamps switched on. <span class="g">Keep exact same</span> composition, objects, mug and camera angle.</div>
+        </div>
+        <div class="note" style="font-size:16px;line-height:1.45;"><b>ChatGPT / Gemini / Kling:</b> edit by instruction — no mask needed, the model finds the mug itself.<br><b>Leonardo:</b> inpainting — paint a mask over the mug + a prompt for that area.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>18 / 27</span></div>
+  <template class="notes">Notice that swapping the mug left the chairs, the espresso machine and the light almost unchanged — that is control. Terminology: in chat models this is "edit by instruction" — we describe the change in words and the model builds the mask itself. Inpainting in the strict sense is when we paint the mask ourselves, as in Leonardo. Use cases: product variants for a store, seasonal banner changes, porting to a brand style.</template>
+</section>
+
+<!-- SLIDE 19: PATTERN 2A (SYNTHETIC CHARACTER) -->
+<section class="slide" data-n="19">
+  <div class="kicker" style="--k:var(--cyan)">Part 4 • Pattern 2 • Character Consistency</div>
+  <h2 class="title">Courier Master Sheet: Multi-Angle Formula</h2>
+  <div class="lead">A naive prompt draws a new person in every scene. The engineering approach: first 4 angles on grey and physical anchors.</div>
+  <div class="body" style="margin-top:20px;">
+    <div class="row" style="grid-template-columns:1fr 1.15fr;gap:34px;align-items:stretch;">
+      <div class="stack" style="gap:12px;justify-content:center;">
+        <div class="pic" style="flex:none;height:auto;"><div class="frame shot" style="flex:none;"><img src="assets/examples/web/C1_sheet.jpg" alt="C1"></div><div class="cap" style="font-size:16px;"><b>Character sheet:</b> 4 angles, neutral pose, studio light</div></div>
+        <div class="prompt" style="font-size:15px;line-height:1.45;padding:12px 14px;"><span class="s">5 fixed anchors:</span> short curly hair • small silver hoop earring • bright yellow jacket <span class="m">with grey stripe</span> • <span class="m">turquoise</span> backpack • white sneakers</div>
+      </div>
+      <div class="stack center" style="gap:10px;">
+        <div class="card-box" style="padding:10px 14px;gap:4px;">
+          <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-naive">Naive</span><b style="font-size:16px;color:var(--fg)">"food courier cycling in the rain"</b></div>
+          <div style="font-size:15px;color:var(--muted)">Every scene gets a new face, age and jacket. No consistency.</div>
+        </div>
+        <div class="card-box" style="padding:10px 14px;gap:4px;border-color:var(--green);">
+          <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-eng">Engineering</span><b style="font-size:16px;color:var(--fg)">Character sheet: 4 angles on grey</b></div>
+          <div style="font-size:15px;color:var(--muted)">Studio light, full body: front, 3/4, profile, back. Master reference for every scene.</div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:4px;">Master sheet prompt (C1)</div>
+          <div class="prompt" style="font-size:14.5px;line-height:1.42;padding:12px 14px;"><span class="s">Character reference sheet on a plain light grey background:</span> the same young woman food delivery courier shown four times in a row - front view, three-quarter view, side profile, back view - full body, standing neutral pose.
+<span class="m">Fixed appearance:</span> about 28 years old, short curly dark-brown hair, light-brown skin, small silver hoop earring in left ear, bright yellow waterproof jacket with reflective grey stripe across chest, black cargo trousers, white sneakers, square turquoise thermal backpack. Studio photography, clean even lighting. <span class="x">No brand names, no logos, no text.</span></div>
+        </div>
+        <div class="note" style="font-size:15px;line-height:1.42;padding:2px 0 2px 12px;"><b>Where to use it:</b> Gemini, ChatGPT, Leonardo, Kling. In Midjourney — via the <b>Edit Model</b> (up to 4 references; replaced <code>--cref</code> / <code>--oref</code> in 08.2026). Save as master <code>C1_sheet.png</code>.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>19 / 27</span></div>
+  <template class="notes">Consistency recipe: 1) generate a character sheet on a neutral background in 4 angles; 2) lock 5 high-contrast anchors. The sheet is attached as a reference to every later generation and video. For anyone who learned Midjourney from older courses: --cref and --oref are gone in V8 — since August 2026 references go through the Edit Model, up to 4 images.</template>
+</section>
+
+<!-- SLIDE 20: PATTERN 2B (REAL PERSON) -->
+<section class="slide" data-n="20">
+  <div class="kicker" style="--k:var(--green)">Part 4 • Pattern 2B • A Real Person as Reference</div>
+  <h2 class="title" style="font-size:46px;">Any Person as Reference: From 2–3 Photos to a Master Sheet</h2>
+  <div class="body" style="margin-top:20px;">
+    <div class="row" style="grid-template-columns:1fr 1.2fr;gap:32px;align-items:stretch;">
+      <div class="stack" style="gap:12px;min-height:0;justify-content:center;">
+        <div class="card-box" style="padding:12px 14px;gap:8px;border-color:var(--cyan);">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="badge-tag badge-workflow">Input 1 • References</span>
+            <span style="font-size:15px;color:var(--cyan)">2–3 real face photos</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;">
+            <div style="display:flex;flex-direction:column;gap:4px;"><div style="aspect-ratio:1/1;border-radius:6px;overflow:hidden;background:#000;border:1px solid var(--line);"><img src="assets/examples/web/ref_ihar_2.jpg" alt="Ref 1" style="width:100%;height:100%;object-fit:cover;"></div><div style="font-size:14px;color:var(--muted);text-align:center;">Front, studio</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px;"><div style="aspect-ratio:1/1;border-radius:6px;overflow:hidden;background:#000;border:1px solid var(--line);"><img src="assets/examples/web/ref_ihar_1.jpg" alt="Ref 2" style="width:100%;height:100%;object-fit:cover;"></div><div style="font-size:14px;color:var(--muted);text-align:center;">Emotion, light</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px;"><div style="aspect-ratio:1/1;border-radius:6px;overflow:hidden;background:#000;border:1px solid var(--line);"><img src="assets/examples/web/ref_ihar_3.jpg" alt="Ref 3" style="width:100%;height:100%;object-fit:cover;"></div><div style="font-size:14px;color:var(--muted);text-align:center;">Daylight</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="prompt-label" style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+            <span>Input 2 • Prompt (Gemini / ChatGPT / Leonardo)</span>
+            <span style="font-family:var(--body);color:var(--green);text-transform:none;letter-spacing:0;font-size:15px;font-weight:700;">holds the face</span>
+          </div>
+          <div class="prompt" style="font-size:14px;line-height:1.42;padding:10px 12px;"><span class="s">Create a photorealistic character reference sheet</span> based on the attached photos of Ihar Rubanovich. Same adult man, not a generic model.
+<span class="g">Preserve facial identity:</span> face shape, eyes, nose, lips, jawline, hairline, skin tone. <span class="x">Do not beautify, rejuvenate or stylize his face.</span>
+<span class="m">Four angles:</span> front, three-quarter, side profile, back. Full body, neutral pose.
+<span class="s">Outfit:</span> yellow courier jacket with grey stripe, black cargo trousers, white sneakers, turquoise thermal backpack. Light grey studio background. <span class="x">No text, no logos.</span></div>
+        </div>
+        <div class="note" style="--k:var(--green);font-size:15px;line-height:1.4;padding:2px 0 2px 12px;"><b>What to send:</b> photos + prompt in the chat; in code — files in <code>contents</code>. Only your own photos or with the person's consent.</div>
+      </div>
+      <div class="stack" style="gap:12px;min-height:0;">
+        <div class="pic" style="flex:1 1 0;min-height:0;height:auto;">
+          <div class="frame shot" style="border-color:var(--green);">
+            <img src="assets/examples/web/C1_sheet_ihar.jpg" alt="C1 Ihar Sheet" style="width:100%;height:100%;object-fit:contain;">
+          </div>
+          <div class="cap" style="font-size:16px;"><b>Result:</b> the face is recognizable in all 4 angles. Check by eye: small features can drift.</div>
+        </div>
+        <div class="row c2" style="gap:12px;flex:none;">
+          <div class="card-box" style="padding:10px 14px;gap:4px;">
+            <div class="mini-h" style="--k:var(--red)">Anti-pattern</div>
+            <div style="font-size:15px;line-height:1.38;color:var(--muted)">Without <code>do not beautify</code> the model smooths the skin and "improves" the face into a stock one.</div>
+          </div>
+          <div class="card-box" style="padding:10px 14px;gap:4px;border-color:var(--cyan)">
+            <div class="mini-h">Bridge to production</div>
+            <div style="font-size:15px;line-height:1.38;color:var(--muted)">Attach the sheet as a character reference to scenes and to Kling / Veo for video.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>20 / 27</span></div>
+  <template class="notes">A real case using the instructor's own photos. How to turn yourself or an actor into a controllable character: send 2–3 real photos, forbid "beautification", and lock 4 angles in the courier outfit. Be honest about the result: the face is recognizable, but this is not a guarantee — small features can drift, so always check by eye. Ethics: only your own photos or with the person's explicit consent. This sheet is animated in Kling and Veo next.</template>
+</section>
+
+<!-- SLIDE 21: SCENE TRANSFER & BRIDGE TO VIDEO -->
+<section class="slide" data-n="21">
+  <div class="kicker" style="--k:var(--cyan)">Part 4 • Pattern 2 • Scenes, Formats &amp; Bridge to Video</div>
+  <h2 class="title">Courier in Scenes &amp; the First Video Frame (Kling / Veo)</h2>
+  <div class="body">
+    <div class="stack" style="flex:1;gap:14px;">
+      <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px;flex:1;min-height:0;">
+        <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/C2_rain.jpg" alt="C2"></div><div class="cap" style="font-size:15px;"><b>Scene 1 (16:9):</b> cycling in the rain ➔ <b>base for video</b></div></div>
+        <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/C3_door.jpg" alt="C3"></div><div class="cap" style="font-size:15px;"><b>Scene 2:</b> doorstep handover (35mm)</div></div>
+        <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/C4_break.jpg" alt="C4"></div><div class="cap" style="font-size:15px;"><b>Scene 3:</b> park bench break (85mm)</div></div>
+      </div>
+      <div class="row" style="grid-template-columns:1.1fr 1fr;gap:26px;align-items:stretch;flex:none;">
+        <div class="stack" style="gap:6px;">
+          <div class="prompt-label" style="margin-bottom:2px;">Scene transfer prompt</div>
+          <div class="prompt" style="font-size:15px;line-height:1.42;padding:10px 14px;"><span class="g">Use attached character sheet (C1) as identity reference:</span>
+The same courier (same face, curly hair, silver hoop earring, yellow jacket with grey stripe, turquoise backpack) is riding a city bicycle through a rainy evening street with wet cobblestones reflecting shop lights. Medium shot, 50mm lens, motion blur in background. Realistic photography. <span class="x">No logos, no text.</span></div>
+          <div class="note" style="font-size:15px;padding:2px 0 2px 12px;"><b>Formats:</b> 16:9 — YouTube and landscape video, 9:16 — Reels / Shorts (format selector).</div>
+        </div>
+        <div class="stack" style="gap:8px;">
+          <div class="card-box" style="padding:10px 14px;border-color:var(--cyan);gap:6px;">
+            <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-workflow">Bridge to video</span><b style="font-size:16px;color:var(--cyan)">Pipeline to Kling 3.0 / Veo 3.1</b></div>
+            <div style="font-size:15px;line-height:1.42;color:var(--muted)">
+              1. <b>Export frame:</b> <code>C2_rain.png</code> (16:9) — the first frame (t₀).<br>
+              2. <b>Image-to-Video:</b> upload into the <b>First Frame</b> slot.<br>
+              3. <b>Motion prompt:</b> <code>"courier starts pedaling, wheels splash puddles, camera tracks along"</code>.<br>
+              4. <b>Result:</b> face and outfit are noticeably more stable than generating from scratch; still check frames for drift.
+            </div>
+          </div>
+          <div style="font-size:15px;line-height:1.4;color:var(--muted);"><b style="color:var(--fg)">In tools:</b> Gemini / ChatGPT (reference in chat) • Leonardo (character reference + seed) • Midjourney (Edit Model) • Kling / Veo (First Frame).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>21 / 27</span></div>
+  <template class="notes">Show how the master sheet carries into story scenes: attach C1 and repeat the text anchors. The key bridge to Lesson 05: the still frame C2 becomes the first frame (t₀) for Kling and Veo — the courier rides off, and the look holds noticeably better than generating video from scratch. Not perfectly, though: still check video frames for face and outfit drift.</template>
+</section>
+
+<!-- SLIDE 22: PATTERN 3 (PRODUCT PHOTOSHOOT) -->
+<section class="slide" data-n="22">
+  <div class="kicker" style="--k:var(--green)">Part 4 • Pattern 3 • E-Commerce</div>
+  <h2 class="title">One Packshot — Four Commercial Assets</h2>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:28px;flex:1;min-height:0;">
+      <div class="stack" style="gap:8px;">
+        <div class="pic"><div class="frame shot"><img src="assets/examples/web/D0_packshot.jpg" alt="D0"></div><div class="cap" style="font-size:15px;"><b>Master packshot (D0):</b> product on pure white</div></div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:3px;">1. Master packshot prompt (D0)</div>
+          <div class="prompt" style="font-size:14.5px;line-height:1.4;padding:10px 14px;"><span class="s">Studio e-commerce packshot of a single handmade ceramic mug:</span> cylindrical body, speckled cream glaze with small brown dots, unglazed terracotta-brown band at base, round C-shaped handle on right. Centered, 3/4 view, pure white background, soft even light. <span class="x">No text, no logo.</span></div>
+        </div>
+      </div>
+      <div class="stack" style="gap:8px;">
+        <div class="row c2" style="grid-template-rows:1fr 1fr;gap:10px 14px;flex:1;min-height:0;">
+          <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/D1_kitchen.jpg" alt="D1"></div><div class="cap" style="font-size:15px;"><b>Lifestyle (D1):</b> kitchen, morning</div></div>
+          <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/D2_flatlay.jpg" alt="D2"></div><div class="cap" style="font-size:15px;"><b>Flat lay (D2):</b> top-down</div></div>
+          <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/D3_hands.jpg" alt="D3"></div><div class="cap" style="font-size:15px;"><b>In hands (D3):</b> product scale</div></div>
+          <div class="pic contain"><div class="frame shot"><img src="assets/examples/web/D4_banner.jpg" alt="D4"></div><div class="cap" style="font-size:15px;"><b>Banner (D4):</b> 1:1 promo poster</div></div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:3px;">2. Catalog scene prompt (with D0 reference)</div>
+          <div class="prompt" style="font-size:14.5px;line-height:1.4;padding:10px 14px;">Product photo session. Place <span class="g">exactly this mug</span> (same shape, speckled cream glaze, terracotta base band, handle on right) on light travertine kitchen counter next to morning window. Soft light, 50mm f/2.8. <span class="x">Do not change mug shape, clay glaze, or proportions.</span></div>
+        </div>
+        <div class="note" style="font-size:15px;padding:2px 0 2px 12px;"><b>Engineering control:</b> reference <code>D0</code> + a "do not change the shape" constraint keep the mug noticeably more stable; final acceptance is done by a human.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>22 / 27</span></div>
+  <template class="notes">The most in-demand business scenario: marketplaces, online stores, social media. A real product is photographed once on a neutral background, and the model produces the product shoot without renting a studio. Honestly: shape and glaze hold well but not perfectly — the speckle pattern and handle proportions can wander, so every frame goes through human acceptance (the yellow zone from the risks block).</template>
+</section>
+
+<!-- SLIDE 23: PATTERN 4 (MULTI-REFERENCE COMPOSITION) -->
+<section class="slide" data-n="23">
+  <div class="kicker" style="--k:var(--green)">Part 4 • Pattern 4 • Composition</div>
+  <h2 class="title">Explicitly Assign the Role of Each Image</h2>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:1fr 50px 2.2fr;gap:20px;flex:1;min-height:0;align-items:stretch;">
+      <div class="stack" style="gap:12px;">
+        <div class="pic"><div class="frame shot"><img src="assets/examples/web/C1_sheet.jpg" alt="C1"></div><div class="cap" style="font-size:15px;"><b>Image 1</b> — character (courier)</div></div>
+        <div class="pic"><div class="frame shot"><img src="assets/examples/web/D0_packshot.jpg" alt="D0"></div><div class="cap" style="font-size:15px;"><b>Image 2</b> — product (mug)</div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--green);">➔</div>
+      <div class="stack center" style="gap:10px;">
+        <div class="pic" style="flex:1;min-height:0;"><div class="frame shot"><img src="assets/examples/web/E1_compose.jpg" alt="E1"></div><div class="cap" style="font-size:15px;"><b>Result:</b> the courier drinks from that exact mug in a morning café</div></div>
+        <div class="card-box" style="padding:10px 14px;border-color:var(--green);gap:4px;">
+          <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-eng">Role rule</span><b style="font-size:16px;color:var(--fg)">Never say "combine these" (you get mush). Assign roles:</b></div>
+          <div style="font-size:15px;color:var(--muted)">Image 1 = identity reference (hero), Image 2 = product reference (item).</div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:3px;">Composition prompt (Nano Banana / ChatGPT)</div>
+          <div class="prompt" style="font-size:15px;line-height:1.42;padding:12px 16px;"><span class="s">Image 1 is the courier character, Image 2 is the exact ceramic mug.</span>
+The courier from Image 1, in her yellow jacket with grey stripe, sits at a coffee shop window counter on her break and drinks from exactly the mug from Image 2 (same speckled cream glaze and terracotta base). Turquoise backpack on floor next to stool. Morning light, 35mm lens, realistic photography. <span class="x">No logos, no text.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>23 / 27</span></div>
+  <template class="notes">Typical beginner mistake: attach 3 images and say "make it nice". The model blends them into mush. The reliable way is explicit roles: Image 1 = hero, Image 2 = product, Image 3 = lighting. Reference limits differ: Nano Banana 2 takes up to 14 objects and 5 characters, the Midjourney Edit Model up to 4 (see the market table).</template>
+</section>
+
+<!-- SLIDE 24: AUTOMATION & CODE -->
+<section class="slide" data-n="24">
+  <div class="kicker">Part 5 • Programmatic Execution</div>
+  <h2 class="title">Batch Generation via Code — Same SDK as L03</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.45fr 1fr;gap:40px;align-items:center;">
+      <pre class="code" style="font-size:17px;line-height:1.5;">import csv
+from google import genai
+from google.genai import types
+from PIL import Image
+
+client = genai.Client()
+ref = Image.open(<span class="str">"packshot.png"</span>)
+
+<span class="kw">for</span> row <span class="kw">in</span> csv.<span class="fn">DictReader</span>(open(<span class="str">"catalog.csv"</span>)):   <span class="cm"># ~50 products</span>
+    resp = client.models.<span class="fn">generate_content</span>(
+        model=<span class="str">"gemini-3.1-flash-image"</span>,
+        contents=[ref, PROMPT_SPEC.<span class="fn">format</span>(**row)],
+        config=types.<span class="fn">GenerateContentConfig</span>(
+            response_modalities=[<span class="str">"IMAGE"</span>],
+            image_config=types.<span class="fn">ImageConfig</span>(aspect_ratio=<span class="str">"16:9"</span>)))
+    <span class="kw">for</span> part <span class="kw">in</span> resp.parts:          <span class="cm"># response = list of parts</span>
+        <span class="kw">if</span> part.inline_data:         <span class="cm"># keep only the image</span>
+            part.<span class="fn">as_image</span>().<span class="fn">save</span>(f<span class="str">"{row['sku']}.png"</span>)</pre>
+      <div class="stack center" style="gap:22px;">
+        <div class="pt" style="--k:var(--green)">
+          <div class="h">~50 cards in ~10 min for ~$2–3</div>
+          <div class="d">Instead of a day of manual browser work: a product CSV → a generation loop. Roughly 10 s and $0.04–0.06 per image.</div>
+        </div>
+        <div class="note" style="font-size:19px;"><b>Don't take <code>parts[0]</code> blindly:</b> the response may also contain text parts. Look for the part with <code>inline_data</code>.</div>
+        <div class="note" style="font-size:19px;"><b>10/90 in code:</b> the model call is 5 lines. The rest is catalog parsing, prompt templating, retries and automated artifact checks.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>24 / 27</span></div>
+  <template class="notes">Connect to engineering practice. Same official google-genai SDK as in L03. In contents we pass the reference image and the text built from a template for each catalog row. Key detail: the response is a list of parts that can hold both text and images, so we loop and take the part with inline_data. Realistic estimate: about 50 cards in 10 minutes for 2–3 dollars — excluding retries and human acceptance.</template>
+</section>
+
+<!-- SLIDE 25: BLAST RADIUS & PRODUCTION SAFETY -->
+<section class="slide" data-n="25">
+  <div class="kicker" style="--k:var(--amber)">Part 5 • Governance • Blast Radius</div>
+  <h2 class="title">Technical Limitations &amp; Production Boundaries</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.05fr 1fr;gap:46px;align-items:center;">
+      <div class="stack center">
+        <ul class="list" style="--k:var(--amber);gap:16px;">
+          <li style="font-size:20px;"><b>Anatomy &amp; small text:</b> fingers in crowds and long paragraphs still fail.</li>
+          <li style="font-size:20px;"><b>Detail drift:</b> after ~5–8 consecutive edits, drift in faces and logos becomes visible.</li>
+          <li style="font-size:20px;"><b>Copyright:</b> in the US a purely AI-generated image is not protected (Thaler: on 02.03.2026 the Supreme Court declined to hear the case). Disney / Universal v. Midjourney is ongoing.</li>
+          <li style="font-size:20px;"><b>Provenance:</b> SynthID — an invisible watermark in the pixels (Google; OpenAI since 05.2026) + C2PA — signed metadata that is lost on a screenshot.</li>
+        </ul>
+      </div>
+      <div style="min-height:0;display:flex;align-items:center;">
+        <svg viewBox="0 0 720 420" style="width:100%;height:100%;overflow:visible">
+          <rect x="0" y="0" width="120" height="420" rx="40" fill="#121a28" stroke="rgba(148,163,184,.25)" stroke-width="2"/>
+          <circle cx="60" cy="70" r="44" fill="#34d399"/>
+          <text x="160" y="62" style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;fill:#34d399">GREEN • AUTONOMOUS</text>
+          <foreignObject x="160" y="72" width="560" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Onest,sans-serif;font-size:21px;line-height:1.35;color:#f1f5f9">Moodboards, concept art, internal presentation slides, storyboards.</div></foreignObject>
+          <circle cx="60" cy="210" r="44" fill="#fbbf24"/>
+          <text x="160" y="202" style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;fill:#fbbf24">YELLOW • HUMAN-IN-THE-LOOP</text>
+          <foreignObject x="160" y="212" width="560" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Onest,sans-serif;font-size:21px;line-height:1.35;color:#f1f5f9">E-commerce cards, marketing banners, YouTube thumbnails. Human sign-off required.</div></foreignObject>
+          <circle cx="60" cy="350" r="44" fill="#f87171"/>
+          <text x="160" y="342" style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;fill:#f87171">RED • PROHIBITED</text>
+          <foreignObject x="160" y="352" width="560" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Onest,sans-serif;font-size:21px;line-height:1.35;color:#f1f5f9">Legal contracts, medical instructions, third-party trademarks, non-consensual likeness.</div></foreignObject>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>25 / 27</span></div>
+  <template class="notes">Revisit the Blast Radius framework from L01. Red zone — no generation. Yellow — only with a human in the loop. Green — free for internal work. 2026 facts: on March 2, 2026 the US Supreme Court declined to hear Thaler — a purely AI image without human authorship is not copyrightable; Disney and Universal v. Midjourney is ongoing. Photorealism can no longer be told apart by eye, but SynthID can tell: Google and, since May 2026, OpenAI embed it; C2PA is metadata and is stripped by a screenshot.</template>
+</section>
+
+<!-- SLIDE 26: HOMEWORK -->
+<section class="slide" data-n="26">
+  <div class="kicker">Practice • Homework Assignment #4</div>
+  <h2 class="title">Product Photoshoot or Delivery Courier Series</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:48px;">
+      <div class="stack center" style="gap:24px;">
+        <div class="track" style="--k:var(--cyan)">
+          <div class="pt"><div class="h"><span class="mark">Track A:</span> Commercial Product Photoshoot</div><div class="d">Pick a physical product on white background ➔ 4 commercial angles (lifestyle, flat lay, in hands, banner).</div></div>
+          <div class="thumbs"><img src="assets/examples/web/D0_packshot.jpg" alt=""><img src="assets/examples/web/D1_kitchen.jpg" alt=""><img src="assets/examples/web/D2_flatlay.jpg" alt=""><img class="contain" src="assets/examples/web/D4_banner.jpg" alt=""></div>
+        </div>
+        <div class="track" style="--k:var(--green)">
+          <div class="pt"><div class="h"><span class="mark">Track B:</span> Glovo Food Delivery Courier</div><div class="d">Character sheet ➔ 3 contextual scenes with visual anchors ➔ 1 targeted edit by instruction.</div></div>
+          <div class="thumbs"><img src="assets/examples/web/C1_sheet.jpg" alt=""><img src="assets/examples/web/C2_rain.jpg" alt=""><img src="assets/examples/web/C3_door.jpg" alt=""><img src="assets/examples/web/C4_break.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="stack center" style="gap:20px;">
+        <div class="card-box" style="background:#141f33;border-color:var(--cyan)">
+          <div style="font-family:var(--mono);font-size:15px;color:var(--cyan);font-weight:700">SUBMISSION REPOSITORY STRUCTURE</div>
+          <div class="cd" style="font-family:var(--mono);font-size:16px;line-height:1.6;color:#e2e8f0;">
+            genai-homeworks/<br>
+            └── L04/<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;├── images/ (01_free.png, 02_structured.png...)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;├── prompts.md (prompts, tool, timestamp)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;└── qa.md (drift observations, what succeeded)
+          </div>
+        </div>
+        <div class="note"><b>Required:</b> Run one prompt across two tools (e.g. Leonardo vs. ChatGPT) and analyze the differences in <code>qa.md</code>. Invite collaborator: <code>ihar_rubanovich@epam.com</code>.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>26 / 27</span></div>
+  <template class="notes">Explain the two homework tracks. Focus on deliberate control and documenting drift in qa.md.</template>
+</section>
+
+<!-- SLIDE 27: SUMMARY & TEASER L05 -->
+<section class="slide" data-n="27">
+  <div class="kicker">Takeaways • Bridge to Video</div>
+  <h2 class="title">Four Principles of Visual AI Engineering</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.4fr 1fr;gap:64px;">
+      <div class="stack center" style="gap:22px;">
+        <div class="pt"><div class="h">1. Tool to Match Task</div><div class="d">Chat for concepts and text, studio for canvas and masks, API for batch automation.</div></div>
+        <div class="pt"><div class="h">2. Structure Over Freeform</div><div class="d">6 explicit slots (Subject, Scene, Camera, Light, Style, Negatives) + Must-Have block.</div></div>
+        <div class="pt"><div class="h">3. Surgical Refinement Over Rerolls</div><div class="d">Atomic "modify only X, preserve Y" commands outperform blind dice rolling.</div></div>
+        <div class="pt"><div class="h">4. Consistency via Visual Anchors</div><div class="d">Master character sheet + 4–6 distinctive textural anchors preserve identity anywhere.</div></div>
+      </div>
+      <div class="stack center" style="gap:16px;">
+        <div class="pic cover"><div class="frame"><img src="assets/examples/web/C2_rain.jpg" alt="C2 rain"></div></div>
+        <div class="pt" style="--k:var(--violet)">
+          <div class="h" style="color:var(--violet)">Lesson 05: Video Generation</div>
+          <div class="d">Today's courier frames become the keyframes of tomorrow's video models (Kling, Veo, Runway). Our courier will start moving!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 04 • Image Generation</span><span>27 / 27</span></div>
+  <template class="notes">Summarize the 4 principles, open mic for Q&A, and teaser Lesson 05 video generation.</template>
+</section>
+
+</main>
+
+<aside class="drawer" id="drawer"><div class="hd"></div><div class="tx"></div></aside>
+<div class="grid" id="grid"></div>
+
+<script>
+const T = {start: 'START 5 MIN', pause: 'PAUSE', done: 'TIME IS UP', notes: 'SPEAKER NOTES'};
+(function () {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  const drawer = document.getElementById('drawer');
+  const grid = document.getElementById('grid');
+  let cur = 1;
+
+  function fit() {
+    const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900) * 0.98;
+    stage.style.setProperty('--s', s);
+  }
+
+  function show(n) {
+    if (n < 1 || n > total) return;
+    cur = n;
+    slides.forEach((el, i) => el.classList.toggle('active', i + 1 === n));
+    const notes = slides[n - 1].querySelector('.notes');
+    drawer.querySelector('.hd').textContent = `${T.notes} • ${String(n).padStart(2, '0')} / ${total}`;
+    drawer.querySelector('.tx').innerHTML = notes ? notes.innerHTML : '';
+    if (location.hash !== '#' + n) history.replaceState(null, '', '#' + n);
+    grid.querySelectorAll('button').forEach((b, i) => b.classList.toggle('cur', i + 1 === n));
+  }
+
+  slides.forEach((el, i) => {
+    const b = document.createElement('button');
+    const t = el.querySelector('.title, h1');
+    b.innerHTML = `<span>${String(i + 1).padStart(2, '0')}</span>${t ? t.textContent : ''}`;
+    b.onclick = () => { show(i + 1); grid.classList.remove('open'); };
+    grid.appendChild(b);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(cur - 1); }
+    else if (e.key === 'Home') show(1);
+    else if (e.key === 'End') show(total);
+    else if (e.key.toLowerCase() === 'n') drawer.classList.toggle('open');
+    else if (e.key.toLowerCase() === 'g') grid.classList.toggle('open');
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    } else if (e.key === 'Escape') { grid.classList.remove('open'); drawer.classList.remove('open'); }
+  });
+
+  stage.addEventListener('click', (e) => {
+    if (e.target.closest('button')) return;
+    const r = stage.getBoundingClientRect();
+    show(e.clientX > r.left + r.width / 3 ? cur + 1 : cur - 1);
+  });
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', () => show(parseInt(location.hash.slice(1), 10) || 1));
+
+  let left = 300, timer = null;
+  const clock = document.getElementById('clock');
+  const startBtn = document.getElementById('timerStart');
+  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  if (startBtn) {
+    startBtn.onclick = () => {
+      if (timer) { clearInterval(timer); timer = null; startBtn.textContent = T.start; return; }
+      startBtn.textContent = T.pause;
+      timer = setInterval(() => {
+        left = Math.max(0, left - 1); clock.textContent = fmt(left);
+        if (!left) { clearInterval(timer); timer = null; startBtn.textContent = T.done; }
+      }, 1000);
+    };
+    document.getElementById('timerReset').onclick = () => {
+      clearInterval(timer); timer = null; left = 300; clock.textContent = fmt(left); startBtn.textContent = T.start;
+    };
+  }
+
+  fit();
+  show(parseInt(location.hash.slice(1), 10) || 1);
+})();
+</script>
+</body>
+</html>

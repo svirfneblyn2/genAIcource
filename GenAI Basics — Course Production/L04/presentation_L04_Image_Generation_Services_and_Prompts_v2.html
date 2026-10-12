@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 04: Генерация изображений | GenAI Basics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f17;          /* course canvas */
+  --surface: #121a28;     /* prompt boxes, tables */
+  --surface-card: #0f1624;
+  --line: rgba(148, 163, 184, 0.18);
+  --fg: #f1f5f9;
+  --muted: #9aa8bc;
+  --dim: #5f6e84;
+  --cyan: #38bdf8;        /* primary accent */
+  --green: #34d399;       /* preserved / good */
+  --amber: #fbbf24;       /* model decided / caution */
+  --red: #f87171;         /* forbidden */
+  --violet: #c084fc;      /* style */
+  --display: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --body: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --mono: 'JetBrains Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: #05080e; color: var(--fg); font-family: var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+.stage { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform: translate(-50%, -50%) scale(var(--s, 1)); transform-origin: center; background: var(--bg); overflow: hidden; border-radius: 6px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.slide { position: absolute; inset: 0; padding: 52px 76px 60px; display: none; flex-direction: column; }
+.slide.active { display: flex; }
+
+/* header */
+.kicker { font-family: var(--mono); font-size: 15px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--k, var(--cyan)); margin-bottom: 12px; }
+.title { font-family: var(--display); font-weight: 700; font-size: 52px; line-height: 1.1; letter-spacing: -0.02em; text-wrap: balance; max-width: 1400px; }
+.lead { font-size: 23px; line-height: 1.38; color: var(--muted); margin-top: 12px; max-width: 1300px; text-wrap: balance; }
+.body { flex: 1 1 0; min-height: 0; margin-top: 28px; display: flex; flex-direction: column; justify-content: center; }
+.foot { position: absolute; left: 76px; right: 76px; bottom: 22px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+/* layout */
+.row { display: grid; gap: 40px; flex: 1 1 0; min-height: 0; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.c5 { grid-template-columns: repeat(5, 1fr); }
+.c6 { grid-template-columns: repeat(6, 1fr); }
+.img-l { grid-template-columns: 1.5fr 1fr; }
+.img-r { grid-template-columns: 1fr 1.5fr; }
+.stack { display: flex; flex-direction: column; gap: 20px; min-height: 0; min-width: 0; }
+.center { justify-content: center; }
+
+/* images */
+.pic { display: flex; flex-direction: column; gap: 8px; min-height: 0; min-width: 0; height: 100%; }
+.stack > .pic { flex: 1 1 0; height: auto; }
+.pic .frame { flex: 1 1 0; min-height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+.pic img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; border-radius: 10px; }
+.pic.cover .frame img { width: 100%; height: 100%; object-fit: cover; }
+.pic .cap { font-size: 19px; line-height: 1.3; color: var(--muted); }
+.pic .cap b { color: var(--fg); font-weight: 600; }
+.tag { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--k, var(--cyan)); margin-right: 6px; }
+
+/* text blocks */
+.pt { display: flex; flex-direction: column; gap: 6px; }
+.pt .h { font-size: 28px; font-weight: 700; line-height: 1.25; }
+.pt .d { font-size: 21px; line-height: 1.4; color: var(--muted); }
+.pt .d b { color: var(--fg); font-weight: 600; }
+.mark { color: var(--k, var(--cyan)); }
+.say { font-family: var(--display); font-size: 34px; font-weight: 600; line-height: 1.3; text-wrap: balance; }
+.say em { font-style: normal; color: var(--k, var(--cyan)); }
+.note { font-size: 21px; line-height: 1.45; color: var(--muted); border-left: 3px solid var(--k, var(--cyan)); padding: 4px 0 4px 18px; }
+.note b { color: var(--fg); }
+code, .code-inline { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; color: #e2e8f0; }
+ul.list { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+ul.list li { font-size: 24px; line-height: 1.4; color: var(--muted); padding-left: 26px; position: relative; }
+ul.list li::before { content: ''; position: absolute; left: 4px; top: 13px; width: 8px; height: 8px; border-radius: 50%; background: var(--k, var(--cyan)); }
+ul.list li b { color: var(--fg); font-weight: 600; }
+
+/* prompt box */
+.prompt { font-family: var(--mono); font-size: 16px; line-height: 1.48; background: var(--surface); border-radius: 12px; padding: 14px 18px; color: #dbe4f0; white-space: pre-wrap; border: 1px solid var(--line); }
+.prompt .s { color: var(--cyan); font-weight: 700; }
+.prompt .g { color: var(--green); font-weight: 700; }
+.prompt .m { color: var(--amber); }
+.prompt .x { color: var(--red); font-weight: 700; }
+.prompt-label { font-family: var(--mono); font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+
+/* tables */
+table.t { width: 100%; border-collapse: collapse; font-size: 21px; }
+table.t th { text-align: left; font-family: var(--mono); font-size: 14px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 700; padding: 0 14px 12px; border-bottom: 1px solid var(--line); }
+table.t td { padding: 14px 14px; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: top; line-height: 1.35; }
+table.t td:first-child { color: var(--fg); font-weight: 600; white-space: nowrap; }
+table.t td.c { text-align: center; } table.t th.c { text-align: center; }
+table.t code { font-size: 18px; }
+
+/* cards & boxes */
+.card-box { background: var(--surface-card); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+.card-box.active { border-color: var(--cyan); }
+.card-box .ch { font-size: 24px; font-weight: 700; color: var(--fg); }
+.card-box .cd { font-size: 18px; line-height: 1.45; color: var(--muted); }
+.badge-tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-family: var(--mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; line-height: 1; }
+.badge-naive { background: rgba(248,113,113,0.18); color: var(--red); border: 1px solid var(--red); }
+.badge-eng { background: rgba(52,211,153,0.18); color: var(--green); border: 1px solid var(--green); }
+.badge-workflow { background: rgba(56,189,248,0.18); color: var(--cyan); border: 1px solid var(--cyan); }
+
+/* hook gallery */
+.hook-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; flex: 1 1 0; min-height: 0; }
+.hook-card { display: flex; flex-direction: column; gap: 10px; background: var(--surface-card); border: 1px solid var(--line); border-radius: 12px; padding: 12px; min-height: 0; }
+.hook-card .himg { flex: 1 1 0; min-height: 0; border-radius: 8px; overflow: hidden; display: flex; background: #000; }
+.hook-card .himg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hook-card .hbadge { font-family: var(--mono); font-size: 18px; font-weight: 700; color: var(--k, var(--cyan)); display: flex; align-items: center; justify-content: space-between; }
+.hook-card .hsub { font-size: 15px; color: var(--muted); line-height: 1.25; }
+
+/* cover slide */
+.cover { padding: 0; }
+.cover .mosaic { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 4px; opacity: .5; }
+.cover .mosaic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,23,.98) 0%, rgba(11,15,23,.95) 58%, rgba(11,15,23,.5) 100%); }
+.cover .txt { position: relative; padding: 0 76px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 1060px; }
+.cover h1 { font-family: var(--display); font-size: 88px; font-weight: 800; line-height: 1; letter-spacing: -0.035em; }
+.cover h2 { font-size: 32px; font-weight: 500; line-height: 1.3; color: var(--cyan); margin-top: 22px; text-wrap: balance; }
+.cover p { font-size: 21px; line-height: 1.5; color: var(--muted); margin-top: 22px; max-width: 820px; }
+.cover .keys { position: absolute; left: 76px; bottom: 26px; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+/* roadmap */
+.road { display: grid; grid-template-columns: repeat(6, 1fr); position: relative; margin-top: 36px; }
+.road::before { content: ''; position: absolute; left: 30px; right: 30px; top: 28px; height: 3px; background: var(--line); }
+.road .m { position: relative; display: flex; flex-direction: column; gap: 10px; padding-right: 18px; }
+.road .dot { width: 60px; height: 60px; border-radius: 50%; background: var(--bg); border: 3px solid #2b3648; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 18px; color: var(--dim); }
+.road .m.done .dot { border-color: var(--green); color: var(--green); }
+.road .m.here .dot { border-color: var(--cyan); color: var(--bg); background: var(--cyan); }
+.road .nm { font-size: 21px; font-weight: 700; }
+.road .sub { font-size: 19px; color: var(--muted); line-height: 1.35; }
+.road .m.future .nm { color: var(--muted); }
+
+/* break */
+.brk { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }
+.brk h2 { font-size: 56px; font-weight: 700; }
+.brk p { font-size: 24px; color: var(--muted); max-width: 900px; line-height: 1.45; }
+.brk .clock { font-family: var(--mono); font-size: 140px; font-weight: 700; color: var(--amber); line-height: 1; margin: 8px 0; }
+.btn { font-family: var(--mono); font-size: 17px; font-weight: 700; padding: 12px 26px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--fg); cursor: pointer; }
+.btn.primary { background: var(--amber); color: #0b0f17; border-color: var(--amber); }
+
+/* code */
+pre.code { font-family: var(--mono); font-size: 19px; line-height: 1.5; background: var(--surface); border-radius: 12px; padding: 22px 26px; color: #dbe4f0; white-space: pre; overflow: hidden; border: 1px solid var(--line); }
+pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str { color: #86efac; } pre.code .cm { color: #64748b; font-style: italic; }
+
+/* drawer & grid */
+.drawer { position: fixed; left: 0; right: 0; bottom: 0; max-height: 40vh; overflow-y: auto; background: #0f1624; border-top: 2px solid var(--cyan); padding: 18px 28px; font-size: 16px; line-height: 1.6; color: #cbd5e1; transform: translateY(100%); transition: transform .2s ease; z-index: 10; }
+.drawer.open { transform: none; }
+.drawer .hd { font-family: var(--mono); font-size: 12px; color: var(--cyan); letter-spacing: .08em; margin-bottom: 8px; }
+.grid { position: fixed; inset: 0; background: rgba(5,8,14,.96); z-index: 11; display: none; padding: 30px; overflow-y: auto; }
+.grid.open { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; align-content: start; }
+.grid button { text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px; color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.35; cursor: pointer; min-height: 96px; }
+.grid button span { display: block; font-family: var(--mono); font-size: 12px; color: var(--cyan); margin-bottom: 6px; }
+.grid button.cur { border-color: var(--cyan); }
+.navhint { position: fixed; right: 14px; bottom: 10px; font-family: var(--mono); font-size: 11px; color: #3b475a; z-index: 5; }
+
+@media print {
+  @page { size: 1600px 900px; margin: 0; }
+  body { overflow: visible; background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .stage { position: static; transform: none; width: 1600px; height: auto; border-radius: 0; box-shadow: none; overflow: visible; }
+  .slide { position: relative; display: flex !important; width: 1600px; height: 900px; break-after: page; page-break-after: always; }
+  .drawer, .grid, .navhint, .btn { display: none !important; }
+}
+
+.pic .frame.shot { border-radius: 12px; border: 1px solid var(--line); background: #0b0f17; }
+.thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.thumbs img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; border-bottom: 4px solid var(--k, var(--cyan)); display: block; }
+
+/* ===== v2 additions (2026-10-12) ===== */
+.badge-tag { font-size: 14px; padding: 4px 9px; }
+.pic.contain .frame { background: #05080e; }
+.pic.contain .frame img { width: 100%; height: 100%; object-fit: contain; }
+.thumbs img.contain { object-fit: contain; background: #000; }
+.small-cap { font-size: 15px; line-height: 1.35; color: var(--muted); }
+.small-cap b { color: var(--fg); }
+.mini-h { font-size: 15px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--k, var(--cyan)); }
+.schematic-tag { display: inline-block; font-size: 14px; color: var(--dim); border: 1px dashed rgba(148,163,184,.35); border-radius: 6px; padding: 2px 8px; }
+
+/* layer diagram (slide: three layers) */
+.layers { display: flex; flex-direction: column; gap: 12px; flex: 1 1 0; min-height: 0; justify-content: center; }
+.layer { display: grid; grid-template-columns: 330px 1fr; gap: 24px; align-items: center; background: var(--surface-card); border: 1px solid var(--line); border-left: 5px solid var(--k); border-radius: 12px; padding: 18px 24px; }
+.layer .ln { font-size: 15px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--k); }
+.layer .lt { font-size: 27px; font-weight: 700; line-height: 1.2; margin-top: 2px; }
+.layer .ld { font-size: 17px; line-height: 1.38; color: var(--muted); margin-top: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip { background: #0b111c; border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 20px; font-weight: 600; color: var(--fg); line-height: 1.25; }
+.chip small { display: block; font-size: 15px; font-weight: 400; color: var(--muted); margin-top: 2px; }
+.chip.own { border-color: rgba(52,211,153,.55); }
+.chip.agg { border-style: dashed; }
+.layer-arrow { text-align: center; color: var(--dim); font-size: 15px; line-height: 1; }
+.legend { display: flex; gap: 22px; font-size: 15px; color: var(--muted); align-items: center; flex-wrap: wrap; }
+.legend .sw { display: inline-block; width: 26px; height: 16px; border-radius: 4px; border: 1px solid var(--line); vertical-align: -3px; margin-right: 6px; background: #0b111c; }
+.legend .sw.own { border-color: rgba(52,211,153,.8); }
+.legend .sw.agg { border-style: dashed; border-color: rgba(148,163,184,.7); }
+
+/* how models draw */
+.howgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; flex: 1 1 0; min-height: 0; }
+.howcol { display: flex; flex-direction: column; gap: 12px; min-height: 0; background: var(--surface-card); border: 1px solid var(--line); border-top: 4px solid var(--k); border-radius: 12px; padding: 16px 20px; }
+.howcol .hh { font-size: 26px; font-weight: 700; color: var(--k); }
+.frames4 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 10px; width: 470px; max-width: 100%; align-self: center; }
+.frames4 figure { display: flex; flex-direction: column; gap: 4px; }
+.frames4 img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; display: block; border: 1px solid var(--line); }
+.frames4 figcaption { font-size: 14px; color: var(--muted); text-align: center; }
+.howcol ul.list { gap: 8px; }
+.howcol ul.list li { font-size: 18px; line-height: 1.38; }
+.howcol ul.list li::before { top: 10px; }
+.wholine { font-size: 16px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; margin-top: auto; }
+.wholine b { color: var(--fg); }
+
+/* compact table */
+table.t.compact { font-size: 18px; }
+table.t.compact td { padding: 10px 12px; line-height: 1.3; }
+table.t.compact th { padding: 0 12px 8px; }
+table.t.compact td:first-child { white-space: normal; }
+table.t.compact td small { display: block; font-size: 15px; color: var(--dim); font-weight: 400; }
+
+/* UI schematics */
+.mock { display: flex; flex-direction: column; background: #0a0f19; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; min-height: 0; height: 100%; }
+.mock .mbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--line); background: #0f1624; font-size: 15px; color: var(--muted); }
+.mock .dots i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #2b3648; margin-right: 5px; }
+.mock .mbody { flex: 1 1 0; min-height: 0; display: grid; grid-template-columns: 190px 1fr 200px; }
+.mock .side { padding: 12px; display: flex; flex-direction: column; gap: 8px; border-right: 1px solid var(--line); font-size: 15px; color: var(--muted); }
+.mock .side.r { border-right: 0; border-left: 1px solid var(--line); }
+.mock .side .sh { font-size: 15px; font-weight: 700; color: var(--fg); }
+.mock .opt { border: 1px solid var(--line); border-radius: 8px; padding: 5px 8px; color: var(--fg); font-size: 15px; line-height: 1.25; }
+.mock .opt small { display: block; color: var(--dim); font-size: 14px; }
+.mock .opt.on { border-color: var(--green); background: rgba(52,211,153,.10); }
+.mock .slider { display: flex; flex-direction: column; gap: 4px; }
+.mock .slider .tr { height: 6px; border-radius: 3px; background: #2b3648; position: relative; }
+.mock .slider .tr i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--cyan); }
+.mock .canvas { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 12px; min-height: 0; }
+.mock .canvas .imgwrap { position: relative; width: 100%; aspect-ratio: 1376 / 768; }
+.mock .canvas img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
+.maskblob { position: absolute; border-radius: 46%; background: rgba(248,113,113,.38); border: 2px dashed #f87171; }
+.mock .tools { display: flex; gap: 8px; }
+.mock .tools span { background: rgba(11,15,23,.88); border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; font-size: 15px; color: var(--fg); }
+.mock .tools span.on { border-color: var(--red); color: #fecaca; }
+.mock .pbar { display: flex; gap: 10px; align-items: center; padding: 10px 14px; border-top: 1px solid var(--line); background: #0f1624; }
+.mock .pbar .in { flex: 1; font-family: var(--mono); font-size: 14px; color: #dbe4f0; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+.mock .pbar .go { font-size: 14px; font-weight: 700; color: #0b0f17; background: var(--green); border-radius: 8px; padding: 6px 12px; }
+
+/* chat scene */
+.chat { display: flex; flex-direction: column; gap: 12px; padding: 14px; flex: 1 1 0; min-height: 0; justify-content: center; }
+.bub { max-width: 88%; border-radius: 14px; padding: 10px 12px; display: flex; gap: 12px; align-items: center; font-size: 16px; line-height: 1.35; }
+.bub.user { align-self: flex-end; background: #16314a; border: 1px solid rgba(56,189,248,.45); color: var(--fg); }
+.bub.bot { align-self: flex-start; background: #121a28; border: 1px solid var(--line); color: var(--fg); }
+.bub img { width: 190px; aspect-ratio: 1376 / 768; object-fit: cover; border-radius: 8px; flex: none; }
+.bub .who { display: block; font-size: 14px; color: var(--muted); margin-bottom: 2px; }
+
+/* acceptance checklist */
+.checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.checklist li { font-size: 20px; line-height: 1.35; color: var(--muted); display: grid; grid-template-columns: 34px 1fr; }
+.checklist li b { color: var(--fg); font-weight: 600; }
+.checklist .ok { color: var(--green); font-weight: 700; }
+.checklist .warn { color: var(--amber); font-weight: 700; }
+.checklist .bad { color: var(--red); font-weight: 700; }
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+
+<!-- SLIDE 01: COVER -->
+<section class="slide cover" data-n="1">
+  <div class="mosaic">
+    <img src="assets/examples/web/A2_structured.jpg" alt="">
+    <img src="assets/examples/web/C2_rain.jpg" alt="">
+    <img src="assets/examples/web/D2_flatlay.jpg" alt="">
+    <img src="assets/examples/web/B2_relight.jpg" alt="">
+    <img src="assets/examples/web/C4_break.jpg" alt="">
+    <img src="assets/examples/web/D3_hands.jpg" alt="">
+    <img src="assets/examples/web/E1_compose.jpg" alt="">
+    <img src="assets/examples/web/E2_style.jpg" alt="">
+  </div>
+  <div class="shade"></div>
+  <div class="txt">
+    <div class="kicker">GenAI Basics • Урок 04 • Модуль 2: мультимодальность</div>
+    <h1>Генерация изображений</h1>
+    <h2>Сервисы, промпт-техники и паттерны контроля</h2>
+    <p>ChatGPT, Nano Banana, Leonardo.ai, Midjourney, Kling и FLUX. От интерактивного хука и устройства рынка — к фотосессии товара, правкам по инструкции и персонажу, который узнаваем в каждом кадре.</p>
+  </div>
+  <div class="keys">← → листать • N заметки спикера • G все слайды • F полный экран</div>
+  <template class="notes">Приветствие. Открываем Модуль 2 — мультимодальность. Сегодня не абстрактный арт, а инженерное ремесло: как модели рисуют, кто стоит за генерацией, зачем нужны креативные студии вроде Leonardo, как писать промпты со слотами и как удерживать консистентность объектов.</template>
+</section>
+
+<!-- SLIDE 02: INTERACTIVE HOOK (QUIZ) -->
+<section class="slide" data-n="2">
+  <div class="kicker" style="--k:var(--amber)">Интерактивный хук • Разминка</div>
+  <h2 class="title">Угадайте: кто реальный человек, а кто — ИИ?</h2>
+  <div class="lead">Шесть портретов. Напишите в чат буквы тех, кого вы считаете настоящей фотографией, и тех, кто сгенерирован нейросетью.</div>
+  <div class="body">
+    <div class="hook-grid">
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ A ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_1_gan2014.jpg" alt="A"></div>
+        <div class="hsub">Портрет А</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ B ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_2_stylegan2018.jpg" alt="B"></div>
+        <div class="hsub">Портрет B</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ C ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_3_sd2022.jpg" alt="C"></div>
+        <div class="hsub">Портрет C</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ D ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_4_mj2023.jpg" alt="D"></div>
+        <div class="hsub">Портрет D</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ E ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_5_flux2024.jpg" alt="E"></div>
+        <div class="hsub">Портрет E</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>[ F ]</span></div>
+        <div class="himg"><img src="assets/hook/hook_6_banana2026.jpg" alt="F"></div>
+        <div class="hsub">Портрет F</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="prompt" style="font-size:18px;"><b>Вопрос в чат:</b> напишите ваши догадки. Например: <span class="m">«A и B — нейросеть, E и F — настоящие люди»</span> или <span class="g">«Только F реальный»</span>. На что вы обращаете внимание?</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>02 / 27</span></div>
+  <template class="notes">Даем залу 30–45 секунд. Спрашиваем: на что смотрите? Обычно цепляются за уши (B), за «пластиковую» кожу (C), за идеальный свет (D), за морщинки (E) и таймстемп смартфона (F). Переходим к следующему слайду с разоблачением.</template>
+</section>
+
+<!-- SLIDE 03: THE REVEAL & 10-YEAR EVOLUTION -->
+<section class="slide" data-n="3">
+  <div class="kicker" style="--k:var(--green)">Раскрытие интриги • 2014–2025</div>
+  <h2 class="title">Все 6 — это генерация ИИ. Десятилетие эволюции</h2>
+  <div class="lead">Ни одной реальной фотографии. Реконструкция стиля каждой эпохи (все кадры сгенерированы в 2026): как генеративные модели прошли «зловещую долину».</div>
+  <div class="body">
+    <div class="hook-grid">
+      <div class="hook-card" style="--k:var(--dim)">
+        <div class="hbadge"><span>2014</span><span style="font-size:14px;color:var(--dim)">GAN</span></div>
+        <div class="himg"><img src="assets/hook/hook_1_gan2014.jpg" alt="2014"></div>
+        <div class="hsub"><b>Goodfellow GAN</b><br>64×64 px, серые пятна шума. Рождение технологии.</div>
+      </div>
+      <div class="hook-card" style="--k:var(--amber)">
+        <div class="hbadge"><span>2018</span><span style="font-size:14px;color:var(--amber)">StyleGAN</span></div>
+        <div class="himg"><img src="assets/hook/hook_2_stylegan2018.jpg" alt="2018"></div>
+        <div class="hsub"><b>NVIDIA StyleGAN</b><br>Иллюзия реализма, но плавятся серьги, уши и фон.</div>
+      </div>
+      <div class="hook-card" style="--k:var(--cyan)">
+        <div class="hbadge"><span>2022</span><span style="font-size:14px;color:var(--cyan)">SD 1.5</span></div>
+        <div class="himg"><img src="assets/hook/hook_3_sd2022.jpg" alt="2022"></div>
+        <div class="hsub"><b>Stable Diffusion</b><br>Диффузия в опенсорсе. Гламурный глянец, неживые глаза.</div>
+      </div>
+      <div class="hook-card" style="--k:var(--violet)">
+        <div class="hbadge"><span>2023</span><span style="font-size:14px;color:var(--violet)">MJ v5</span></div>
+        <div class="himg"><img src="assets/hook/hook_4_mj2023.jpg" alt="2023"></div>
+        <div class="hsub"><b>Midjourney v5</b><br>Победа эстетики. Киношный контраст, теплый контурный свет.</div>
+      </div>
+      <div class="hook-card" style="--k:var(--green)">
+        <div class="hbadge"><span>2024</span><span style="font-size:14px;color:var(--green)">FLUX.1</span></div>
+        <div class="himg"><img src="assets/hook/hook_5_flux2024.jpg" alt="2024"></div>
+        <div class="hsub"><b>FLUX.1 Dev/Pro</b><br>Микротекстура кожи, поры, морщины, естественные зубы.</div>
+      </div>
+      <div class="hook-card" style="--k:#34d399">
+        <div class="hbadge"><span>2025</span><span style="font-size:14px;color:#34d399">NB Pro</span></div>
+        <div class="himg"><img src="assets/hook/hook_6_banana2026.jpg" alt="2026"></div>
+        <div class="hsub"><b>Nano Banana Pro</b><br>Оптика смартфона, боке, шум сенсора. На глаз не отличить.</div>
+      </div>
+    </div>
+    <div style="margin-top:20px;">
+      <div class="note"><b>Вывод для инженера:</b> Модели научились рисовать фотореализм из коробки. Проблема 2026 года — не в «красоте», а в <b>управляемости</b>: как заставить модель нарисовать ровно то, что требует ТЗ, и повторить героя в 10 сценах.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>03 / 27</span></div>
+  <template class="notes">Все 6 — генерация! Важно: это реконструкция стиля каждой эпохи, все кадры сгенерированы в 2026 году. Подчеркнуть скорость развития: от мутных 64 пикселей в 2014 году до снимка 2025 года (Nano Banana Pro), который на глаз не отличить от фото. Но SynthID — невидимый водяной знак — отличит; к этому вернемся в блоке о рисках. Это подводит нас к главному вопросу урока: как этим процессом управлять детерминированно.</template>
+</section>
+
+<!-- SLIDE 04: ROADMAP -->
+<section class="slide" data-n="4">
+  <div class="kicker">Маршрут курса</div>
+  <h2 class="title">Модуль 1 пройден. Сегодня — пиксели</h2>
+  <div class="body">
+    <div class="road">
+      <div class="m done"><div class="dot">01</div><div class="nm">Основы и API</div><div class="sub">L01–L03</div></div>
+      <div class="m here"><div class="dot">02</div><div class="nm">Мультимодальность</div><div class="sub">L04 картинки<br>L05 видео • L06 звук</div></div>
+      <div class="m future"><div class="dot">03</div><div class="nm">Среда инженера</div><div class="sub">L07–L09</div></div>
+      <div class="m future"><div class="dot">04</div><div class="nm">Локальный AI</div><div class="sub">L10</div></div>
+      <div class="m future"><div class="dot">05</div><div class="nm">Агенты и MCP</div><div class="sub">L11–L13</div></div>
+      <div class="m future"><div class="dot">06</div><div class="nm">Продакшен</div><div class="sub">L14–L16</div></div>
+    </div>
+    <div style="margin-top:80px;">
+      <div class="note"><b>Что переносится из Модуля 1:</b> законы промптинга из L02 работают и для диффузии. Конкретика вместо абстракций, разделение на слоты и контекст. Но вместо примеров текста мы теперь подаем <b>референс-изображения</b>.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>04 / 27</span></div>
+  <template class="notes">Связываем с предыдущими уроками. Мы изучили токены, системные промпты и REST API. Сегодня переходим к мультимодальным весам. Навык системного описания задачи переносится полностью.</template>
+</section>
+
+<!-- SLIDE 05: THE 3 LAYERS OF VISUAL AI -->
+<section class="slide" data-n="5">
+  <div class="kicker" style="--k:var(--cyan)">Архитектура • Инженерный обзор</div>
+  <h2 class="title">Три слоя экосистемы генерации изображений</h2>
+  <div class="lead">Модель ≠ сервис. Одна и та же модель живет в API, в креативной студии и в чате.</div>
+  <div class="body" style="margin-top:18px;">
+    <div class="layers">
+      <div class="layer" style="--k:var(--cyan)">
+        <div><div class="ln">Слой 3</div><div class="lt">Мультимодальный чат</div><div class="ld">Модель рассуждает текстом, рисует и помнит диалог. Лучшее место для правок и надписей.</div></div>
+        <div class="chips">
+          <div class="chip own">ChatGPT<small>GPT Image 2.5</small></div>
+          <div class="chip own">Gemini<small>Nano Banana 2 / Pro</small></div>
+          <div class="chip own">Grok<small>Grok Imagine 2.0 (модель Aurora)</small></div>
+        </div>
+      </div>
+      <div class="layer-arrow">▲ используют модели и API нижнего слоя ▲</div>
+      <div class="layer" style="--k:var(--green)">
+        <div><div class="ln">Слой 2</div><div class="lt">Креативные студии</div><div class="ld">Холст, маски, слои, апскейл, пресеты. Свои модели и/или чужие через API.</div></div>
+        <div class="chips">
+          <div class="chip own">Leonardo.ai<small>свои Phoenix / Lucid + сторонние</small></div>
+          <div class="chip own">Kling<small>свои IMAGE 3.0 / O1 → видео</small></div>
+          <div class="chip own">Midjourney<small>свой V8.2, только Web / Discord</small></div>
+          <div class="chip agg">Krea, Sintx<small>агрегаторы чужих моделей</small></div>
+        </div>
+      </div>
+      <div class="layer-arrow">▲ используют модели и API нижнего слоя ▲</div>
+      <div class="layer" style="--k:var(--amber)">
+        <div><div class="ln">Слой 1</div><div class="lt">Базовые модели и API</div><div class="ld">Обучают веса, держат GPU и отдают REST / Python API для автоматизации.</div></div>
+        <div class="chips">
+          <div class="chip">OpenAI<small>GPT Image 2 / 2.5</small></div>
+          <div class="chip">Google<small>Nano Banana: Gemini API, Vertex</small></div>
+          <div class="chip">Black Forest Labs<small>FLUX.2 / FLUX 3</small></div>
+          <div class="chip">Stability AI<small>SD 3.5 / SDXL</small></div>
+          <div class="chip">ByteDance<small>Seedream 5.0</small></div>
+        </div>
+      </div>
+      <div class="legend"><span><i class="sw own"></i>сервис на своих моделях</span><span><i class="sw agg"></i>агрегатор чужих моделей</span><span>Один вендор может быть на нескольких слоях: Google — и API (Слой 1), и чат Gemini (Слой 3).</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>05 / 27</span></div>
+  <template class="notes">Студенты часто путают модель и сервис. Разводим три слоя. Слой 1 — те, кто обучает веса и дает API: OpenAI, Google, BFL, Stability, ByteDance. Слой 2 — креативные студии: Leonardo и Kling работают на своих моделях (Leonardo Phoenix/Lucid плюс сторонние, Kling IMAGE 3.0/O1), Krea и Sintx в основном агрегируют чужие. Midjourney — особый случай: своя модель, но без публичного API. Слой 3 — чаты: ChatGPT на GPT Image, Gemini на Nano Banana, Grok на своей модели Aurora. Дальше по уроку используем только термины «Слой 1/2/3».</template>
+</section>
+
+<!-- SLIDE 06: HOW MODELS DRAW (NEW) -->
+<section class="slide" data-n="6">
+  <div class="kicker" style="--k:var(--violet)">Под капотом • Два способа рисовать</div>
+  <h2 class="title">Как модели рисуют: диффузия и авторегрессия</h2>
+  <div class="body" style="margin-top:22px;">
+    <div class="howgrid">
+      <div class="howcol" style="--k:var(--cyan)">
+        <div class="hh">Диффузия: из шума — сразу всё</div>
+        <div class="frames4">
+          <figure><img src="assets/examples/web/denoise_0.jpg" alt=""><figcaption>старт: шум</figcaption></figure>
+          <figure><img src="assets/examples/web/denoise_1.jpg" alt=""><figcaption>→ формы</figcaption></figure>
+          <figure><img src="assets/examples/web/denoise_2.jpg" alt=""><figcaption>→ детали</figcaption></figure>
+          <figure><img src="assets/examples/web/denoise_3.jpg" alt=""><figcaption>финал</figcaption></figure>
+        </div>
+        <ul class="list" style="--k:var(--cyan)">
+          <li>Стартует с чистого шума и за 20–50 шагов убирает его <b>по всей картинке сразу</b>; промпт направляет каждый шаг.</li>
+          <li>Другой <b>seed</b> = другой шум = другая картинка. Отсюда ручки студий: <b>seed, guidance, steps, negative prompt</b>.</li>
+        </ul>
+        <div class="wholine"><b>Кто:</b> Stable Diffusion / SDXL, FLUX, Midjourney, большинство моделей студий.</div>
+      </div>
+      <div class="howcol" style="--k:var(--green)">
+        <div class="hh">Авторегрессия: патч за патчем, как текст</div>
+        <div class="frames4">
+          <figure><img src="assets/v2/ar_0.jpg" alt=""><figcaption>первые патчи</figcaption></figure>
+          <figure><img src="assets/v2/ar_1.jpg" alt=""><figcaption>→ 40%</figcaption></figure>
+          <figure><img src="assets/v2/ar_2.jpg" alt=""><figcaption>→ 70%</figcaption></figure>
+          <figure><img src="assets/v2/ar_3.jpg" alt=""><figcaption>готово</figcaption></figure>
+        </div>
+        <ul class="list" style="--k:var(--green)">
+          <li>Картинка = последовательность <b>токенов-патчей</b>; модель предсказывает следующий, как слово в тексте.</li>
+          <li>Рисует та же мультимодальная LLM, что читает промпт → сильна в <b>тексте, инструкциях и правках</b>. Часто — гибрид.</li>
+        </ul>
+        <div class="wholine"><b>Кто:</b> GPT Image, Grok Aurora; Nano Banana — архитектура не раскрыта.</div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:14px;font-size:19px;"><b>На практике:</b> диффузия — ползунки и seed; чат-модели — промпт как ТЗ и правки словами. Техники урока работают для обоих.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>06 / 27</span></div>
+  <template class="notes">Короткая теория без формул. Диффузия: стартуем с шума и за десятки шагов «проявляем» картинку целиком — поэтому seed и guidance так важны в студиях. Авторегрессия: картинка разбита на патчи-токены, модель пишет их по очереди, как текст, — поэтому чат-модели хорошо понимают инструкции и надписи. Честная оговорка: архитектуры GPT Image и Nano Banana раскрыты не полностью, многие современные модели — гибриды. Правая визуализация — схема (патчи 40×40 px), а не реальный порядок генерации конкретной модели.</template>
+</section>
+
+<!-- SLIDE 07: FOUNDATION PROVIDERS & TOP MODELS -->
+<section class="slide" data-n="7">
+  <div class="kicker" style="--k:var(--amber)">Слой 1 • Базовые поставщики</div>
+  <h2 class="title">Кто обучает базовые модели и дает API</h2>
+  <div class="lead">С ними вы уже работали в L03 через SDK. Те же компании дают эндпоинты генерации изображений.</div>
+  <div class="body">
+    <div class="row c3" style="gap:22px;">
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--cyan);font-weight:700">GOOGLE</div>
+        <div class="ch">Nano Banana 2 / Pro / 2 Lite</div>
+        <div class="cd"><code>gemini-3.1-flash-image</code>, <code>gemini-3-pro-image</code>, <code>gemini-3.1-flash-lite-image</code>.<br><b>Сила:</b> скорость, знания мира и поиск, мульти-референсы, тот же SDK, что в L03.</div>
+      </div>
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--green);font-weight:700">OPENAI</div>
+        <div class="ch">GPT Image 2 / 2.5</div>
+        <div class="cd"><code>gpt-image-2</code>, <code>gpt-image-2.5-flare</code> (быстрая), <code>gpt-image-2.5-sunburst</code> (точные правки).<br><b>Сила:</b> текст на картинке, строгое следование ТЗ, правки в диалоге.</div>
+      </div>
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--violet);font-weight:700">BLACK FOREST LABS</div>
+        <div class="ch">FLUX.2 (Pro / Flex / Dev) → FLUX 3</div>
+        <div class="cd">API: BFL, Replicate, fal.ai. FLUX.2 Dev / Klein — открытые веса, до 10 референсов. FLUX 3 (07.2026) — мультимодальная.<br><b>Сила:</b> фотореализм, цвета по hex, локальный запуск.</div>
+      </div>
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--amber);font-weight:700">STABILITY AI</div>
+        <div class="ch">Stable Diffusion 3.5 / SDXL</div>
+        <div class="cd">Основа опенсорс-экосистемы. Доступ через API и локальный запуск (L10).<br><b>Сила:</b> тысячи пользовательских LoRA под любой стиль.</div>
+      </div>
+      <div class="card-box">
+        <div style="font-family:var(--mono);font-size:14px;color:#f472b6;font-weight:700">MIDJOURNEY</div>
+        <div class="ch">Midjourney V8.2 + Edit Model</div>
+        <div class="cd">Только Web и Discord, публичного API нет. Edit Model (08.2026): правки, inpaint / outpaint, до 4 референсов.<br><b>Сила:</b> эстетика и кинематографичный стиль.</div>
+      </div>
+      <div class="card-box" style="background:#141f33;border-color:var(--cyan)">
+        <div style="font-family:var(--mono);font-size:14px;color:var(--cyan);font-weight:700">КАК ВЫЗЫВАТЬ В КОДЕ</div>
+        <div class="ch">Прямой вызов API</div>
+        <div class="cd"><code>POST /v1/images/generations</code> или <code>client.models.generate_content</code>.<br><b>Цена:</b> ≈ $0.02–0.06 за кадр 1K у быстрых моделей; Pro и 4K дороже. Скорость: 3–15 с.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>07 / 27</span></div>
+  <template class="notes">База та же, что в L03: те же ключи и заголовки авторизации. В Gemini API в response_modalities запрашиваем IMAGE. Актуальные линейки на октябрь 2026: у OpenAI — GPT Image 2 и 2.5 (варианты flare и sunburst), у Google — Nano Banana 2, Pro и 2 Lite, у BFL — FLUX.2 и новая FLUX 3. Midjourney V8.2 по-прежнему без официального REST API, поэтому в корпоративный пайплайн его не встроить; референсы там теперь через Edit Model.</template>
+</section>
+
+<!-- SLIDE 08: MARKET OCT 2026 (NEW) -->
+<section class="slide" data-n="8">
+  <div class="kicker" style="--k:var(--cyan)">Рынок • Октябрь 2026</div>
+  <h2 class="title">Рынок генерации изображений: октябрь 2026</h2>
+  <div class="body" style="margin-top:20px;justify-content:flex-start;">
+    <table class="t compact">
+      <thead><tr><th style="width:21%">Модель · вендор</th><th style="width:34%">Сильная сторона</th><th style="width:19%">Референсы</th><th>Доступ и цена</th></tr></thead>
+      <tbody>
+        <tr><td>GPT Image 2 / 2.5<small>OpenAI</small></td><td>Текст и инфографика, следование ТЗ, правки в диалоге; <span style="color:var(--green)">#1 Arena</span></td><td>до 16 (2.5; источники расходятся)</td><td>ChatGPT (вкл. Free); API ≈ $30 / 1M выходных image-токенов</td></tr>
+        <tr><td>Nano Banana 2 / Pro / 2 Lite<small>Google</small></td><td>Скорость, знания мира и поиск, 4K, перевод текста на картинке</td><td>NB 2: до 14 объектов + 5 персонажей</td><td>Gemini app; API: 2 Lite ≈ $0.034 / кадр 1K</td></tr>
+        <tr><td>Grok Imagine Image 2.0<small>xAI / SpaceXAI</small></td><td>Magic Wand-выделение, шаблоны (товар, портрет); <span style="color:var(--green)">#2 Arena</span></td><td>до 5</td><td>Grok app; API ≈ $0.02–0.06</td></tr>
+        <tr><td>Midjourney V8.2<small>Midjourney</small></td><td>Эстетика и стиль: <code>--sref</code>, moodboards, персонализация</td><td>Edit Model: до 4</td><td>$10–120 / мес.; API нет</td></tr>
+        <tr><td>FLUX.2 / FLUX 3<small>Black Forest Labs</small></td><td>Открытые веса (Dev, Klein), 4 Мп, точные цвета по hex</td><td>до 10</td><td>API BFL / fal / Replicate; локально (L10)</td></tr>
+        <tr><td>Kling IMAGE 3.0 / O1<small>Kuaishou</small></td><td>Кинокадр, серии кадров, прямой мост в Kling-видео</td><td>до 10</td><td>kling.ai (кредиты), API</td></tr>
+        <tr><td>Seedream 5.0<small>ByteDance</small></td><td>4K, поиск в Lite; Pro раскладывает кадр на PNG-слои</td><td>до 10 (Flash)</td><td>API, партнерские платформы</td></tr>
+        <tr><td>Ideogram 4.0<small>Ideogram</small></td><td>Типографика; официальные <b style="color:var(--fg)">JSON-промпты</b>; открытые веса 9.3B</td><td>—</td><td>ideogram.ai; веса Apache 2.0</td></tr>
+        <tr><td>Recraft V4<small>Recraft</small></td><td>Нативный редактируемый <b style="color:var(--fg)">SVG</b>, бренд-стили</td><td>стиль-сеты</td><td>recraft.ai, API</td></tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:14px;font-size:17px;"><b>Arena, 08.2026:</b> GPT-Image-2 — #1, Grok Imagine 2.0 — #2 (Text-to-Image и Image Edit). Лимиты и цены меняются ежемесячно — сверяйте перед занятием.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>08 / 27</span></div>
+  <template class="notes">Это раздаточная карта рынка на октябрь 2026, не рейтинг «лучшей модели». Читаем по столбцам: за чем идти к каждой модели и сколько референсов она принимает. Акценты: GPT Image и Nano Banana — универсалы с текстом и правками в диалоге; Midjourney — эстетика без API; FLUX и Ideogram — открытые веса; Recraft — единственный с нативным SVG; Kling — если дальше нужно видео. Числа референсов зависят от поверхности (приложение vs API), у GPT Image 2.5 источники расходятся. Цены — ориентир, проверить перед занятием.</template>
+</section>
+
+<!-- SLIDE 09: CREATIVE STUDIOS & AGGREGATORS -->
+<section class="slide" data-n="9">
+  <div class="kicker" style="--k:var(--green)">Слой 2 • Креативные студии и агрегаторы</div>
+  <h2 class="title">Зачем нужна креативная студия вместо «голого» API?</h2>
+  <div class="lead">Leonardo.ai, Kling, Krea, Sintx: холст, маски и пресеты поверх своих и чужих моделей.</div>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.45fr 1fr;gap:36px;align-items:center;">
+      <div style="height:500px;min-height:0;">
+        <div class="mock">
+          <div class="mbar"><span class="dots"><i></i><i></i><i></i></span><span>Схема интерфейса креативной студии (обобщенно, не скриншот)</span></div>
+          <div class="mbody">
+            <div class="side">
+              <div class="sh">Модель</div>
+              <div class="opt on">Phoenix<small>своя модель студии</small></div>
+              <div class="opt">FLUX.2 Pro<small>через API BFL</small></div>
+              <div class="opt">GPT Image 2<small>через API OpenAI</small></div>
+              <div class="opt">Nano Banana 2<small>через API Google</small></div>
+              <div class="opt">SDXL + LoRA<small>открытые веса</small></div>
+            </div>
+            <div class="canvas">
+              <div class="tools"><span class="on">Кисть-маска</span><span>Outpaint</span><span>Слои</span></div>
+              <div class="imgwrap"><img src="assets/examples/web/A2_structured.jpg" alt=""><div class="maskblob" style="left:64%;top:55%;width:16%;height:34%;"></div></div>
+            </div>
+            <div class="side r">
+              <div class="sh">Параметры</div>
+              <div class="slider">Guidance: 7.0<div class="tr"><i style="width:58%"></i></div></div>
+              <div class="slider">Steps: 30<div class="tr"><i style="width:40%"></i></div></div>
+              <div class="opt">Seed: 41872 🔒</div>
+              <div class="opt">Стиль: Editorial</div>
+              <div class="opt">Negative: text, logo</div>
+            </div>
+          </div>
+          <div class="pbar"><span class="in">Inpaint: tall glass of iced latte</span><span class="go">Сгенерировать</span></div>
+        </div>
+      </div>
+      <div class="stack center" style="gap:16px;">
+        <ul class="list" style="--k:var(--green);gap:14px;">
+          <li style="font-size:20px;"><b>Свои + чужие модели:</b> Leonardo (Phoenix, Lucid) и Kling (IMAGE 3.0) — свои; рядом FLUX, GPT Image, Nano Banana, SDXL — одна подписка вместо пяти API-ключей.</li>
+          <li style="font-size:20px;"><b>Холст:</b> слои, маска кистью (inpainting), дорисовка границ кадра (outpainting).</li>
+          <li style="font-size:20px;"><b>Пресеты и LoRA:</b> стиль бренда или «фотосессия» в один клик.</li>
+          <li style="font-size:20px;"><b>Ручки управления:</b> guidance, seed, ControlNet по позе или контуру.</li>
+        </ul>
+        <div class="note" style="font-size:19px;"><b>Определение:</b> креативная студия — визуальная оболочка над моделями (своими и сторонними), которая превращает генерацию в рабочий процесс.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>09 / 27</span></div>
+  <template class="notes">Слева — схема, а не скриншот реального продукта: так выглядит типичная креативная студия. Слева выбор модели (своя модель студии и сторонние через API), в центре холст с маской по кружке, справа ползунки диффузии. Важно: Leonardo и Kling — не «просто прокси», у них свои модели; Krea и Sintx в основном агрегируют чужие. Midjourney в такие агрегаторы официально не встроить — у него нет публичного API. Почему студии живут, если многие модели тренируют другие? Потому что большая часть работы дизайнера — не нажать кнопку, а собрать композицию, замаскировать лишнее и повторить стиль бренда.</template>
+</section>
+
+<!-- SLIDE 10: TWO WORLDS: CANVAS VS CHAT -->
+<section class="slide" data-n="10">
+  <div class="kicker" style="--k:var(--cyan)">Два подхода • Рабочий процесс</div>
+  <h2 class="title">Холст и ползунки vs правка словами</h2>
+  <div class="lead">Одна задача — заменить кружку на айс-латте — в двух парадигмах.</div>
+  <div class="body">
+    <div class="row c2" style="gap:40px;">
+      <div class="stack" style="gap:14px;">
+        <div class="mock" style="height:330px;flex:none;">
+          <div class="mbar"><span class="dots"><i></i><i></i><i></i></span><span>Схема: креативная студия (например, Leonardo)</span></div>
+          <div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 40px 1fr;align-items:center;padding:14px;gap:6px;">
+            <div style="position:relative;"><img src="assets/examples/web/A2_structured.jpg" alt="" style="width:100%;border-radius:8px;display:block;"><div class="maskblob" style="left:64%;top:55%;width:16%;height:34%;"></div></div>
+            <div style="text-align:center;color:var(--green);font-size:28px;">➔</div>
+            <div><img src="assets/examples/web/B1_replace.jpg" alt="" style="width:100%;border-radius:8px;display:block;"></div>
+          </div>
+          <div class="pbar" style="gap:8px;"><span class="schematic-tag" style="color:#fecaca;border-color:var(--red)">маска кистью</span><span class="schematic-tag">prompt для зоны</span><span class="schematic-tag">negative prompt</span><span class="schematic-tag">seed 41872 🔒</span></div>
+        </div>
+        <div class="pt" style="--k:var(--amber)">
+          <div class="h">Креативная студия: графический редактор</div>
+          <div class="d"><b>Вы управляете процессом:</b> обводите кружку маской (inpainting), пишете промпт для зоны, фиксируете seed и guidance. Контроль до пикселя — ценой ручной работы.</div>
+        </div>
+      </div>
+      <div class="stack" style="gap:14px;">
+        <div class="mock" style="height:330px;flex:none;">
+          <div class="mbar"><span class="dots"><i></i><i></i><i></i></span><span>Схема диалога: ChatGPT / Gemini</span></div>
+          <div class="chat">
+            <div class="bub user"><img src="assets/examples/web/A2_structured.jpg" alt=""><span><span class="who">Вы</span>Замени <b>только</b> кружку на высокий стакан айс-латте. Свет, стол и фон не меняй.</span></div>
+            <div class="bub bot"><img src="assets/examples/web/B1_replace.jpg" alt=""><span><span class="who">Модель</span>Готово: кружка заменена, остальное без изменений.</span></div>
+          </div>
+        </div>
+        <div class="pt" style="--k:var(--cyan)">
+          <div class="h">Чат-модель: разговор с режиссером</div>
+          <div class="d"><b>Маска не нужна:</b> модель сама находит объект по описанию (правка по инструкции). Быстро, но точность зависит от формулировки — и от вашей проверки результата.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>10 / 27</span></div>
+  <template class="notes">Обе панели — схемы рабочего процесса, а не скриншоты продуктов; кадры A2 и B1 — наши реальные генерации из этого урока. Слева студия: рисуем маску по кружке, пишем промпт для зоны, держим seed. Справа чат: прикладываем кадр и пишем «замени только кружку» — модель сама сегментирует объект. Если нужен попиксельный контроль и ручная маска — студия. Если нужно быстро менять объекты смысловыми командами и работать с текстом — чат-модель.</template>
+</section>
+
+<!-- SLIDE 11: TRADEOFF MATRIX -->
+<section class="slide" data-n="11">
+  <div class="kicker">Инженерный выбор • Сравнение инструментов</div>
+  <h2 class="title">Матрица выбора: студия vs чат vs API</h2>
+  <div class="body">
+    <table class="t" style="font-size:19px;">
+      <thead>
+        <tr>
+          <th style="width:19%">Критерий</th>
+          <th style="width:24%">Креативная студия (Leonardo, Krea)</th>
+          <th style="width:25%">Мультимодальный чат (ChatGPT, Gemini)</th>
+          <th>API (Python SDK / Vertex / fal)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Порог входа</td>
+          <td>Средний (интерфейс, ползунки, слои)</td>
+          <td><span style="color:var(--green)">Минимальный</span> (естественный язык)</td>
+          <td>Высокий (код, ключи, пайплайны)</td>
+        </tr>
+        <tr>
+          <td>Точечные правки</td>
+          <td><span style="color:var(--green)">Маска кистью / холст</span> (inpainting)</td>
+          <td>Правка по инструкции (текстом)</td>
+          <td>Маска в запросе или правка по инструкции</td>
+        </tr>
+        <tr>
+          <td>Текст и кириллица</td>
+          <td>Зависит от выбранной модели</td>
+          <td><span style="color:var(--green)">Отлично</span> (GPT Image 2.x, Nano Banana)</td>
+          <td><span style="color:var(--green)">Отлично</span> (GPT Image 2.x, Nano Banana, FLUX.2)</td>
+        </tr>
+        <tr>
+          <td>Консистентность персонажа</td>
+          <td>Референс персонажа, фиксация seed</td>
+          <td>Мульти-референсы (Nano Banana 2: до 14 объектов + 5 персонажей)</td>
+          <td>Референсы в <code>contents</code> запроса</td>
+        </tr>
+        <tr>
+          <td>Пакетная генерация (500+ шт.)</td>
+          <td>Неудобно (клики, лимиты кредитов)</td>
+          <td>Невозможно (ручной чат)</td>
+          <td><span style="color:var(--green)">Идеально</span>: скрипт + БД. За кадр: Nano Banana 2 Lite ≈ $0.034 (1K), legacy Nano Banana ≈ $0.039, Grok ≈ $0.02–0.06</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="margin-top:24px;">
+      <div class="note"><b>Инженерное правило:</b> концепты и быстрые надписи ➔ <b>чат</b>. Коммерческий арт с ручной маской ➔ <b>студия</b>. Массовая генерация баннеров по каталогу ➔ <b>API-скрипт</b>.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>11 / 27</span></div>
+  <template class="notes">Это раздаточная таблица. Студенты часто пытаются вручную генерировать 100 товаров в чате — это ошибка. В чате делаем прототип, в студии правим детали маской, а в продакшен уходит Python-скрипт со слайда 24. Цены за кадр — ориентир на октябрь 2026, у разных моделей они различаются в разы.</template>
+</section>
+
+<!-- SLIDE 12: PROMPT STEP 1 (FREE PROMPT) -->
+<section class="slide" data-n="12">
+  <div class="kicker" style="--k:var(--amber)">Часть 3 • Промпт-инжиниринг • Шаг 1</div>
+  <h2 class="title">Шесть слов — и все решения принимает модель</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.75fr 1fr;gap:44px;">
+      <div class="pic">
+        <div class="frame">
+          <svg viewBox="0 0 1376 768" style="width:100%;height:100%;border-radius:12px" preserveAspectRatio="xMidYMid meet">
+            <image href="assets/examples/web/A1_free.jpg" x="0" y="0" width="1376" height="768" preserveAspectRatio="xMidYMid meet"/>
+            <circle cx="165" cy="246" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="165" y="255" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">1</text>
+            <rect x="203" y="218" width="170" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="221" y="255" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">дождь</text>
+            <circle cx="399" cy="422" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="399" y="431" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">2</text>
+            <rect x="437" y="394" width="152" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="455" y="431" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">люди</text>
+            <circle cx="303" cy="384" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="303" y="393" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">3</text>
+            <rect x="131" y="356" width="134" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="149" y="393" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">кот</text>
+            <circle cx="1280" cy="553" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="1280" y="562" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">4</text>
+            <rect x="1072" y="525" width="170" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="1090" y="562" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">камин</text>
+            <circle cx="1004" cy="292" r="28" fill="#fbbf24" stroke="#0b0f17" stroke-width="4"/><text x="1004" y="301" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;fill:#0b0f17">5</text>
+            <rect x="1042" y="264" width="206" height="56" rx="10" fill="rgba(11,15,23,.86)"/><text x="1060" y="301" style="font-family:Onest,sans-serif;font-size:31px;font-weight:600;fill:#f1f5f9">бариста</text>
+          </svg>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="prompt-label">Весь свободный промпт</div>
+        <div class="prompt" style="font-size:22px;">a cozy coffee shop in the morning</div>
+        <div class="say" style="font-size:28px;margin-top:10px;">Утро? За окном дождь. Людей, кота и камин <em>никто не просил</em> — модель заполнила пустоты по среднему из обучающего датасета.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>12 / 27</span></div>
+  <template class="notes">Показываем картинку: получилось красиво. Спрашиваем аудиторию: это то, что вы хотели? Утро — а за окном дождь, люди, кот, камин. Модель не ошиблась — она заполнила пустоты. Отсюда переход к структуре.</template>
+</section>
+
+<!-- SLIDE 13: PROMPT STEP 2 (STRUCTURED PROMPT) -->
+<section class="slide" data-n="13">
+  <div class="kicker" style="--k:var(--green)">Часть 3 • Промпт-инжиниринг • Анатомия слотов</div>
+  <h2 class="title">Шесть слотов — что за что отвечает</h2>
+  <div class="body" style="margin-top:20px;">
+    <div style="display:grid;grid-template-columns:1fr 1.08fr;gap:32px;flex:1;min-height:0;align-items:stretch;">
+      <div class="stack" style="gap:14px;min-height:0;justify-content:center;">
+        <div>
+          <div class="prompt-label" style="display:flex;justify-content:space-between;align-items:baseline;">
+            <span>Работающий промпт со слотами (copy &amp; run)</span>
+            <span style="font-family:var(--body);color:var(--green);font-weight:700;text-transform:none;letter-spacing:0;font-size:15px;">высокий контроль сцены</span>
+          </div>
+          <div class="prompt" style="font-size:16px;line-height:1.5;"><span class="s">Subject:</span> a speckled cream ceramic mug of black coffee with steam, on worn oak counter in right third.
+<span class="s">Setting:</span> empty Scandinavian coffee shop at 7 a.m., chairs up on tables, brass espresso machine on left.
+<span class="s">Camera:</span> eye-level, 35mm lens, f/2.0, shallow depth of field.
+<span class="s">Lighting:</span> low warm morning sunlight from left window, long soft shadows.
+<span class="s">Style:</span> realistic editorial photography.
+<span class="x">Constraints:</span> no text, no logos.</div>
+        </div>
+        <div class="card-box" style="padding:14px 18px;gap:6px;border-color:var(--amber);">
+          <div class="mini-h" style="--k:var(--amber)">Запреты зависят от модели</div>
+          <div style="font-size:17px;line-height:1.4;color:var(--muted)"><b style="color:var(--fg)">Gemini и GPT</b> лучше слушают позитивные формулировки: <i>«empty coffee shop»</i> вместо <i>«no people»</i>. Отрицания <code>--no</code> / negative prompt — для <b style="color:var(--fg)">Midjourney и SD / FLUX</b> в студиях.</div>
+        </div>
+        <div class="note" style="font-size:17px;">Вместо «cozy, 4k, masterpiece» — физические детали: время, оптика, свет.</div>
+      </div>
+      <div class="stack" style="gap:12px;min-height:0;">
+        <div class="pic" style="flex:1 1 0;min-height:0;height:auto;">
+          <div class="frame">
+            <svg viewBox="0 0 1376 768" style="width:100%;height:100%;border-radius:10px" preserveAspectRatio="xMidYMid meet">
+              <image href="assets/examples/web/A2_structured.jpg" x="0" y="0" width="1376" height="768" preserveAspectRatio="xMidYMid meet"/>
+              <circle cx="991" cy="553" r="30" fill="#38bdf8" stroke="#0b0f17" stroke-width="4"/><text x="991" y="563" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#0b0f17">1</text>
+              <rect x="1031" y="523" width="200" height="60" rx="10" fill="rgba(11,15,23,.86)"/><text x="1049" y="564" style="font-family:Onest,sans-serif;font-size:34px;font-weight:600;fill:#f1f5f9">объект</text>
+              <circle cx="716" cy="230" r="30" fill="#38bdf8" stroke="#0b0f17" stroke-width="4"/><text x="716" y="240" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#0b0f17">2</text>
+              <rect x="756" y="200" width="180" height="60" rx="10" fill="rgba(11,15,23,.86)"/><text x="774" y="241" style="font-family:Onest,sans-serif;font-size:34px;font-weight:600;fill:#f1f5f9">сцена</text>
+              <circle cx="248" cy="538" r="30" fill="#38bdf8" stroke="#0b0f17" stroke-width="4"/><text x="248" y="548" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#0b0f17">3</text>
+              <rect x="288" y="508" width="380" height="60" rx="10" fill="rgba(11,15,23,.86)"/><text x="306" y="549" style="font-family:Onest,sans-serif;font-size:34px;font-weight:600;fill:#f1f5f9">камера: размытие</text>
+              <circle cx="138" cy="169" r="30" fill="#38bdf8" stroke="#0b0f17" stroke-width="4"/><text x="138" y="179" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#0b0f17">4</text>
+              <rect x="178" y="139" width="270" height="60" rx="10" fill="rgba(11,15,23,.86)"/><text x="196" y="180" style="font-family:Onest,sans-serif;font-size:34px;font-weight:600;fill:#f1f5f9">свет слева</text>
+            </svg>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:16px;line-height:1.4;color:var(--muted);">
+          <div><b style="color:var(--cyan)">1 Subject</b> — главный объект, фактура, место в кадре (right third).</div>
+          <div><b style="color:var(--cyan)">2 Setting</b> — время и контекст: «7 a.m., chairs up» убирает случайных людей.</div>
+          <div><b style="color:var(--cyan)">3 Camera</b> — 35mm (естественный умеренно широкий угол), f/2.0 — мягкое боке.</div>
+          <div><b style="color:var(--cyan)">4 Lighting</b> — низкий свет слева дает объем и длинные тени.</div>
+          <div><b style="color:var(--cyan)">5 Style</b> — editorial photo вместо глянцевого 3D-рендера.</div>
+          <div><b style="color:var(--red)">6 Constraints</b> — что исключить: текст, логотипы.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>13 / 27</span></div>
+  <template class="notes">Читаем промпт по слотам и показываем на кадре, где сработал каждый: объект в правой трети, пустой зал с поднятыми стульями, 35 мм и f/2.0 дают естественный угол и мягкое размытие фона, свет слева. Три типичные ошибки новичка: эпитеты вместо деталей («cozy» — и модель рисует камин и кота), теги-пустышки «4k, masterpiece», забытые ограничения. Важный нюанс 2026 года: Google прямо советует для Gemini позитивные формулировки — «empty street» вместо «no cars»; отрицания через --no и negative prompt — инструмент Midjourney и SD/FLUX.</template>
+</section>
+
+<!-- SLIDE 14: MUST-HAVE DETAILS & TYPOGRAPHY -->
+<section class="slide" data-n="14">
+  <div class="kicker" style="--k:var(--green)">Часть 3 • Промпт • Шаг 3</div>
+  <h2 class="title">Важные детали и надписи — отдельным блоком</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.35fr 1fr;gap:40px;">
+      <div class="pic">
+        <div class="frame"><img src="assets/examples/web/A3_details.jpg" alt="A3 details"></div>
+        <div class="cap">Кадр A3 — результат промпта справа. Проверяем по чек-листу, а не «на глаз».</div>
+      </div>
+      <div class="stack center" style="gap:16px;">
+        <div class="prompt" style="font-size:16px;"><span class="g">Must-have:</span>
+• chalkboard sign with text exactly <span class="m">"FLAT WHITE 3.50"</span> and <span class="m">"OPEN 7:00"</span>
+• one fresh croissant behind the mug
+• small glass vase with lavender to the left of the mug
+• no other text</div>
+        <div class="card-box" style="padding:14px 18px;gap:8px;border-color:var(--green);">
+          <div class="mini-h" style="--k:var(--green)">Чек-лист приемки кадра A3</div>
+          <ul class="checklist">
+            <li><span>✅</span><span><b>Текст</b> «FLAT WHITE 3.50» и «OPEN 7:00» — без ошибок</span></li>
+            <li><span>✅</span><span><b>Один круассан</b> за кружкой</span></li>
+            <li><span>⚠️</span><span><b>Лаванда</b> есть, но справа, а не слева</span></li>
+            <li><span>❌</span><span><b>Лишний текст:</b> меню-доска сверху</span></li>
+          </ul>
+        </div>
+        <div class="note" style="font-size:18px;"><b>Правила:</b> текст — в кавычках и со словом <code>exactly</code>; количество — числом; позицию — явно. Не прошло → <b>точечная правка</b>, не реролл.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>14 / 27</span></div>
+  <template class="notes">Сравниваем с предыдущим слайдом: сцена та же, добавились детали и текст. Честно разбираем результат по чек-листу: текст отрисован без ошибок — сильная сторона современных чат-моделей; круассан один и за кружкой; а вот лаванда оказалась справа, и на стене появилась меню-доска с лишним текстом. Это нормальная ситуация: must-have — это чек-лист приемки, и незакрытые пункты чиним точечной правкой (следующая часть урока), а не перегенерацией всего кадра.</template>
+</section>
+
+<!-- SLIDE 15: PHOTOGRAPHER'S LEXICON -->
+<section class="slide" data-n="15">
+  <div class="kicker">Часть 3 • Словарь фотографа</div>
+  <h2 class="title">Одна героиня — шесть слов камеры и света</h2>
+  <div class="body">
+    <div class="row c3" style="grid-template-rows:1fr 1fr;gap:18px 24px;">
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V1_low.jpg" alt=""></div><div class="cap"><code>low angle</code> снизу — «героично»</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V2_top.jpg" alt=""></div><div class="cap"><code>top-down</code> сверху — схема, флэтлей</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V3_wide.jpg" alt=""></div><div class="cap"><code>24mm wide</code> герой + окружение</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V4_85.jpg" alt=""></div><div class="cap"><code>85mm f/1.8</code> портрет, размытый фон</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V5_golden.jpg" alt=""></div><div class="cap"><code>golden hour</code> теплый контровой свет</div></div>
+      <div class="pic cover"><div class="frame"><img src="assets/examples/web/V6_studio.jpg" alt=""></div><div class="cap"><code>softbox studio</code> ровный студийный свет</div></div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>15 / 27</span></div>
+  <template class="notes">Это раздаточная шпаргалка. Разбираем 2–3 примера: 85 мм + f/1.8 = портрет с размытым фоном; top-down = флэтлей для товаров; golden hour = теплый мягкий свет. Формат кадра задаем параметром (--ar в Midjourney, выбор формата в ChatGPT и Gemini), а не словами.</template>
+</section>
+
+<!-- SLIDE 16: MIDPOINT BREAK -->
+<section class="slide" data-n="16">
+  <div class="brk">
+    <div class="kicker" style="--k:var(--amber)">Экватор занятия</div>
+    <h2 class="title">Перерыв 5 минут</h2>
+    <div class="clock" id="clock">05:00</div>
+    <div style="display:flex;gap:14px;">
+      <button class="btn primary" id="timerStart">СТАРТ 5 МИН</button>
+      <button class="btn" id="timerReset">СБРОС</button>
+    </div>
+    <p>Во второй части: точечные правки по инструкции, консистентный персонаж-курьер и фотосессия товара.</p>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>16 / 27</span></div>
+  <template class="notes">Включаем таймер. Никаких заданий в чат — только отдых и перезагрузка внимания.</template>
+</section>
+
+<!-- SLIDE 17: THE EDIT LOOP -->
+<section class="slide" data-n="17">
+  <div class="kicker" style="--k:var(--green)">Часть 4 • Методология контроля</div>
+  <h2 class="title">Правим по кругу, а не перегенерируем</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.1fr 1fr;gap:40px;">
+      <div style="min-height:0;display:flex;align-items:center;">
+        <svg viewBox="-210 -50 850 540" style="width:100%;height:100%;overflow:visible">
+          <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="rgba(148,163,184,.7)"/></marker></defs>
+          <path d="M253.5,65.1 A154.8,154.8 0 0 1 345.7,132.1" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <path d="M369.5,205.3 A154.8,154.8 0 0 1 334.3,313.7" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <path d="M272.0,358.9 A154.8,154.8 0 0 1 158.0,358.9" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <path d="M95.7,313.7 A154.8,154.8 0 0 1 60.5,205.3" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <path d="M84.3,132.1 A154.8,154.8 0 0 1 176.5,65.1" fill="none" stroke="rgba(148,163,184,.45)" stroke-width="3" marker-end="url(#ah)"/>
+          <circle cx="215.0" cy="60.2" r="34" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><text x="215.0" y="68.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#38bdf8">1</text><text x="215.0" y="-11.8" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Черновик</text><text x="215.0" y="20.2" text-anchor="middle" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">2–4 варианта</text>
+          <circle cx="362.2" cy="167.2" r="34" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><text x="362.2" y="175.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#38bdf8">2</text><text x="414.2" y="165.2" text-anchor="start" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Выбор</text><text x="414.2" y="197.2" text-anchor="start" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">по must-have</text>
+          <circle cx="306.0" cy="340.2" r="34" fill="#0b0f17" stroke="#34d399" stroke-width="3"/><text x="306.0" y="348.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#34d399">3</text><text x="358.0" y="338.2" text-anchor="start" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Одна правка</text><text x="358.0" y="370.2" text-anchor="start" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">«только X»</text>
+          <circle cx="124.0" cy="340.2" r="34" fill="#0b0f17" stroke="#fbbf24" stroke-width="3"/><text x="124.0" y="348.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#fbbf24">4</text><text x="72.0" y="338.2" text-anchor="end" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Проверка</text><text x="72.0" y="370.2" text-anchor="end" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">что уплыло?</text>
+          <circle cx="67.8" cy="167.2" r="34" fill="#0b0f17" stroke="#c084fc" stroke-width="3"/><text x="67.8" y="175.2" text-anchor="middle" style="font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:700;fill:#c084fc">5</text><text x="15.8" y="165.2" text-anchor="end" style="font-family:Onest,sans-serif;font-size:30px;font-weight:700;fill:#f1f5f9">Финал</text><text x="15.8" y="197.2" text-anchor="end" style="font-family:Onest,sans-serif;font-size:22px;fill:#9aa8bc">сохранить промпт</text>
+        </svg>
+      </div>
+      <div class="stack center">
+        <div class="prompt-label">Шаблон инженерной правки</div>
+        <div class="prompt" style="font-size:19px;">Отредактируй фото. Замени <span class='m'>только</span> объект X на Y.
+<span class='g'>Сохрани:</span> ракурс, свет, фон, фактуру и тени.
+<span class='x'>Не меняй:</span> геометрию окружения.</div>
+        <ul class="list" style="--k:var(--green)">
+          <li><b>Одна правка за шаг</b> (как один атомарный коммит в git).</li>
+          <li><b>Явно называйте то, что сохранить</b> — модель защищает эти зоны.</li>
+          <li><b>После ~5–8 правок</b> дрейф заметен — открываем новый чат с лучшим кадром.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>17 / 27</span></div>
+  <template class="notes">Ключевой навык. Новички жмут кнопку «перегенерировать» 20 раз и удивляются, почему меняется всё. Правильный подход — зафиксировать черновик и вносить атомарные правки. Следующий слайд демонстрирует результат.</template>
+</section>
+
+<!-- SLIDE 18: PATTERN 1 (EDIT BY INSTRUCTION) -->
+<section class="slide" data-n="18">
+  <div class="kicker" style="--k:var(--green)">Часть 4 • Паттерн 1 • Правка по инструкции</div>
+  <h2 class="title">Одна сцена — три направленные правки</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.15fr 1fr;gap:34px;align-items:stretch;">
+      <div class="row c2" style="grid-template-rows:1fr 1fr;gap:12px 16px;min-height:0;">
+        <div class="pic"><div class="frame"><img src="assets/examples/web/A2_structured.jpg" alt="A2"></div><div class="cap" style="font-size:16px;"><b>Оригинал A2:</b> утренняя кофейня, кружка</div></div>
+        <div class="pic"><div class="frame"><img src="assets/examples/web/B1_replace.jpg" alt="B1"></div><div class="cap" style="font-size:16px;"><b>Объект (B1):</b> кружка ➔ айс-латте</div></div>
+        <div class="pic"><div class="frame"><img src="assets/examples/web/B2_relight.jpg" alt="B2"></div><div class="cap" style="font-size:16px;"><b>Свет (B2):</b> дождливый вечер за окном</div></div>
+        <div class="pic"><div class="frame"><img src="assets/examples/web/E2_style.jpg" alt="E2"></div><div class="cap" style="font-size:16px;"><b>Стиль (E2):</b> плоская векторная графика</div></div>
+      </div>
+      <div class="stack center" style="gap:12px;">
+        <div class="card-box" style="padding:12px 16px;gap:4px;border-color:var(--cyan);">
+          <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-workflow">Формула</span><b style="font-size:17px;color:var(--fg)">Кадр A2 + одна правка за шаг</b></div>
+          <div style="font-size:16px;color:var(--muted)">«Замени <span class="m">только X на Y</span>. Сохрани: ракурс, свет, фон, геометрию».</div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:4px;">Промпт B1: замена объекта</div>
+          <div class="prompt" style="font-size:15px;line-height:1.45;padding:10px 14px;">Edit this photo. Replace <span class="m">only</span> the ceramic mug with a tall glass of iced latte with visible coffee and milk layers and ice cubes. <span class="g">Keep everything else exactly the same:</span> camera angle, counter, espresso machine, background, light direction and shadows.</div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:4px;">Промпт B2: смена света и погоды</div>
+          <div class="prompt" style="font-size:15px;line-height:1.45;padding:10px 14px;">Edit this photo. Change <span class="m">only the time of day</span> to a rainy evening: dark dusk outside window, raindrops on glass, warm interior pendant lamps switched on. <span class="g">Keep exact same</span> composition, objects, mug and camera angle.</div>
+        </div>
+        <div class="note" style="font-size:16px;line-height:1.45;"><b>ChatGPT / Gemini / Kling:</b> правка по инструкции — маска не нужна, модель сама находит кружку.<br><b>Leonardo:</b> inpainting — маска кистью по кружке + промпт для этой зоны.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>18 / 27</span></div>
+  <template class="notes">Обратите внимание: при замене кружки стулья, кофемашина и свет почти не изменились — это и есть контроль. Терминология: в чат-моделях это «правка по инструкции» (edit by instruction) — мы описываем изменение словами, маску модель строит сама. Inpainting в строгом смысле — это когда мы сами рисуем маску кистью, как в Leonardo. Где применяется: варианты товара для магазина, смена сезона в баннере, адаптация под стиль бренда.</template>
+</section>
+
+<!-- SLIDE 19: PATTERN 2A (SYNTHETIC CHARACTER) -->
+<section class="slide" data-n="19">
+  <div class="kicker" style="--k:var(--cyan)">Часть 4 • Паттерн 2 • Консистентность персонажа</div>
+  <h2 class="title">Мастер-лист курьера: формула генерации ракурсов</h2>
+  <div class="lead">Наивный запрос в каждой сцене рисует нового человека. Инженерный подход: сначала 4 ракурса на сером фоне и физические якоря.</div>
+  <div class="body" style="margin-top:20px;">
+    <div class="row" style="grid-template-columns:1fr 1.15fr;gap:34px;align-items:stretch;">
+      <div class="stack" style="gap:12px;justify-content:center;">
+        <div class="pic" style="flex:none;height:auto;"><div class="frame shot" style="flex:none;"><img src="assets/examples/web/C1_sheet.jpg" alt="C1"></div><div class="cap" style="font-size:16px;"><b>Лист персонажа (character sheet):</b> 4 ракурса, нейтральная поза, студийный свет</div></div>
+        <div class="prompt" style="font-size:15px;line-height:1.45;padding:12px 14px;"><span class="s">5 неизменных якорей:</span> short curly hair • small silver hoop earring • bright yellow jacket <span class="m">with grey stripe</span> • <span class="m">turquoise</span> backpack • white sneakers</div>
+      </div>
+      <div class="stack center" style="gap:10px;">
+        <div class="card-box" style="padding:10px 14px;gap:4px;">
+          <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-naive">Наивно</span><b style="font-size:16px;color:var(--fg)">«курьер едет на велосипеде под дождем»</b></div>
+          <div style="font-size:15px;color:var(--muted)">В каждой сцене — новое лицо, возраст и куртка. Консистентности нет.</div>
+        </div>
+        <div class="card-box" style="padding:10px 14px;gap:4px;border-color:var(--green);">
+          <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-eng">Инженерно</span><b style="font-size:16px;color:var(--fg)">Лист персонажа: 4 ракурса на сером фоне</b></div>
+          <div style="font-size:15px;color:var(--muted)">Студийный свет, полный рост: анфас, 3/4, профиль, со спины. Мастер-референс для всех сцен.</div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:4px;">Промпт мастер-листа (C1)</div>
+          <div class="prompt" style="font-size:14.5px;line-height:1.42;padding:12px 14px;"><span class="s">Character reference sheet on a plain light grey background:</span> the same young woman food delivery courier shown four times in a row - front view, three-quarter view, side profile, back view - full body, standing neutral pose.
+<span class="m">Fixed appearance:</span> about 28 years old, short curly dark-brown hair, light-brown skin, small silver hoop earring in left ear, bright yellow waterproof jacket with reflective grey stripe across chest, black cargo trousers, white sneakers, square turquoise thermal backpack. Studio photography, clean even lighting. <span class="x">No brand names, no logos, no text.</span></div>
+        </div>
+        <div class="note" style="font-size:15px;line-height:1.42;padding:2px 0 2px 12px;"><b>Куда вставлять:</b> Gemini, ChatGPT, Leonardo, Kling. В Midjourney — через <b>Edit Model</b> (до 4 референсов; в 08.2026 заменил <code>--cref</code> / <code>--oref</code>). Сохраняем как эталон <code>C1_sheet.png</code>.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>19 / 27</span></div>
+  <template class="notes">Рецепт консистентности: 1) сгенерировать лист персонажа на нейтральном фоне в 4 ракурсах; 2) зафиксировать 5 контрастных якорей. Этот лист прикладывается как референс ко всем последующим генерациям и видео. Для тех, кто учился по старым курсам Midjourney: параметров --cref и --oref в V8 больше нет — с августа 2026 референсы подаются через Edit Model, до 4 изображений.</template>
+</section>
+
+<!-- SLIDE 20: PATTERN 2B (REAL PERSON) -->
+<section class="slide" data-n="20">
+  <div class="kicker" style="--k:var(--green)">Часть 4 • Паттерн 2B • Реальный человек как референс</div>
+  <h2 class="title" style="font-size:46px;">Любой человек как референс: от 2–3 фото к мастер-листу</h2>
+  <div class="body" style="margin-top:20px;">
+    <div class="row" style="grid-template-columns:1fr 1.2fr;gap:32px;align-items:stretch;">
+      <div class="stack" style="gap:12px;min-height:0;justify-content:center;">
+        <div class="card-box" style="padding:12px 14px;gap:8px;border-color:var(--cyan);">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <span class="badge-tag badge-workflow">Вход 1 • Референсы</span>
+            <span style="font-size:15px;color:var(--cyan)">2–3 реальных фото лица</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;">
+            <div style="display:flex;flex-direction:column;gap:4px;"><div style="aspect-ratio:1/1;border-radius:6px;overflow:hidden;background:#000;border:1px solid var(--line);"><img src="assets/examples/web/ref_ihar_2.jpg" alt="Ref 1" style="width:100%;height:100%;object-fit:cover;"></div><div style="font-size:14px;color:var(--muted);text-align:center;">Анфас, студия</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px;"><div style="aspect-ratio:1/1;border-radius:6px;overflow:hidden;background:#000;border:1px solid var(--line);"><img src="assets/examples/web/ref_ihar_1.jpg" alt="Ref 2" style="width:100%;height:100%;object-fit:cover;"></div><div style="font-size:14px;color:var(--muted);text-align:center;">Эмоция, свет</div></div>
+            <div style="display:flex;flex-direction:column;gap:4px;"><div style="aspect-ratio:1/1;border-radius:6px;overflow:hidden;background:#000;border:1px solid var(--line);"><img src="assets/examples/web/ref_ihar_3.jpg" alt="Ref 3" style="width:100%;height:100%;object-fit:cover;"></div><div style="font-size:14px;color:var(--muted);text-align:center;">Дневной свет</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="prompt-label" style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;">
+            <span>Вход 2 • Промпт (Gemini / ChatGPT / Leonardo)</span>
+            <span style="font-family:var(--body);color:var(--green);text-transform:none;letter-spacing:0;font-size:15px;font-weight:700;">удерживает лицо</span>
+          </div>
+          <div class="prompt" style="font-size:14px;line-height:1.42;padding:10px 12px;"><span class="s">Create a photorealistic character reference sheet</span> based on the attached photos of Ihar Rubanovich. Same adult man, not a generic model.
+<span class="g">Preserve facial identity:</span> face shape, eyes, nose, lips, jawline, hairline, skin tone. <span class="x">Do not beautify, rejuvenate or stylize his face.</span>
+<span class="m">Four angles:</span> front, three-quarter, side profile, back. Full body, neutral pose.
+<span class="s">Outfit:</span> yellow courier jacket with grey stripe, black cargo trousers, white sneakers, turquoise thermal backpack. Light grey studio background. <span class="x">No text, no logos.</span></div>
+        </div>
+        <div class="note" style="--k:var(--green);font-size:15px;line-height:1.4;padding:2px 0 2px 12px;"><b>Что отправляем:</b> фото + промпт в чат; в коде — файлы в <code>contents</code>. Только свои фото или с согласия человека.</div>
+      </div>
+      <div class="stack" style="gap:12px;min-height:0;">
+        <div class="pic" style="flex:1 1 0;min-height:0;height:auto;">
+          <div class="frame shot" style="border-color:var(--green);">
+            <img src="assets/examples/web/C1_sheet_ihar.jpg" alt="C1 Ihar Sheet" style="width:100%;height:100%;object-fit:contain;">
+          </div>
+          <div class="cap" style="font-size:16px;"><b>Результат:</b> лицо узнаваемо во всех 4 ракурсах. Сверяйте глазами: мелкие черты могут плыть.</div>
+        </div>
+        <div class="row c2" style="gap:12px;flex:none;">
+          <div class="card-box" style="padding:10px 14px;gap:4px;">
+            <div class="mini-h" style="--k:var(--red)">Анти-паттерн</div>
+            <div style="font-size:15px;line-height:1.38;color:var(--muted)">Без <code>do not beautify</code> модель сгладит кожу и «улучшит» лицо до стокового.</div>
+          </div>
+          <div class="card-box" style="padding:10px 14px;gap:4px;border-color:var(--cyan)">
+            <div class="mini-h">Мост к продакшену</div>
+            <div style="font-size:15px;line-height:1.38;color:var(--muted)">Лист прикладываем как референс персонажа к сценам и к Kling / Veo для видео.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>20 / 27</span></div>
+  <template class="notes">Показываем реальный кейс на себе. Как превратить себя или актера в управляемого героя: отправляем 2–3 реальных фото, запрещаем «улучшайзинг» и фиксируем 4 ракурса с костюмом курьера. Честно про результат: лицо узнаваемо, но это не гарантия — мелкие черты могут плыть, поэтому результат всегда сверяем глазами. Этический момент: работаем только со своими фото или с явного согласия человека. Этот лист дальше анимируется в Kling и Veo.</template>
+</section>
+
+<!-- SLIDE 21: SCENE TRANSFER & BRIDGE TO VIDEO -->
+<section class="slide" data-n="21">
+  <div class="kicker" style="--k:var(--cyan)">Часть 4 • Паттерн 2 • Сцены, форматы и мост к видео</div>
+  <h2 class="title">Курьер в сценах и первый кадр для видео (Kling / Veo)</h2>
+  <div class="body">
+    <div class="stack" style="flex:1;gap:14px;">
+      <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:14px;flex:1;min-height:0;">
+        <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/C2_rain.jpg" alt="C2"></div><div class="cap" style="font-size:15px;"><b>Сцена 1 (16:9):</b> на велосипеде под дождем ➔ <b>база для видео</b></div></div>
+        <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/C3_door.jpg" alt="C3"></div><div class="cap" style="font-size:15px;"><b>Сцена 2:</b> передача заказа у двери (35mm)</div></div>
+        <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/C4_break.jpg" alt="C4"></div><div class="cap" style="font-size:15px;"><b>Сцена 3:</b> перерыв на лавочке в парке (85mm)</div></div>
+      </div>
+      <div class="row" style="grid-template-columns:1.1fr 1fr;gap:26px;align-items:stretch;flex:none;">
+        <div class="stack" style="gap:6px;">
+          <div class="prompt-label" style="margin-bottom:2px;">Промпт переноса в сцену (scene transfer)</div>
+          <div class="prompt" style="font-size:15px;line-height:1.42;padding:10px 14px;"><span class="g">Use attached character sheet (C1) as identity reference:</span>
+The same courier (same face, curly hair, silver hoop earring, yellow jacket with grey stripe, turquoise backpack) is riding a city bicycle through a rainy evening street with wet cobblestones reflecting shop lights. Medium shot, 50mm lens, motion blur in background. Realistic photography. <span class="x">No logos, no text.</span></div>
+          <div class="note" style="font-size:15px;padding:2px 0 2px 12px;"><b>Форматы:</b> 16:9 — YouTube и горизонтальное видео, 9:16 — Reels / Shorts (селектор формата).</div>
+        </div>
+        <div class="stack" style="gap:8px;">
+          <div class="card-box" style="padding:10px 14px;border-color:var(--cyan);gap:6px;">
+            <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-workflow">Мост к видео</span><b style="font-size:16px;color:var(--cyan)">Конвейер в Kling 3.0 / Veo 3.1</b></div>
+            <div style="font-size:15px;line-height:1.42;color:var(--muted)">
+              1. <b>Экспорт кадра:</b> <code>C2_rain.png</code> (16:9) — первый кадр (t₀).<br>
+              2. <b>Image-to-Video:</b> загружаем в слот <b>First Frame</b>.<br>
+              3. <b>Промпт движения:</b> <code>"courier starts pedaling, wheels splash puddles, camera tracks along"</code>.<br>
+              4. <b>Результат:</b> лицо и одежда заметно стабильнее, чем при генерации с нуля; кадры все равно проверяем на дрейф.
+            </div>
+          </div>
+          <div style="font-size:15px;line-height:1.4;color:var(--muted);"><b style="color:var(--fg)">В тулах:</b> Gemini / ChatGPT (референс в чате) • Leonardo (референс персонажа + seed) • Midjourney (Edit Model) • Kling / Veo (First Frame).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>21 / 27</span></div>
+  <template class="notes">Показываем, как мастер-лист переносится в сюжетные сцены: прикладываем C1 и повторяем текстовые якоря. Главный мост к Уроку 05: статичный кадр C2 становится первым кадром (t₀) для Kling и Veo — курьер поедет на велосипеде, и внешность держится заметно лучше, чем при генерации видео с нуля. Но не идеально: кадры видео все равно проверяем на дрейф лица и одежды.</template>
+</section>
+
+<!-- SLIDE 22: PATTERN 3 (PRODUCT PHOTOSHOOT) -->
+<section class="slide" data-n="22">
+  <div class="kicker" style="--k:var(--green)">Часть 4 • Паттерн 3 • E-commerce</div>
+  <h2 class="title">Один пэкшот — четыре коммерческих кадра</h2>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:28px;flex:1;min-height:0;">
+      <div class="stack" style="gap:8px;">
+        <div class="pic"><div class="frame shot"><img src="assets/examples/web/D0_packshot.jpg" alt="D0"></div><div class="cap" style="font-size:15px;"><b>Мастер-пэкшот (D0):</b> товар на белом фоне</div></div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:3px;">1. Промпт мастер-пэкшота (D0)</div>
+          <div class="prompt" style="font-size:14.5px;line-height:1.4;padding:10px 14px;"><span class="s">Studio e-commerce packshot of a single handmade ceramic mug:</span> cylindrical body, speckled cream glaze with small brown dots, unglazed terracotta-brown band at base, round C-shaped handle on right. Centered, 3/4 view, pure white background, soft even light. <span class="x">No text, no logo.</span></div>
+        </div>
+      </div>
+      <div class="stack" style="gap:8px;">
+        <div class="row c2" style="grid-template-rows:1fr 1fr;gap:10px 14px;flex:1;min-height:0;">
+          <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/D1_kitchen.jpg" alt="D1"></div><div class="cap" style="font-size:15px;"><b>Лайфстайл (D1):</b> кухня, утро</div></div>
+          <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/D2_flatlay.jpg" alt="D2"></div><div class="cap" style="font-size:15px;"><b>Флэтлей (D2):</b> вид сверху</div></div>
+          <div class="pic cover"><div class="frame shot"><img src="assets/examples/web/D3_hands.jpg" alt="D3"></div><div class="cap" style="font-size:15px;"><b>В руках (D3):</b> масштаб товара</div></div>
+          <div class="pic contain"><div class="frame shot"><img src="assets/examples/web/D4_banner.jpg" alt="D4"></div><div class="cap" style="font-size:15px;"><b>Баннер (D4):</b> промо-постер 1:1</div></div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:3px;">2. Промпт каталожной сцены (с референсом D0)</div>
+          <div class="prompt" style="font-size:14.5px;line-height:1.4;padding:10px 14px;">Product photo session. Place <span class="g">exactly this mug</span> (same shape, speckled cream glaze, terracotta base band, handle on right) on light travertine kitchen counter next to morning window. Soft light, 50mm f/2.8. <span class="x">Do not change mug shape, clay glaze, or proportions.</span></div>
+        </div>
+        <div class="note" style="font-size:15px;padding:2px 0 2px 12px;"><b>Инженерный контроль:</b> референс <code>D0</code> + запрет менять форму держат кружку заметно стабильнее; финальная приемка — за человеком.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>22 / 27</span></div>
+  <template class="notes">Самый востребованный бизнес-сценарий: маркетплейсы, интернет-магазины, соцсети. Реальный товар фотографируют один раз на нейтральном фоне, а модель делает предметную съемку без аренды студии. Честно: форма и глазурь держатся хорошо, но не идеально — мелкий рисунок крапинок и пропорции ручки могут гулять, поэтому каждый кадр проходит ручную приемку (желтая зона из блока о рисках).</template>
+</section>
+
+<!-- SLIDE 23: PATTERN 4 (MULTI-REFERENCE COMPOSITION) -->
+<section class="slide" data-n="23">
+  <div class="kicker" style="--k:var(--green)">Часть 4 • Паттерн 4 • Композиция</div>
+  <h2 class="title">Назовите роль каждой картинки</h2>
+  <div class="body">
+    <div style="display:grid;grid-template-columns:1fr 50px 2.2fr;gap:20px;flex:1;min-height:0;align-items:stretch;">
+      <div class="stack" style="gap:12px;">
+        <div class="pic"><div class="frame shot"><img src="assets/examples/web/C1_sheet.jpg" alt="C1"></div><div class="cap" style="font-size:15px;"><b>Картинка 1</b> — персонаж (курьер)</div></div>
+        <div class="pic"><div class="frame shot"><img src="assets/examples/web/D0_packshot.jpg" alt="D0"></div><div class="cap" style="font-size:15px;"><b>Картинка 2</b> — товар (кружка)</div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--green);">➔</div>
+      <div class="stack center" style="gap:10px;">
+        <div class="pic" style="flex:1;min-height:0;"><div class="frame shot"><img src="assets/examples/web/E1_compose.jpg" alt="E1"></div><div class="cap" style="font-size:15px;"><b>Итог:</b> курьер пьет из той самой кружки в утренней кофейне</div></div>
+        <div class="card-box" style="padding:10px 14px;border-color:var(--green);gap:4px;">
+          <div style="display:flex;align-items:center;gap:10px;"><span class="badge-tag badge-eng">Правило ролей</span><b style="font-size:16px;color:var(--fg)">Не писать «объедини их» (будет каша). Назначить роли:</b></div>
+          <div style="font-size:15px;color:var(--muted)">Image 1 = identity reference (герой), Image 2 = product reference (товар).</div>
+        </div>
+        <div>
+          <div class="prompt-label" style="margin-bottom:3px;">Промпт композиции (Nano Banana / ChatGPT)</div>
+          <div class="prompt" style="font-size:15px;line-height:1.42;padding:12px 16px;"><span class="s">Image 1 is the courier character, Image 2 is the exact ceramic mug.</span>
+The courier from Image 1, in her yellow jacket with grey stripe, sits at a coffee shop window counter on her break and drinks from exactly the mug from Image 2 (same speckled cream glaze and terracotta base). Turquoise backpack on floor next to stool. Morning light, 35mm lens, realistic photography. <span class="x">No logos, no text.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>23 / 27</span></div>
+  <template class="notes">Типичная ошибка новичка — приложить 3 картинки и написать «сделай красиво». Модель смешает их в кашу. Надежный способ — явно распределить роли: Картинка 1 — герой, Картинка 2 — товар, Картинка 3 — свет. Лимиты на число референсов разные: в Nano Banana 2 — до 14 объектов и 5 персонажей, в Midjourney Edit Model — до 4 (таблица рынка).</template>
+</section>
+
+<!-- SLIDE 24: AUTOMATION & CODE -->
+<section class="slide" data-n="24">
+  <div class="kicker">Часть 5 • То же в коде</div>
+  <h2 class="title">Серия картинок скриптом — тот же SDK, что в L03</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.45fr 1fr;gap:40px;align-items:center;">
+      <pre class="code" style="font-size:17px;line-height:1.5;">import csv
+from google import genai
+from google.genai import types
+from PIL import Image
+
+client = genai.Client()
+ref = Image.open(<span class="str">"packshot.png"</span>)
+
+<span class="kw">for</span> row <span class="kw">in</span> csv.<span class="fn">DictReader</span>(open(<span class="str">"catalog.csv"</span>)):   <span class="cm"># ~50 товаров</span>
+    resp = client.models.<span class="fn">generate_content</span>(
+        model=<span class="str">"gemini-3.1-flash-image"</span>,
+        contents=[ref, PROMPT_SPEC.<span class="fn">format</span>(**row)],
+        config=types.<span class="fn">GenerateContentConfig</span>(
+            response_modalities=[<span class="str">"IMAGE"</span>],
+            image_config=types.<span class="fn">ImageConfig</span>(aspect_ratio=<span class="str">"16:9"</span>)))
+    <span class="kw">for</span> part <span class="kw">in</span> resp.parts:          <span class="cm"># ответ = список частей</span>
+        <span class="kw">if</span> part.inline_data:         <span class="cm"># берем только картинку</span>
+            part.<span class="fn">as_image</span>().<span class="fn">save</span>(f<span class="str">"{row['sku']}.png"</span>)</pre>
+      <div class="stack center" style="gap:22px;">
+        <div class="pt" style="--k:var(--green)">
+          <div class="h">~50 карточек за ~10 минут и ~$2–3</div>
+          <div class="d">Вместо дня ручной работы в браузере: CSV с товарами → цикл генерации. Порядка 10 с и $0.04–0.06 на кадр.</div>
+        </div>
+        <div class="note" style="font-size:19px;"><b>Не берите <code>parts[0]</code> вслепую:</b> в ответе могут быть и текстовые части. Ищем часть с <code>inline_data</code>.</div>
+        <div class="note" style="font-size:19px;"><b>10/90 в коде:</b> вызов модели — 5 строк. Остальное — чтение каталога, шаблон промпта, ретраи и автопроверка на артефакты.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>24 / 27</span></div>
+  <template class="notes">Связываем с практикой инженера. Тот же официальный google-genai SDK, что в L03. В contents передаем изображение-референс и текст, собранный из шаблона по строке каталога. Важная деталь: ответ — это список частей (parts), где может быть и текст, и картинка, поэтому идем циклом и берем часть с inline_data. Реалистичная оценка: около 50 карточек за 10 минут и 2–3 доллара — без учета ретраев и ручной приемки.</template>
+</section>
+
+<!-- SLIDE 25: BLAST RADIUS & PRODUCTION SAFETY -->
+<section class="slide" data-n="25">
+  <div class="kicker" style="--k:var(--amber)">Часть 5 • Риски • Blast Radius</div>
+  <h2 class="title">Где генерация подводит и где ее нельзя применять</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.05fr 1fr;gap:46px;align-items:center;">
+      <div class="stack center">
+        <ul class="list" style="--k:var(--amber);gap:16px;">
+          <li style="font-size:20px;"><b>Анатомия и мелкий текст:</b> пальцы в толпе и длинные абзацы все еще дают сбои.</li>
+          <li style="font-size:20px;"><b>Дрейф деталей:</b> после ~5–8 правок подряд дрейф лица и логотипов заметен.</li>
+          <li style="font-size:20px;"><b>Авторское право:</b> в США чисто сгенерированное изображение не защищено (дело Thaler: 02.03.2026 Верховный суд отказался его рассматривать). Иск Disney / Universal v. Midjourney продолжается.</li>
+          <li style="font-size:20px;"><b>Происхождение:</b> SynthID — невидимый водяной знак в пикселях (Google; у OpenAI с 05.2026) + C2PA — подписанные метаданные, которые теряются при скриншоте.</li>
+        </ul>
+      </div>
+      <div style="min-height:0;display:flex;align-items:center;">
+        <svg viewBox="0 0 720 420" style="width:100%;height:100%;overflow:visible">
+          <rect x="0" y="0" width="120" height="420" rx="40" fill="#121a28" stroke="rgba(148,163,184,.25)" stroke-width="2"/>
+          <circle cx="60" cy="70" r="44" fill="#34d399"/>
+          <text x="160" y="62" style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;fill:#34d399">ЗЕЛЕНАЯ • АВТОНОМНО</text>
+          <foreignObject x="160" y="72" width="560" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Onest,sans-serif;font-size:21px;line-height:1.35;color:#f1f5f9">Мудборды, концепт-арт, иллюстрации к внутренним презентациям, раскадровки.</div></foreignObject>
+          <circle cx="60" cy="210" r="44" fill="#fbbf24"/>
+          <text x="160" y="202" style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;fill:#fbbf24">ЖЕЛТАЯ • HUMAN-IN-THE-LOOP</text>
+          <foreignObject x="160" y="212" width="560" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Onest,sans-serif;font-size:21px;line-height:1.35;color:#f1f5f9">Карточки товаров, рекламные баннеры, обложки YouTube. Обязательна ручная приемка.</div></foreignObject>
+          <circle cx="60" cy="350" r="44" fill="#f87171"/>
+          <text x="160" y="342" style="font-family:'JetBrains Mono',monospace;font-size:19px;font-weight:700;fill:#f87171">КРАСНАЯ • НЕ ГЕНЕРИРУЕМ</text>
+          <foreignObject x="160" y="352" width="560" height="80"><div xmlns="http://www.w3.org/1999/xhtml" style="font-family:Onest,sans-serif;font-size:21px;line-height:1.35;color:#f1f5f9">Юридические документы, медицинские инструкции, чужие логотипы, лица людей без согласия.</div></foreignObject>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>25 / 27</span></div>
+  <template class="notes">Напоминаем матрицу Blast Radius из L01. Красная зона — табу для генерации. Желтая — только с человеком в контуре. Зеленая — свобода для внутренних задач. По фактам 2026 года: в США Верховный суд 2 марта 2026 отказался рассматривать дело Thaler — чисто ИИ-изображение без авторского вклада человека не защищается копирайтом; иск Disney и Universal против Midjourney идет. На глаз фотореализм уже не отличить, но SynthID отличит: его ставят Google и, с мая 2026, OpenAI; C2PA — метаданные, они слетают при скриншоте.</template>
+</section>
+
+<!-- SLIDE 26: HOMEWORK -->
+<section class="slide" data-n="26">
+  <div class="kicker">Практика • Домашнее задание №4</div>
+  <h2 class="title">Фотосессия товара или персонаж-курьер</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:48px;">
+      <div class="stack center" style="gap:24px;">
+        <div class="track" style="--k:var(--cyan)">
+          <div class="pt"><div class="h"><span class="mark">Трек А:</span> фотосессия предмета</div><div class="d">Свой предмет на белом фоне ➔ 4 коммерческих кадра (лайфстайл, флэтлей, в руках, баннер).</div></div>
+          <div class="thumbs"><img src="assets/examples/web/D0_packshot.jpg" alt=""><img src="assets/examples/web/D1_kitchen.jpg" alt=""><img src="assets/examples/web/D2_flatlay.jpg" alt=""><img class="contain" src="assets/examples/web/D4_banner.jpg" alt=""></div>
+        </div>
+        <div class="track" style="--k:var(--green)">
+          <div class="pt"><div class="h"><span class="mark">Трек Б:</span> курьер доставки (Glovo)</div><div class="d">Лист персонажа ➔ 3 сцены с якорными приметами ➔ 1 правка по инструкции.</div></div>
+          <div class="thumbs"><img src="assets/examples/web/C1_sheet.jpg" alt=""><img src="assets/examples/web/C2_rain.jpg" alt=""><img src="assets/examples/web/C3_door.jpg" alt=""><img src="assets/examples/web/C4_break.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="stack center" style="gap:20px;">
+        <div class="card-box" style="background:#141f33;border-color:var(--cyan)">
+          <div style="font-family:var(--mono);font-size:15px;color:var(--cyan);font-weight:700">СТРУКТУРА СДАЧИ В GITHUB</div>
+          <div class="cd" style="font-family:var(--mono);font-size:16px;line-height:1.6;color:#e2e8f0;">
+            genai-homeworks/<br>
+            └── L04/<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;├── images/ (01_free.png, 02_structured.png...)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;├── prompts.md (промпты, сервис, дата)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;└── qa.md (что сохранилось, что уплыло)
+          </div>
+        </div>
+        <div class="note"><b>Обязательно:</b> сравнить один промпт в двух сервисах (например, Leonardo vs ChatGPT) и описать разницу в <code>qa.md</code>. Инвайт: <code>ihar_rubanovich@epam.com</code>.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>26 / 27</span></div>
+  <template class="notes">Студенты выбирают один из двух треков. Трек А ближе тем, кто занимается e-commerce. Трек Б продолжает наш сквозной кейс курьера из L01. Главный критерий оценки — не идеальная красота, а осознанность: виден ли переход от свободного промпта к структуре и честно ли зафиксирован дрейф в qa.md.</template>
+</section>
+
+<!-- SLIDE 27: SUMMARY & TEASER L05 -->
+<section class="slide" data-n="27">
+  <div class="kicker">Итоги • Мост к видео</div>
+  <h2 class="title">Четыре правила инженера визуального AI</h2>
+  <div class="body">
+    <div class="row" style="grid-template-columns:1.4fr 1fr;gap:64px;">
+      <div class="stack center" style="gap:22px;">
+        <div class="pt"><div class="h">1. Инструмент — под задачу</div><div class="d">Чат для идей и надписей, студия для холста и масок, API для конвейера в коде.</div></div>
+        <div class="pt"><div class="h">2. Структура вместо фразы</div><div class="d">6 слотов (объект, сцена, камера, свет, стиль, запреты) + блок must-have.</div></div>
+        <div class="pt"><div class="h">3. Хирургическая правка вместо реролла</div><div class="d">Атомарная команда «измени только X, сохрани Y» побеждает генерацию заново.</div></div>
+        <div class="pt"><div class="h">4. Консистентность через якоря</div><div class="d">Мастер-референс + 4–6 ярких словесных примет удерживают героя в любой сцене.</div></div>
+      </div>
+      <div class="stack center" style="gap:16px;">
+        <div class="pic cover"><div class="frame"><img src="assets/examples/web/C2_rain.jpg" alt="C2 rain"></div></div>
+        <div class="pt" style="--k:var(--violet)">
+          <div class="h" style="color:var(--violet)">Урок 05: Генерация видео</div>
+          <div class="d">Кадры с курьером станут первыми кадрами для видеомоделей (Kling, Veo, Runway). Наш курьер поедет на велосипеде!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 04 • Генерация изображений</span><span>27 / 27</span></div>
+  <template class="notes">Подводим итоги, благодарим за внимание и открываем микрофон для Q&A. Делаем интригующий тизер Урока 05: мы возьмем эти же картинки и превратим их в 5-секундные видеоролики с физикой движения.</template>
+</section>
+
+</main>
+
+<aside class="drawer" id="drawer"><div class="hd"></div><div class="tx"></div></aside>
+<div class="grid" id="grid"></div>
+
+<script>
+const T = {start: 'СТАРТ 5 МИН', pause: 'ПАУЗА', done: 'ВРЕМЯ ВЫШЛО', notes: 'ЗАМЕТКИ СПИКЕРА'};
+(function () {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  const drawer = document.getElementById('drawer');
+  const grid = document.getElementById('grid');
+  let cur = 1;
+
+  function fit() {
+    const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900) * 0.98;
+    stage.style.setProperty('--s', s);
+  }
+
+  function show(n) {
+    if (n < 1 || n > total) return;
+    cur = n;
+    slides.forEach((el, i) => el.classList.toggle('active', i + 1 === n));
+    const notes = slides[n - 1].querySelector('.notes');
+    drawer.querySelector('.hd').textContent = `${T.notes} • ${String(n).padStart(2, '0')} / ${total}`;
+    drawer.querySelector('.tx').innerHTML = notes ? notes.innerHTML : '';
+    if (location.hash !== '#' + n) history.replaceState(null, '', '#' + n);
+    grid.querySelectorAll('button').forEach((b, i) => b.classList.toggle('cur', i + 1 === n));
+  }
+
+  slides.forEach((el, i) => {
+    const b = document.createElement('button');
+    const t = el.querySelector('.title, h1');
+    b.innerHTML = `<span>${String(i + 1).padStart(2, '0')}</span>${t ? t.textContent : ''}`;
+    b.onclick = () => { show(i + 1); grid.classList.remove('open'); };
+    grid.appendChild(b);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(cur - 1); }
+    else if (e.key === 'Home') show(1);
+    else if (e.key === 'End') show(total);
+    else if (e.key.toLowerCase() === 'n') drawer.classList.toggle('open');
+    else if (e.key.toLowerCase() === 'g') grid.classList.toggle('open');
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    } else if (e.key === 'Escape') { grid.classList.remove('open'); drawer.classList.remove('open'); }
+  });
+
+  stage.addEventListener('click', (e) => {
+    if (e.target.closest('button')) return;
+    const r = stage.getBoundingClientRect();
+    show(e.clientX > r.left + r.width / 3 ? cur + 1 : cur - 1);
+  });
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', () => show(parseInt(location.hash.slice(1), 10) || 1));
+
+  let left = 300, timer = null;
+  const clock = document.getElementById('clock');
+  const startBtn = document.getElementById('timerStart');
+  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  if (startBtn) {
+    startBtn.onclick = () => {
+      if (timer) { clearInterval(timer); timer = null; startBtn.textContent = T.start; return; }
+      startBtn.textContent = T.pause;
+      timer = setInterval(() => {
+        left = Math.max(0, left - 1); clock.textContent = fmt(left);
+        if (!left) { clearInterval(timer); timer = null; startBtn.textContent = T.done; }
+      }, 1000);
+    };
+    document.getElementById('timerReset').onclick = () => {
+      clearInterval(timer); timer = null; left = 300; clock.textContent = fmt(left); startBtn.textContent = T.start;
+    };
+  }
+
+  fit();
+  show(parseInt(location.hash.slice(1), 10) || 1);
+})();
+</script>
+</body>
+</html>
