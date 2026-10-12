@@ -321,12 +321,12 @@ Below: models were trained on captioned video, so they understand camera terms. 
 **On Screen:** Bars for “maximum length of one clip per generation” (0–30 s scale) and capability chips `audio` / `image→video` / `API` / `open weights`:
 - Gemini Omni 1.1 Flash (Google) — 10 s, + extend to 40 s · #1 LMArena · audio*;
 - Veo 3.1 (Google) — 8 s, + extend to 148 s · our clips;
-- Kling 3.0 (Kuaishou) — 15 s · 4.0 up to 30 s — early access;
+- Kling 3.0 (Kuaishou) — 15 s · 4.0 Flash up to 20 s — early access (full 4.0 up to 30 s announced for October);
 - Seedance 2.5 (ByteDance) — 30 s;
 - Wan 3.0 (Alibaba) — 30 s · #1 Artificial Analysis with audio;
 - Hailuo H3 (MiniMax) — 15 s;
 - Ray3.2 (Luma) — 10 s, no audio;
-- LTX-2 (Lightricks) — 20 s, open weights;
+- LTX-2 (Lightricks) — 20 s, image→video, API and open weights;
 - Wan 2.2 (Alibaba) — 5 s, open weights.
 
 Separate row: `Sora 2 (OpenAI) — shut down: app 26.04.2026, API 24.09.2026, no replacement.` Footnote: * Omni audio per third-party reviews; LMArena ranking 21.09.2026, Artificial Analysis October 2026; Runway and Leonardo are platforms that host many of these models.
@@ -346,7 +346,7 @@ Separate row: `Sora 2 (OpenAI) — shut down: app 26.04.2026, API 24.09.2026, no
 > 
 > One more thing: Runway and Leonardo today are platforms where many of these models are available in one place."
 
-*(Before class, check whether the full Kling 4.0 has shipped — it was planned for October 2026. If it has, mention it in one sentence.)*
+*(Before class, check whether the full Kling 4.0 (up to 30 s) has shipped — it was planned for October 2026; since 28 Sep only 4.0 Flash, up to 20 s, is in early access. If the full model has shipped, mention it in one sentence.)*
 
 ---
 
@@ -440,7 +440,7 @@ Right — “how a mark survives re-saving”: `Video from Veo` → **SynthID** 
 > 
 > You can check SynthID yourself: upload the video to the Gemini app — up to 100 megabytes and 90 seconds. Note: the check only finds SynthID, so it may not recognise videos from other services. ‘No mark found’ does not mean ‘filmed with a camera’.
 > 
-> And the law. In the EU — **Article 50 of the AI Act**. Since 2 August 2026 deepfakes must be labelled. Machine-readable marking for systems that were on the market earlier is due by 2 December 2026. Fines up to 15 million euros or 3% of turnover. In the US, since May 2026 platforms must remove intimate deepfakes within 48 hours — that is the TAKE IT DOWN Act.
+> And the law. In the EU — **Article 50 of the AI Act**. Since 2 August 2026 there are two different duties. Paragraph 50(4): whoever publishes a deepfake — that is, us — must label it. Paragraph 50(2): the model provider adds a machine-readable mark; for systems already on the market, by 2 December 2026. Fines up to 15 million euros or 3% of turnover. In the US, since May 2026 platforms must remove intimate deepfakes within 48 hours — that is the TAKE IT DOWN Act.
 > 
 > The practical takeaway for work: label it, don’t use other people’s faces or brands without permission, and when in doubt, go to the company lawyers."
 
@@ -457,7 +457,7 @@ Right — what to submit:
 3. Prompts and settings → `video_spec.md`;
 4. Check against the slide 16 checklist → `video_qa.md`.
 
-Structure: `genai-homeworks/L05/` → `videos/` (01_t2v_trap, 02/03_i2v), `video_spec.md`, `video_qa.md`. Reviewer: `ihar_rubanovich@epam.com`. Free service credits are enough.
+Structure: `genai-homeworks/L05/` → `videos/` (01_t2v_trap, 02/03_i2v), `video_spec.md`, `video_qa.md`. Reviewer: `ihar_rubanovich@epam.com`. Free credits: Kling gives daily credits; check the other services before you start (see the homework file).
 
 #### Speaker's Talk Track:
 > "Homework. Two tracks to choose from; both continue L04.
@@ -478,7 +478,7 @@ Structure: `genai-homeworks/L05/` → `videos/` (01_t2v_trap, 02/03_i2v), `video
 > 
 > How we grade: not beauty but awareness. Can you show where and why the model went wrong — with timecodes.
 > 
-> No code is needed; everything is done in web interfaces. Free service credits are usually enough — but terms change, details are in the file. Submit to `genai-homeworks/L05/`; the reviewer is me, `ihar_rubanovich@epam.com`. File templates are in `L05_05_Homework_EN.md`."
+> No code is needed; everything is done in web interfaces. Kling definitely gives daily free credits; other services change their terms — check before you start, the table is in the homework file. Submit to `genai-homeworks/L05/`; the reviewer is me, `ihar_rubanovich@epam.com`. File templates are in `L05_05_Homework_EN.md`."
 
 ---
 

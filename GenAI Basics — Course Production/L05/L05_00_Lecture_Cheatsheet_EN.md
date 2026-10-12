@@ -50,5 +50,5 @@
 | Veo 3.1 | clips 4/6/8 s; extend +7 s per step up to 148 s; up to 3 references; SynthID on every video |
 | Gemini Omni 1.1 Flash | 3–10 s; extend +10 s up to 40 s; 360p draft ≈ ⅓ of the 720p price |
 | Sora | shutdown announced 24.03.2026 • app closed **26.04.2026** • API closed **24.09.2026**, no replacement |
-| EU AI Act | **Art. 50**; applies from **02.08.2026**; machine-readable marking 50(2) for systems released earlier — from **02.12.2026**; fines **€15M / 3%** of turnover |
+| EU AI Act | **Art. 50**; applies from **02.08.2026**; **50(4)** — whoever publishes a deepfake labels it; **50(2)** — machine-readable mark from the model provider (systems released earlier — from **02.12.2026**); fines **€15M / 3%** of turnover |
 | US | TAKE IT DOWN Act — removal of intimate deepfakes within 48 h, FTC enforcement since 19.05.2026 |

@@ -1,5 +1,6 @@
 # L05 — Lesson Graph (deck v2, 19 slides, 90 min)
 
+Reviewed by Fable on 2026-10-12 (facts, logic, design); fixes applied in the same change.
 Single map of how the lesson is built: what each slide teaches, what it depends on, and which artifact carries it into practice.
 Source of truth for slide content: `deck_v2/build.py`. Facts: `L05_08_Source_Notes_Research_2026-10.md`.
 
@@ -74,18 +75,21 @@ flowchart LR
 | Slide | Script (RU/EN) | Cheatsheet | Notebook | Demo runbook | Homework |
 |---|---|---|---|---|---|
 | 02 Hook | ✓ | ✓ | — | `courier_delivery_final.mp4` | — |
+| 03 How a model makes video | ✓ | ✓ | Step 3 "what can go wrong" | — | — |
 | 04 Failure gallery | ✓ | ✓ | — | `trainwreck_naive_t2v.mp4` | Step 1 (T2V trap) |
 | 05 T2V vs I2V | ✓ | ✓ | T2V/I2V cells | ✓ | Steps 1–2 |
 | 06–07 References, key frame | ✓ | ✓ | `image=` input | ✓ | Step 2 (L04 frame) |
-| 08–09 Prompt, camera | ✓ | ✓ | prompt cell | ✓ | `video_spec.md` |
+| 08–09 Prompt, camera | ✓ | ✓ | 6-slot table + prompt (same order as slide 8) | ✓ | `video_spec.md` |
 | 10 Local control | ✓ | ✓ | — | — | optional |
 | 11 Editing | ✓ | ✓ | — | ffmpeg one-liner | — |
+| 13 Market | ✓ | ✓ | Omni note in Step 3 | — | services table |
 | 14 Code | ✓ | ✓ | ✓ (`RUN_PAID=False`) | ✓ | — |
 | 15 Economics | ✓ | ✓ | cost estimate | — | — |
 | 16 Acceptance | ✓ | ✓ | — | ✓ | `video_qa.md` rubric |
 | 17 Risks | ✓ | ✓ | — | — | consent rule |
 | 18 Homework | ✓ | ✓ | — | — | `L05_05_Homework*.md` |
+| 19 Four rules + L06 | ✓ | ✓ | — | — | — |
 
 ## 4. Volatile facts to recheck 24 h before class
 
-Gemini Omni model ID and limits · Veo 3.1 IDs (preview vs GA) and $/s · Kling 3.0/4.0 status · Seedance/Wan/Hailuo clip lengths · LMArena / Artificial Analysis leaders · Sora 2 shutdown dates · EU AI Act Art. 50 dates and fines.
+Gemini Omni model ID and limits · Veo 3.1 IDs (preview vs GA), $/s and Lite limits (no extend, no references, no 4K) · Kling 4.0 Flash (≤20 s, early access) vs full 4.0 (≤30 s, announced for Oct) · Seedance/Wan/Hailuo clip lengths · LMArena / Artificial Analysis leaders · Sora 2 shutdown dates (API 24.09 primary-sourced; app 26.04 secondary only) · free credits per service (homework table) · EU AI Act Art. 50 dates and fines.

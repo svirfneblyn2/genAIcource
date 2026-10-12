@@ -425,8 +425,8 @@ def s_control():
       </div>
       <div class="stack" style="gap:16px;">
         {tile("cyan", s1, t("Первый + последний кадр", "First + last frame"), t("Модель достраивает движение между двумя картинками. <b>Veo 3.1, Gemini Omni, Kling 3.0</b>", "The model fills in the motion between two images. <b>Veo 3.1, Gemini Omni, Kling 3.0</b>"))}
-        {tile("green", s2, t("Продление клипа", "Extend a clip"), t("<b>Veo 3.1:</b> +7 с за шаг, до 148 с<br><b>Gemini Omni:</b> +10 с за шаг, до 40 с", "<b>Veo 3.1:</b> +7 s per step, up to 148 s<br><b>Gemini Omni:</b> +10 s per step, up to 40 s"))}
-        {tile("amber", s3, t("Референсы героя", "Hero references"), t("<b>Veo 3.1:</b> до 3 картинок<br><b>Kling 3.0 Elements:</b> 2–4 картинки", "<b>Veo 3.1:</b> up to 3 images<br><b>Kling 3.0 Elements:</b> 2–4 images"))}
+        {tile("green", s2, t("Продление клипа", "Extend a clip"), t("<b>Veo 3.1:</b> +7 с за шаг, до 148 с (720p, не Lite)<br><b>Gemini Omni:</b> +10 с за шаг, до 40 с", "<b>Veo 3.1:</b> +7 s per step, up to 148 s (720p, not Lite)<br><b>Gemini Omni:</b> +10 s per step, up to 40 s"))}
+        {tile("amber", s3, t("Референсы героя", "Hero references"), t("<b>Veo 3.1 / Fast:</b> до 3 картинок, клип 8 с<br><b>Kling 3.0 Elements:</b> 2–4 картинки", "<b>Veo 3.1 / Fast:</b> up to 3 images, 8 s clip<br><b>Kling 3.0 Elements:</b> 2–4 images"))}
       </div>
     </div>
   </div>''',
@@ -501,12 +501,12 @@ def s_market():
     rows = [
         ("Gemini Omni 1.1 Flash", "Google", 10, t("+ продление до 40 с", "+ extend to 40 s"), {"a", "a*", "i", "p"}, "#1 LMArena"),
         ("Veo 3.1", "Google", 8, t("+ продление до 148 с · наши клипы", "+ extend to 148 s · our clips"), {"a", "i", "p"}, ""),
-        ("Kling 3.0", "Kuaishou", 15, t("4.0 до 30 с — ранний доступ", "4.0 up to 30 s — early access"), {"a", "i", "p"}, ""),
+        ("Kling 3.0", "Kuaishou", 15, t("4.0 Flash: до 20 с (бета)", "4.0 Flash: 20 s (beta)"), {"a", "i", "p"}, ""),
         ("Seedance 2.5", "ByteDance", 30, "", {"a", "i", "p"}, ""),
         ("Wan 3.0", "Alibaba", 30, "", {"a", "i", "p"}, t("#1 AA со звуком", "#1 AA with audio")),
         ("Hailuo H3", "MiniMax", 15, "", {"a", "i", "p"}, ""),
         ("Ray3.2", "Luma", 10, "", {"i", "p"}, ""),
-        ("LTX-2", "Lightricks", 20, "", {"a", "o"}, ""),
+        ("LTX-2", "Lightricks", 20, "", {"a", "i", "p", "o"}, ""),
         ("Wan 2.2", "Alibaba", 5, "", {"i", "o"}, ""),
     ]
     def pct(s):
@@ -538,7 +538,7 @@ def s_market():
                       "Leaders: Google’s main model is now Gemini Omni 1.1 Flash (#1 on LMArena, 21.09.2026). Veo 3.1, which made our clips, still runs in the API and can extend a clip to 148 seconds. On the Artificial Analysis board with audio, Wan 3.0 is first. Boards disagree and change monthly — always check the date."),
                     t("Открытые веса (можно запустить у себя): Wan 2.2 и LTX-2. Новые Wan 2.5–3.0 — только через API. Sora от OpenAI закрыта: приложение — с 26 апреля, API — с 24 сентября 2026, замены нет; ChatGPT видео не делает.",
                       "Open weights (you can run them yourself): Wan 2.2 and LTX-2. Newer Wan 2.5–3.0 are API-only. OpenAI’s Sora is shut down: the app since 26 April, the API since 24 September 2026, with no replacement; ChatGPT does not make video."),
-                    t("Перед занятием проверьте: вышел ли полный Kling 4.0 (план — октябрь 2026).", "Before class, check whether the full Kling 4.0 has shipped (planned for October 2026).")))
+                    t("Kling 4.0 Flash (до 20 с, 720p) — ранний доступ с 28.09; полная 4.0 (до 30 с) анонсирована на октябрь — проверьте перед занятием, вышла ли.", "Kling 4.0 Flash (up to 20 s, 720p) — early access since 28 Sep; full 4.0 (up to 30 s) is announced for October — check before class whether it has shipped.")))
 
 
 def s_code():
@@ -671,7 +671,7 @@ def s_risks():
         <div class="note" style="--k:var(--green);font-size:20px">{t("<b>Проверка SynthID:</b> загрузить видео в приложение Gemini (до 100 МБ / 90 с). Находит только SynthID — видео других сервисов может не распознать.", "<b>SynthID check:</b> upload the video to the Gemini app (up to 100 MB / 90 s). It only finds SynthID — videos from other services may go unrecognised.")}</div>
       </div>
     </div>
-    <div class="plaque" style="margin-top:40px;font-size:22px;"><b>EU AI Act, {t("ст. 50", "Art. 50")}:</b> {t("с 2 августа 2026 дипфейки нужно помечать; машиночитаемая маркировка для систем, выпущенных раньше, — с 2 декабря 2026. Штраф — до €15 млн или 3% оборота.", "since 2 August 2026 deepfakes must be labelled; machine-readable marking for systems released earlier — from 2 December 2026. Fines up to €15M or 3% of turnover.")}</div>
+    <div class="plaque" style="margin-top:40px;font-size:22px;"><b>EU AI Act, {t("ст. 50", "Art. 50")}:</b> {t("с 2 августа 2026: <b>50(4)</b> — дипфейк помечает тот, кто публикует; <b>50(2)</b> — машиночитаемую метку ставит провайдер модели (для систем, выпущенных раньше, — с 2 декабря 2026). Штраф — до €15 млн или 3% оборота.", "since 2 August 2026: <b>50(4)</b> — whoever publishes a deepfake must label it; <b>50(2)</b> — the model provider adds a machine-readable mark (systems released earlier: from 2 December 2026). Fines up to €15M or 3% of turnover.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 6 мин. Слева — светофор. Зелёный: свои сгенерированные кадры и персонажи, помечаем как созданные ИИ. Жёлтый: чужие бренды и логотипы — только с разрешения, решают юристы компании (вспомните «Glono» из провала). Красный: реальные люди — коллеги, клиенты, знаменитости — только с письменного согласия.",
@@ -702,7 +702,7 @@ def s_hw():
 ├── videos/  <span class="cm"># 01_t2v_trap, 02/03_i2v</span>
 ├── video_spec.md
 └── video_qa.md</div>
-        <div class="small" style="font-size:18px">{t("Ревьюер: <b>ihar_rubanovich@epam.com</b>. Бесплатных кредитов сервисов достаточно.", "Reviewer: <b>ihar_rubanovich@epam.com</b>. Free service credits are enough.")}</div>
+        <div class="small" style="font-size:18px">{t("Ревьюер: <b>ihar_rubanovich@epam.com</b>. Бесплатные кредиты: Kling — ежедневно; остальные сервисы проверьте перед стартом (см. файл ДЗ).", "Reviewer: <b>ihar_rubanovich@epam.com</b>. Free credits: Kling gives daily credits; check the other services before you start (see the homework file).")}</div>
       </div>
     </div>
   </div>''',

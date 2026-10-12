@@ -64,7 +64,7 @@ ul.list li b { color: var(--fg); font-weight: 600; }
 code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; color: #e2e8f0; }
 .cap { font-size: 19px; line-height: 1.35; color: var(--muted); }
 .cap b { color: var(--fg); font-weight: 600; }
-.small { font-size: 16px; line-height: 1.4; color: var(--dim); }
+.small { font-size: 18px; line-height: 1.4; color: var(--dim); }
 .small b { color: var(--muted); }
 .badge { display: inline-block; font-family: var(--mono); font-size: 14px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--k, var(--cyan)); color: var(--k, var(--cyan)); background: rgba(255,255,255,.03); white-space: nowrap; }
 .badge.solid { background: var(--k, var(--cyan)); color: #0b0f17; }
@@ -102,7 +102,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,
 .how .pile img:nth-child(2) { left: 30px; top: 35px; opacity: .88; }
 .how .pile img:nth-child(3) { left: 0; top: 70px; }
 .how .pile .grid-ov { position: absolute; left: 0; top: 70px; width: 320px; height: 180px; border-radius: 8px; background-image: linear-gradient(rgba(56,189,248,.55) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,.55) 1px, transparent 1px); background-size: 40px 36px; }
-.how .pile .tax { position: absolute; left: 330px; top: 140px; font-family: var(--mono); font-size: 14px; color: var(--dim); transform: rotate(-38deg); transform-origin: left; white-space: nowrap; }
+.how .pile .tax { display: none; position: absolute; left: 330px; top: 140px; font-family: var(--mono); font-size: 14px; color: var(--dim); transform: rotate(-38deg); transform-origin: left; white-space: nowrap; }
 .how .sh { font-size: 26px; font-weight: 700; color: var(--k); }
 .how .sd { font-size: 20px; line-height: 1.38; color: var(--muted); text-align: center; max-width: 400px; }
 .how .ar { font-size: 44px; color: var(--dim); text-align: center; }
@@ -116,13 +116,13 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,
 .fail .tc { position: absolute; left: 8px; top: 8px; font-family: var(--mono); font-size: 16px; font-weight: 700; background: var(--red); color: #0b0f17; border-radius: 6px; padding: 2px 8px; }
 .fail .ft { font-size: 20px; font-weight: 700; color: var(--fg); line-height: 1.25; }
 .fail .fd { font-size: 17px; line-height: 1.35; color: var(--muted); }
-.prompt { font-family: var(--mono); font-size: 16px; line-height: 1.5; background: var(--surface); border-radius: 12px; padding: 12px 16px; color: #dbe4f0; border: 1px solid var(--line); }
+.prompt { font-family: var(--mono); font-size: 18px; line-height: 1.5; background: var(--surface); border-radius: 12px; padding: 12px 16px; color: #dbe4f0; border: 1px solid var(--line); }
 .prompt-label { font-family: var(--mono); font-size: 15px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 
 /* flows */
 .flow { display: flex; align-items: center; gap: 12px; }
 .flow .box { background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 19px; line-height: 1.3; color: var(--fg); }
-.flow .box small { display: block; font-size: 15px; color: var(--muted); }
+.flow .box small { display: block; font-size: 17px; color: var(--muted); }
 .flow .box.k { border-color: var(--k); }
 .flow .box.hl { border: 2px solid var(--k); background: rgba(255,255,255,.03); }
 .flow .arr { font-size: 26px; color: var(--dim); }
@@ -172,40 +172,40 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,
 .mrow { display: grid; grid-template-columns: 320px 1fr 490px; gap: 16px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .mrow.head { border-bottom: 0; padding-bottom: 2px; }
 .mrow .nm { font-size: 23px; font-weight: 700; color: var(--fg); line-height: 1.15; }
-.mrow .nm small { font-size: 16px; font-weight: 400; color: var(--dim); margin-left: 6px; }
+.mrow .nm small { font-size: 17px; font-weight: 400; color: var(--dim); margin-left: 6px; }
 .mrow .track { position: relative; height: 34px; }
 .mrow .bar { position: absolute; left: 0; top: 2px; height: 30px; border-radius: 4px; background: var(--k, var(--cyan)); }
 .mrow .bv { position: absolute; top: 3px; font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--fg); white-space: nowrap; }
 .mrow .bv.in { color: #0b0f17; transform: translateX(-100%); }
 .mrow .bv.in small { color: #0b0f17; }
-.mrow .bv small { font-family: var(--body); font-size: 16px; font-weight: 400; color: var(--muted); margin-left: 6px; }
+.mrow .bv small { font-family: var(--body); font-size: 18px; font-weight: 400; color: var(--muted); margin-left: 6px; }
 .mrow .ticks { position: relative; height: 22px; }
-.mrow .ticks span { position: absolute; top: 0; white-space: nowrap; font-family: var(--mono); font-size: 16px; color: var(--dim); transform: translateX(-50%); }
+.mrow .ticks span { position: absolute; top: 0; white-space: nowrap; font-family: var(--mono); font-size: 18px; color: var(--dim); transform: translateX(-50%); }
 .mrow .gridl { position: absolute; top: -4px; bottom: -4px; width: 1px; background: rgba(148,163,184,.12); }
 .chipset { display: flex; gap: 6px; flex-wrap: nowrap; }
-.chip { font-size: 16px; font-weight: 600; border-radius: 6px; padding: 4px 8px; border: 1px solid var(--line); color: var(--dim); white-space: nowrap; }
+.chip { font-size: 18px; font-weight: 600; border-radius: 6px; padding: 4px 8px; border: 1px solid var(--line); color: var(--dim); white-space: nowrap; }
 .chip.on { color: var(--fg); border-color: rgba(56,189,248,.6); background: rgba(56,189,248,.10); }
 .chip.ow.on { border-color: rgba(52,211,153,.7); background: rgba(52,211,153,.12); }
 .mrow.closed .nm { color: var(--dim); text-decoration: line-through; }
 .mrow .rk { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--amber); margin-left: 8px; white-space: nowrap; }
 
 /* code */
-pre.code { font-family: var(--mono); font-size: 20px; line-height: 1.55; background: var(--surface); border-radius: 12px; padding: 22px 26px; color: #dbe4f0; white-space: pre; overflow: hidden; border: 1px solid var(--line); }
+pre.code { font-family: var(--mono); font-size: 22px; line-height: 1.55; background: var(--surface); border-radius: 12px; padding: 22px 26px; color: #dbe4f0; white-space: pre; overflow: hidden; border: 1px solid var(--line); }
 pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str { color: #86efac; } pre.code .cm { color: #7c8aa0; font-style: italic; }
 
 /* horizontal bar charts */
 .hbars { display: flex; flex-direction: column; gap: 30px; }
 .hb { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: center; }
 .hb .lab { font-size: 21px; font-weight: 600; color: var(--fg); line-height: 1.25; }
-.hb .lab small { display: block; font-size: 16px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.hb .lab small { display: block; font-size: 18px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 .hb .tr { position: relative; height: 70px; }
 .hb .b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; background: var(--k); }
 .hb .v { position: absolute; top: 50%; transform: translateY(-50%); font-family: var(--display); font-size: 46px; font-weight: 800; color: var(--k); white-space: nowrap; }
-.hb .v small { font-family: var(--mono); font-size: 16px; font-weight: 400; color: var(--muted); margin-left: 10px; }
+.hb .v small { font-family: var(--mono); font-size: 18px; font-weight: 400; color: var(--muted); margin-left: 10px; }
 .hbars.sm { gap: 14px; }
 .hbars.sm .hb { grid-template-columns: 170px 1fr; }
-.hbars.sm .hb .tr { height: 34px; }
-.hbars.sm .hb .v { font-size: 26px; }
+.hbars.sm .hb .tr { height: 44px; }
+.hbars.sm .hb .v { font-size: 34px; }
 
 /* QA */
 .qa-shot { position: relative; }
@@ -225,13 +225,13 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
 .lrow .d { font-size: 19px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
 .prov { display: grid; grid-template-columns: 190px 40px 1fr 40px 200px; align-items: center; gap: 8px; }
 .prov .pb { background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 18px; line-height: 1.3; color: var(--fg); }
-.prov .pb small { display: block; font-size: 15px; color: var(--muted); margin-top: 4px; }
+.prov .pb small { display: block; font-size: 17px; color: var(--muted); margin-top: 4px; }
 .prov .arr { font-size: 28px; color: var(--dim); text-align: center; }
 .prov .marks { display: flex; flex-direction: column; gap: 12px; }
 .prov .pb.k { border-color: var(--k); }
 .prov .out { display: flex; flex-direction: column; gap: 12px; }
 .prov .res { font-size: 18px; font-weight: 700; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--k); color: var(--k); background: rgba(255,255,255,.03); line-height: 1.3; }
-.prov .res small { display: block; font-size: 15px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.prov .res small { display: block; font-size: 17px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 
 /* provenance lanes */
 .prov2 { display: grid; grid-template-columns: 140px 26px 1fr 26px 230px 26px 1fr; grid-template-rows: auto auto; gap: 20px 6px; align-items: center; }
@@ -241,7 +241,7 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
 .prov2 .span2 { grid-row: 1 / span 2; }
 .prov2 .arr { font-size: 28px; color: var(--dim); text-align: center; }
 .prov2 .res { font-size: 22px; font-weight: 700; padding: 18px 16px; border-radius: 10px; border: 2px solid var(--k); color: var(--k); background: rgba(255,255,255,.03); line-height: 1.3; }
-.prov2 .res small { display: block; font-size: 16px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.prov2 .res small { display: block; font-size: 18px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 
 /* keyframe v2 */
 .kf { display: grid; grid-template-columns: 230px 56px 1fr 56px 1fr; align-items: start; gap: 10px; }
@@ -262,11 +262,11 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
 .files .cm { color: #7c8aa0; }
 
 /* rules */
-.rules { display: flex; flex-direction: column; gap: 32px; }
+.rules { display: flex; flex-direction: column; gap: 44px; }
 .rule { display: grid; grid-template-columns: 56px 1fr; gap: 16px; align-items: center; }
-.rule .n { font-family: var(--display); font-size: 40px; font-weight: 800; color: var(--k, var(--cyan)); line-height: 1; }
-.rule .t { font-size: 28px; font-weight: 600; line-height: 1.3; }
-.rule .t small { display: block; font-size: 19px; font-weight: 400; color: var(--muted); margin-top: 2px; }
+.rule .n { font-family: var(--display); font-size: 48px; font-weight: 800; color: var(--k, var(--cyan)); line-height: 1; }
+.rule .t { font-size: 34px; font-weight: 600; line-height: 1.3; }
+.rule .t small { display: block; font-size: 22px; font-weight: 400; color: var(--muted); margin-top: 2px; }
 
 /* break */
 .brk { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }
@@ -485,8 +485,8 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
       </div>
       <div class="stack" style="gap:16px;">
         <div class="ctrl" style="--k:var(--cyan)"><svg viewBox="0 0 150 84"><rect x="4" y="22" width="48" height="34" rx="4" fill="#16314a" stroke="#38bdf8" stroke-width="2"/><rect x="98" y="22" width="48" height="34" rx="4" fill="#16314a" stroke="#38bdf8" stroke-width="2"/><path d="M54 39 Q 75 6 96 39" stroke="#34d399" stroke-width="3" stroke-dasharray="5 4" fill="none"/><text x="28" y="45" font-size="16" fill="#f1f5f9" text-anchor="middle" font-family="JetBrains Mono, monospace">A</text><text x="122" y="45" font-size="16" fill="#f1f5f9" text-anchor="middle" font-family="JetBrains Mono, monospace">B</text></svg><div><div class="h">First + last frame</div><div class="d">The model fills in the motion between two images. <b>Veo 3.1, Gemini Omni, Kling 3.0</b></div></div></div>
-        <div class="ctrl" style="--k:var(--green)"><svg viewBox="0 0 150 84"><rect x="4" y="28" width="40" height="28" rx="3" fill="#38bdf8"/><rect x="48" y="28" width="30" height="28" rx="3" fill="rgba(56,189,248,.55)"/><rect x="82" y="28" width="30" height="28" rx="3" fill="rgba(56,189,248,.3)"/><rect x="116" y="28" width="30" height="28" rx="3" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 3"/></svg><div><div class="h">Extend a clip</div><div class="d"><b>Veo 3.1:</b> +7 s per step, up to 148 s<br><b>Gemini Omni:</b> +10 s per step, up to 40 s</div></div></div>
-        <div class="ctrl" style="--k:var(--amber)"><svg viewBox="0 0 150 84"><rect x="6" y="6" width="26" height="20" rx="3" fill="#fbbf24"/><rect x="6" y="32" width="26" height="20" rx="3" fill="#34d399"/><rect x="6" y="58" width="26" height="20" rx="3" fill="#c084fc"/><path d="M40 42 L80 42" stroke="#5f6e84" stroke-width="3"/><path d="M78 35 L90 42 L78 49 Z" fill="#5f6e84"/><rect x="96" y="20" width="50" height="44" rx="4" fill="#16314a" stroke="#38bdf8" stroke-width="2"/></svg><div><div class="h">Hero references</div><div class="d"><b>Veo 3.1:</b> up to 3 images<br><b>Kling 3.0 Elements:</b> 2–4 images</div></div></div>
+        <div class="ctrl" style="--k:var(--green)"><svg viewBox="0 0 150 84"><rect x="4" y="28" width="40" height="28" rx="3" fill="#38bdf8"/><rect x="48" y="28" width="30" height="28" rx="3" fill="rgba(56,189,248,.55)"/><rect x="82" y="28" width="30" height="28" rx="3" fill="rgba(56,189,248,.3)"/><rect x="116" y="28" width="30" height="28" rx="3" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 3"/></svg><div><div class="h">Extend a clip</div><div class="d"><b>Veo 3.1:</b> +7 s per step, up to 148 s (720p, not Lite)<br><b>Gemini Omni:</b> +10 s per step, up to 40 s</div></div></div>
+        <div class="ctrl" style="--k:var(--amber)"><svg viewBox="0 0 150 84"><rect x="6" y="6" width="26" height="20" rx="3" fill="#fbbf24"/><rect x="6" y="32" width="26" height="20" rx="3" fill="#34d399"/><rect x="6" y="58" width="26" height="20" rx="3" fill="#c084fc"/><path d="M40 42 L80 42" stroke="#5f6e84" stroke-width="3"/><path d="M78 35 L90 42 L78 49 Z" fill="#5f6e84"/><rect x="96" y="20" width="50" height="44" rx="4" fill="#16314a" stroke="#38bdf8" stroke-width="2"/></svg><div><div class="h">Hero references</div><div class="d"><b>Veo 3.1 / Fast:</b> up to 3 images, 8 s clip<br><b>Kling 3.0 Elements:</b> 2–4 images</div></div></div>
       </div>
     </div>
   </div>
@@ -527,11 +527,11 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
   <div class="kicker" style="--k:var(--amber)">Market • October 2026</div>
   <h2 class="title">Video models: length of one clip and what they can do</h2>
   <div class="body" style="margin-top:6px;">
-    <div class="mkt"><div class="mrow head"><div class="small">Model</div><div class="ticks"><span style="left:0.00%">0 s</span><span style="left:31.25%">10 s</span><span style="left:62.50%">20 s</span><span style="left:93.75%">30 s</span></div><div class="small">Capabilities</div></div><div class="mrow"><div class="nm">Gemini Omni 1.1 Flash<small>Google</small><span class="rk">#1 LMArena</span></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:31.25%"></div><div class="bv" style="left:calc(31.25% + 10px)">10 s<small>+ extend to 40 s</small></div></div><div class="chipset"><span class="chip on">audio*</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Veo 3.1<small>Google</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:25.00%"></div><div class="bv" style="left:calc(25.00% + 10px)">8 s<small>+ extend to 148 s · our clips</small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Kling 3.0<small>Kuaishou</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:46.88%"></div><div class="bv" style="left:calc(46.88% + 10px)">15 s<small>4.0 up to 30 s — early access</small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Seedance 2.5<small>ByteDance</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:93.75%"></div><div class="bv in" style="left:calc(93.75% - 10px)">30 s<small></small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Wan 3.0<small>Alibaba</small><span class="rk">#1 AA with audio</span></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:93.75%"></div><div class="bv in" style="left:calc(93.75% - 10px)">30 s<small></small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Hailuo H3<small>MiniMax</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:46.88%"></div><div class="bv" style="left:calc(46.88% + 10px)">15 s<small></small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Ray3.2<small>Luma</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:31.25%"></div><div class="bv" style="left:calc(31.25% + 10px)">10 s<small></small></div></div><div class="chipset"><span class="chip">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">LTX-2<small>Lightricks</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:62.50%"></div><div class="bv" style="left:calc(62.50% + 10px)">20 s<small></small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip">image→video</span><span class="chip">API</span><span class="chip ow on">open weights</span></div></div><div class="mrow"><div class="nm">Wan 2.2<small>Alibaba</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:15.62%"></div><div class="bv" style="left:calc(15.62% + 10px)">5 s<small></small></div></div><div class="chipset"><span class="chip">audio</span><span class="chip on">image→video</span><span class="chip">API</span><span class="chip ow on">open weights</span></div></div><div class="mrow closed"><div class="nm">Sora 2<small>OpenAI</small></div><div class="track"><div class="bv" style="left:0;color:var(--red)">shut down: app 26.04.2026, API 24.09.2026, no replacement</div></div><div></div></div></div>
+    <div class="mkt"><div class="mrow head"><div class="small">Model</div><div class="ticks"><span style="left:0.00%">0 s</span><span style="left:31.25%">10 s</span><span style="left:62.50%">20 s</span><span style="left:93.75%">30 s</span></div><div class="small">Capabilities</div></div><div class="mrow"><div class="nm">Gemini Omni 1.1 Flash<small>Google</small><span class="rk">#1 LMArena</span></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:31.25%"></div><div class="bv" style="left:calc(31.25% + 10px)">10 s<small>+ extend to 40 s</small></div></div><div class="chipset"><span class="chip on">audio*</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Veo 3.1<small>Google</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:25.00%"></div><div class="bv" style="left:calc(25.00% + 10px)">8 s<small>+ extend to 148 s · our clips</small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Kling 3.0<small>Kuaishou</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:46.88%"></div><div class="bv" style="left:calc(46.88% + 10px)">15 s<small>4.0 Flash: 20 s (beta)</small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Seedance 2.5<small>ByteDance</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:93.75%"></div><div class="bv in" style="left:calc(93.75% - 10px)">30 s<small></small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Wan 3.0<small>Alibaba</small><span class="rk">#1 AA with audio</span></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:93.75%"></div><div class="bv in" style="left:calc(93.75% - 10px)">30 s<small></small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Hailuo H3<small>MiniMax</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:46.88%"></div><div class="bv" style="left:calc(46.88% + 10px)">15 s<small></small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">Ray3.2<small>Luma</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:31.25%"></div><div class="bv" style="left:calc(31.25% + 10px)">10 s<small></small></div></div><div class="chipset"><span class="chip">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow">open weights</span></div></div><div class="mrow"><div class="nm">LTX-2<small>Lightricks</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:62.50%"></div><div class="bv" style="left:calc(62.50% + 10px)">20 s<small></small></div></div><div class="chipset"><span class="chip on">audio</span><span class="chip on">image→video</span><span class="chip on">API</span><span class="chip ow on">open weights</span></div></div><div class="mrow"><div class="nm">Wan 2.2<small>Alibaba</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:15.62%"></div><div class="bv" style="left:calc(15.62% + 10px)">5 s<small></small></div></div><div class="chipset"><span class="chip">audio</span><span class="chip on">image→video</span><span class="chip">API</span><span class="chip ow on">open weights</span></div></div><div class="mrow closed"><div class="nm">Sora 2<small>OpenAI</small></div><div class="track"><div class="bv" style="left:0;color:var(--red)">shut down: app 26.04.2026, API 24.09.2026, no replacement</div></div><div></div></div></div>
     <div class="small" style="margin-top:8px;">Bar = maximum per generation. Highlighted chip = yes; grey = no or not confirmed. * Omni audio — per third-party reviews. Rankings: LMArena 21.09.2026, Artificial Analysis (with audio) — October 2026. Runway and Leonardo are platforms that host many of these models.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 05 • Video Generation</span><span>13 / 19</span></div>
-  <template class="notes"><p>⏱ 7 min. How to read it: the bar is how many seconds one generation gives; on the right, what the model can do. What changed in a year: audio became standard for almost everyone, and typical clip length grew from 5–10 to 10–30 seconds.</p><p>Leaders: Google’s main model is now Gemini Omni 1.1 Flash (#1 on LMArena, 21.09.2026). Veo 3.1, which made our clips, still runs in the API and can extend a clip to 148 seconds. On the Artificial Analysis board with audio, Wan 3.0 is first. Boards disagree and change monthly — always check the date.</p><p>Open weights (you can run them yourself): Wan 2.2 and LTX-2. Newer Wan 2.5–3.0 are API-only. OpenAI’s Sora is shut down: the app since 26 April, the API since 24 September 2026, with no replacement; ChatGPT does not make video.</p><p>Before class, check whether the full Kling 4.0 has shipped (planned for October 2026).</p></template>
+  <template class="notes"><p>⏱ 7 min. How to read it: the bar is how many seconds one generation gives; on the right, what the model can do. What changed in a year: audio became standard for almost everyone, and typical clip length grew from 5–10 to 10–30 seconds.</p><p>Leaders: Google’s main model is now Gemini Omni 1.1 Flash (#1 on LMArena, 21.09.2026). Veo 3.1, which made our clips, still runs in the API and can extend a clip to 148 seconds. On the Artificial Analysis board with audio, Wan 3.0 is first. Boards disagree and change monthly — always check the date.</p><p>Open weights (you can run them yourself): Wan 2.2 and LTX-2. Newer Wan 2.5–3.0 are API-only. OpenAI’s Sora is shut down: the app since 26 April, the API since 24 September 2026, with no replacement; ChatGPT does not make video.</p><p>Kling 4.0 Flash (up to 20 s, 720p) — early access since 28 Sep; full 4.0 (up to 30 s) is announced for October — check before class whether it has shipped.</p></template>
 </section>
 <!-- SLIDE 14 · s_code · 3 min -->
 <section class="slide" data-n="14">
@@ -643,7 +643,7 @@ video.<span class="fn">save</span>(<span class="str">"shot2.mp4"</span>)</pre>
         <div class="note" style="--k:var(--green);font-size:20px"><b>SynthID check:</b> upload the video to the Gemini app (up to 100 MB / 90 s). It only finds SynthID — videos from other services may go unrecognised.</div>
       </div>
     </div>
-    <div class="plaque" style="margin-top:40px;font-size:22px;"><b>EU AI Act, Art. 50:</b> since 2 August 2026 deepfakes must be labelled; machine-readable marking for systems released earlier — from 2 December 2026. Fines up to €15M or 3% of turnover.</div>
+    <div class="plaque" style="margin-top:40px;font-size:22px;"><b>EU AI Act, Art. 50:</b> since 2 August 2026: <b>50(4)</b> — whoever publishes a deepfake must label it; <b>50(2)</b> — the model provider adds a machine-readable mark (systems released earlier: from 2 December 2026). Fines up to €15M or 3% of turnover.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 05 • Video Generation</span><span>17 / 19</span></div>
   <template class="notes"><p>⏱ 6 min. On the left is a traffic light. Green: your own generated frames and characters, labelled as AI-made. Amber: other brands and logos — only with permission, decided by company lawyers (remember “Glono” from the failure). Red: real people — colleagues, clients, celebrities — only with written consent.</p><p>On the right: how to tell a video is AI-made. Google gives every Veo video SynthID — an invisible mark in the pixels. It survives compression and cropping. C2PA is a signature in the file metadata; it is easily lost on re-save or screenshot. You can check SynthID by uploading a video to the Gemini app (up to 100 MB and 90 seconds). Note: the check only finds SynthID, so videos from other services may not be recognised.</p><p>Law: in the EU, Article 50 of the AI Act — since 2 August 2026 deepfakes must be labelled, fines up to €15M or 3% of turnover. In the US, since May 2026 platforms must remove intimate deepfakes within 48 hours (TAKE IT DOWN Act).</p></template>
@@ -669,7 +669,7 @@ video.<span class="fn">save</span>(<span class="str">"shot2.mp4"</span>)</pre>
 ├── videos/  <span class="cm"># 01_t2v_trap, 02/03_i2v</span>
 ├── video_spec.md
 └── video_qa.md</div>
-        <div class="small" style="font-size:18px">Reviewer: <b>ihar_rubanovich@epam.com</b>. Free service credits are enough.</div>
+        <div class="small" style="font-size:18px">Reviewer: <b>ihar_rubanovich@epam.com</b>. Free credits: Kling gives daily credits; check the other services before you start (see the homework file).</div>
       </div>
     </div>
   </div>

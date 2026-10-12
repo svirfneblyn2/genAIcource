@@ -2,6 +2,8 @@
 
 ## Status: deck v2 (19 slides, facts as of October 2026), 2026-10-12
 
+Review 2026-10-12 (Fable): facts verified against primary sources; fixes applied — Kling 4.0 Flash vs full 4.0, LTX-2 capabilities, Veo Lite limits, free-credit wording, EU AI Act 50(2)/50(4), notebook 6 slots aligned with slide 8, larger type for Teams. Lesson graph: `L05_10_Lesson_Graph.md`. **PDFs need a rebuild on a machine with Edge** (`python deck_v2/build.py`).
+
 ## Source of truth
 - **Slide decks (RU/EN):** `presentation_L05_Video_Generation_v2.html` / `presentation_L05_Video_Generation_EN_v2.html` + PDFs with the same basenames. Self-contained HTML (inline CSS/JS): `←/→` navigate, `N` speaker notes, `G` slide grid, `F` fullscreen, break timer on slide 12. Videos are click-to-play and muted; in the PDF each video shows its poster with the label “▶ video in the HTML version”.
 - **Generator:** `deck_v2/build.py` (RU/EN strings side by side, `t("ru", "en")`) + `deck_v2/style.css` + `deck_v2/deck.js`. Run `python deck_v2/build.py` (HTML + PDF via headless Edge) or `--no-pdf`. Edit the generator, not the HTML.

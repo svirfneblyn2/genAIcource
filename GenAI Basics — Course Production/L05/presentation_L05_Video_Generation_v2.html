@@ -64,7 +64,7 @@ ul.list li b { color: var(--fg); font-weight: 600; }
 code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; color: #e2e8f0; }
 .cap { font-size: 19px; line-height: 1.35; color: var(--muted); }
 .cap b { color: var(--fg); font-weight: 600; }
-.small { font-size: 16px; line-height: 1.4; color: var(--dim); }
+.small { font-size: 18px; line-height: 1.4; color: var(--dim); }
 .small b { color: var(--muted); }
 .badge { display: inline-block; font-family: var(--mono); font-size: 14px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--k, var(--cyan)); color: var(--k, var(--cyan)); background: rgba(255,255,255,.03); white-space: nowrap; }
 .badge.solid { background: var(--k, var(--cyan)); color: #0b0f17; }
@@ -102,7 +102,7 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,
 .how .pile img:nth-child(2) { left: 30px; top: 35px; opacity: .88; }
 .how .pile img:nth-child(3) { left: 0; top: 70px; }
 .how .pile .grid-ov { position: absolute; left: 0; top: 70px; width: 320px; height: 180px; border-radius: 8px; background-image: linear-gradient(rgba(56,189,248,.55) 1px, transparent 1px), linear-gradient(90deg, rgba(56,189,248,.55) 1px, transparent 1px); background-size: 40px 36px; }
-.how .pile .tax { position: absolute; left: 330px; top: 140px; font-family: var(--mono); font-size: 14px; color: var(--dim); transform: rotate(-38deg); transform-origin: left; white-space: nowrap; }
+.how .pile .tax { display: none; position: absolute; left: 330px; top: 140px; font-family: var(--mono); font-size: 14px; color: var(--dim); transform: rotate(-38deg); transform-origin: left; white-space: nowrap; }
 .how .sh { font-size: 26px; font-weight: 700; color: var(--k); }
 .how .sd { font-size: 20px; line-height: 1.38; color: var(--muted); text-align: center; max-width: 400px; }
 .how .ar { font-size: 44px; color: var(--dim); text-align: center; }
@@ -116,13 +116,13 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,
 .fail .tc { position: absolute; left: 8px; top: 8px; font-family: var(--mono); font-size: 16px; font-weight: 700; background: var(--red); color: #0b0f17; border-radius: 6px; padding: 2px 8px; }
 .fail .ft { font-size: 20px; font-weight: 700; color: var(--fg); line-height: 1.25; }
 .fail .fd { font-size: 17px; line-height: 1.35; color: var(--muted); }
-.prompt { font-family: var(--mono); font-size: 16px; line-height: 1.5; background: var(--surface); border-radius: 12px; padding: 12px 16px; color: #dbe4f0; border: 1px solid var(--line); }
+.prompt { font-family: var(--mono); font-size: 18px; line-height: 1.5; background: var(--surface); border-radius: 12px; padding: 12px 16px; color: #dbe4f0; border: 1px solid var(--line); }
 .prompt-label { font-family: var(--mono); font-size: 15px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
 
 /* flows */
 .flow { display: flex; align-items: center; gap: 12px; }
 .flow .box { background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; font-size: 19px; line-height: 1.3; color: var(--fg); }
-.flow .box small { display: block; font-size: 15px; color: var(--muted); }
+.flow .box small { display: block; font-size: 17px; color: var(--muted); }
 .flow .box.k { border-color: var(--k); }
 .flow .box.hl { border: 2px solid var(--k); background: rgba(255,255,255,.03); }
 .flow .arr { font-size: 26px; color: var(--dim); }
@@ -172,40 +172,40 @@ code { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,
 .mrow { display: grid; grid-template-columns: 320px 1fr 490px; gap: 16px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .mrow.head { border-bottom: 0; padding-bottom: 2px; }
 .mrow .nm { font-size: 23px; font-weight: 700; color: var(--fg); line-height: 1.15; }
-.mrow .nm small { font-size: 16px; font-weight: 400; color: var(--dim); margin-left: 6px; }
+.mrow .nm small { font-size: 17px; font-weight: 400; color: var(--dim); margin-left: 6px; }
 .mrow .track { position: relative; height: 34px; }
 .mrow .bar { position: absolute; left: 0; top: 2px; height: 30px; border-radius: 4px; background: var(--k, var(--cyan)); }
 .mrow .bv { position: absolute; top: 3px; font-family: var(--mono); font-size: 20px; font-weight: 700; color: var(--fg); white-space: nowrap; }
 .mrow .bv.in { color: #0b0f17; transform: translateX(-100%); }
 .mrow .bv.in small { color: #0b0f17; }
-.mrow .bv small { font-family: var(--body); font-size: 16px; font-weight: 400; color: var(--muted); margin-left: 6px; }
+.mrow .bv small { font-family: var(--body); font-size: 18px; font-weight: 400; color: var(--muted); margin-left: 6px; }
 .mrow .ticks { position: relative; height: 22px; }
-.mrow .ticks span { position: absolute; top: 0; white-space: nowrap; font-family: var(--mono); font-size: 16px; color: var(--dim); transform: translateX(-50%); }
+.mrow .ticks span { position: absolute; top: 0; white-space: nowrap; font-family: var(--mono); font-size: 18px; color: var(--dim); transform: translateX(-50%); }
 .mrow .gridl { position: absolute; top: -4px; bottom: -4px; width: 1px; background: rgba(148,163,184,.12); }
 .chipset { display: flex; gap: 6px; flex-wrap: nowrap; }
-.chip { font-size: 16px; font-weight: 600; border-radius: 6px; padding: 4px 8px; border: 1px solid var(--line); color: var(--dim); white-space: nowrap; }
+.chip { font-size: 18px; font-weight: 600; border-radius: 6px; padding: 4px 8px; border: 1px solid var(--line); color: var(--dim); white-space: nowrap; }
 .chip.on { color: var(--fg); border-color: rgba(56,189,248,.6); background: rgba(56,189,248,.10); }
 .chip.ow.on { border-color: rgba(52,211,153,.7); background: rgba(52,211,153,.12); }
 .mrow.closed .nm { color: var(--dim); text-decoration: line-through; }
 .mrow .rk { font-family: var(--mono); font-size: 15px; font-weight: 700; color: var(--amber); margin-left: 8px; white-space: nowrap; }
 
 /* code */
-pre.code { font-family: var(--mono); font-size: 20px; line-height: 1.55; background: var(--surface); border-radius: 12px; padding: 22px 26px; color: #dbe4f0; white-space: pre; overflow: hidden; border: 1px solid var(--line); }
+pre.code { font-family: var(--mono); font-size: 22px; line-height: 1.55; background: var(--surface); border-radius: 12px; padding: 22px 26px; color: #dbe4f0; white-space: pre; overflow: hidden; border: 1px solid var(--line); }
 pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str { color: #86efac; } pre.code .cm { color: #7c8aa0; font-style: italic; }
 
 /* horizontal bar charts */
 .hbars { display: flex; flex-direction: column; gap: 30px; }
 .hb { display: grid; grid-template-columns: 360px 1fr; gap: 20px; align-items: center; }
 .hb .lab { font-size: 21px; font-weight: 600; color: var(--fg); line-height: 1.25; }
-.hb .lab small { display: block; font-size: 16px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.hb .lab small { display: block; font-size: 18px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 .hb .tr { position: relative; height: 70px; }
 .hb .b { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; background: var(--k); }
 .hb .v { position: absolute; top: 50%; transform: translateY(-50%); font-family: var(--display); font-size: 46px; font-weight: 800; color: var(--k); white-space: nowrap; }
-.hb .v small { font-family: var(--mono); font-size: 16px; font-weight: 400; color: var(--muted); margin-left: 10px; }
+.hb .v small { font-family: var(--mono); font-size: 18px; font-weight: 400; color: var(--muted); margin-left: 10px; }
 .hbars.sm { gap: 14px; }
 .hbars.sm .hb { grid-template-columns: 170px 1fr; }
-.hbars.sm .hb .tr { height: 34px; }
-.hbars.sm .hb .v { font-size: 26px; }
+.hbars.sm .hb .tr { height: 44px; }
+.hbars.sm .hb .v { font-size: 34px; }
 
 /* QA */
 .qa-shot { position: relative; }
@@ -225,13 +225,13 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
 .lrow .d { font-size: 19px; color: var(--muted); line-height: 1.35; margin-top: 2px; }
 .prov { display: grid; grid-template-columns: 190px 40px 1fr 40px 200px; align-items: center; gap: 8px; }
 .prov .pb { background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; font-size: 18px; line-height: 1.3; color: var(--fg); }
-.prov .pb small { display: block; font-size: 15px; color: var(--muted); margin-top: 4px; }
+.prov .pb small { display: block; font-size: 17px; color: var(--muted); margin-top: 4px; }
 .prov .arr { font-size: 28px; color: var(--dim); text-align: center; }
 .prov .marks { display: flex; flex-direction: column; gap: 12px; }
 .prov .pb.k { border-color: var(--k); }
 .prov .out { display: flex; flex-direction: column; gap: 12px; }
 .prov .res { font-size: 18px; font-weight: 700; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--k); color: var(--k); background: rgba(255,255,255,.03); line-height: 1.3; }
-.prov .res small { display: block; font-size: 15px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.prov .res small { display: block; font-size: 17px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 
 /* provenance lanes */
 .prov2 { display: grid; grid-template-columns: 140px 26px 1fr 26px 230px 26px 1fr; grid-template-rows: auto auto; gap: 20px 6px; align-items: center; }
@@ -241,7 +241,7 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
 .prov2 .span2 { grid-row: 1 / span 2; }
 .prov2 .arr { font-size: 28px; color: var(--dim); text-align: center; }
 .prov2 .res { font-size: 22px; font-weight: 700; padding: 18px 16px; border-radius: 10px; border: 2px solid var(--k); color: var(--k); background: rgba(255,255,255,.03); line-height: 1.3; }
-.prov2 .res small { display: block; font-size: 16px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.prov2 .res small { display: block; font-size: 18px; font-weight: 400; color: var(--muted); margin-top: 3px; }
 
 /* keyframe v2 */
 .kf { display: grid; grid-template-columns: 230px 56px 1fr 56px 1fr; align-items: start; gap: 10px; }
@@ -262,11 +262,11 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
 .files .cm { color: #7c8aa0; }
 
 /* rules */
-.rules { display: flex; flex-direction: column; gap: 32px; }
+.rules { display: flex; flex-direction: column; gap: 44px; }
 .rule { display: grid; grid-template-columns: 56px 1fr; gap: 16px; align-items: center; }
-.rule .n { font-family: var(--display); font-size: 40px; font-weight: 800; color: var(--k, var(--cyan)); line-height: 1; }
-.rule .t { font-size: 28px; font-weight: 600; line-height: 1.3; }
-.rule .t small { display: block; font-size: 19px; font-weight: 400; color: var(--muted); margin-top: 2px; }
+.rule .n { font-family: var(--display); font-size: 48px; font-weight: 800; color: var(--k, var(--cyan)); line-height: 1; }
+.rule .t { font-size: 34px; font-weight: 600; line-height: 1.3; }
+.rule .t small { display: block; font-size: 22px; font-weight: 400; color: var(--muted); margin-top: 2px; }
 
 /* break */
 .brk { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 16px; }
@@ -485,8 +485,8 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
       </div>
       <div class="stack" style="gap:16px;">
         <div class="ctrl" style="--k:var(--cyan)"><svg viewBox="0 0 150 84"><rect x="4" y="22" width="48" height="34" rx="4" fill="#16314a" stroke="#38bdf8" stroke-width="2"/><rect x="98" y="22" width="48" height="34" rx="4" fill="#16314a" stroke="#38bdf8" stroke-width="2"/><path d="M54 39 Q 75 6 96 39" stroke="#34d399" stroke-width="3" stroke-dasharray="5 4" fill="none"/><text x="28" y="45" font-size="16" fill="#f1f5f9" text-anchor="middle" font-family="JetBrains Mono, monospace">A</text><text x="122" y="45" font-size="16" fill="#f1f5f9" text-anchor="middle" font-family="JetBrains Mono, monospace">B</text></svg><div><div class="h">Первый + последний кадр</div><div class="d">Модель достраивает движение между двумя картинками. <b>Veo 3.1, Gemini Omni, Kling 3.0</b></div></div></div>
-        <div class="ctrl" style="--k:var(--green)"><svg viewBox="0 0 150 84"><rect x="4" y="28" width="40" height="28" rx="3" fill="#38bdf8"/><rect x="48" y="28" width="30" height="28" rx="3" fill="rgba(56,189,248,.55)"/><rect x="82" y="28" width="30" height="28" rx="3" fill="rgba(56,189,248,.3)"/><rect x="116" y="28" width="30" height="28" rx="3" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 3"/></svg><div><div class="h">Продление клипа</div><div class="d"><b>Veo 3.1:</b> +7 с за шаг, до 148 с<br><b>Gemini Omni:</b> +10 с за шаг, до 40 с</div></div></div>
-        <div class="ctrl" style="--k:var(--amber)"><svg viewBox="0 0 150 84"><rect x="6" y="6" width="26" height="20" rx="3" fill="#fbbf24"/><rect x="6" y="32" width="26" height="20" rx="3" fill="#34d399"/><rect x="6" y="58" width="26" height="20" rx="3" fill="#c084fc"/><path d="M40 42 L80 42" stroke="#5f6e84" stroke-width="3"/><path d="M78 35 L90 42 L78 49 Z" fill="#5f6e84"/><rect x="96" y="20" width="50" height="44" rx="4" fill="#16314a" stroke="#38bdf8" stroke-width="2"/></svg><div><div class="h">Референсы героя</div><div class="d"><b>Veo 3.1:</b> до 3 картинок<br><b>Kling 3.0 Elements:</b> 2–4 картинки</div></div></div>
+        <div class="ctrl" style="--k:var(--green)"><svg viewBox="0 0 150 84"><rect x="4" y="28" width="40" height="28" rx="3" fill="#38bdf8"/><rect x="48" y="28" width="30" height="28" rx="3" fill="rgba(56,189,248,.55)"/><rect x="82" y="28" width="30" height="28" rx="3" fill="rgba(56,189,248,.3)"/><rect x="116" y="28" width="30" height="28" rx="3" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 3"/></svg><div><div class="h">Продление клипа</div><div class="d"><b>Veo 3.1:</b> +7 с за шаг, до 148 с (720p, не Lite)<br><b>Gemini Omni:</b> +10 с за шаг, до 40 с</div></div></div>
+        <div class="ctrl" style="--k:var(--amber)"><svg viewBox="0 0 150 84"><rect x="6" y="6" width="26" height="20" rx="3" fill="#fbbf24"/><rect x="6" y="32" width="26" height="20" rx="3" fill="#34d399"/><rect x="6" y="58" width="26" height="20" rx="3" fill="#c084fc"/><path d="M40 42 L80 42" stroke="#5f6e84" stroke-width="3"/><path d="M78 35 L90 42 L78 49 Z" fill="#5f6e84"/><rect x="96" y="20" width="50" height="44" rx="4" fill="#16314a" stroke="#38bdf8" stroke-width="2"/></svg><div><div class="h">Референсы героя</div><div class="d"><b>Veo 3.1 / Fast:</b> до 3 картинок, клип 8 с<br><b>Kling 3.0 Elements:</b> 2–4 картинки</div></div></div>
       </div>
     </div>
   </div>
@@ -527,11 +527,11 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
   <div class="kicker" style="--k:var(--amber)">Рынок • октябрь 2026</div>
   <h2 class="title">Видеомодели: длина одного клипа и что они умеют</h2>
   <div class="body" style="margin-top:6px;">
-    <div class="mkt"><div class="mrow head"><div class="small">Модель</div><div class="ticks"><span style="left:0.00%">0 с</span><span style="left:31.25%">10 с</span><span style="left:62.50%">20 с</span><span style="left:93.75%">30 с</span></div><div class="small">Что умеет</div></div><div class="mrow"><div class="nm">Gemini Omni 1.1 Flash<small>Google</small><span class="rk">#1 LMArena</span></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:31.25%"></div><div class="bv" style="left:calc(31.25% + 10px)">10 с<small>+ продление до 40 с</small></div></div><div class="chipset"><span class="chip on">звук*</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Veo 3.1<small>Google</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:25.00%"></div><div class="bv" style="left:calc(25.00% + 10px)">8 с<small>+ продление до 148 с · наши клипы</small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Kling 3.0<small>Kuaishou</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:46.88%"></div><div class="bv" style="left:calc(46.88% + 10px)">15 с<small>4.0 до 30 с — ранний доступ</small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Seedance 2.5<small>ByteDance</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:93.75%"></div><div class="bv in" style="left:calc(93.75% - 10px)">30 с<small></small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Wan 3.0<small>Alibaba</small><span class="rk">#1 AA со звуком</span></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:93.75%"></div><div class="bv in" style="left:calc(93.75% - 10px)">30 с<small></small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Hailuo H3<small>MiniMax</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:46.88%"></div><div class="bv" style="left:calc(46.88% + 10px)">15 с<small></small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Ray3.2<small>Luma</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:31.25%"></div><div class="bv" style="left:calc(31.25% + 10px)">10 с<small></small></div></div><div class="chipset"><span class="chip">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">LTX-2<small>Lightricks</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:62.50%"></div><div class="bv" style="left:calc(62.50% + 10px)">20 с<small></small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip">кадр→видео</span><span class="chip">API</span><span class="chip ow on">открытые веса</span></div></div><div class="mrow"><div class="nm">Wan 2.2<small>Alibaba</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:15.62%"></div><div class="bv" style="left:calc(15.62% + 10px)">5 с<small></small></div></div><div class="chipset"><span class="chip">звук</span><span class="chip on">кадр→видео</span><span class="chip">API</span><span class="chip ow on">открытые веса</span></div></div><div class="mrow closed"><div class="nm">Sora 2<small>OpenAI</small></div><div class="track"><div class="bv" style="left:0;color:var(--red)">закрыта: приложение — 26.04.2026, API — 24.09.2026, замены нет</div></div><div></div></div></div>
+    <div class="mkt"><div class="mrow head"><div class="small">Модель</div><div class="ticks"><span style="left:0.00%">0 с</span><span style="left:31.25%">10 с</span><span style="left:62.50%">20 с</span><span style="left:93.75%">30 с</span></div><div class="small">Что умеет</div></div><div class="mrow"><div class="nm">Gemini Omni 1.1 Flash<small>Google</small><span class="rk">#1 LMArena</span></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:31.25%"></div><div class="bv" style="left:calc(31.25% + 10px)">10 с<small>+ продление до 40 с</small></div></div><div class="chipset"><span class="chip on">звук*</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Veo 3.1<small>Google</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:25.00%"></div><div class="bv" style="left:calc(25.00% + 10px)">8 с<small>+ продление до 148 с · наши клипы</small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Kling 3.0<small>Kuaishou</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:46.88%"></div><div class="bv" style="left:calc(46.88% + 10px)">15 с<small>4.0 Flash: до 20 с (бета)</small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Seedance 2.5<small>ByteDance</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:93.75%"></div><div class="bv in" style="left:calc(93.75% - 10px)">30 с<small></small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Wan 3.0<small>Alibaba</small><span class="rk">#1 AA со звуком</span></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:93.75%"></div><div class="bv in" style="left:calc(93.75% - 10px)">30 с<small></small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Hailuo H3<small>MiniMax</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:46.88%"></div><div class="bv" style="left:calc(46.88% + 10px)">15 с<small></small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">Ray3.2<small>Luma</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:31.25%"></div><div class="bv" style="left:calc(31.25% + 10px)">10 с<small></small></div></div><div class="chipset"><span class="chip">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow">открытые веса</span></div></div><div class="mrow"><div class="nm">LTX-2<small>Lightricks</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:62.50%"></div><div class="bv" style="left:calc(62.50% + 10px)">20 с<small></small></div></div><div class="chipset"><span class="chip on">звук</span><span class="chip on">кадр→видео</span><span class="chip on">API</span><span class="chip ow on">открытые веса</span></div></div><div class="mrow"><div class="nm">Wan 2.2<small>Alibaba</small></div><div class="track"><i class="gridl" style="left:31.25%"></i><i class="gridl" style="left:62.50%"></i><i class="gridl" style="left:93.75%"></i><div class="bar" style="width:15.62%"></div><div class="bv" style="left:calc(15.62% + 10px)">5 с<small></small></div></div><div class="chipset"><span class="chip">звук</span><span class="chip on">кадр→видео</span><span class="chip">API</span><span class="chip ow on">открытые веса</span></div></div><div class="mrow closed"><div class="nm">Sora 2<small>OpenAI</small></div><div class="track"><div class="bv" style="left:0;color:var(--red)">закрыта: приложение — 26.04.2026, API — 24.09.2026, замены нет</div></div><div></div></div></div>
     <div class="small" style="margin-top:8px;">Полоса — максимум за одну генерацию. Подсвеченный значок — есть; серый — нет или не подтверждено. * звук у Omni — по сторонним обзорам. Рейтинги: LMArena от 21.09.2026, Artificial Analysis (со звуком) — октябрь 2026. Runway и Leonardo — площадки, где доступны многие из этих моделей.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>13 / 19</span></div>
-  <template class="notes"><p>⏱ 7 мин. Как читать: полоса — сколько секунд даёт одна генерация; справа — что модель умеет. Что изменилось за год: звук стал нормой почти у всех, а типичная длина клипа выросла с 5–10 до 10–30 секунд.</p><p>Лидеры: у Google сейчас главная модель — Gemini Omni 1.1 Flash (№1 на LMArena 21.09.2026). Veo 3.1, которым сделаны наши клипы, по-прежнему работает в API и умеет продлевать клип до 148 секунд. На рейтинге Artificial Analysis со звуком первое место у Wan 3.0. Рейтинги расходятся и меняются каждый месяц — всегда смотрите дату.</p><p>Открытые веса (можно запустить у себя): Wan 2.2 и LTX-2. Новые Wan 2.5–3.0 — только через API. Sora от OpenAI закрыта: приложение — с 26 апреля, API — с 24 сентября 2026, замены нет; ChatGPT видео не делает.</p><p>Перед занятием проверьте: вышел ли полный Kling 4.0 (план — октябрь 2026).</p></template>
+  <template class="notes"><p>⏱ 7 мин. Как читать: полоса — сколько секунд даёт одна генерация; справа — что модель умеет. Что изменилось за год: звук стал нормой почти у всех, а типичная длина клипа выросла с 5–10 до 10–30 секунд.</p><p>Лидеры: у Google сейчас главная модель — Gemini Omni 1.1 Flash (№1 на LMArena 21.09.2026). Veo 3.1, которым сделаны наши клипы, по-прежнему работает в API и умеет продлевать клип до 148 секунд. На рейтинге Artificial Analysis со звуком первое место у Wan 3.0. Рейтинги расходятся и меняются каждый месяц — всегда смотрите дату.</p><p>Открытые веса (можно запустить у себя): Wan 2.2 и LTX-2. Новые Wan 2.5–3.0 — только через API. Sora от OpenAI закрыта: приложение — с 26 апреля, API — с 24 сентября 2026, замены нет; ChatGPT видео не делает.</p><p>Kling 4.0 Flash (до 20 с, 720p) — ранний доступ с 28.09; полная 4.0 (до 30 с) анонсирована на октябрь — проверьте перед занятием, вышла ли.</p></template>
 </section>
 <!-- SLIDE 14 · s_code · 3 min -->
 <section class="slide" data-n="14">
@@ -643,7 +643,7 @@ video.<span class="fn">save</span>(<span class="str">"shot2.mp4"</span>)</pre>
         <div class="note" style="--k:var(--green);font-size:20px"><b>Проверка SynthID:</b> загрузить видео в приложение Gemini (до 100 МБ / 90 с). Находит только SynthID — видео других сервисов может не распознать.</div>
       </div>
     </div>
-    <div class="plaque" style="margin-top:40px;font-size:22px;"><b>EU AI Act, ст. 50:</b> с 2 августа 2026 дипфейки нужно помечать; машиночитаемая маркировка для систем, выпущенных раньше, — с 2 декабря 2026. Штраф — до €15 млн или 3% оборота.</div>
+    <div class="plaque" style="margin-top:40px;font-size:22px;"><b>EU AI Act, ст. 50:</b> с 2 августа 2026: <b>50(4)</b> — дипфейк помечает тот, кто публикует; <b>50(2)</b> — машиночитаемую метку ставит провайдер модели (для систем, выпущенных раньше, — с 2 декабря 2026). Штраф — до €15 млн или 3% оборота.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Урок 05 • Генерация видео</span><span>17 / 19</span></div>
   <template class="notes"><p>⏱ 6 мин. Слева — светофор. Зелёный: свои сгенерированные кадры и персонажи, помечаем как созданные ИИ. Жёлтый: чужие бренды и логотипы — только с разрешения, решают юристы компании (вспомните «Glono» из провала). Красный: реальные люди — коллеги, клиенты, знаменитости — только с письменного согласия.</p><p>Справа — как узнать, что видео сделано ИИ. У Google все видео Veo получают SynthID — невидимую метку прямо в пикселях. Она переживает сжатие и обрезку. C2PA — это подпись в метаданных файла; её легко потерять при пересохранении или скриншоте. Проверить SynthID можно, загрузив видео в приложение Gemini (до 100 МБ и 90 секунд). Важно: проверка находит только SynthID, поэтому видео других сервисов она может не распознать.</p><p>Закон: в ЕС действует статья 50 AI Act — с 2 августа 2026 дипфейки нужно помечать, штраф до €15 млн или 3% оборота. В США с мая 2026 платформы обязаны удалять интимные дипфейки за 48 часов (TAKE IT DOWN Act).</p></template>
@@ -669,7 +669,7 @@ video.<span class="fn">save</span>(<span class="str">"shot2.mp4"</span>)</pre>
 ├── videos/  <span class="cm"># 01_t2v_trap, 02/03_i2v</span>
 ├── video_spec.md
 └── video_qa.md</div>
-        <div class="small" style="font-size:18px">Ревьюер: <b>ihar_rubanovich@epam.com</b>. Бесплатных кредитов сервисов достаточно.</div>
+        <div class="small" style="font-size:18px">Ревьюер: <b>ihar_rubanovich@epam.com</b>. Бесплатные кредиты: Kling — ежедневно; остальные сервисы проверьте перед стартом (см. файл ДЗ).</div>
       </div>
     </div>
   </div>
