@@ -2,7 +2,7 @@
 
 ## Status: deck v2 (21 slides, 90 min, facts as of October 2026), companion documents aligned 2026-10-12
 
-Deck structure: the L05 courier video with a voice-over, where to generate (chat, web studio, API, open weights), four audio tasks, how a speech model works, audio inside video models (Veo invents lines), then a 6-step pipeline (1 script, 2 text for the voice, 3 voice, 4 sound effects and music, 5 mix, 6 check with speech-to-text), three speech architectures, market, break, code, cost per second / minute / hour, acceptance checklist, risks and voice consent, homework (voice your L05 video), summary. Lesson graph: `L06_10_Lesson_Graph.md`. **PDFs need a build on a machine with Edge** (`python deck_v2/build.py`).
+Deck structure: the L05 courier video with a voice-over, where to generate (chat, web studio, API, open weights), four audio tasks, how a speech model works, audio inside video models (Veo invents lines), then a 6-step pipeline (1 script, 2 text for the voice, 3 voice, 4 sound effects and music, 5 mix, 6 check with speech-to-text), three speech architectures, market, break, code, cost per second / minute / hour, acceptance checklist, risks and voice consent, homework (voice your L05 video), summary. Lesson graph: `L06_10_Lesson_Graph.md`. PDFs built with headless Edge on 2026-10-12 (21 pages each); rebuild after any deck change with `python deck_v2/build.py` on a machine with Edge.
 
 The old Drive package (`06 — Speech and Audio AI — DONE`, Sep 2026: docx/pptx, speech-to-text only, mock demo repo) is replaced by this folder. Its useful parts (batch / streaming / realtime, word error rate plus critical terms, synthetic audio only) live on slides 12–13.
 
