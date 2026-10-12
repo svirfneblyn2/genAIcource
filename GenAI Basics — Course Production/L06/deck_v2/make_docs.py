@@ -70,7 +70,7 @@ HEAD = {
 **Материалы:** озвученный ролик и дорожки из `assets/v2/` (сделаны `deck_v2/make_audio.py` из ролика L05), отчёт с измерениями `demo_courier_audio/report.json`, ДЗ `L06_05_Homework.md`.
 **Факты:** на октябрь 2026, источники в `L06_08_Source_Notes_Research_2026-10.md`. Список «перепроверить за сутки» в конце шпаргалки.
 
-> **Перед стартом (Teams):** в этом уроке звук обязателен. При демонстрации экрана включите **«Включить звук компьютера» (Include computer sound)** и «Оптимизировать для движения и видео». Проверьте звук на одном клипе до начала.
+> **Перед стартом (Teams):** в этом уроке звук обязателен. При демонстрации экрана в окне «Поделиться» включите **«Включить звук» (Include sound)**; в старых версиях Teams переключатель называется Include computer sound. Проверьте звук на одном клипе до начала.
 
 **Цель урока:** студенты понимают четыре задачи аудио-ИИ (синтез речи, распознавание речи, речь в речь, музыка и шумы), знают, где их делать (чат, веб-студия, API, открытые модели), умеют озвучить ролик по пайплайну из 6 шагов (сценарий, текст для голоса, голос, шумы и музыка, сведение, проверка), считают стоимость секунды, минуты и часа аудио, принимают результат по чек-листу и соблюдают правила согласия на голос.
 """,
@@ -85,7 +85,7 @@ HEAD = {
 **Materials:** the voiced video and tracks in `assets/v2/` (made by `deck_v2/make_audio.py` from the L05 video), the measurement report `demo_courier_audio/report.json`, homework `L06_05_Homework_EN.md`.
 **Facts:** as of October 2026, sources in `L06_08_Source_Notes_Research_2026-10.md`. The “recheck within 24 hours” list is at the end of the cheatsheet.
 
-> **Before you start (Teams):** this lesson needs sound. When sharing your screen, turn on **“Include computer sound”** and “Optimize for motion and video”. Test the sound on one clip before class.
+> **Before you start (Teams):** this lesson needs sound. When sharing your screen, turn on **“Include sound”** in the Share window (older Teams versions: “Include computer sound”). Test the sound on one clip before class.
 
 **Lesson objective:** students understand the four audio AI tasks (text-to-speech, speech-to-text, speech-to-speech, music and sound effects), know where to run them (chat, web studio, API, open-weight models), can voice a video with a 6-step pipeline (script, text for the voice, voice, sound effects and music, mix, check), can estimate the cost of a second, a minute and an hour of audio, accept the result with a checklist and follow the voice consent rules.
 """,

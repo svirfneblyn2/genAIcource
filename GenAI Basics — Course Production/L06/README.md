@@ -30,8 +30,8 @@ The old Drive package (`06 — Speech and Audio AI — DONE`, Sep 2026: docx/ppt
 | 09 | 4 | 31:00–35:00 | Step 3: three sources of a voice | Library / designed / clone cards with consent gates |
 | 10 | 4 | 35:00–39:00 | Step 4: sound effects and music | MusicGen bed player + licence table |
 | 11 | 6 | 39:00–45:00 | Step 5: mix | Four real waveforms, loudness, ffmpeg command |
-| 12 | 5 | 45:00–50:00 | Step 6: check with speech-to-text | Script vs Whisper transcript, word error rate, critical terms |
-| 13 | 5 | 50:00–55:00 | Three speech architectures | File / stream / speech-to-speech lanes |
+| 12 | 7 | 45:00–52:00 | Step 6: check with speech-to-text | Script vs Whisper transcript, word error rate, critical terms |
+| 13 | 3 | 52:00–55:00 | Three speech system architectures | File / stream / speech-to-speech lanes |
 | 14 | 3 | 55:00–58:00 | Market, October 2026 | Models by task, open weights with licences |
 | 15 | 5 | 58:00–63:00 | Break | Timer |
 | 16 | 3 | 63:00–66:00 | Code (reference) | Gemini API text-to-speech + faster-whisper check |

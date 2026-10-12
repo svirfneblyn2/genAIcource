@@ -911,3 +911,32 @@ Legend: [P] = primary source (vendor docs, legislation, regulator); [S] = second
 - Regulator guidance specific to employee voice cloning.
 
 **Volatile: recheck 24h before class**
+
+---
+
+## Fact-check pass (independent reviewer, 2026-10-12)
+
+Corrections applied to the deck after the review:
+- OpenAI deprecated tts-1, tts-1-hd and gpt-4o-mini-tts on 2026-10-01; removal from the API on **2027-01-06** (replacement gpt-realtime-2.1-mini). Source: https://developers.openai.com/api/docs/deprecations
+- The gpt-realtime family shuts down on 2027-01-20 (replacement gpt-realtime-2.1).
+- Gemini 3.8 TTS reads input text verbatim; style goes in `speech_metadata.style`; unary output is WAV with a RIFF header (24 kHz, mono, 16-bit). Source: https://ai.google.dev/gemini-api/docs/speech-generation
+- Teams toggle is now "Include sound" (older: "Include computer sound"). Source: Microsoft support, share sound in Teams meetings.
+- Kling 3.0 audio surcharge: no primary source, softened to "audio also costs extra".
+- MusicGen: 50 frames per second, 4 tokens per frame. Qwen3-TTS runs at ~12.5 tokens per second, so the slide says 12–50.
+- Vertex AI renamed Gemini Enterprise Agent Platform (2026-04-22).
+- Gemini API voice replication needs a recorded consent phrase but no allowlist; Google Cloud Instant Custom Voice is allow-listed; OpenAI custom voices are for eligible customers.
+- "No dialogue" is not a documented Veo prompt convention; Google advises describing what you want instead.
+
+## Volatile facts to recheck 24 h before class
+1. The Gemini TTS model ID and call shape: `gemini-3.8-flash-tts`, the Interactions vs generateContent samples, the default output format. https://ai.google.dev/gemini-api/docs/speech-generation
+2. Gemini 3.8 Flash TTS price: $9/1M audio tokens until 31.12.2026, $18 after. https://ai.google.dev/gemini-api/docs/pricing
+3. OpenAI deprecations: tts-1, tts-1-hd and gpt-4o-mini-tts on 06.01.2027; whisper-1 and gpt-4o-transcribe on 26.02.2027; the gpt-realtime family on 20.01.2027. Prices for gpt-transcribe ($0.0045/min) and gpt-live-1 ($0.05/min). https://developers.openai.com/api/docs/deprecations and /pricing
+4. ElevenLabs prices: v4/v3 $0.08/1K (the v4 promo ends 12 Oct), Scribe v2 $0.22/h, Music $0.15/min, Agents $0.08/min, Starter $6 / 30K credits, Free 10K credits. https://elevenlabs.io/pricing/api and /pricing
+5. Suno: Pro $8/month billed yearly, v6 still current. https://suno.com/pricing
+6. Veo 3.1 on Vertex / Agent Platform: $0.40/s with audio, $0.20/s without. https://cloud.google.com/vertex-ai/generative-ai/pricing
+7. Open ASR Leaderboard version and top WERs: 4.0 / 5.0 / 7.84. https://huggingface.co/spaces/hf-audio/open_asr_leaderboard
+8. Lyria 3.5 availability and price ($0.08 per song).
+9. EU AI Act Art. 50(2) grace period to 2 Dec 2026 (Digital Omnibus); confirm on EUR-Lex.
+10. Teams share-sound toggle label ("Include sound").
+11. Fideuram case figures (€95M, €36M still missing); the press story is still developing.
+12. OpenAI voice count (13 listed, while the intro says 11) and the Gemini prebuilt voice count (30).

@@ -9,7 +9,7 @@
 **Materials:** the voiced video and tracks in `assets/v2/` (made by `deck_v2/make_audio.py` from the L05 video), the measurement report `demo_courier_audio/report.json`, homework `L06_05_Homework_EN.md`.
 **Facts:** as of October 2026, sources in `L06_08_Source_Notes_Research_2026-10.md`. The “recheck within 24 hours” list is at the end of the cheatsheet.
 
-> **Before you start (Teams):** this lesson needs sound. When sharing your screen, turn on **“Include computer sound”** and “Optimize for motion and video”. Test the sound on one clip before class.
+> **Before you start (Teams):** this lesson needs sound. When sharing your screen, turn on **“Include sound”** in the Share window (older Teams versions: “Include computer sound”). Test the sound on one clip before class.
 
 **Lesson objective:** students understand the four audio AI tasks (text-to-speech, speech-to-text, speech-to-speech, music and sound effects), know where to run them (chat, web studio, API, open-weight models), can voice a video with a 6-step pipeline (script, text for the voice, voice, sound effects and music, mix, check), can estimate the cost of a second, a minute and an hour of audio, accept the result with a checklist and follow the voice consent rules.
 
@@ -54,7 +54,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 >
 > Plan: a finished voiced video, where to generate, four audio tasks, how a model handles sound, what audio inside video models can do, then a 6-step pipeline, speech recognition architectures and the market. After the break: code, cost, acceptance, risks and voice consent, homework.
 >
-> Before you start: Teams: this lesson needs sound. When sharing your screen, turn on “Include computer sound” and “Optimize for motion and video”. Test the sound on one clip before you start.
+> Before you start: Teams: this lesson needs sound. In Share, turn on “Include sound” (older versions: “Include computer sound”). Test the sound on one clip before you start.
 
 ---
 
@@ -69,7 +69,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 >
 > The result is not perfect: later in the lesson we find its errors with speech-to-text. That is today’s main skill: produce, then check.
 >
-> Teams: this lesson needs sound. When sharing your screen, turn on “Include computer sound” and “Optimize for motion and video”. Test the sound on one clip before you start.
+> Teams: this lesson needs sound. In Share, turn on “Include sound” (older versions: “Include computer sound”). Test the sound on one clip before you start.
 
 ---
 
@@ -108,7 +108,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 #### Speaker (4 min)
 > Link to L03 and L05: a language model predicts text tokens, a video model denoises frames. A speech model predicts audio tokens, compressed chunks of sound. A decoder (also called a vocoder) turns them back into a waveform.
 >
-> Scale: at 48 kHz one second of audio is 48,000 numbers. The model does not work at that level; it sees a compressed representation. Two real numbers: Gemini bills speech at 25 audio tokens per second; MusicGen, which made our music, works with 50 tokens per second. Architectures differ; the principle is the same.
+> Scale: at 48 kHz one second of audio is 48,000 numbers. The model does not work at that level; it sees a compressed representation. Two real numbers: Gemini bills speech at 25 audio tokens per second; MusicGen, which made our music, takes 50 steps per second (4 tokens per step). Architectures differ; the principle is the same.
 >
 > Key point: there is no rule inside like “read 417 as four hundred seventeen”. The model has seen many text and audio pairs and guesses. That is why numbers, names and abbreviations are the most common errors. This is step 2.
 
@@ -121,7 +121,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 #### Speaker (4 min)
 > Play both. Left: shot 1 from L05. The prompt had no dialogue, yet Veo voiced the barista and the courier: “Here’s your order. Thank you. Have a good day.” Right: the L05 failure clip. The prompt mentions a navigation map, and Veo added a navigator voice: “Continue straight for 200 meters”. We did not notice this until we ran the audio through speech-to-text.
 >
-> Takeaway. A video model’s audio works as background: noise, rain, footsteps, in sync with the picture. It is not free: on Vertex AI the generateAudio parameter turns Veo 3.1 audio off, and a second then costs $0.20 instead of $0.40; on Kling 3.0 audio adds about 50% to the price. The Gemini API documents no switch to turn Veo audio off. And the main point: a video model does not give exact words, the same voice across three shots or separate tracks for editing. It makes up lines.
+> Takeaway. A video model’s audio works as background: noise, rain, footsteps, in sync with the picture. It is not free: on Vertex AI (now Gemini Enterprise Agent Platform) the generateAudio parameter turns Veo 3.1 audio off, and a second then costs $0.20 instead of $0.40; on other services such as Kling 3.0, audio also costs extra. The Gemini API documents no switch to turn Veo audio off. And the main point: a video model does not give exact words, the same voice across three shots or separate tracks for editing. It makes up lines.
 >
 > Rule: when you need exact words, generate the voice separately with text-to-speech, and use the video model’s audio as background or mute it. Google’s Veo prompting guide puts dialogue in quotes, sound effects after “SFX:” and background after “Ambient noise:”; that helps but guarantees nothing.
 
@@ -190,7 +190,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 >
 > Our first normalisation pass gave a −0.6 dBTP peak on the Russian version, which fails the −1 dBTP limit. Two-pass normalisation plus a limiter fixed it: now −1.1. No code: Audacity, steps on the right. Without Auto Duck, simply lower the background by 10–15 dB wherever the voice speaks. A music bed is quiet music under the voice. With code, ffmpeg does the same: the sidechaincompress filter (the voice controls how much the background drops) and loudnorm.
 >
-> Teams: this lesson needs sound. When sharing your screen, turn on “Include computer sound” and “Optimize for motion and video”. Test the sound on one clip before you start.
+> Teams: this lesson needs sound. In Share, turn on “Include sound” (older versions: “Include computer sound”). Test the sound on one clip before you start.
 
 ---
 
@@ -218,7 +218,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 >
 > Stream: microphone audio goes out in short chunks; the service immediately returns partial text and later replaces it with final text. That is why words in live captions sometimes change as you watch. Store the final text.
 >
-> Speech-to-speech: a voice agent. The hard part is not the model but the conversation: detecting that the person finished, letting them interrupt, not staying silent too long. Two ways to build it: a chain of three models, or one speech-to-speech model such as OpenAI’s gpt-realtime or Google’s Gemini Live. We build agents in module 4.
+> Speech-to-speech: a voice agent. The hard part is not the model but the conversation: detecting that the person finished, letting them interrupt, not staying silent too long. Two ways to build it: a chain of three models, or one speech-to-speech model such as OpenAI’s gpt-realtime-2.1 or gpt-live-1, or Google’s Gemini Live. We build agents in module 4.
 
 ---
 
@@ -231,7 +231,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 >
 > Accuracy: on the Hugging Face Open ASR Leaderboard (updated 09.10.2026) the best commercial systems are around 4–5% English word error rate, the best open ones around 5–6%, Whisper large-v3 around 7.8%. Other languages and noisy recordings score worse; test on your own data.
 >
-> On lifetimes: OpenAI has announced that whisper-1 and gpt-4o-transcribe shut down on 26 February 2027. So keep the model name in configuration. Model names change every few months; recheck before class.
+> On lifetimes: OpenAI has announced that tts-1 and gpt-4o-mini-tts shut down on 6 January 2027 (replacement: gpt-realtime-2.1-mini), and whisper-1 and gpt-4o-transcribe on 26 February 2027. So keep the model name in configuration. Model names change every few months; recheck before class.
 
 ---
 
@@ -249,7 +249,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 **On screen:** Text-to-speech code with google-genai (Gemini API) and three lines of checking with faster-whisper.
 
 #### Speaker (3 min)
-> A reference slide; do not go line by line. Left: text-to-speech with the google-genai library from L03. A normal generate_content call, but we ask for an audio response and name a prebuilt voice. The response is raw 16-bit, 24 kHz mono samples; we wrap them in a WAV file.
+> A reference slide; do not go line by line. Left: text-to-speech with the google-genai library from L03. A normal generate_content call, but we ask for an audio response and name a prebuilt voice and a style. The response is a ready WAV file (16-bit, 24 kHz, mono); we save it as is. The style goes in speech_metadata, because anything in the text is spoken.
 >
 > Right: the check with the open Whisper model through the faster-whisper library, three lines, runs on a laptop offline. The full pipeline of our example (voice, mix, check) is in make_audio.py next to the deck.
 >
@@ -262,7 +262,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 **On screen:** Price table: second, minute, hour for synthesis, transcription, speech-to-speech, music. Right: the cost of voicing our video and a comparison with video.
 
 #### Speaker (5 min)
-> Units first. Speech synthesis is billed per character of text (OpenAI tts-1, Google, ElevenLabs) or per audio token (Gemini). Transcription, voice agents and ElevenLabs music are billed per minute. To compare, we convert everything to second, minute and hour, using 1,000 characters per minute of speech, ElevenLabs’ own rule.
+> Units first. Speech synthesis is billed per character of text (Google Cloud, ElevenLabs) or per audio token (Gemini). Transcription, voice agents and ElevenLabs music are billed per minute. To compare, we convert everything to second, minute and hour, using 1,000 characters per minute of speech, ElevenLabs’ own rule.
 >
 > Key point: audio is orders of magnitude cheaper than video. An hour of voice costs $4.80 on ElevenLabs and under a dollar on Gemini 3.8 Flash TTS. An hour of Veo 3.1 video in L05 cost $1,440. Transcribing an hour of recording costs 22 to 27 cents. Voicing our video: about 150 characters, roughly 1 cent on ElevenLabs.
 >
@@ -290,7 +290,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 #### Speaker (4 min)
 > For the homework: an end caption “Voice and music: AI-generated (services)”. On the left is a traffic light for voices. Green: a library voice or one designed from a description, under the service licence and with an “AI-generated” label. Amber: your own voice or a colleague’s clone, only with written consent that says the purpose, where, how long and how to withdraw. Red: a client’s, a manager’s or a public figure’s voice; not without written consent and legal review. Voice clones are used for fraud: a call “from the CEO” asking for an urgent transfer.
 >
-> On the right: how services check consent. OpenAI and Google require the voice owner to record a fixed consent phrase, and clone access is limited. ElevenLabs asks the owner to read a verification text for a professional clone, and only a checkbox for an instant clone. Azure grants clones on application and may match the consent recording to the voice. Open models clone from a few seconds and check nothing. So checking consent is your responsibility, not the service’s.
+> On the right: how services check consent. OpenAI limits custom voices to eligible customers and Google Cloud to allow-listed ones; in the Gemini API any developer can replicate a voice, but only with the owner’s recorded consent phrase. ElevenLabs asks the owner to read a verification text for a professional clone, and only a checkbox for an instant clone. Azure grants clones on application and may match the consent recording to the voice. Open models clone from a few seconds and check nothing. So checking consent is your responsibility, not the service’s.
 >
 > Law: Article 50 of the EU AI Act applies from 2 August 2026: synthetic audio and deepfakes must be labelled, with fines up to €15M or 3% of turnover. OpenAI’s usage policies require a clear disclosure to listeners that the voice is AI-generated. Google embeds SynthID in all audio from its models (Lyria, Gemini speech); the Gemini app can check it, but only for Google content. For systems already on the market, the Art. 50(2) machine-readable marking obligation has a grace period to 2 December 2026. The fraud risk is real: according to press reports, in February 2026 the Italian bank Fideuram wired about €95M after a call in which a real lawyer’s voice was cloned.
 
