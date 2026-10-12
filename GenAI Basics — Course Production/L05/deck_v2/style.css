@@ -251,7 +251,7 @@ pre.code .kw { color: #f472b6; } pre.code .fn { color: #7dd3fc; } pre.code .str 
 .files .cm { color: #7c8aa0; }
 
 /* rules */
-.rules { display: flex; flex-direction: column; gap: 44px; }
+.rules { display: flex; flex-direction: column; gap: 30px; }
 .rule { display: grid; grid-template-columns: 56px 1fr; gap: 16px; align-items: center; }
 .rule .n { font-family: var(--display); font-size: 48px; font-weight: 800; color: var(--k, var(--cyan)); line-height: 1; }
 .rule .t { font-size: 34px; font-weight: 600; line-height: 1.3; }
@@ -307,7 +307,7 @@ table.sb td.im { width: 210px; } table.sb td.im img { width: 190px; border-radiu
 table.sb td.tm { font-family: var(--mono); font-size: 19px; color: var(--amber); white-space: nowrap; }
 table.sb td.f code { font-size: 16px; }
 table.cost th:not(:first-child), table.cost td:not(:first-child) { text-align: right; }
-table.cost td { font-family: var(--mono); font-size: 24px; color: var(--fg); padding: 11px 12px; border-bottom: 1px solid var(--line); }
+table.cost td { font-family: var(--mono); font-size: 23px; color: var(--fg); padding: 8px 12px; border-bottom: 1px solid var(--line); }
 table.cost td.m { font-family: var(--body); font-size: 23px; font-weight: 600; }
 table.cost td.m small { display: block; font-size: 17px; font-weight: 400; color: var(--muted); }
 table.cost td.h { color: var(--amber); font-weight: 700; }
