@@ -4,7 +4,7 @@
 **Submission:** folder `genai-homeworks/L06/` in your personal GitHub repository  
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Estimated time:** 3–4 hours  
-**Code:** not needed. Every step has a no-code tool below. Code and open-weight models are optional (slide 16, `deck_v2/make_audio.py`).  
+**Code:** not needed. Every step has a no-code tool below. Code and open-weight models are optional (slides 13 and 16, `deck_v2/make_audio.py`, `deck_v2/make_clone.py`).  
 **Matches:** slide 20 (homework) of `presentation_L06_Speech_and_Audio_EN_v2.html`, plus slides 7–12 (the 6 pipeline steps), slide 17 (cost), slide 18 (acceptance checklist = rubric), slide 19 (consent). Service facts as of 2026-10-12.
 
 ---
@@ -58,7 +58,7 @@ Add an end caption to the video: **“Voice and music: AI-generated (service nam
 
 | Step | No-code options | Notes |
 |---|---|---|
-| 3 Voice | **ElevenLabs** (web, free plan: 10,000 credits a month ≈ 10 minutes of speech; no commercial licence on Free) • **Google AI Studio** → speech generation (Gemini TTS) | Optional: Gemini API (slide 16), OpenAI `gpt-4o-mini-tts` (shuts down 6 January 2027), open-weight Kokoro (EN) or Piper (RU) on your machine |
+| 3 Voice | **ElevenLabs** (web, free plan: 10,000 credits a month ≈ 10 minutes of speech; no commercial licence on Free) • **Google AI Studio** → speech generation (Gemini TTS) | Optional: Gemini API (code in the lesson README), OpenAI `gpt-4o-mini-tts` (shuts down 6 January 2027), open-weight Kokoro (EN), Piper (RU) or **Qwen3-TTS** with a clone of **your own** voice, installed by a coding agent with the prompt from slide 16 |
 | 4 Background | Your video’s own sound • **ElevenLabs Sound Effects** (up to 30 s per generation) • **ElevenLabs Music** • **Gemini app** music (Lyria 3.5) • **Suno** (Free: Suno owns the song, non-commercial; fine for homework) • non-AI fallback: YouTube Audio Library (licence shown per track) | Write the licence of every track in `audio_spec.md` |
 | 5 Mix | **Audacity** (free): import the lines and the background → select the background track → *Effect › Auto Duck* (or lower it by 10–15 dB where the voice speaks) → *Tracks › Mix and Render* → *Effect › Loudness Normalization* to −14 LUFS → *Limiter* with the limit at −1 dB → export WAV. Then in **CapCut**, **Clipchamp** or **DaVinci Resolve**: mute the clip’s own sound and place the WAV at 0:00. | Alternative: everything in DaVinci Resolve (Fairlight page). ffmpeg is optional (slide 11, `make_audio.py`). |
 | 5 Measure | **Youlean Loudness Meter** (free, browser or app) or the **DaVinci Resolve** loudness meter. Read **Integrated** (−13 to −15 LUFS passes) and **True Peak** (must be ≤ −1.0 dBTP). Save a screenshot as `qa/loudness.png`. | With code: `ffmpeg -i mix.wav -af ebur128=peak=true -f null -` |

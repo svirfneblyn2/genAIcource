@@ -28,14 +28,14 @@ flowchart LR
     S10[10 Step 4: sound effects and music<br/>prompt, length, licence]
     S11[11 Step 5: mix<br/>ducking · -14 LUFS · -1 dBTP]
     S12[12 Step 6: check with speech-to-text<br/>word error rate + critical terms]
-    S13[13 Three speech architectures<br/>batch · streaming · speech-to-speech]
+    S13[13 Local open-weight models<br/>Hugging Face → disk → CPU/GPU · hardware · cost]
     S14[14 Market, Oct 2026]
   end
 
   BRK[15 Break · 5 min]
 
   subgraph P2[Part 2: code, cost, acceptance, risk · 63:00–90:00]
-    S16[16 Code for reference<br/>TTS + transcription]
+    S16[16 Coding agent installs Qwen3-TTS<br/>voice clone: sample + transcript + text]
     S17[17 Cost<br/>second · minute · hour of audio]
     S18[18 Acceptance checklist<br/>6 items = homework rubric]
     S19[19 Risks and voice consent]
@@ -52,7 +52,9 @@ flowchart LR
   S06 -. exact words need a separate voice .-> S07
   S05 -. why numbers break .-> S08
   S09 -. consent .-> S19
-  S12 -. same tool, live .-> S13
+  S03 -. fourth path .-> S13
+  S13 -. hands-on .-> S16
+  S09 -. clone needs consent .-> S16
   S03 -. billing per layer .-> S17
   S12 -. items 1–2 .-> S18
   S11 -. items 4–5 .-> S18
@@ -90,9 +92,9 @@ flowchart LR
 | 10 Step 4: SFX and music | ✓ | ✓ | `music_bed.mp3` (MusicGen-small) | SFX or music, with licence |
 | 11 Step 5: mix | ✓ | ✓ | `mix_{en,ru}.mp3`, loudness in `report.json` | `final_voiced.mp4`, loudness |
 | 12 Step 6: check | ✓ | ✓ | Whisper transcripts, word error rate, critical terms | round-trip transcript |
-| 13 Three architectures | ✓ | ✓ | n/a | n/a |
+| 13 Local models | ✓ | ✓ | `make_audio.py` (Kokoro, Piper, Whisper on CPU) | optional open-weight voice |
 | 14 Market | ✓ | ✓ | n/a | services table |
-| 16 Code | ✓ | ✓ | `make_audio.py` | optional |
+| 16 Agent + local clone | ✓ | ✓ | `make_clone.py`, `clone_report.json` | optional: clone your own voice |
 | 17 Cost | ✓ | ✓ | n/a | cost table in `audio_spec.md` |
 | 18 Acceptance | ✓ | ✓ | `report.json` | `audio_qa.md` rubric (items 1–6) |
 | 19 Risks | ✓ | ✓ | n/a | consent and licence rule |

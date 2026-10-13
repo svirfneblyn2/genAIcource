@@ -1,0 +1,39 @@
+{
+  "model": "Qwen/Qwen3-TTS-12Hz-0.6B-Base",
+  "device": "CPU only, 4 cores, x86_64",
+  "reference": {
+    "voice": "Kokoro-82M af_heart (synthetic)",
+    "seconds": 5.8,
+    "text": "Good evening. This is the dispatch desk. Your courier has picked up the order and is riding through the rain."
+  },
+  "load_seconds": 9.9,
+  "lines": [
+    {
+      "name": "en_1",
+      "language": "English",
+      "text": "Six forty-two. Order four one seven is picked up, still hot.",
+      "audio_seconds": 4.6,
+      "generation_seconds": 42.1,
+      "real_time_factor": 9.2,
+      "whisper": "642. Order 417 is picked up, still hot."
+    },
+    {
+      "name": "ru_1",
+      "language": "Russian",
+      "text": "Шесть сорок две. Заказ четыреста семнадцать забран, ещё горячий.",
+      "audio_seconds": 5.1,
+      "generation_seconds": 38.5,
+      "real_time_factor": 7.5,
+      "whisper": "Shaste Sort 2. Заказ 417 забран еще горячий."
+    },
+    {
+      "name": "ru_3",
+      "language": "Russian",
+      "text": "До двери двенадцать минут. Анна уже в пути.",
+      "audio_seconds": 2.8,
+      "generation_seconds": 22.2,
+      "real_time_factor": 7.9,
+      "whisper": "До дверей 12 минут. Анна уже в пути."
+    }
+  ]
+}

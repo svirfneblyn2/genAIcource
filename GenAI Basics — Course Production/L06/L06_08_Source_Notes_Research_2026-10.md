@@ -940,3 +940,20 @@ Corrections applied to the deck after the review:
 10. Teams share-sound toggle label ("Include sound").
 11. Fideuram case figures (€95M, €36M still missing); the press story is still developing.
 12. OpenAI voice count (13 listed, while the intro says 11) and the Gemini prebuilt voice count (30).
+
+---
+
+## Local open-weight audio models and voice cloning (added 2026-10-13, slides 13 and 16)
+
+| Fact | Value | Source |
+|---|---|---|
+| Qwen3-TTS family | 1.7B VoiceDesign (voice from a text description), 1.7B CustomVoice (9 preset timbres, style instructions), 1.7B Base and 0.6B Base (“3-second rapid voice clone from user audio input”), 0.6B CustomVoice, Tokenizer-12Hz | [P] https://github.com/QwenLM/Qwen3-TTS (README, released 2026-01-22) |
+| Licence | Apache-2.0 (all Qwen3-TTS checkpoints) | [P] Hugging Face API, `cardData.license` |
+| Languages | Chinese, English, Japanese, Korean, German, French, Russian, Portuguese, Spanish, Italian | [P] model card `Qwen/Qwen3-TTS-12Hz-0.6B-Base` |
+| Install and API | `pip install -U qwen-tts`; `Qwen3TTSModel.from_pretrained(...)`, `generate_voice_clone(text, language, ref_audio, ref_text)`; `x_vector_only_mode` works without a transcript at lower quality | [P] model card and GitHub README |
+| Download size (all files) | 0.6B Base 2.52 GB; 1.7B Base 4.54 GB; 1.7B CustomVoice / VoiceDesign 4.52 GB; Kokoro-82M 0.36 GB; Chatterbox 13.87 GB | [P] Hugging Face API `?blobs=true`, summed file sizes, 2026-10-13 |
+| GPU memory | Vendor gives no VRAM figure. Third-party: ~2 GB (0.6B) and ~4 GB (1.7B) in FP16; “8+ GB VRAM handles any of these models comfortably” | [S] spheron.network GPU guide; Medium “high quality long form TTS with Qwen3 open weight models” |
+| Our CPU run (no GPU, 4 cores) | see `demo_courier_audio/clone_report.json`: load time, generation time per line, real-time factor (English line: 4.6 s of audio in 42.1 s, ≈9.2× slower than real time) | own measurement, `deck_v2/make_clone.py` |
+| Consent | The model card and README contain no consent mechanism; the reference voice in our demo is synthetic (Kokoro `af_heart`) | [P] README; own setup |
+
+Volatile: Qwen3-TTS versions and sizes, `qwen-tts` package API (CPU needs matching CPU builds of `torch` and `torchaudio`), third-party VRAM figures.

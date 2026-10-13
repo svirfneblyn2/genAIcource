@@ -9,7 +9,7 @@
 ### Teams: before you start
 * **Sound is required.** Share → turn on **“Include sound”** (older Teams: “Include computer sound”). Test one clip before class.
 * Deck: `F` fullscreen, `←/→` navigate, `N` notes, `G` slide grid. Audio and video play **on click, with sound**. The PDF shows “▶ audio / video in the HTML version”.
-* Clicks: **sl. 2** voiced courier video (23 s) • **sl. 6** two Veo audio clips • **sl. 10** music bed • **sl. 12** optional live demo: drop `mix_en.mp3` into Google AI Studio, prompt “Transcribe verbatim. Do not correct mistakes.” • **sl. 15** timer “Start”.
+* Clicks: **sl. 2** voiced courier video (23 s) • **sl. 6** two Veo audio clips • **sl. 10** music bed • **sl. 12** optional live demo: drop `mix_en.mp3` into Google AI Studio, prompt “Transcribe verbatim. Do not correct mistakes.” • **sl. 15** timer “Start” • **sl. 16** clone sample, then clone.
 * Pipeline (6 steps, strip on slides 7–12): **1** script • **2** spoken text • **3** voice • **4** effects and music • **5** mix • **6** check.
 
 ---
@@ -25,17 +25,17 @@
 * **08 Step 2 spoken text (5, 26–31):** 6:42 → “six forty-two”, 417 → “four one seven” (you decide), 12 min → “twelve minutes”. Style: OpenAI `instructions`, Gemini 3.8 `style` field, ElevenLabs v3 tags `[whispers]`, pronunciation dictionaries.
 * **09 Step 3 voice (4, 31–35):** library (Gemini 30 voices, OpenAI 13) • designed from a description • clone only with written consent (ElevenLabs Instant 1–2 min, Professional 30+ min; open models clone from 3 s). Test the hard words first.
 * **10 Step 4 effects and music (4, 35–39):** our MusicGen bed (CC BY-NC: lesson only). Suno v6: commercial rights only on paid plans • Lyria 3.5: SynthID on every track • ElevenLabs Music 3 s–5 min • ElevenLabs Sound Effects ≤30 s.
-* **11 Step 5 mix (6, 39–45):** voice −19.2 LUFS, Veo −22.8 → mix **−14.0 LUFS, −1.1 dBTP**. Ducking; Spotify −14, Apple Podcasts −16, EBU R128 −23; true peak ≤ −1 dBTP. First pass RU −0.6 dBTP failed → two-pass + limiter. No code: Audacity Auto Duck → Loudness Normalization → Limiter.
-* **12 Step 6 check (7, 45–52):** Whisper small on the mix. EN: WER 18.5%, “Here’s your order” leaks from Veo audio, “642” = transcriber format → critical terms 3/4 → **4/4 after listening**. RU: «Часть 42», «Оно» = voice errors, 2/4. Never paste the script into a transcription prompt.
-* **13 Architectures (3, 52–55):** file (seconds to minutes) • streaming (partial → final) • speech-to-speech (turn detection, interruptions). Agent = chain or one model (gpt-realtime-2.1, gpt-live-1, Gemini Live); built in module 4.
-* **14 Market (3, 55–58):** see slide. Open ASR Leaderboard 9 Oct 2026: best commercial ≈4%, best open ≈5%, Whisper large-v3 7.84%. OpenAI shuts down tts-1 / gpt-4o-mini-tts **06.01.2027**, whisper-1 / gpt-4o-transcribe **26.02.2027**.
+* **11 Step 5 mix (5, 39–44):** voice −19.2 LUFS, Veo −22.8 → mix **−14.0 LUFS, −1.1 dBTP**. Ducking; Spotify −14, Apple Podcasts −16, EBU R128 −23; true peak ≤ −1 dBTP. First pass RU −0.6 dBTP failed → two-pass + limiter. No code: Audacity Auto Duck → Loudness Normalization → Limiter.
+* **12 Step 6 check (6, 44–50):** Whisper small on the mix. EN: WER 18.5%, “Here’s your order” leaks from Veo audio, “642” = transcriber format → critical terms 3/4 → **4/4 after listening**. RU: «Часть 42», «Оно» = voice errors, 2/4. Never paste the script into a transcription prompt.
+* **13 Local models (4, 50–54):** Hugging Face model card + weight files → cached on disk → Python package → CPU or GPU → WAV, offline. Kokoro 0.36 GB and Whisper small run on a laptop CPU (our voice-over and check). Qwen3-TTS 0.6B: 2.5 GB, CPU ≈9× slower than real time (our run); 1.7B: 4.5 GB, GPU with 8 GB+ (third-party). $0 per minute, but hardware, electricity, setup time; local wins for privacy, steady volume, experiments. Architectures (batch / streaming / voice agent) only in notes.
+* **14 Market (4, 54–58):** see slide. Open ASR Leaderboard 9 Oct 2026: best commercial ≈4%, best open ≈5%, Whisper large-v3 7.84%. OpenAI shuts down tts-1 / gpt-4o-mini-tts **06.01.2027**, whisper-1 / gpt-4o-transcribe **26.02.2027**.
 
 ### Break (58:00–63:00)
 * **15 Break (5):** “Start”. Rest only, no chat tasks.
 
 ### Part 2 (63:00–90:00)
-* **16 Code (3, 63–66):** reference only. `gemini-3.8-flash-tts`, style in `speech_metadata.style`, response is already WAV (24 kHz, 16-bit, mono). Check: faster-whisper, 3 lines. Homework needs no code.
-* **17 Cost (5, 66–71):** table below. Voicing our video ≈ 1 cent. An hour of ElevenLabs voice ($4.80) = 12 s of Veo 3.1. Homework example ≈ $0.07 at list price, $0 on free tiers.
+* **16 Agent + local clone (4, 63–67):** prompt for Claude Code / Antigravity / Codex: check hardware → separate Python env → `pip install qwen-tts` → download `Qwen/Qwen3-TTS-12Hz-0.6B-Base` (Apache-2.0) → `clone.py` with `generate_voice_clone(text, language, ref_audio, ref_text)` → run offline. Sample 3–10 s + exact transcript. Our demo: synthetic Kokoro sample, CPU, EN 4.6 s in 42 s. Own voice only. Gemini API code moved to README.
+* **17 Cost (4, 67–71):** table below. Voicing our video ≈ 1 cent. An hour of ElevenLabs voice ($4.80) = 12 s of Veo 3.1. Homework example ≈ $0.07 at list price, $0 on free tiers.
 * **18 Acceptance (5, 71–76):** 1 words • 2 pronunciation • 3 timing • 4 mix (no stray speech) • 5 loudness −14 ± 1 LUFS, true peak ≤ −1 dBTP • 6 rights and AI label. Both our versions rejected (EN: Veo line; RU: voice + Veo line missed by Russian speech-to-text). **= homework rubric.** Meter without code: Youlean Loudness Meter, DaVinci Resolve.
 * **19 Risks (4, 76–80):** green library/designed voice • amber own or colleague’s clone with written consent • red client/manager/public figure. OpenAI and Google: consent phrase; ElevenLabs Professional: read-out; Azure: application only; open models: no checks. EU AI Act Art. 50 from 2 Aug 2026, fines €15M / 3%. OpenAI: disclose AI voice. Fideuram ≈€95M (press reports, Feb 2026).
 * **20 Homework (7, 80–87):** voice your L05 video in 6 steps; two no-code voice services; background with licence; −14 ± 1 LUFS + meter screenshot; `transcript.txt`, `audio_qa.md`, `audio_spec.md`; end caption “AI-generated”. Own voice or library voices only.

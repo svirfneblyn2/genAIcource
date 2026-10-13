@@ -26,6 +26,8 @@ VID = "assets/v2/video/"
 AUD = "assets/v2/audio/"
 REPORT = json.loads((L06 / "demo_courier_audio" / "report.json").read_text(encoding="utf-8"))
 ENV = json.loads((HERE / "envelopes.json").read_text(encoding="utf-8"))
+_CL = L06 / "demo_courier_audio" / "clone_report.json"
+CLONE = json.loads(_CL.read_text(encoding="utf-8")) if _CL.exists() else None
 
 LANG = "ru"
 
@@ -440,7 +442,7 @@ def s_mix():
     cmd = ('ffmpeg -i voice.wav -i veo.wav -i music.wav -filter_complex \\\n'
            ' "[1][2]amix[bed];[bed][0]sidechaincompress[duck];\n'
            '  [0][duck]amix,loudnorm=I=-14:TP=-1.5" mix.wav')
-    return dict(min=6, html=f'''
+    return dict(min=5, html=f'''
   {head(t("Шаг 5 • сведение", "Step 5 • mix"), t("Сведение: голос сверху, фон приглушён", "Mixing: voice on top, background ducked, loudness normalised"), k="green")}
   <div class="body" style="margin-top:14px;">
     <div class="stems">{stems}</div>
@@ -454,8 +456,8 @@ def s_mix():
     </div>
   </div>''',
                 notes=notes(
-                    t(f"⏱ 6 мин. Это реальные дорожки нашего ролика. Голос сам по себе {num(R()['voice_only']['lufs'])} LUFS, звук Veo {num(REPORT['veo_native']['lufs'])} LUFS, ниже музыка и итог. Видно, как фон проседает там, где говорит голос: это приглушение, по-английски ducking.",
-                      f"⏱ 6 min. These are the real tracks of our video. The voice alone is {num(R()['voice_only']['lufs'])} LUFS, Veo’s audio {num(REPORT['veo_native']['lufs'])} LUFS, then music and the final mix. You can see the background drop where the voice speaks: that is ducking."),
+                    t(f"⏱ 5 мин. Это реальные дорожки нашего ролика. Голос сам по себе {num(R()['voice_only']['lufs'])} LUFS, звук Veo {num(REPORT['veo_native']['lufs'])} LUFS, ниже музыка и итог. Видно, как фон проседает там, где говорит голос: это приглушение, по-английски ducking.",
+                      f"⏱ 5 min. These are the real tracks of our video. The voice alone is {num(R()['voice_only']['lufs'])} LUFS, Veo’s audio {num(REPORT['veo_native']['lufs'])} LUFS, then music and the final mix. You can see the background drop where the voice speaks: that is ducking."),
                     t("LUFS — единица громкости, как её слышит человек. Стриминговые платформы приводят треки к своему уровню: Spotify к −14 LUFS, Apple Podcasts к −16. Стандарт эфира Европейского вещательного союза EBU R128: −23. Если ролик тише, платформа его поднимет вместе с шумом; если громче, опустит. Второе число — истинный пик, true peak: не выше −1 dBTP, иначе после сжатия в MP3 или AAC появится хрип.",
                       "LUFS is a loudness unit that follows human hearing. Streaming platforms normalise tracks to their level: Spotify to −14 LUFS, Apple Podcasts to −16. The European Broadcasting Union broadcast standard EBU R128 is −23. A quieter video gets raised together with its noise; a louder one gets turned down. The second number is true peak: no higher than −1 dBTP, otherwise MP3 or AAC encoding adds distortion."),
                     t("Наш первый проход нормализации дал пик −0,6 dBTP на русской версии, то есть не прошёл. Исправили двухпроходной нормализацией и лимитером, теперь −1,1. Без кода: Audacity, шаги справа. Нет Auto Duck — просто опустите фон на 10–15 дБ там, где звучит голос. Музыкальная подложка (bed) — тихая музыка под голосом. С кодом то же делает ffmpeg: фильтр sidechaincompress (голос управляет тем, насколько приглушить фон) и loudnorm.",
@@ -476,7 +478,7 @@ def s_check():
     listened = {"en": len(crit), "ru": ok}[LANG]  # after listening: EN "642" is the transcriber's format; RU errors are real
     script = " ".join(x["display"] for x in rr["lines"])
     diags = "".join(f'<li style="--k:var(--{k})"><b>{a}</b>: {b}</li>' for k, a, b in diag)
-    return dict(min=7, html=f'''
+    return dict(min=6, html=f'''
   {head(t("Шаг 6 • проверка", "Step 6 • check"), t("Проверка озвучки распознаванием речи", "Checking the voice-over with speech-to-text"), k="green")}
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1.45fr 1fr;gap:36px;align-items:center;flex:none;">
@@ -492,8 +494,8 @@ def s_check():
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 7 мин. Как проверить озвучку, не вслушиваясь десять раз: прогоняем итоговый звук через распознавание речи и сравниваем с исходным сценарием. Мы использовали открытую модель Whisper small прямо на ноутбуке. Живая демонстрация (2 мин): перетащите mix_ru.mp3 в Google AI Studio с промптом «Transcribe verbatim. Do not correct mistakes. Write numbers as you hear them.». Никогда не вставляйте сценарий в промпт распознавания: языковая модель «исправит» текст под сценарий и спрячет ошибки.",
-                      "⏱ 7 min. How to check a voice-over without listening ten times: run the final audio through speech-to-text and compare with the script. We used the open Whisper small model on a laptop. Live demo (2 min): drop mix_en.mp3 into Google AI Studio with the prompt “Transcribe verbatim. Do not correct mistakes. Write numbers as you hear them.” Never paste your script into the transcription prompt: a language model will correct the transcript towards the script and hide the errors."),
+                    t("⏱ 6 мин. Как проверить озвучку, не вслушиваясь десять раз: прогоняем итоговый звук через распознавание речи и сравниваем с исходным сценарием. Мы использовали открытую модель Whisper small прямо на ноутбуке. Живая демонстрация (2 мин): перетащите mix_ru.mp3 в Google AI Studio с промптом «Transcribe verbatim. Do not correct mistakes. Write numbers as you hear them.». Никогда не вставляйте сценарий в промпт распознавания: языковая модель «исправит» текст под сценарий и спрячет ошибки.",
+                      "⏱ 6 min. How to check a voice-over without listening ten times: run the final audio through speech-to-text and compare with the script. We used the open Whisper small model on a laptop. Live demo (2 min): drop mix_en.mp3 into Google AI Studio with the prompt “Transcribe verbatim. Do not correct mistakes. Write numbers as you hear them.” Never paste your script into the transcription prompt: a language model will correct the transcript towards the script and hide the errors."),
                     t("Частота ошибок в словах, WER: замены плюс пропуски плюс вставки, делённые на число слов сценария. Чем ниже, тем лучше. Но одна цифра прячет главное: ошибка в номере заказа важнее десяти ошибок в предлогах. Поэтому отдельно проверяем список критичных слов: время, номер, минуты, имя. И перед подсчётом приведите числа к одному виду в обоих текстах: «6:42» и «шесть сорок две» иначе считаются ошибкой.",
                       "Word error rate, WER: substitutions plus deletions plus insertions, divided by the number of words in the script. Lower is better. But one number hides the important part: an error in the order number matters more than ten errors in articles. So we check a separate list of critical terms: time, order number, minutes, name. Before counting, write numbers the same way in both texts, otherwise “6:42” and “six forty-two” count as an error."),
                     t("Что нашли в английской версии: в начале распознано «Here’s your order», это реплика, которую придумал Veo (слайд 6), она пробивается через сведение. Значит, звук шота 1 нужно вырезать или заглушить в начале. «642» вместо «6:42»: послушали — голос сказал верно, это формат записи у распознавания. Ошибка проверки, а не озвучки.",
@@ -502,28 +504,44 @@ def s_check():
                       "In Russian: “Часть 42” (“part 42”) instead of “Шесть сорок две” (“six forty-two”) and “Оно” (“it”) instead of “Анна” (Anna). We listened: it is the voice; the open Russian Piper model reads these words badly. Fix: a different voice or a rewritten line. These are real results, nothing staged.")))
 
 
-def s_arch():
-    def lane(k, h, sub, steps, lat, latsub):
-        fl = '<div class="arr">→</div>'.join(f'<div class="box">{s}</div>' for s in steps)
-        return (f'<div class="lane" style="--k:var(--{k})"><div class="h">{h}<small>{sub}</small></div>'
-                f'<div class="flow" style="--k:var(--{k})">{fl}</div><div class="lat">{lat}<small>{latsub}</small></div></div>')
-    return dict(min=3, html=f'''
-  {head(t("Архитектура", "Architecture"), t("Три архитектуры речевых систем: файл, поток, голосовой агент", "Three speech system architectures: file, stream, voice agent"), k="violet")}
-  <div class="body" style="margin-top:18px;">
-    <div class="arch">
-      {lane("cyan", t("Файл (batch)", "Batch file"), t("субтитры, протоколы, наша проверка", "subtitles, meeting notes, our check"), [t("запись", "recording"), t("распознавание", "transcription"), t("текст с таймкодами", "text with timecodes")], t("от секунд до минут", "seconds to minutes"), t("ждать можно", "waiting is fine"))}
-      {lane("green", t("Поток (streaming)", "Streaming"), t("живые субтитры, заметки на встрече", "live captions, meeting notes"), [t("микрофон", "microphone"), t("короткие кусочки", "short chunks"), t("черновой текст → итоговый", "partial → final text")], t("доли секунды", "under a second"), t("черновик может измениться", "partial text may change"))}
-      {lane("amber", t("Речь в речь (realtime)", "Speech-to-speech (realtime)"), t("голосовой агент, перевод", "voice agent, translation"), [t("голос", "voice"), t("конец фразы?", "end of turn?"), t("модель + инструменты", "model + tools"), t("голос", "voice")], t("счёт на секунды", "seconds matter"), t("перебивание, тишина, задержка", "interruptions, silence, latency"))}
+def s_local():
+    cl = CLONE or {"load_seconds": 0, "lines": [{"real_time_factor": 0}]}
+    rtf = max(x["real_time_factor"] for x in cl["lines"])
+    rows = [
+        ("Kokoro-82M", t("синтез речи", "text-to-speech"), "0,36 ГБ" if LANG == "ru" else "0.36 GB", t("процессор ноутбука", "laptop processor"), t("наш голос EN", "our EN voice")),
+        ("Whisper small", t("распознавание", "speech-to-text"), "0,5 ГБ" if LANG == "ru" else "0.5 GB", t("процессор ноутбука", "laptop processor"), t("наша проверка", "our check")),
+        ("Qwen3-TTS 0.6B", t("синтез + клон", "text-to-speech + cloning"), "2,5 ГБ" if LANG == "ru" else "2.5 GB", t(f"процессор: ≈{num(rtf, 0)}× медленнее реального времени", f"processor: ≈{num(rtf, 0)}× slower than real time"), t("слайд 16", "slide 16")),
+        ("Qwen3-TTS 1.7B", t("синтез + клон", "text-to-speech + cloning"), "4,5 ГБ" if LANG == "ru" else "4.5 GB", t("видеокарта от 8 ГБ памяти", "graphics card with 8 GB or more"), t("лучше качество", "better quality")),
+    ]
+    trs = "".join(f'<tr><td class="m">{a}<small>{b}</small></td><td style="white-space:nowrap">{c}</td><td style="font-family:var(--body);font-size:21px">{d}</td><td style="font-family:var(--body);font-size:20px;color:var(--muted)">{e}</td></tr>'
+                  for a, b, c, d, e in rows)
+    flow = '<div class="arr">→</div>'.join(f'<div class="box">{x}</div>' for x in [
+        t("Hugging Face<small>карточка модели и файлы весов</small>", "Hugging Face<small>model card and weight files</small>"),
+        t("Ваш диск<small>~/.cache/huggingface</small>", "Your disk<small>~/.cache/huggingface</small>"),
+        t("Python-пакет<small>qwen-tts, kokoro-onnx</small>", "Python package<small>qwen-tts, kokoro-onnx</small>"),
+        t("Процессор или видеокарта<small>считает звук</small>", "Processor (CPU) or graphics card (GPU)<small>computes the audio</small>"),
+        t("WAV-файл<small>ничего не уходит в интернет</small>", "WAV file<small>nothing leaves the machine</small>")])
+    return dict(min=4, html=f'''
+  {head(t("Локальные модели", "Local models"), t("Открытые аудиомодели на своём компьютере: где лежат, что нужно, сколько стоят", "Open-weight audio models on your own computer: where they live, what they need, what they cost"), k="green")}
+  <div class="body" style="margin-top:14px;">
+    <div class="flow" style="--k:var(--green);gap:12px;">{flow}</div>
+    <div class="row" style="grid-template-columns:1.55fr 1fr;gap:36px;flex:none;margin-top:26px;align-items:center;">
+      <table class="cost lic"><thead><tr><th>{t("Модель", "Model")}</th><th>{t("Файлы", "Files")}</th><th>{t("Где запускать", "Runs on")}</th><th>{t("У нас", "In this lesson")}</th></tr></thead><tbody>{trs}</tbody></table>
+      <div class="stack" style="gap:22px;">
+        <div class="stat" style="--k:var(--green)"><div class="n">$0 {t("за минуту", "per minute")}</div><div class="d">{t("нет оплаты за символы и минуты, но вы платите <b>железом, электричеством и временем на установку</b>", "no per-character or per-minute bill, but you pay with <b>hardware, electricity and setup time</b>")}</div></div>
+        <div class="note" style="--k:var(--amber)">{t("Зачем: <b>данные не уходят</b> из компьютера, нет лимитов, работает без интернета. Цена: качество ниже лучших сервисов, обновления и лицензии на вас.", "Why: <b>data stays on the machine</b>, no quotas, works offline. Cost: quality below the best services; updates and licences are your job.")}</div>
+      </div>
     </div>
-    <div class="note" style="margin-top:22px;--k:var(--violet)">{t("<b>Голосовой агент двумя способами:</b> цепочка «распознавание → языковая модель → синтез» (проще отлаживать) или одна модель «речь в речь» (быстрее, естественнее). Строим агентов в модуле 4.", "<b>A voice agent, two ways:</b> a chain “speech-to-text → language model → text-to-speech” (easier to debug) or one speech-to-speech model (faster, more natural). We build agents in module 4.")}</div>
   </div>''',
                 notes=notes(
-                    t("⏱ 3 мин. Распознавание речи бывает в трёх архитектурах, и это три разных продукта. Файл: отдали запись, получили текст с таймкодами через секунды или минуты. Так работает наша проверка и любые субтитры.",
-                      "⏱ 3 min. Speech recognition comes in three architectures, and they are three different products. File: send a recording, get text with timecodes in seconds or minutes. That is our check and any subtitle job."),
-                    t("Поток: звук с микрофона отправляют короткими кусочками, сервис сразу возвращает черновой текст и потом исправляет его в итоговый. Поэтому в живых субтитрах слова иногда меняются на глазах. Хранить надо итоговый текст.",
-                      "Stream: microphone audio goes out in short chunks; the service immediately returns partial text and later replaces it with final text. That is why words in live captions sometimes change as you watch. Store the final text."),
-                    t("Речь в речь: голосовой агент. Самое трудное здесь не модель, а разговор: понять, что человек закончил фразу, дать себя перебить, не молчать слишком долго. Есть два способа: цепочка из трёх моделей или одна модель речь-в-речь, например gpt-realtime-2.1 или gpt-live-1 у OpenAI или Gemini Live у Google. Подробно строим агентов в модуле 4.",
-                      "Speech-to-speech: a voice agent. The hard part is not the model but the conversation: detecting that the person finished, letting them interrupt, not staying silent too long. Two ways to build it: a chain of three models, or one speech-to-speech model such as OpenAI’s gpt-realtime-2.1 or gpt-live-1, or Google’s Gemini Live. We build agents in module 4.")))
+                    t(f"⏱ 4 мин. Открытая модель — это файлы весов, которые любой может скачать. Почти все они лежат на Hugging Face: у каждой модели есть страница (карточка) с описанием, лицензией и примером кода. Python-пакет скачивает файлы один раз в папку кэша на вашем диске, дальше всё работает без интернета. Считает процессор или видеокарта; запись голоса и текст никуда не отправляются.",
+                      f"⏱ 4 min. An open-weight model is a set of weight files anyone can download. Almost all of them live on Hugging Face: each model has a page (model card) with a description, licence and code example. A Python package downloads the files once into a cache folder on your disk; after that it works offline. The CPU or GPU does the computing; your voice recording and text go nowhere."),
+                    t(f"Сколько нужно железа. Маленькие модели работают на обычном ноутбуке: Kokoro (0,36 ГБ) и Whisper small сделали нашу озвучку и проверку без видеокарты. Qwen3-TTS 0.6B (файлы 2,5 ГБ) на процессоре тоже работает, но медленно: в нашем замере примерно в {num(rtf, 0)} раз медленнее реального времени, то есть секунда звука считается {num(rtf, 0)} секунд. Для Qwen3-TTS 1.7B (4,5 ГБ) нужна видеокарта; по сторонним замерам комфортно от 8 ГБ видеопамяти. Плюс место на диске и Python 3.10 или новее.",
+                      f"How much hardware. Small models run on an ordinary laptop: Kokoro (0.36 GB) and Whisper small made our voice-over and check without a GPU. Qwen3-TTS 0.6B (2.5 GB of files) also runs on a CPU, but slowly: in our measurement about {num(rtf, 0)} times slower than real time, so one second of audio takes {num(rtf, 0)} seconds. Qwen3-TTS 1.7B (4.5 GB) needs a GPU; third-party measurements say 8 GB of video memory is comfortable. Plus disk space and Python 3.10 or newer."),
+                    t("Как это влияет на стоимость. Счёта за символы нет, но час речи на процессоре — это много часов работы компьютера, а видеокарта стоит денег или аренды. Локально выгодно, когда данные нельзя отдавать наружу, когда объём большой и постоянный, или для экспериментов. Для разовой озвучки ролика сервис за $0.08 в минуту дешевле вашего времени на установку.",
+                      "How this affects cost. There is no per-character bill, but an hour of speech on a CPU means many hours of computer time, and a GPU costs money to buy or rent. Local makes sense when data must not leave the company, when volume is large and steady, or for experiments. For a one-off voice-over, a service at $0.08 per minute costs less than your setup time."),
+                    t("Про архитектуры речевых систем (файл, поток, голосовой агент) коротко: распознавание бывает пакетное (файл целиком) и потоковое (черновой текст сразу, итоговый потом); голосовой агент — это цепочка «распознавание → языковая модель → синтез» или одна модель речь-в-речь. Строим агентов в модуле 4.",
+                      "On speech system architectures (file, stream, voice agent), briefly: transcription is batch (whole file) or streaming (partial text at once, final text later); a voice agent is a chain speech-to-text → language model → text-to-speech, or one speech-to-speech model. We build agents in module 4.")))
 
 
 def s_market():
@@ -546,7 +564,7 @@ def s_market():
         chips = "".join(f'<span class="mchip">{n}</span>' for n, _ in closed)
         chips += "".join(f'<span class="mchip ow">{n}<small>{lic}</small></span>' for n, lic in open_)
         cells += f'<div class="task-h" style="--k:var(--{k})">{h}<small>{sub}</small></div><div class="ms">{chips}</div>'
-    return dict(min=3, html=f'''
+    return dict(min=4, html=f'''
   {head(t("Рынок • октябрь 2026", "Market • October 2026"), t("Аудиомодели по задачам: коммерческие и открытые", "Audio models by task: commercial and open-weight"), k="amber")}
   <div class="body" style="margin-top:12px;">
     <div class="mk">{cells}</div>
@@ -557,8 +575,8 @@ def s_market():
     <div class="small" style="margin-top:10px;color:var(--muted)">{t("Зелёная рамка: открытая модель и её лицензия. <b>MIT, Apache-2.0:</b> можно в коммерции, сохраняя текст лицензии. <b>CC BY:</b> можно в коммерции с указанием автора. <b>CC BY-NC:</b> только некоммерческое. У голосов и датасетов бывают свои лицензии.", "Green border: open-weight model and its licence. <b>MIT, Apache-2.0:</b> commercial use allowed, keep the licence notice. <b>CC BY:</b> commercial use with credit. <b>CC BY-NC:</b> non-commercial only. Voices and datasets can have their own licences.")}</div>
   </div>''',
                 notes=notes(
-                    t("⏱ 3 мин. Карта по четырём задачам, по три коммерческих примера на строку; полный список с ценами в L06_08. Слева коммерческие модели, в зелёной рамке открытые, с лицензией. Что изменилось за год: у OpenAI новое поколение распознавания (gpt-transcribe) и голосовых моделей (gpt-realtime-2.1, gpt-live-1), у ElevenLabs v4, у Google Gemini 3.8 TTS и музыка Lyria 3.5, у Suno v6.",
-                      "⏱ 3 min. A map by the four tasks, three commercial examples per row; the full list with prices is in L06_08. Commercial models on the left, open-weight ones in a green border with their licence. What changed in a year: OpenAI has a new generation of transcription (gpt-transcribe) and voice models (gpt-realtime-2.1, gpt-live-1), ElevenLabs has v4, Google has Gemini 3.8 TTS and Lyria 3.5 music, Suno has v6."),
+                    t("⏱ 4 мин. Карта по четырём задачам, по три коммерческих примера на строку; полный список с ценами в L06_08. Слева коммерческие модели, в зелёной рамке открытые, с лицензией. Что изменилось за год: у OpenAI новое поколение распознавания (gpt-transcribe) и голосовых моделей (gpt-realtime-2.1, gpt-live-1), у ElevenLabs v4, у Google Gemini 3.8 TTS и музыка Lyria 3.5, у Suno v6.",
+                      "⏱ 4 min. A map by the four tasks, three commercial examples per row; the full list with prices is in L06_08. Commercial models on the left, open-weight ones in a green border with their licence. What changed in a year: OpenAI has a new generation of transcription (gpt-transcribe) and voice models (gpt-realtime-2.1, gpt-live-1), ElevenLabs has v4, Google has Gemini 3.8 TTS and Lyria 3.5 music, Suno has v6."),
                     t("Точность распознавания: на открытом рейтинге Hugging Face Open ASR Leaderboard (обновлён 09.10.2026) лучшие коммерческие системы дают около 4–5% ошибок в словах на английском, лучшие открытые около 5–6%, Whisper large-v3 около 7,8%. На русском и на шумной записи цифры хуже; проверяйте на своих данных.",
                       "Accuracy: on the Hugging Face Open ASR Leaderboard (updated 09.10.2026) the best commercial systems are around 4–5% English word error rate, the best open ones around 5–6%, Whisper large-v3 around 7.8%. Other languages and noisy recordings score worse; test on your own data."),
                     t("И про срок жизни: OpenAI уже объявила отключение tts-1 и gpt-4o-mini-tts 6 января 2027 (замена: gpt-realtime-2.1-mini), whisper-1 и gpt-4o-transcribe 26 февраля 2027. Поэтому имя модели выносим в настройки. Названия моделей меняются каждые несколько месяцев; перепроверьте перед занятием.",
@@ -577,48 +595,49 @@ def s_break():
                 notes=notes(t("⏱ 5 мин. Нажмите «Старт». Только отдых, без заданий в чате.", "⏱ 5 min. Press “Start”. Rest only, no chat tasks.")))
 
 
-def s_code():
-    code = (
-        '<span class="kw">from</span> google <span class="kw">import</span> genai\n'
-        '<span class="kw">from</span> google.genai <span class="kw">import</span> types\n\n'
-        f'client = genai.<span class="fn">Client</span>()  <span class="cm"># {t("ключ из GEMINI_API_KEY", "key from GEMINI_API_KEY")}</span>\n'
-        'r = client.models.<span class="fn">generate_content</span>(\n'
-        '    model=<span class="str">"gemini-3.8-flash-tts"</span>,\n'
-        '    contents=types.<span class="fn">Content</span>(role=<span class="str">"user"</span>, parts=[types.<span class="fn">Part</span>(\n'
-        '        text=<span class="str">"Six forty-two. Order four one seven."</span>,\n'
-        '        speech_metadata=types.<span class="fn">SpeechMetadata</span>(\n'
-        '            style=<span class="str">"calm, friendly dispatcher"</span>))]),\n'
-        '    config=types.<span class="fn">GenerateContentConfig</span>(\n'
-        '        response_modalities=[<span class="str">"AUDIO"</span>],\n'
-        '        speech_config=types.<span class="fn">SpeechConfig</span>(\n'
-        '            voice_config=types.<span class="fn">VoiceConfig</span>(\n'
-        '                prebuilt_voice_config=types.<span class="fn">PrebuiltVoiceConfig</span>(\n'
-        '                    voice_name=<span class="str">"Kore"</span>)))))\n'
-        f'audio = r.candidates[0].content.parts[0].inline_data  <span class="cm"># {t("уже WAV", "already WAV")}</span>\n'
-        '<span class="fn">open</span>(<span class="str">"line1.wav"</span>, <span class="str">"wb"</span>).<span class="fn">write</span>(audio.data)')
-    stt = ('<span class="kw">from</span> faster_whisper <span class="kw">import</span> WhisperModel\n'
-           'm = <span class="fn">WhisperModel</span>(<span class="str">"small"</span>)\n'
-           'segs, _ = m.<span class="fn">transcribe</span>(<span class="str">"mix.wav"</span>)\n'
-           '<span class="fn">print</span>(<span class="str">" "</span>.<span class="fn">join</span>(s.text <span class="kw">for</span> s <span class="kw">in</span> segs))')
-    return dict(min=3, html=f'''
-  {head(t("Для справки • google-genai + Whisper", "Reference • google-genai + Whisper"), t("Код: синтез речи через Gemini и проверка распознаванием через Whisper", "Code: text-to-speech with Gemini and a speech-to-text check with Whisper"), k="violet")}
-  <div class="body" style="margin-top:16px;">
-    <div class="row" style="grid-template-columns:1.55fr 1fr;gap:36px;align-items:center;">
-      <pre class="code" style="font-size:18px;line-height:1.5;padding:18px 22px;">{code}</pre>
-      <div class="stack" style="gap:20px;">
-        <div class="note" style="--k:var(--cyan)">{t("<b>Синтез:</b> та же идея, что в L03, но ответ — звук: готовый WAV, 16 бит, 24 кГц, моно. Стиль голоса — в отдельном поле <code>style</code>: Gemini 3.8 читает текст дословно.", "<b>Synthesis:</b> the same idea as in L03, but the response is audio: a WAV file, 16-bit, 24 kHz, mono. The voice style goes in a separate <code>style</code> field: Gemini 3.8 reads the text aloud word for word.")}</div>
-        <div><div class="prompt-label">{t("Проверка, локально и бесплатно", "Check, local and free")}</div><pre class="code" style="font-size:18px;padding:14px 16px;white-space:pre-wrap;">{stt}</pre></div>
-        <div class="small">{t("Программный интерфейс Gemini (API), октябрь 2026. Полный пайплайн урока: <code>deck_v2/make_audio.py</code>.", "Gemini application programming interface (API), October 2026. The full lesson pipeline: <code>deck_v2/make_audio.py</code>.")}</div>
+def s_agent():
+    cl = CLONE or {"load_seconds": 0, "reference": {"seconds": 0}, "lines": []}
+    by = {x["name"]: x for x in cl["lines"]}
+    prompt = t(
+        "Установи на этот компьютер открытую модель синтеза речи Qwen3-TTS (Qwen/Qwen3-TTS-12Hz-0.6B-Base, лицензия Apache-2.0) и склонируй МОЙ голос.\n"
+        "1. Проверь железо: видеокарта и её память, оперативная память, свободный диск (нужно ~5 ГБ). Скажи, что подойдёт: 0.6B или 1.7B, видеокарта или процессор.\n"
+        "2. Создай отдельное окружение Python в ./qwen-tts-demo, установи qwen-tts и soundfile.\n"
+        "3. Скачай модель с Hugging Face и покажи, где лежат файлы.\n"
+        "4. Напиши clone.py: вход my_voice.wav (10 с моего голоса) и my_voice.txt (точная расшифровка), выход line1.wav с фразой из script.md.\n"
+        "5. Запусти, замерь время, ничего не загружай в интернет.",
+        "Install the open-weight text-to-speech model Qwen3-TTS (Qwen/Qwen3-TTS-12Hz-0.6B-Base, Apache-2.0 licence) on this computer and clone MY voice.\n"
+        "1. Check the hardware: graphics card and its memory, system memory, free disk (~5 GB needed). Tell me what fits: 0.6B or 1.7B, graphics card or processor.\n"
+        "2. Create a separate Python environment in ./qwen-tts-demo; install qwen-tts and soundfile.\n"
+        "3. Download the model from Hugging Face and show where the files are.\n"
+        "4. Write clone.py: input my_voice.wav (10 s of my voice) and my_voice.txt (exact transcript); output line1.wav with the line from script.md.\n"
+        "5. Run it, report the time, upload nothing to the internet.")
+    ru = by.get("ru_3", {})
+    en = by.get("en_1", {})
+    return dict(min=4, html=f'''
+  {head(t("Практика с агентом", "Hands-on with an agent"), t("Агент ставит Qwen3-TTS локально и клонирует голос", "A coding agent installs Qwen3-TTS locally and clones a voice"), k="violet")}
+  <div class="body" style="margin-top:14px;">
+    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:32px;align-items:center;flex:none;">
+      <div class="stack" style="gap:8px;">
+        <div class="prompt-label">{t("Промпт для Claude Code, Antigravity или Codex", "Prompt for Claude Code, Antigravity or Codex")}</div>
+        <pre class="code" style="font-size:19px;line-height:1.55;padding:18px 20px;white-space:pre-wrap;">{prompt}</pre>
+      </div>
+      <div class="stack" style="gap:14px;">
+        <div class="flow" style="--k:var(--violet);flex-wrap:wrap;gap:8px;"><div class="box">{t("Образец 3–10 с<small>+ его точный текст</small>", "3–10 s sample<small>+ its exact transcript</small>")}</div><div class="arr">+</div><div class="box">{t("Новый текст<small>+ язык</small>", "New text<small>+ language</small>")}</div><div class="arr">→</div><div class="box hl">{t("Новая речь<small>этим голосом</small>", "New speech<small>in that voice</small>")}</div></div>
+        {aud("clone_reference", t("Образец", "Sample"), t(f"синтетический голос Kokoro, {num(cl['reference']['seconds'])} с", f"synthetic Kokoro voice, {num(cl['reference']['seconds'])} s"), "cyan")}
+        {aud("clone_ru_3" if LANG == "ru" else "clone_en_1", t("Клон", "Clone"), t(f"Qwen3-TTS 0.6B на процессоре, {num(ru.get('generation_seconds', 0), 0)} с счёта", f"Qwen3-TTS 0.6B on a processor, {num(en.get('generation_seconds', 0), 0)} s of compute"), "violet")}
+        <div class="note" style="--k:var(--red)">{t("<b>Только свой голос.</b> Модель ничего не проверяет: согласие — ваша ответственность (слайд 19).", "<b>Your own voice only.</b> The model checks nothing: consent is your responsibility (slide 19).")}</div>
       </div>
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 3 мин. Слайд для справки, построчно не разбираем. Слева синтез речи через библиотеку google-genai, ту же, что в L03: обычный generate_content, но просим ответ в виде звука, указываем готовый голос и стиль. Ответ — готовый WAV (16 бит, 24 кГц, моно), сохраняем как есть. Стиль — в speech_metadata: всё, что в тексте, модель произносит.",
-                      "⏱ 3 min. A reference slide; do not go line by line. Left: text-to-speech with the google-genai library from L03. A normal generate_content call, but we ask for an audio response and name a prebuilt voice and a style. The response is a ready WAV file (16-bit, 24 kHz, mono); we save it as is. The style goes in speech_metadata, because anything in the text is spoken."),
-                    t("Справа проверка: открытый Whisper через библиотеку faster-whisper, три строки, работает на ноутбуке без интернета. Весь пайплайн нашего примера (голос, сведение, проверка) лежит в make_audio.py рядом с презентацией.",
-                      "Right: the check with the open Whisper model through the faster-whisper library, three lines, runs on a laptop offline. The full pipeline of our example (voice, mix, check) is in make_audio.py next to the deck."),
-                    t("Перед занятием проверьте имя модели синтеза в документации Gemini API: модели переименовываются часто.",
-                      "Before class, check the speech model ID in the Gemini API docs: models get renamed often.")))
+                    t("⏱ 4 мин. Слева готовый промпт для агента разработки: Claude Code, Antigravity или Codex в ChatGPT. Агент сам проверит железо, создаст отдельное окружение Python, скачает модель с Hugging Face, напишет скрипт и запустит его. Вам остаётся записать 10 секунд своего голоса и точно расшифровать их.",
+                      "⏱ 4 min. On the left is a ready prompt for a coding agent: Claude Code, Antigravity or Codex in ChatGPT. The agent checks the hardware, creates a separate Python environment, downloads the model from Hugging Face, writes the script and runs it. You only record 10 seconds of your voice and transcribe them exactly."),
+                    t(f"Что делает модель. Base-версия Qwen3-TTS получает образец голоса на 3–10 секунд и его точный текст; по ним она запоминает тембр и манеру. Потом получает новый текст и язык и генерирует речь этим голосом. В коде это одна функция generate_voice_clone(text, language, ref_audio, ref_text). Есть режим без расшифровки (x_vector_only), но качество ниже.",
+                      f"What the model does. The Base version of Qwen3-TTS takes a 3–10 second voice sample and its exact transcript; from them it captures the timbre and manner. Then it takes new text and a language and generates speech in that voice. In code this is one function, generate_voice_clone(text, language, ref_audio, ref_text). There is a mode without a transcript (x_vector_only), but quality is lower."),
+                    t(f"Наш реальный прогон: образцом был синтетический голос Kokoro, а не живой человек, поэтому вопроса согласия нет. Модель 0.6B на процессоре контейнера без видеокарты загружалась {num(cl['load_seconds'], 0)} с. Русская реплика «{ru.get('text', '')}» считалась {num(ru.get('generation_seconds', 0), 0)} с; Whisper услышал: «{ru.get('whisper', '')}». Английская: {num(en.get('generation_seconds', 0), 0)} с, Whisper: «{en.get('whisper', '')}». Обратите внимание: голос клонирован с английского образца, а говорит по-русски; «Анна» теперь произнесена верно, в отличие от Piper. Но первую русскую реплику Whisper записал как «Shaste Sort 2»: клон перенёс английский акцент образца. Образец лучше записывать на том же языке, на котором будет озвучка.",
+                      f"Our real run: the sample was a synthetic Kokoro voice, not a living person, so there is no consent question. The 0.6B model on a container CPU without a GPU took {num(cl['load_seconds'], 0)} s to load. The English line took {num(en.get('generation_seconds', 0), 0)} s; Whisper heard: “{en.get('whisper', '')}”. The Russian line took {num(ru.get('generation_seconds', 0), 0)} s; Whisper heard: “{ru.get('whisper', '')}”. Note that the voice was cloned from an English sample and speaks Russian; “Анна” is now pronounced correctly, unlike with Piper. But Whisper wrote the first Russian line as “Shaste Sort 2”: the clone carried over the sample’s English accent. Record the sample in the same language as the voice-over."),
+                    t("Справочный код синтеза через Gemini API (было на этом слайде раньше) лежит в README урока. Для ДЗ код не нужен; локальная модель — вариант по желанию, только со своим голосом.",
+                      "The reference Gemini API synthesis code (previously on this slide) is in the lesson README. The homework needs no code; a local model is optional, with your own voice only.")))
 
 
 def s_econ():
@@ -642,7 +661,7 @@ def s_econ():
         f'<tr><td class="m">{m}<small>{task} · {unit}</small></td><td>{money(v / 60)}</td><td>{money(v)}</td><td class="h">{money(v * 60)}</td></tr>'
         for task, m, unit, v in rows)
     _, _, chars = voice_words()
-    return dict(min=5, html=f'''
+    return dict(min=4, html=f'''
   {head(t("Стоимость", "Cost"), t("Стоимость аудио: секунда, минута, час", "Audio cost: per second, per minute, per hour"), t("Пересчёт: <b>1 минута речи ≈ 1000 символов</b> (так считает ElevenLabs). Списочные цены на 12.10.2026.", "Conversion: <b>1 minute of speech ≈ 1,000 characters</b> (ElevenLabs’ own rule). List prices as of 12 October 2026."), k="amber")}
   <div class="body" style="margin-top:10px;">
     <div class="row" style="grid-template-columns:1.5fr 1fr;gap:36px;align-items:start;">
@@ -657,8 +676,8 @@ def s_econ():
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 5 мин. Сначала единицы. Синтез речи считают за символы текста (Google Cloud, ElevenLabs) или за аудиотокены (Gemini). Распознавание, голосовые агенты и музыку ElevenLabs — за минуту. Чтобы сравнивать, пересчитываем всё в секунду, минуту и час, приняв 1000 символов за минуту речи; так считает сам ElevenLabs.",
-                      "⏱ 5 min. Units first. Speech synthesis is billed per character of text (Google Cloud, ElevenLabs) or per audio token (Gemini). Transcription, voice agents and ElevenLabs music are billed per minute. To compare, we convert everything to second, minute and hour, using 1,000 characters per minute of speech, ElevenLabs’ own rule."),
+                    t("⏱ 4 мин. Сначала единицы. Синтез речи считают за символы текста (Google Cloud, ElevenLabs) или за аудиотокены (Gemini). Распознавание, голосовые агенты и музыку ElevenLabs — за минуту. Чтобы сравнивать, пересчитываем всё в секунду, минуту и час, приняв 1000 символов за минуту речи; так считает сам ElevenLabs.",
+                      "⏱ 4 min. Units first. Speech synthesis is billed per character of text (Google Cloud, ElevenLabs) or per audio token (Gemini). Transcription, voice agents and ElevenLabs music are billed per minute. To compare, we convert everything to second, minute and hour, using 1,000 characters per minute of speech, ElevenLabs’ own rule."),
                     t("Главная мысль: звук на порядки дешевле видео. Час голоса на ElevenLabs стоит $4.80, на Gemini 3.8 Flash TTS меньше доллара. Час видео Veo 3.1 в L05 стоил $1 440. Распознавание часа записи стоит от 22 до 27 центов. Озвучка нашего ролика: около 150 символов, на ElevenLabs это примерно 1 цент.",
                       "Key point: audio is orders of magnitude cheaper than video. An hour of voice costs $4.80 on ElevenLabs and under a dollar on Gemini 3.8 Flash TTS. An hour of Veo 3.1 video in L05 cost $1,440. Transcribing an hour of recording costs 22 to 27 cents. Voicing our video: about 150 characters, roughly 1 cent on ElevenLabs."),
                     t("Подписки: ElevenLabs от $6 в месяц (30 тыс. кредитов ≈ 30 минут), Suno Pro $8 в месяц при оплате за год. В таблицу не входят дубли, сведение и работа людей. Пример для ДЗ: 3 реплики ≈ 150 символов × 2 сервиса × 3 дубля ≈ 900 символов ≈ $0.07 по прайсу; на бесплатном тарифе $0. Где деньги на самом деле уходят: голосовые агенты (минуты разговора плюс языковая модель за ними) и дубли озвучки. И подписки веб-студий: в ДЗ бесплатного лимита ElevenLabs (10 тыс. кредитов ≈ 10 минут) хватит, но коммерческой лицензии на бесплатном тарифе нет. Цены меняются: у Gemini 3.8 TTS цена удваивается с 1 января 2027.",
@@ -801,7 +820,7 @@ def s_summary():
 
 
 SLIDES = [s_cover, s_hook, s_layers, s_tasks, s_how, s_video_audio, s_script, s_text, s_voice, s_music,
-          s_mix, s_check, s_arch, s_market, s_break, s_code, s_econ, s_qa, s_risks, s_hw, s_summary]
+          s_mix, s_check, s_local, s_market, s_break, s_agent, s_econ, s_qa, s_risks, s_hw, s_summary]
 
 
 # ---------------------------------------------------------------- page

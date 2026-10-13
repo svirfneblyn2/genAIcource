@@ -29,13 +29,13 @@
 | **08** | Spoken text: numbers as words, style as a separate instruction | 26:00–31:00 | 5 |
 | **09** | Three sources of a voice: library, description, clone | 31:00–35:00 | 4 |
 | **10** | Sound effects and music: prompt, length and the track licence | 35:00–39:00 | 4 |
-| **11** | Mixing: voice on top, background ducked, loudness normalised | 39:00–45:00 | 6 |
-| **12** | Checking the voice-over with speech-to-text | 45:00–52:00 | 7 |
-| **13** | Three speech system architectures: file, stream, voice agent | 52:00–55:00 | 3 |
-| **14** | Audio models by task: commercial and open-weight | 55:00–58:00 | 3 |
+| **11** | Mixing: voice on top, background ducked, loudness normalised | 39:00–44:00 | 5 |
+| **12** | Checking the voice-over with speech-to-text | 44:00–50:00 | 6 |
+| **13** | Open-weight audio models on your own computer: where they live, what they need, what they cost | 50:00–54:00 | 4 |
+| **14** | Audio models by task: commercial and open-weight | 54:00–58:00 | 4 |
 | **15** | 5 minutes for coffee and resting your ears | 58:00–63:00 | 5 |
-| **16** | Code: text-to-speech with Gemini and a speech-to-text check with Whisper | 63:00–66:00 | 3 |
-| **17** | Audio cost: per second, per minute, per hour | 66:00–71:00 | 5 |
+| **16** | A coding agent installs Qwen3-TTS locally and clones a voice | 63:00–67:00 | 4 |
+| **17** | Audio cost: per second, per minute, per hour | 67:00–71:00 | 4 |
 | **18** | Acceptance checklist for a voice-over | 71:00–76:00 | 5 |
 | **19** | Risks and voice consent: cloning, labelling, law | 76:00–80:00 | 4 |
 | **20** | Homework 6: voice your L05 video | 80:00–87:00 | 7 |
@@ -179,11 +179,11 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 
 ---
 
-### Slide 11 (39:00–45:00) • Mixing: voice on top, background ducked, loudness normalised
+### Slide 11 (39:00–44:00) • Mixing: voice on top, background ducked, loudness normalised
 
 **On screen:** Four real tracks (voice, Veo audio, music, mix) with loudness; three rules (ducking, loudness, peak) and the ffmpeg command.
 
-#### Speaker (6 min)
+#### Speaker (5 min)
 > These are the real tracks of our video. The voice alone is -19.2 LUFS, Veo’s audio -22.8 LUFS, then music and the final mix. You can see the background drop where the voice speaks: that is ducking.
 >
 > LUFS is a loudness unit that follows human hearing. Streaming platforms normalise tracks to their level: Spotify to −14 LUFS, Apple Podcasts to −16. The European Broadcasting Union broadcast standard EBU R128 is −23. A quieter video gets raised together with its noise; a louder one gets turned down. The second number is true peak: no higher than −1 dBTP, otherwise MP3 or AAC encoding adds distortion.
@@ -194,11 +194,11 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 
 ---
 
-### Slide 12 (45:00–52:00) • Checking the voice-over with speech-to-text
+### Slide 12 (44:00–50:00) • Checking the voice-over with speech-to-text
 
 **On screen:** The script and what Whisper heard, with errors highlighted; two errors explained. Right: word error rate and the number of correct critical terms.
 
-#### Speaker (7 min)
+#### Speaker (6 min)
 > How to check a voice-over without listening ten times: run the final audio through speech-to-text and compare with the script. We used the open Whisper small model on a laptop. Live demo (2 min): drop mix_en.mp3 into Google AI Studio with the prompt “Transcribe verbatim. Do not correct mistakes. Write numbers as you hear them.” Never paste your script into the transcription prompt: a language model will correct the transcript towards the script and hide the errors.
 >
 > Word error rate, WER: substitutions plus deletions plus insertions, divided by the number of words in the script. Lower is better. But one number hides the important part: an error in the order number matters more than ten errors in articles. So we check a separate list of critical terms: time, order number, minutes, name. Before counting, write numbers the same way in both texts, otherwise “6:42” and “six forty-two” count as an error.
@@ -209,24 +209,26 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 
 ---
 
-### Slide 13 (52:00–55:00) • Three speech system architectures: file, stream, voice agent
+### Slide 13 (50:00–54:00) • Open-weight audio models on your own computer: where they live, what they need, what they cost
 
-**On screen:** Three architecture lanes: file, stream, speech-to-speech, with latency. Below: two ways to build a voice agent.
+**On screen:** Flow Hugging Face → disk → Python package → CPU or GPU → WAV; model table with file sizes and our CPU measurement; $0 per minute and what you pay instead.
 
-#### Speaker (3 min)
-> Speech recognition comes in three architectures, and they are three different products. File: send a recording, get text with timecodes in seconds or minutes. That is our check and any subtitle job.
+#### Speaker (4 min)
+> An open-weight model is a set of weight files anyone can download. Almost all of them live on Hugging Face: each model has a page (model card) with a description, licence and code example. A Python package downloads the files once into a cache folder on your disk; after that it works offline. The CPU or GPU does the computing; your voice recording and text go nowhere.
 >
-> Stream: microphone audio goes out in short chunks; the service immediately returns partial text and later replaces it with final text. That is why words in live captions sometimes change as you watch. Store the final text.
+> How much hardware. Small models run on an ordinary laptop: Kokoro (0.36 GB) and Whisper small made our voice-over and check without a GPU. Qwen3-TTS 0.6B (2.5 GB of files) also runs on a CPU, but slowly: in our measurement about 9 times slower than real time, so one second of audio takes 9 seconds. Qwen3-TTS 1.7B (4.5 GB) needs a GPU; third-party measurements say 8 GB of video memory is comfortable. Plus disk space and Python 3.10 or newer.
 >
-> Speech-to-speech: a voice agent. The hard part is not the model but the conversation: detecting that the person finished, letting them interrupt, not staying silent too long. Two ways to build it: a chain of three models, or one speech-to-speech model such as OpenAI’s gpt-realtime-2.1 or gpt-live-1, or Google’s Gemini Live. We build agents in module 4.
+> How this affects cost. There is no per-character bill, but an hour of speech on a CPU means many hours of computer time, and a GPU costs money to buy or rent. Local makes sense when data must not leave the company, when volume is large and steady, or for experiments. For a one-off voice-over, a service at $0.08 per minute costs less than your setup time.
+>
+> On speech system architectures (file, stream, voice agent), briefly: transcription is batch (whole file) or streaming (partial text at once, final text later); a voice agent is a chain speech-to-text → language model → text-to-speech, or one speech-to-speech model. We build agents in module 4.
 
 ---
 
-### Slide 14 (55:00–58:00) • Audio models by task: commercial and open-weight
+### Slide 14 (54:00–58:00) • Audio models by task: commercial and open-weight
 
 **On screen:** Four task rows with models; open-weight models in a green border with the licence. Below: transcription accuracy and model lifetimes.
 
-#### Speaker (3 min)
+#### Speaker (4 min)
 > A map by the four tasks, three commercial examples per row; the full list with prices is in L06_08. Commercial models on the left, open-weight ones in a green border with their licence. What changed in a year: OpenAI has a new generation of transcription (gpt-transcribe) and voice models (gpt-realtime-2.1, gpt-live-1), ElevenLabs has v4, Google has Gemini 3.8 TTS and Lyria 3.5 music, Suno has v6.
 >
 > Accuracy: on the Hugging Face Open ASR Leaderboard (updated 09.10.2026) the best commercial systems are around 4–5% English word error rate, the best open ones around 5–6%, Whisper large-v3 around 7.8%. Other languages and noisy recordings score worse; test on your own data.
@@ -244,24 +246,26 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 
 ---
 
-### Slide 16 (63:00–66:00) • Code: text-to-speech with Gemini and a speech-to-text check with Whisper
+### Slide 16 (63:00–67:00) • A coding agent installs Qwen3-TTS locally and clones a voice
 
-**On screen:** Text-to-speech code with google-genai (Gemini API) and three lines of checking with faster-whisper.
+**On screen:** Coding-agent prompt (Claude Code, Antigravity, Codex) to install Qwen3-TTS and clone a voice; diagram sample + text → speech in that voice; two players: synthetic sample and clone; the own-voice-only rule.
 
-#### Speaker (3 min)
-> A reference slide; do not go line by line. Left: text-to-speech with the google-genai library from L03. A normal generate_content call, but we ask for an audio response and name a prebuilt voice and a style. The response is a ready WAV file (16-bit, 24 kHz, mono); we save it as is. The style goes in speech_metadata, because anything in the text is spoken.
+#### Speaker (4 min)
+> On the left is a ready prompt for a coding agent: Claude Code, Antigravity or Codex in ChatGPT. The agent checks the hardware, creates a separate Python environment, downloads the model from Hugging Face, writes the script and runs it. You only record 10 seconds of your voice and transcribe them exactly.
 >
-> Right: the check with the open Whisper model through the faster-whisper library, three lines, runs on a laptop offline. The full pipeline of our example (voice, mix, check) is in make_audio.py next to the deck.
+> What the model does. The Base version of Qwen3-TTS takes a 3–10 second voice sample and its exact transcript; from them it captures the timbre and manner. Then it takes new text and a language and generates speech in that voice. In code this is one function, generate_voice_clone(text, language, ref_audio, ref_text). There is a mode without a transcript (x_vector_only), but quality is lower.
 >
-> Before class, check the speech model ID in the Gemini API docs: models get renamed often.
+> Our real run: the sample was a synthetic Kokoro voice, not a living person, so there is no consent question. The 0.6B model on a container CPU without a GPU took 10 s to load. The English line took 42 s; Whisper heard: “642. Order 417 is picked up, still hot.”. The Russian line took 22 s; Whisper heard: “До дверей 12 минут. Анна уже в пути.”. Note that the voice was cloned from an English sample and speaks Russian; “Анна” is now pronounced correctly, unlike with Piper. But Whisper wrote the first Russian line as “Shaste Sort 2”: the clone carried over the sample’s English accent. Record the sample in the same language as the voice-over.
+>
+> The reference Gemini API synthesis code (previously on this slide) is in the lesson README. The homework needs no code; a local model is optional, with your own voice only.
 
 ---
 
-### Slide 17 (66:00–71:00) • Audio cost: per second, per minute, per hour
+### Slide 17 (67:00–71:00) • Audio cost: per second, per minute, per hour
 
 **On screen:** Price table: second, minute, hour for synthesis, transcription, speech-to-speech, music. Right: the cost of voicing our video and a comparison with video.
 
-#### Speaker (5 min)
+#### Speaker (4 min)
 > Units first. Speech synthesis is billed per character of text (Google Cloud, ElevenLabs) or per audio token (Gemini). Transcription, voice agents and ElevenLabs music are billed per minute. To compare, we convert everything to second, minute and hour, using 1,000 characters per minute of speech, ElevenLabs’ own rule.
 >
 > Key point: audio is orders of magnitude cheaper than video. An hour of voice costs $4.80 on ElevenLabs and under a dollar on Gemini 3.8 Flash TTS. An hour of Veo 3.1 video in L05 cost $1,440. Transcribing an hour of recording costs 22 to 27 cents. Voicing our video: about 150 characters, roughly 1 cent on ElevenLabs.

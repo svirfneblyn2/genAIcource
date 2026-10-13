@@ -2,7 +2,7 @@
 
 ## Status: deck v2 (21 slides, 90 min, facts as of October 2026), companion documents aligned 2026-10-12
 
-Deck structure: the L05 courier video with a voice-over, where to generate (chat, web studio, API, open weights), four audio tasks, how a speech model works, audio inside video models (Veo invents lines), then a 6-step pipeline (1 script, 2 text for the voice, 3 voice, 4 sound effects and music, 5 mix, 6 check with speech-to-text), three speech architectures, market, break, code, cost per second / minute / hour, acceptance checklist, risks and voice consent, homework (voice your L05 video), summary. Lesson graph: `L06_10_Lesson_Graph.md`. PDFs built with headless Edge on 2026-10-12 (21 pages each); rebuild after any deck change with `python deck_v2/build.py` on a machine with Edge.
+Deck structure: the L05 courier video with a voice-over, where to generate (chat, web studio, API, open weights), four audio tasks, how a speech model works, audio inside video models (Veo invents lines), then a 6-step pipeline (1 script, 2 text for the voice, 3 voice, 4 sound effects and music, 5 mix, 6 check with speech-to-text), local open-weight models, market, break, a coding agent cloning a voice with Qwen3-TTS, cost per second / minute / hour, acceptance checklist, risks and voice consent, homework (voice your L05 video), summary. Lesson graph: `L06_10_Lesson_Graph.md`. PDFs built with headless Edge on 2026-10-12 (21 pages each); rebuild after any deck change with `python deck_v2/build.py` on a machine with Edge.
 
 The old Drive package (`06 — Speech and Audio AI — DONE`, Sep 2026: docx/pptx, speech-to-text only, mock demo repo) is replaced by this folder. Its useful parts (batch / streaming / realtime, word error rate plus critical terms, synthetic audio only) live on slides 12–13.
 
@@ -29,14 +29,36 @@ The old Drive package (`06 — Speech and Audio AI — DONE`, Sep 2026: docx/ppt
 | 08 | 5 | 26:00–31:00 | Step 2: text for the voice | Script → spoken text table + style instruction |
 | 09 | 4 | 31:00–35:00 | Step 3: three sources of a voice | Library / designed / clone cards with consent gates |
 | 10 | 4 | 35:00–39:00 | Step 4: sound effects and music | MusicGen bed player + licence table |
-| 11 | 6 | 39:00–45:00 | Step 5: mix | Four real waveforms, loudness, ffmpeg command |
-| 12 | 7 | 45:00–52:00 | Step 6: check with speech-to-text | Script vs Whisper transcript, word error rate, critical terms |
-| 13 | 3 | 52:00–55:00 | Three speech system architectures | File / stream / speech-to-speech lanes |
-| 14 | 3 | 55:00–58:00 | Market, October 2026 | Models by task, open weights with licences |
+| 11 | 5 | 39:00–44:00 | Step 5: mix | Four real waveforms, loudness, ffmpeg command |
+| 12 | 6 | 44:00–50:00 | Step 6: check with speech-to-text | Script vs Whisper transcript, word error rate, critical terms |
+| 13 | 4 | 50:00–54:00 | Local open-weight audio models: where they live, hardware, cost | Hugging Face → disk → package → CPU/GPU flow; model table with file sizes and measured CPU speed |
+| 14 | 4 | 54:00–58:00 | Market, October 2026 | Models by task, open weights with licences |
 | 15 | 5 | 58:00–63:00 | Break | Timer |
-| 16 | 3 | 63:00–66:00 | Code (reference) | Gemini API text-to-speech + faster-whisper check |
-| 17 | 5 | 66:00–71:00 | Cost: second, minute, hour | Price table + cost of our video |
+| 16 | 4 | 63:00–67:00 | A coding agent installs Qwen3-TTS locally and clones a voice | Agent prompt (Claude Code / Antigravity / Codex) + real clone demo (synthetic reference, CPU) |
+| 17 | 4 | 67:00–71:00 | Cost: second, minute, hour | Price table + cost of our video |
 | 18 | 5 | 71:00–76:00 | Acceptance checklist | 6 items with our real result (= homework rubric) |
 | 19 | 4 | 76:00–80:00 | Risks and voice consent | Traffic light, vendor consent checks, EU AI Act Art. 50 |
 | 20 | 7 | 80:00–87:00 | Homework: voice your L05 video | Deliverables, repo tree |
-| 21 | 3 | 87:00–90:00 | Summary | 5 rules + L07 preview |
+| 21 | 3 | 87:00–90:00 | Summary | 6 rules + L07 preview |
+
+## Local voice cloning demo (slide 16)
+`python deck_v2/make_clone.py` loads `Qwen/Qwen3-TTS-12Hz-0.6B-Base` (Apache-2.0, ~2.5 GB) on a CPU, clones a **synthetic** reference voice (Kokoro `af_heart`, no real person), generates one English and two Russian lines and writes `assets/v2/audio/clone_*.mp3` and `demo_courier_audio/clone_report.json` (load time, generation time, real-time factor, Whisper transcript). Requires `pip install qwen-tts soundfile` and CPU builds of `torch` and `torchaudio` from the same release. Clone only your own voice.
+
+## Reference code: Gemini API text-to-speech (moved from the old slide 16)
+```python
+from google import genai
+from google.genai import types
+
+client = genai.Client()  # key from GEMINI_API_KEY
+r = client.models.generate_content(
+    model="gemini-3.8-flash-tts",
+    contents=types.Content(role="user", parts=[types.Part(
+        text="Six forty-two. Order four one seven.",
+        speech_metadata=types.SpeechMetadata(style="calm, friendly dispatcher"))]),
+    config=types.GenerateContentConfig(
+        response_modalities=["AUDIO"],
+        speech_config=types.SpeechConfig(voice_config=types.VoiceConfig(
+            prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name="Kore")))))
+open("line1.wav", "wb").write(r.candidates[0].content.parts[0].inline_data.data)  # already WAV, 24 kHz mono
+```
+Gemini 3.8 TTS reads the text verbatim, so the style goes in `speech_metadata.style`, not in the text. Check the model ID before class.
