@@ -413,3 +413,5 @@ table.cost.tight td.m { font-size: 23px; }
 .lane .flow .box { font-size: 20px; padding: 12px 16px; }
 .arch { gap: 24px; }
 .stem svg { height: 62px; }
+code { font-size: max(18px, .88em); }
+.steps.big span i { font-size: 18px; width: 30px; height: 30px; }

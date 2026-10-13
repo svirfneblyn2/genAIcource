@@ -60,7 +60,7 @@
 |---|---|---|
 | 3 Голос | **ElevenLabs** (веб, бесплатный тариф: 10 000 кредитов в месяц ≈ 10 минут речи; на Free нет коммерческой лицензии) • **Google AI Studio** → генерация речи (Gemini TTS) | По желанию: Gemini API (код в README урока), OpenAI `gpt-4o-mini-tts` (отключается 06.01.2027), открытые Kokoro (EN), Piper (RU) или **Qwen3-TTS** с клоном **своего** голоса, которую ставит агент разработки по промпту со слайда 16. Русские открытые голоса часто ошибаются на числах и именах (слайд 12) |
 | 4 Фон | Звук самого ролика • **ElevenLabs Sound Effects** (до 30 с за генерацию) • **ElevenLabs Music** • музыка в **Gemini app** (Lyria 3.5) • **Suno** (на бесплатном тарифе песня принадлежит Suno, только некоммерческое использование; для ДЗ можно) • без ИИ: YouTube Audio Library (лицензия указана у каждого трека) | Лицензию каждой дорожки запишите в `audio_spec.md` |
-| 5 Сведение | **Audacity** (бесплатно): импорт реплик и фона → выделить дорожку фона → *Effect › Auto Duck* (или опустить её на 10–15 дБ там, где звучит голос) → *Tracks › Mix and Render* → *Effect › Loudness Normalization* к −14 LUFS → *Limiter* с пределом −1 дБ → экспорт WAV. Затем в **CapCut**, **Clipchamp** или **DaVinci Resolve**: выключить звук клипа и положить WAV с 0:00. | Альтернатива: всё в DaVinci Resolve (страница Fairlight). ffmpeg по желанию (слайд 11, `make_audio.py`) |
+| 5 Сведение | **Audacity** (бесплатно): импорт реплик и фона → выделить дорожку фона → *Effect › Auto Duck* (или опустить её на 10–15 дБ там, где звучит голос) → *Tracks › Mix and Render* → *Effect › Loudness Normalization* к −14 LUFS → *Limiter* с пределом −2 дБ (кодирование видео в AAC поднимает пик примерно на 0,5 дБ) → экспорт WAV. Затем в **CapCut**, **Clipchamp** или **DaVinci Resolve**: выключить звук клипа и положить WAV с 0:00. | Альтернатива: всё в DaVinci Resolve (страница Fairlight). ffmpeg по желанию (слайд 11, `make_audio.py`) |
 | 5 Измерение | **Youlean Loudness Meter** (бесплатно, в браузере или приложение) или измеритель громкости **DaVinci Resolve**. Смотрим **Integrated** (от −13 до −15 LUFS — проходит) и **True Peak** (не выше −1,0 dBTP). Скриншот в `qa/loudness.png`. | С кодом: `ffmpeg -i mix.wav -af ebur128=peak=true -f null -` |
 | 6 Распознавание | **ElevenLabs Speech to Text** • **Google AI Studio**: загрузить файл с промптом *«Transcribe verbatim. Do not correct mistakes. Write numbers as you hear them.»* • **Buzz** (Whisper для компьютера, без интернета) | **Никогда не вставляйте сценарий в промпт распознавания**: языковая модель «исправит» текст под сценарий и спрячет ошибки. Результат сохраняем без правок. |
 
@@ -131,7 +131,7 @@ genai-homeworks/
 | Фон | [...] | [...] | [...] | [...] |
 
 ## 3. Сведение
-- **Инструмент и шаги:** [например, Audacity: Auto Duck → Loudness Normalization −14 LUFS → Limiter −1 дБ; CapCut для видео]
+- **Инструмент и шаги:** [например, Audacity: Auto Duck → Loudness Normalization −14 LUFS → Limiter −2 дБ; CapCut для видео]
 - **Результат:** Integrated [… LUFS], True Peak [… dBTP] (скриншот `qa/loudness.png`)
 - **Пометка ИИ:** [где титр и его точный текст]
 

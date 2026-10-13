@@ -28,7 +28,7 @@ Produced by `deck_v2/make_audio.py` on a laptop-class CPU, no GPU. All numbers o
 | Voice EN | Kokoro-82M (Apache-2.0), voice `af_heart`; 3 lines, 30 words, ≈ 9.2 s, ≈ 3.2 words/s, 154 characters |
 | Voice RU | Piper `ru_RU-dmitri-medium` (voice data CC0; `piper-tts` 1.8.0 is GPL-3.0), sampling noise off for reproducibility |
 | Music | MusicGen-small (weights CC-BY-NC-4.0), seed 7, prompt in `make_audio.py`; EnCodec frame rate 50 Hz (model config) |
-| Mix | Veo bed + music, sidechain ducking under the voice, two-pass loudnorm + limiter: −14.0 LUFS, −1.1 dBTP (both languages). A single-pass loudnorm gave −0.6 dBTP on RU (fail). |
+| Mix | Veo bed + music, sidechain ducking under the voice, two-pass loudnorm + limiter at −3 dBTP; final MP4 (AAC): EN −14.4 LUFS / −2.2 dBTP, RU −14.2 LUFS / −1.9 dBTP. A −1.5 dBTP limit gave −0.7 dBTP after AAC encoding (local review, 2026-10-13). A single-pass loudnorm gave −0.6 dBTP on RU (fail). |
 | Round trip | Whisper small (faster-whisper, MIT). EN: WER 18.5% vs display text, critical terms 3/4 (“642” for “6:42” is transcriber formatting; “Here's your order” leaks from Veo audio). RU: WER ≈ 14%, critical terms 2/4 (voice reads “Шесть” as “Часть”, “Анна” as “Оно”). Whisper medium hears RU “6-42” but still “оно”. |
 
 ---
@@ -697,7 +697,7 @@ Timeline (P: https://developers.openai.com/api/docs/changelog):
   - Normal "-14dB LUFS", Loud "-11dB LUFS", Quiet "-19dB LUFS".
   - "Keep it below -1dB TP (True Peak) max". For masters louder than -14 LUFS, keep TP below -2 dB.
 - **EBU R 128** (P: https://tech.ebu.ch/docs/r/r128.pdf):
-  - Target Level **-23.0 LUFS**, max true peak **-1 dBTP**, measured with an ITU-R BS.1770 meter.
+  - Target Level **−23.0 LUFS**, max true peak **-1 dBTP**, measured with an ITU-R BS.1770 meter.
   - Tolerance is ±0.2 LU (rev. 2020, per Tech 3343) and ±1 LU for live programmes.
   - Short-form content (R 128 s1) adds a max short-term loudness of -18 LUFS.
 - **Apple Podcasts** (P: https://podcasters.apple.com/support/893-audio-requirements): about **-16 LKFS ±1 dB**, true peak not above -1 dBFS, per ITU-R BS.1770.

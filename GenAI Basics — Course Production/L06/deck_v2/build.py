@@ -115,7 +115,7 @@ def teams():
 def voice_words():
     lines = R()["lines"]
     words = sum(len(x["spoken"].split()) for x in lines)
-    secs = sum(x["end"] - x["start"] for x in lines)
+    secs = sum(round(x["end"] - x["start"], 1) for x in lines)  # same rounding as the script table on slide 7
     chars = sum(len(x["spoken"]) for x in lines)
     return words, secs, chars
 
@@ -162,7 +162,7 @@ def s_cover():
 
 def s_hook():
     words, secs, _ = voice_words()
-    mix = R()["mix"]
+    mix = R()["final_mp4"]
     return dict(min=3, html=f'''
   {head(t("Пример", "Example"), t("Ролик курьера из L05 с озвучкой, звуком и музыкой", "The L05 courier video with voice-over, sound and music"), k="amber")}
   <div class="body">
@@ -436,12 +436,12 @@ def s_mix():
     rows = [("vo_" + LANG, t("Голос", "Voice"), t("синтез речи", "text-to-speech"), "var(--cyan)", R()["voice_only"]["lufs"]),
             ("veo", t("Звук Veo", "Veo audio"), t("шумы из видео, приглушается под голосом", "video sound, ducked under the voice"), "var(--green)", REPORT["veo_native"]["lufs"]),
             ("music", t("Музыка", "Music"), "MusicGen", "var(--violet)", None),
-            ("mix_" + LANG, t("Сведение", "Mix"), f'{num(R()["mix"]["lufs"])} LUFS · {num(R()["mix"]["true_peak_dbfs"])} dBTP', "var(--amber)", None)]
+            ("mix_" + LANG, t("Сведение", "Mix"), f'{num(R()["final_mp4"]["lufs"])} LUFS · {num(R()["final_mp4"]["true_peak_dbfs"])} dBTP', "var(--amber)", None)]
     stems = "".join(f'<div class="stem" style="--k:{c}"><div class="lab">{lab}<small>{sub}</small></div>{wave(ENV[k], h=62, w=span, color=c)}</div>'
                     for k, lab, sub, c, _ in rows)
     cmd = ('ffmpeg -i voice.wav -i veo.wav -i music.wav -filter_complex \\\n'
            ' "[1][2]amix[bed];[bed][0]sidechaincompress[duck];\n'
-           '  [0][duck]amix,loudnorm=I=-14:TP=-1.5" mix.wav')
+           '  [0][duck]amix,loudnorm=I=-14:TP=-3" mix.wav')
     return dict(min=5, html=f'''
   {head(t("Шаг 5 • сведение", "Step 5 • mix"), t("Сведение: голос сверху, фон приглушён", "Mixing: voice on top, background ducked, loudness normalised"), k="green")}
   <div class="body" style="margin-top:14px;">
@@ -452,7 +452,7 @@ def s_mix():
         <li>{t("<b>Громкость:</b> −14 Loudness Units relative to Full Scale (LUFS) для Spotify и других стриминговых сервисов, −23 LUFS для эфира (стандарт Европейского вещательного союза EBU R128).", "<b>Loudness:</b> −14 Loudness Units relative to Full Scale (LUFS) for Spotify-style streaming, −23 LUFS for broadcast (European Broadcasting Union standard EBU R128).")}</li>
         <li>{t("<b>Пик:</b> истинный пик (true peak), самая высокая точка волны, включая промежутки между отсчётами; не выше −1 дБ (dBTP), иначе сжатие в MP3 или AAC даст искажения.", "<b>Peak:</b> true peak, the highest point of the wave including between samples; no higher than −1 decibel (dBTP), otherwise MP3 or AAC encoding distorts it.")}</li>
       </ul>
-      <div class="stack" style="gap:8px;"><div class="nocode">{t("<b>Без кода, Audacity (бесплатно):</b> 1) импорт звука ролика, музыки и реплик; 2) фон: <i>Effect › Auto Duck</i>; 3) <i>Mix and Render</i> → <i>Loudness Normalization</i> −14 LUFS → <i>Limiter</i> −1 dB; 4) WAV в CapCut или Clipchamp, звук клипа выключить.", "<b>No code, Audacity (free):</b> 1) import the video sound, music and lines; 2) background: <i>Effect › Auto Duck</i>; 3) <i>Mix and Render</i> → <i>Loudness Normalization</i> −14 LUFS → <i>Limiter</i> −1 dB; 4) WAV into CapCut or Clipchamp, mute the clip’s own sound.")}</div><div class="small">{t("С кодом: ffmpeg (sidechaincompress + loudnorm), полная команда в make_audio.py.", "With code: ffmpeg (sidechaincompress + loudnorm), full command in make_audio.py.")}</div></div>
+      <div class="stack" style="gap:8px;"><div class="nocode">{t("<b>Без кода, Audacity (бесплатно):</b> 1) импорт звука ролика, музыки и реплик; 2) фон: <i>Effect › Auto Duck</i>; 3) <i>Mix and Render</i> → <i>Loudness Normalization</i> −14 LUFS → <i>Limiter</i> −2 dB (AAC добавляет около 0,5 дБ); 4) WAV в CapCut или Clipchamp, звук клипа выключить.", "<b>No code, Audacity (free):</b> 1) import the video sound, music and lines; 2) background: <i>Effect › Auto Duck</i>; 3) <i>Mix and Render</i> → <i>Loudness Normalization</i> −14 LUFS → <i>Limiter</i> −2 dB (AAC adds about 0.5 dB); 4) WAV into CapCut or Clipchamp, mute the clip’s own sound.")}</div></div>
     </div>
   </div>''',
                 notes=notes(
@@ -460,8 +460,8 @@ def s_mix():
                       f"⏱ 5 min. These are the real tracks of our video. The voice alone is {num(R()['voice_only']['lufs'])} LUFS, Veo’s audio {num(REPORT['veo_native']['lufs'])} LUFS, then music and the final mix. You can see the background drop where the voice speaks: that is ducking."),
                     t("LUFS — единица громкости, как её слышит человек. Стриминговые платформы приводят треки к своему уровню: Spotify к −14 LUFS, Apple Podcasts к −16. Стандарт эфира Европейского вещательного союза EBU R128: −23. Если ролик тише, платформа его поднимет вместе с шумом; если громче, опустит. Второе число — истинный пик, true peak: не выше −1 dBTP, иначе после сжатия в MP3 или AAC появится хрип.",
                       "LUFS is a loudness unit that follows human hearing. Streaming platforms normalise tracks to their level: Spotify to −14 LUFS, Apple Podcasts to −16. The European Broadcasting Union broadcast standard EBU R128 is −23. A quieter video gets raised together with its noise; a louder one gets turned down. The second number is true peak: no higher than −1 dBTP, otherwise MP3 or AAC encoding adds distortion."),
-                    t("Наш первый проход нормализации дал пик −0,6 dBTP на русской версии, то есть не прошёл. Исправили двухпроходной нормализацией и лимитером, теперь −1,1. Без кода: Audacity, шаги справа. Нет Auto Duck — просто опустите фон на 10–15 дБ там, где звучит голос. Музыкальная подложка (bed) — тихая музыка под голосом. С кодом то же делает ffmpeg: фильтр sidechaincompress (голос управляет тем, насколько приглушить фон) и loudnorm.",
-                      "Our first normalisation pass gave a −0.6 dBTP peak on the Russian version, which fails the −1 dBTP limit. Two-pass normalisation plus a limiter fixed it: now −1.1. No code: Audacity, steps on the right. Without Auto Duck, simply lower the background by 10–15 dB wherever the voice speaks. A music bed is quiet music under the voice. With code, ffmpeg does the same: the sidechaincompress filter (the voice controls how much the background drops) and loudnorm."),
+                    t("Наш первый проход нормализации дал пик −0,6 dBTP на русской версии, то есть не прошёл. Исправили двухпроходной нормализацией и лимитером. И ещё один урок: сжатие в AAC при сборке видео поднимает пик примерно на полдецибела, поэтому перед кодированием ограничиваем пик −3 dBTP; в готовом MP4 получилось около −2 dBTP. Без кода: Audacity, шаги справа. Нет Auto Duck — просто опустите фон на 10–15 дБ там, где звучит голос. Музыкальная подложка (bed) — тихая музыка под голосом. С кодом то же делает ffmpeg: фильтр sidechaincompress (голос управляет тем, насколько приглушить фон) и loudnorm.",
+                      "Our first normalisation pass gave a −0.6 dBTP peak on the Russian version, which fails the −1 dBTP limit. Two-pass normalisation plus a limiter fixed it. One more lesson: AAC encoding for the video raises the peak by about half a decibel, so we limit the peak to −3 dBTP before encoding; the final MP4 is about −2 dBTP. No code: Audacity, steps on the right. Without Auto Duck, simply lower the background by 10–15 dB wherever the voice speaks. A music bed is quiet music under the voice. With code, ffmpeg does the same: the sidechaincompress filter (the voice controls how much the background drops) and loudnorm."),
                     teams()))
 
 
@@ -570,9 +570,8 @@ def s_market():
     <div class="mk">{cells}</div>
     <div class="row" style="grid-template-columns:1fr 1fr;gap:36px;flex:none;margin-top:18px;">
       <div class="note" style="--k:var(--green)">{t("<b>Точность распознавания (английский):</b> лучшие коммерческие ≈ 4–5% ошибок в словах, лучшие открытые ≈ 5–6%, Whisper large-v3 ≈ 7,8%. Open ASR Leaderboard, 09.10.2026.", "<b>Speech-to-text accuracy (English):</b> best commercial ≈ 4–5% word error rate, best open ≈ 5–6%, Whisper large-v3 ≈ 7.8%. Hugging Face Open ASR Leaderboard, 9 October 2026.")}</div>
-      <div class="note" style="--k:var(--amber)">{t("<b>Срок жизни моделей короткий:</b> OpenAI отключает tts-1 и gpt-4o-mini-tts 06.01.2027, whisper-1 и gpt-4o-transcribe 26.02.2027. Имя модели держим в настройках.", "<b>Model lifetimes are short:</b> OpenAI shuts down tts-1 and gpt-4o-mini-tts on 6 January 2027, and whisper-1 and gpt-4o-transcribe on 26 February 2027. Keep the model name in configuration, not in code.")}</div>
+      <div class="note" style="--k:var(--green)">{t("Зелёная рамка: открытая модель и её лицензия. <b>MIT, Apache-2.0:</b> можно в коммерции, сохраняя текст лицензии. <b>CC BY:</b> можно в коммерции с указанием автора. <b>CC BY-NC:</b> только некоммерческое. У голосов и датасетов бывают свои лицензии.", "Green border: open-weight model and its licence. <b>MIT, Apache-2.0:</b> commercial use allowed, keep the licence notice. <b>CC BY:</b> commercial use with credit. <b>CC BY-NC:</b> non-commercial only. Voices and datasets can have their own licences.")}</div>
     </div>
-    <div class="small" style="margin-top:10px;color:var(--muted)">{t("Зелёная рамка: открытая модель и её лицензия. <b>MIT, Apache-2.0:</b> можно в коммерции, сохраняя текст лицензии. <b>CC BY:</b> можно в коммерции с указанием автора. <b>CC BY-NC:</b> только некоммерческое. У голосов и датасетов бывают свои лицензии.", "Green border: open-weight model and its licence. <b>MIT, Apache-2.0:</b> commercial use allowed, keep the licence notice. <b>CC BY:</b> commercial use with credit. <b>CC BY-NC:</b> non-commercial only. Voices and datasets can have their own licences.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Карта по четырём задачам, по три коммерческих примера на строку; полный список с ценами в L06_08. Слева коммерческие модели, в зелёной рамке открытые, с лицензией. Что изменилось за год: у OpenAI новое поколение распознавания (gpt-transcribe) и голосовых моделей (gpt-realtime-2.1, gpt-live-1), у ElevenLabs v4, у Google Gemini 3.8 TTS и музыка Lyria 3.5, у Suno v6.",
@@ -599,19 +598,22 @@ def s_agent():
     cl = CLONE or {"load_seconds": 0, "reference": {"seconds": 0}, "lines": []}
     by = {x["name"]: x for x in cl["lines"]}
     prompt = t(
-        "Установи на этот компьютер открытую модель синтеза речи Qwen3-TTS (Qwen/Qwen3-TTS-12Hz-0.6B-Base, лицензия Apache-2.0) и склонируй МОЙ голос.\n"
-        "1. Проверь железо: видеокарта и её память, оперативная память, свободный диск (нужно ~5 ГБ). Скажи, что подойдёт: 0.6B или 1.7B, видеокарта или процессор.\n"
-        "2. Создай отдельное окружение Python в ./qwen-tts-demo, установи qwen-tts и soundfile.\n"
+        "Установи открытую модель синтеза речи Qwen3-TTS (Qwen/Qwen3-TTS-12Hz-0.6B-Base, Apache-2.0) в папку C:\\ai\\qwen-tts-demo и склонируй МОЙ голос.\n"
+        "0. Мой образец: my_voice.m4a из «Звукозаписи» Windows, 10 с, и my_voice.txt с точным текстом. Переведи образец в WAV 24 кГц моно через ffmpeg.\n"
+        "1. Проверь видеокарту и её память, оперативную память, свободный диск (~5 ГБ). Скажи, что подойдёт: 0.6B или 1.7B, видеокарта или процессор.\n"
+        "2. Создай там отдельное окружение Python, установи qwen-tts и soundfile.\n"
         "3. Скачай модель с Hugging Face и покажи, где лежат файлы.\n"
-        "4. Напиши clone.py: вход my_voice.wav (10 с моего голоса) и my_voice.txt (точная расшифровка), выход line1.wav с фразой из script.md.\n"
+        "4. Напиши clone.py и озвучь моим голосом по-русски: «Шесть сорок две. Заказ четыреста семнадцать забран, ещё горячий.» → line1.wav.\n"
         "5. Запусти, замерь время, ничего не загружай в интернет.",
-        "Install the open-weight text-to-speech model Qwen3-TTS (Qwen/Qwen3-TTS-12Hz-0.6B-Base, Apache-2.0 licence) on this computer and clone MY voice.\n"
-        "1. Check the hardware: graphics card and its memory, system memory, free disk (~5 GB needed). Tell me what fits: 0.6B or 1.7B, graphics card or processor.\n"
-        "2. Create a separate Python environment in ./qwen-tts-demo; install qwen-tts and soundfile.\n"
+        "Install the open-weight text-to-speech model Qwen3-TTS (Qwen/Qwen3-TTS-12Hz-0.6B-Base, Apache-2.0) in C:\\ai\\qwen-tts-demo and clone MY voice.\n"
+        "0. My sample: my_voice.m4a from Windows Sound Recorder, 10 s, and my_voice.txt with its exact text. Convert the sample to 24 kHz mono WAV with ffmpeg.\n"
+        "1. Check the graphics card and its memory, system memory, free disk (~5 GB). Tell me what fits: 0.6B or 1.7B, graphics card or processor.\n"
+        "2. Create a separate Python environment there; install qwen-tts and soundfile.\n"
         "3. Download the model from Hugging Face and show where the files are.\n"
-        "4. Write clone.py: input my_voice.wav (10 s of my voice) and my_voice.txt (exact transcript); output line1.wav with the line from script.md.\n"
+        "4. Write clone.py and say in my voice, in English: “Six forty-two. Order four one seven is picked up, still hot.” → line1.wav.\n"
         "5. Run it, report the time, upload nothing to the internet.")
-    ru = by.get("ru_3", {})
+    ru = by.get("ru_1", {})
+    ru3 = by.get("ru_3", {})
     en = by.get("en_1", {})
     return dict(min=4, html=f'''
   {head(t("Практика с агентом", "Hands-on with an agent"), t("Агент ставит Qwen3-TTS локально и клонирует голос", "A coding agent installs Qwen3-TTS locally and clones a voice"), k="violet")}
@@ -624,18 +626,18 @@ def s_agent():
       <div class="stack" style="gap:14px;">
         <div class="flow" style="--k:var(--violet);flex-wrap:wrap;gap:8px;"><div class="box">{t("Образец 3–10 с<small>+ его точный текст</small>", "3–10 s sample<small>+ its exact transcript</small>")}</div><div class="arr">+</div><div class="box">{t("Новый текст<small>+ язык</small>", "New text<small>+ language</small>")}</div><div class="arr">→</div><div class="box hl">{t("Новая речь<small>этим голосом</small>", "New speech<small>in that voice</small>")}</div></div>
         {aud("clone_reference", t("Образец", "Sample"), t(f"синтетический голос Kokoro, {num(cl['reference']['seconds'])} с", f"synthetic Kokoro voice, {num(cl['reference']['seconds'])} s"), "cyan")}
-        {aud("clone_ru_3" if LANG == "ru" else "clone_en_1", t("Клон", "Clone"), t(f"Qwen3-TTS 0.6B на процессоре, {num(ru.get('generation_seconds', 0), 0)} с счёта", f"Qwen3-TTS 0.6B on a processor, {num(en.get('generation_seconds', 0), 0)} s of compute"), "violet")}
+        {aud("clone_ru_1" if LANG == "ru" else "clone_en_1", t("Клон", "Clone"), t(f"реплика 1: {num(ru.get('audio_seconds', 0))} с речи за {num(ru.get('generation_seconds', 0), 0)} с на процессоре", f"line 1: {num(en.get('audio_seconds', 0))} s of speech in {num(en.get('generation_seconds', 0), 0)} s on a processor"), "violet")}
         <div class="note" style="--k:var(--red)">{t("<b>Только свой голос.</b> Модель ничего не проверяет: согласие — ваша ответственность (слайд 19).", "<b>Your own voice only.</b> The model checks nothing: consent is your responsibility (slide 19).")}</div>
       </div>
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 4 мин. Слева готовый промпт для агента разработки: Claude Code, Antigravity или Codex в ChatGPT. Агент сам проверит железо, создаст отдельное окружение Python, скачает модель с Hugging Face, напишет скрипт и запустит его. Вам остаётся записать 10 секунд своего голоса и точно расшифровать их.",
-                      "⏱ 4 min. On the left is a ready prompt for a coding agent: Claude Code, Antigravity or Codex in ChatGPT. The agent checks the hardware, creates a separate Python environment, downloads the model from Hugging Face, writes the script and runs it. You only record 10 seconds of your voice and transcribe them exactly."),
+                    t("⏱ 4 мин. Слева готовый промпт для агента разработки: Claude Code, Antigravity или Codex в ChatGPT. Агент сам проверит железо, создаст отдельное окружение Python, скачает модель с Hugging Face, напишет скрипт и запустит его. Вам остаётся записать 10 секунд своего голоса (на Windows приложение «Звукозапись», файл m4a; агент сам переведёт его в WAV) и точно записать, что вы сказали. Папку задаём полным путём, а текст реплики пишем прямо в промпт, чтобы агенту не пришлось ничего искать.",
+                      "⏱ 4 min. On the left is a ready prompt for a coding agent: Claude Code, Antigravity or Codex in ChatGPT. The agent checks the hardware, creates a separate Python environment, downloads the model from Hugging Face, writes the script and runs it. You only record 10 seconds of your voice (on Windows, the Sound Recorder app saves m4a; the agent converts it to WAV) and write down exactly what you said. Give the folder as a full path and put the line text into the prompt, so the agent does not have to look for anything."),
                     t(f"Что делает модель. Base-версия Qwen3-TTS получает образец голоса на 3–10 секунд и его точный текст; по ним она запоминает тембр и манеру. Потом получает новый текст и язык и генерирует речь этим голосом. В коде это одна функция generate_voice_clone(text, language, ref_audio, ref_text). Есть режим без расшифровки (x_vector_only), но качество ниже.",
                       f"What the model does. The Base version of Qwen3-TTS takes a 3–10 second voice sample and its exact transcript; from them it captures the timbre and manner. Then it takes new text and a language and generates speech in that voice. In code this is one function, generate_voice_clone(text, language, ref_audio, ref_text). There is a mode without a transcript (x_vector_only), but quality is lower."),
-                    t(f"Наш реальный прогон: образцом был синтетический голос Kokoro, а не живой человек, поэтому вопроса согласия нет. Модель 0.6B на процессоре контейнера без видеокарты загружалась {num(cl['load_seconds'], 0)} с. Русская реплика «{ru.get('text', '')}» считалась {num(ru.get('generation_seconds', 0), 0)} с; Whisper услышал: «{ru.get('whisper', '')}». Английская: {num(en.get('generation_seconds', 0), 0)} с, Whisper: «{en.get('whisper', '')}». Обратите внимание: голос клонирован с английского образца, а говорит по-русски; «Анна» теперь произнесена верно, в отличие от Piper. Но первую русскую реплику Whisper записал как «Shaste Sort 2»: клон перенёс английский акцент образца. Образец лучше записывать на том же языке, на котором будет озвучка.",
-                      f"Our real run: the sample was a synthetic Kokoro voice, not a living person, so there is no consent question. The 0.6B model on a container CPU without a GPU took {num(cl['load_seconds'], 0)} s to load. The English line took {num(en.get('generation_seconds', 0), 0)} s; Whisper heard: “{en.get('whisper', '')}”. The Russian line took {num(ru.get('generation_seconds', 0), 0)} s; Whisper heard: “{ru.get('whisper', '')}”. Note that the voice was cloned from an English sample and speaks Russian; “Анна” is now pronounced correctly, unlike with Piper. But Whisper wrote the first Russian line as “Shaste Sort 2”: the clone carried over the sample’s English accent. Record the sample in the same language as the voice-over."),
+                    t(f"Наш реальный прогон: образцом был синтетический голос Kokoro, а не живой человек, поэтому вопроса согласия нет. Модель 0.6B на процессоре контейнера без видеокарты загружалась {num(cl['load_seconds'], 0)} с. Русская реплика 1 «{ru.get('text', '')}» считалась {num(ru.get('generation_seconds', 0), 0)} с; Whisper услышал: «{ru.get('whisper', '')}». Реплика 3: «{ru3.get('whisper', '')}». Английская: {num(en.get('generation_seconds', 0), 0)} с, Whisper: «{en.get('whisper', '')}». Обратите внимание: голос клонирован с английского образца, а говорит по-русски; «Анна» теперь произнесена верно, в отличие от Piper. Но первую русскую реплику Whisper записал как «Shaste Sort 2»: клон перенёс английский акцент образца. Образец лучше записывать на том же языке, на котором будет озвучка.",
+                      f"Our real run: the sample was a synthetic Kokoro voice, not a living person, so there is no consent question. The 0.6B model on a container CPU without a GPU took {num(cl['load_seconds'], 0)} s to load. The English line took {num(en.get('generation_seconds', 0), 0)} s; Whisper heard: “{en.get('whisper', '')}”. Russian line 1 took {num(ru.get('generation_seconds', 0), 0)} s; Whisper heard: “{ru.get('whisper', '')}”. Line 3: “{ru3.get('whisper', '')}”. Note that the voice was cloned from an English sample and speaks Russian; “Анна” is now pronounced correctly, unlike with Piper. But Whisper wrote the first Russian line as “Shaste Sort 2”: the clone carried over the sample’s English accent. Record the sample in the same language as the voice-over."),
                     t("Справочный код синтеза через Gemini API (было на этом слайде раньше) лежит в README урока. Для ДЗ код не нужен; локальная модель — вариант по желанию, только со своим голосом.",
                       "The reference Gemini API synthesis code (previously on this slide) is in the lesson README. The homework needs no code; a local model is optional, with your own voice only.")))
 
@@ -686,7 +688,7 @@ def s_econ():
 
 def s_qa():
     rr = R()
-    mix = rr["mix"]
+    mix = rr["final_mp4"]
     items = [
         (t("<b>Слова</b> совпадают со сценарием: распознавание + список критичных слов", "<b>Words</b> match the script: speech-to-text + critical terms list"), "red"),
         (t("<b>Произношение</b> имён, чисел, терминов: проверено на слух", "<b>Pronunciation</b> of names, numbers, terms: checked by ear"), "red" if LANG == "ru" else "green"),
@@ -735,9 +737,8 @@ def s_risks():
       <div class="stack" style="gap:14px;">
         <div class="prompt-label">{t("Как сервисы проверяют согласие на клон", "How services check consent for a clone")}</div>
         <ul class="list">
-          <li>{t("<b>OpenAI, Google:</b> владелец голоса записывает фиксированную фразу согласия.", "<b>OpenAI, Google:</b> the voice owner records a fixed consent phrase.")}</li>
+          <li>{t("<b>OpenAI, Google, Azure:</b> владелец голоса записывает фразу согласия; доступ по заявке.", "<b>OpenAI, Google, Azure:</b> the voice owner records a consent phrase; access on application.")}</li>
           <li>{t("<b>ElevenLabs Professional:</b> владелец читает проверочный текст; Instant: только галочка.", "<b>ElevenLabs Professional:</b> the owner reads a verification text aloud; Instant: a checkbox only.")}</li>
-          <li>{t("<b>Azure:</b> доступ к клонам только по заявке, запись согласия сверяют с голосом.", "<b>Azure:</b> clones by application only; the consent recording is matched to the voice.")}</li>
           <li>{t("<b>Открытые модели</b> (Qwen3-TTS, Chatterbox): клон по 3–10 с, <b>без проверок</b>.", "<b>Open-weight models</b> (Qwen3-TTS, Chatterbox): clone from 3–10 s, <b>no checks at all</b>.")}</li>
         </ul>
       </div>

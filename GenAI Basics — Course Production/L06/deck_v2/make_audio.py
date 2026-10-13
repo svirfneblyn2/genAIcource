@@ -116,7 +116,7 @@ def loudness(path):
     return lufs, tp
 
 
-def normalise(src, dst, target=-14.0, tp=-1.5):
+def normalise(src, dst, target=-14.0, tp=-3.0):  # -2 dBTP leaves headroom: AAC encoding raises the peak
     """Two-pass loudness normalisation (EBU R128 measurement, linear gain), then a true-peak limiter."""
     p = subprocess.run(["ffmpeg", "-hide_banner", "-i", str(src), "-af", f"loudnorm=I={target}:TP={tp}:LRA=11:print_format=json",
                         "-f", "null", "-"], capture_output=True, text=True)
@@ -244,6 +244,7 @@ def main():
         crit = [{"term": term, "ok": bool(re.search(rx, hyp.lower()))} for term, rx in CRITICAL[lang]]
         report["langs"][lang] = {"lines": lines, "mix": dict(zip(("lufs", "true_peak_dbfs"), loudness(mix))),
                                  "voice_only": dict(zip(("lufs", "true_peak_dbfs"), loudness(vo_wav))),
+                                 "final_mp4": dict(zip(("lufs", "true_peak_dbfs"), loudness(VID / f"courier_voiced_{lang}.mp4"))),
                                  "transcript": segs, "wer": w, "wer_vs_display": w_disp, "ref_words": n, "critical_terms": crit}
         print(lang, "WER", w, crit)
 

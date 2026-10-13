@@ -65,7 +65,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 #### Speaker (3 min)
 > Start the clip with a click, with sound (23 seconds). It is the same L05 video: three Veo 3.1 shots. Ask the chat: what do you hear, how many layers of sound?
 >
-> Answer: three layers. The narrator: three lines, 9.2 seconds of speech from an open-weight text-to-speech model running on a laptop (Kokoro for English, Piper for Russian). The sound Veo generated with the video: cafe, rain. And a music bed from the open MusicGen model. Everything is mixed to −14 LUFS (Loudness Units relative to Full Scale, a loudness measure), the level Spotify normalises tracks to.
+> Answer: three layers. The narrator: three lines, 9.3 seconds of speech from an open-weight text-to-speech model running on a laptop (Kokoro for English, Piper for Russian). The sound Veo generated with the video: cafe, rain. And a music bed from the open MusicGen model. Everything is mixed to −14 LUFS (Loudness Units relative to Full Scale, a loudness measure), the level Spotify normalises tracks to.
 >
 > The result is not perfect: later in the lesson we find its errors with speech-to-text. That is today’s main skill: produce, then check.
 >
@@ -188,7 +188,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 >
 > LUFS is a loudness unit that follows human hearing. Streaming platforms normalise tracks to their level: Spotify to −14 LUFS, Apple Podcasts to −16. The European Broadcasting Union broadcast standard EBU R128 is −23. A quieter video gets raised together with its noise; a louder one gets turned down. The second number is true peak: no higher than −1 dBTP, otherwise MP3 or AAC encoding adds distortion.
 >
-> Our first normalisation pass gave a −0.6 dBTP peak on the Russian version, which fails the −1 dBTP limit. Two-pass normalisation plus a limiter fixed it: now −1.1. No code: Audacity, steps on the right. Without Auto Duck, simply lower the background by 10–15 dB wherever the voice speaks. A music bed is quiet music under the voice. With code, ffmpeg does the same: the sidechaincompress filter (the voice controls how much the background drops) and loudnorm.
+> Our first normalisation pass gave a −0.6 dBTP peak on the Russian version, which fails the −1 dBTP limit. Two-pass normalisation plus a limiter fixed it. One more lesson: AAC encoding for the video raises the peak by about half a decibel, so we limit the peak to −3 dBTP before encoding; the final MP4 is about −2 dBTP. No code: Audacity, steps on the right. Without Auto Duck, simply lower the background by 10–15 dB wherever the voice speaks. A music bed is quiet music under the voice. With code, ffmpeg does the same: the sidechaincompress filter (the voice controls how much the background drops) and loudnorm.
 >
 > Teams: this lesson needs sound. In Share, turn on “Include sound” (older versions: “Include computer sound”). Test the sound on one clip before you start.
 
@@ -251,11 +251,11 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 **On screen:** Coding-agent prompt (Claude Code, Antigravity, Codex) to install Qwen3-TTS and clone a voice; diagram sample + text → speech in that voice; two players: synthetic sample and clone; the own-voice-only rule.
 
 #### Speaker (4 min)
-> On the left is a ready prompt for a coding agent: Claude Code, Antigravity or Codex in ChatGPT. The agent checks the hardware, creates a separate Python environment, downloads the model from Hugging Face, writes the script and runs it. You only record 10 seconds of your voice and transcribe them exactly.
+> On the left is a ready prompt for a coding agent: Claude Code, Antigravity or Codex in ChatGPT. The agent checks the hardware, creates a separate Python environment, downloads the model from Hugging Face, writes the script and runs it. You only record 10 seconds of your voice (on Windows, the Sound Recorder app saves m4a; the agent converts it to WAV) and write down exactly what you said. Give the folder as a full path and put the line text into the prompt, so the agent does not have to look for anything.
 >
 > What the model does. The Base version of Qwen3-TTS takes a 3–10 second voice sample and its exact transcript; from them it captures the timbre and manner. Then it takes new text and a language and generates speech in that voice. In code this is one function, generate_voice_clone(text, language, ref_audio, ref_text). There is a mode without a transcript (x_vector_only), but quality is lower.
 >
-> Our real run: the sample was a synthetic Kokoro voice, not a living person, so there is no consent question. The 0.6B model on a container CPU without a GPU took 10 s to load. The English line took 42 s; Whisper heard: “642. Order 417 is picked up, still hot.”. The Russian line took 22 s; Whisper heard: “До дверей 12 минут. Анна уже в пути.”. Note that the voice was cloned from an English sample and speaks Russian; “Анна” is now pronounced correctly, unlike with Piper. But Whisper wrote the first Russian line as “Shaste Sort 2”: the clone carried over the sample’s English accent. Record the sample in the same language as the voice-over.
+> Our real run: the sample was a synthetic Kokoro voice, not a living person, so there is no consent question. The 0.6B model on a container CPU without a GPU took 10 s to load. The English line took 42 s; Whisper heard: “642. Order 417 is picked up, still hot.”. Russian line 1 took 38 s; Whisper heard: “Shaste Sort 2. Заказ 417 забран еще горячий.”. Line 3: “До дверей 12 минут. Анна уже в пути.”. Note that the voice was cloned from an English sample and speaks Russian; “Анна” is now pronounced correctly, unlike with Piper. But Whisper wrote the first Russian line as “Shaste Sort 2”: the clone carried over the sample’s English accent. Record the sample in the same language as the voice-over.
 >
 > The reference Gemini API synthesis code (previously on this slide) is in the lesson README. The homework needs no code; a local model is optional, with your own voice only.
 

@@ -25,12 +25,16 @@
         }
       ],
       "mix": {
-        "lufs": -14.0,
-        "true_peak_dbfs": -1.1
+        "lufs": -14.3,
+        "true_peak_dbfs": -2.6
       },
       "voice_only": {
         "lufs": -19.2,
         "true_peak_dbfs": -3.1
+      },
+      "final_mp4": {
+        "lufs": -14.4,
+        "true_peak_dbfs": -2.2
       },
       "transcript": [
         {
@@ -45,16 +49,16 @@
         },
         {
           "start": 2.0,
-          "end": 8.43,
+          "end": 8.55,
           "text": "Order 417 is picked up, still hot."
         },
         {
-          "start": 8.43,
-          "end": 16.2,
+          "start": 8.55,
+          "end": 16.24,
           "text": "Rain on the Avenue, the route skips the bridge."
         },
         {
-          "start": 16.2,
+          "start": 16.24,
           "end": 18.76,
           "text": "12 minutes to the door, Anna is on her way."
         }
@@ -103,12 +107,16 @@
         }
       ],
       "mix": {
-        "lufs": -14.0,
-        "true_peak_dbfs": -1.1
+        "lufs": -14.2,
+        "true_peak_dbfs": -2.5
       },
       "voice_only": {
         "lufs": -21.0,
         "true_peak_dbfs": -3.1
+      },
+      "final_mp4": {
+        "lufs": -14.2,
+        "true_peak_dbfs": -1.9
       },
       "transcript": [
         {
@@ -122,8 +130,8 @@
           "text": "На проспекте дождь. Маршрут в обход моста."
         },
         {
-          "start": 16.15,
-          "end": 18.65,
+          "start": 16.12,
+          "end": 18.62,
           "text": "До двери 12 минут. Оно уже в пути."
         }
       ],

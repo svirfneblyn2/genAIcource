@@ -60,7 +60,7 @@ Add an end caption to the video: **“Voice and music: AI-generated (service nam
 |---|---|---|
 | 3 Voice | **ElevenLabs** (web, free plan: 10,000 credits a month ≈ 10 minutes of speech; no commercial licence on Free) • **Google AI Studio** → speech generation (Gemini TTS) | Optional: Gemini API (code in the lesson README), OpenAI `gpt-4o-mini-tts` (shuts down 6 January 2027), open-weight Kokoro (EN), Piper (RU) or **Qwen3-TTS** with a clone of **your own** voice, installed by a coding agent with the prompt from slide 16 |
 | 4 Background | Your video’s own sound • **ElevenLabs Sound Effects** (up to 30 s per generation) • **ElevenLabs Music** • **Gemini app** music (Lyria 3.5) • **Suno** (Free: Suno owns the song, non-commercial; fine for homework) • non-AI fallback: YouTube Audio Library (licence shown per track) | Write the licence of every track in `audio_spec.md` |
-| 5 Mix | **Audacity** (free): import the lines and the background → select the background track → *Effect › Auto Duck* (or lower it by 10–15 dB where the voice speaks) → *Tracks › Mix and Render* → *Effect › Loudness Normalization* to −14 LUFS → *Limiter* with the limit at −1 dB → export WAV. Then in **CapCut**, **Clipchamp** or **DaVinci Resolve**: mute the clip’s own sound and place the WAV at 0:00. | Alternative: everything in DaVinci Resolve (Fairlight page). ffmpeg is optional (slide 11, `make_audio.py`). |
+| 5 Mix | **Audacity** (free): import the lines and the background → select the background track → *Effect › Auto Duck* (or lower it by 10–15 dB where the voice speaks) → *Tracks › Mix and Render* → *Effect › Loudness Normalization* to −14 LUFS → *Limiter* with the limit at −2 dB (video encoding to AAC raises the peak by about 0.5 dB) → export WAV. Then in **CapCut**, **Clipchamp** or **DaVinci Resolve**: mute the clip’s own sound and place the WAV at 0:00. | Alternative: everything in DaVinci Resolve (Fairlight page). ffmpeg is optional (slide 11, `make_audio.py`). |
 | 5 Measure | **Youlean Loudness Meter** (free, browser or app) or the **DaVinci Resolve** loudness meter. Read **Integrated** (−13 to −15 LUFS passes) and **True Peak** (must be ≤ −1.0 dBTP). Save a screenshot as `qa/loudness.png`. | With code: `ffmpeg -i mix.wav -af ebur128=peak=true -f null -` |
 | 6 Speech-to-text | **ElevenLabs Speech to Text** • **Google AI Studio**: upload the file with the prompt *“Transcribe verbatim. Do not correct mistakes. Write numbers as you hear them.”* • **Buzz** (Whisper desktop app, offline) | **Never paste your script into the transcription prompt**: a language model will correct the transcript towards the script and hide the errors. Save the output unedited. |
 
@@ -131,7 +131,7 @@ genai-homeworks/
 | Background | [...] | [...] | [...] | [...] |
 
 ## 3. Mix
-- **Tool and steps:** [e.g. Audacity: Auto Duck → Loudness Normalization −14 LUFS → Limiter −1 dB; CapCut for the video]
+- **Tool and steps:** [e.g. Audacity: Auto Duck → Loudness Normalization −14 LUFS → Limiter −2 dB; CapCut for the video]
 - **Result:** Integrated [… LUFS], True Peak [… dBTP] (screenshot `qa/loudness.png`)
 - **AI label:** [where the caption appears, its exact text]
 
