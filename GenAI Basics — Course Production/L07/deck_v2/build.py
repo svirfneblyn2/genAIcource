@@ -132,9 +132,9 @@ def strip_data():
       (t("Вт", "Tue"), "issue", "violet", "GitHub issue", "GitHub issue",
        t("#12 Бесплатная доставка для Prime от $75", "#12 Free delivery for Prime from $75")),
       (t("Ср", "Wed"), "code", "violet", "VS Code", "VS Code",
-       t(f"+{N_LOGIC} строки логики, +{N_NEW} теста, {N_TESTS} ok", f"+{N_LOGIC} lines of logic, +{N_NEW} tests, {N_TESTS} ok")),
+       t(f"+{N_LOGIC} строки логики, +{N_NEW} теста, все {N_TESTS} зелёные", f"+{N_LOGIC} lines of logic, +{N_NEW} tests, all {N_TESTS} green")),
       (t("Чт", "Thu"), "pr", "violet", "Pull request", "Pull request",
-       t("Ревью: «тест на 74.99 есть; подумайте про Decimal»", "Review: “74.99 test is there; consider Decimal”")),
+       t("Ревью: «тест на 74.99 есть; для денег возьмите точный тип»", "Review: “74.99 test is there; use an exact type for money”")),
       (t("Пт", "Fri"), "win", "green", "Windows", "Windows",
        t("Чек-лист, пункт 6: откатить флаг, если плата вне зоны изменилась", "Checklist item 6: roll back the flag if outside-zone fees change")),
   ]
@@ -172,7 +172,7 @@ def s_cover():
   <div class="txt">
     <div class="kicker">{t("GenAI Basics • Урок 07 • Экосистема Copilot", "GenAI Basics • Lesson 07 • The Copilot Ecosystem")}</div>
     <h1>{t("Один Copilot? Нет — семья из трёх", "One Copilot? No: a family of three")}</h1>
-    <h2>{t("Как команда за неделю выпускает одну фичу, а Copilot помогает на каждом шаге", "How a team ships one feature in a week, with Copilot helping at every step")}</h2>
+    <h2>{t("Как команда за неделю выпускает одну функцию, а Copilot помогает на каждом шаге", "How a team ships one feature in a week, with Copilot helping at every step")}</h2>
     <p>{t("3 Copilot • 1 команда • 1 фича • 1 неделя. Все данные придуманные. Для практики хватит бесплатных уровней.",
           "3 Copilots • 1 team • 1 feature • 1 week. All data is synthetic. Free tiers are enough for practice.")}</p>
   </div>
@@ -197,8 +197,8 @@ def s_week():
                 notes=notes(
                     t("⏱ 4 мин. «Вот весь урок на одном слайде. Дальше мы по очереди приближаем каждую станцию.»",
                       "⏱ 4 min. “Here is the whole lesson on one slide. Next we zoom into each station.”"),
-                    t("Понедельник: встреча в Teams, где решили правило. Потом бриф в Word. Во вторник Анна превращает бриф в задачу на GitHub. В среду Павел в VS Code делает изменение с помощью Copilot. В четверг pull request и ревью. В пятницу релиз, чек-лист на компьютере с Windows.",
-                      "Monday: a Teams meeting where the rule is decided. Then a brief in Word. On Tuesday Anna turns the brief into a GitHub task. On Wednesday Pavel makes the change in VS Code with Copilot. On Thursday the pull request and review. On Friday the release, with the checklist on a Windows PC."),
+                    t("Понедельник: встреча в Teams, где решили правило. Потом бриф в Word. Во вторник Анна превращает бриф в задачу на GitHub. Issue — это задача на GitHub с номером. Pull request — страница, где изменение показывают и принимают. В среду Павел в VS Code делает изменение с помощью Copilot. В четверг pull request и ревью. В пятницу релиз, чек-лист на компьютере с Windows.",
+                      "Monday: a Teams meeting where the rule is decided. Then a brief in Word. On Tuesday Anna turns the brief into a GitHub task. An issue is a task on GitHub, with a number. A pull request is the page where a change is shown and accepted. On Wednesday Pavel makes the change in VS Code with Copilot. On Thursday the pull request and review. On Friday the release, with the checklist on a Windows PC."),
                     t("Обратите внимание на цитаты под значками: это настоящие фрагменты из файлов, которые мы откроем на уроке. И на общее свойство: на каждом шаге Copilot даёт текст, а ответственность за проверку остаётся у человека.",
                       "Look at the quotes under the icons: they are real fragments of the files we open in class. And the common point: at every step Copilot gives a text, and the responsibility for checking stays with the person.")))
 
@@ -222,9 +222,9 @@ def s_three():
     ic_pc = lambda cx: f'<g transform="translate({cx - 28} 104)" fill="none" stroke="var(--green)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="52" height="34" rx="4"/><path d="M16 50h24M28 36v14"/></g>'
     svg = f'''<svg viewBox="0 0 1448 590" class="fig" style="width:100%;height:auto">
     {circ(250, "violet", ic_repo, t("Репозиторий", "Repository"), "GitHub Copilot", "issue #12", "pull request #13",
-          t("Видит: код, историю,", "Sees: code, history,"), t("issue и pull request", "issues and pull requests"))}
+          t("Видит: код, историю, задачи (issue)", "Sees: code, history, issues"), t("и изменения (pull request)", "and pull requests"))}
     {circ(724, "cyan", ic_doc, t("Рабочие документы", "Work documents"), t("Copilot в Word, Teams", "Copilot in Word, Teams"), t("встреча в Teams", "Teams meeting"), t("бриф в Word", "brief in Word"),
-          t("Видит: письма, файлы и встречи,", "Sees: mail, files and meetings"), t("которые открыты вам", "that are open to you"))}
+          t("Видит: письма, файлы и встречи,", "Sees: mail, files and meetings"), t("к которым у вас есть доступ", "that are open to you"))}
     {circ(1198, "green", ic_pc, t("Ваш компьютер", "Your PC"), t("Copilot в Windows", "Copilot in Windows"), "release_checklist.txt", t("окно на экране", "window on screen"),
           t("Видит: окно, которое вы показали,", "Sees: the window you shared,"), t("и ваши файлы", "and your files"))}
     </svg>'''
@@ -253,7 +253,7 @@ def s_model():
     svg = f'''<svg viewBox="0 0 900 540" class="fig" style="width:100%;height:auto">
     <rect x="20" y="40" width="250" height="84" rx="12" fill="var(--surface)" stroke="var(--amber)" stroke-width="3"/>
     <text x="145" y="92" text-anchor="middle" class="s26b" fill="var(--amber)">{t("Ваш вопрос", "Your question")}</text>
-    <text x="20" y="214" class="s21b" fill="var(--muted)">{t("Контекст: что он видит", "Context: what it sees")}</text>
+    <text x="20" y="214" class="s21b" fill="var(--muted)">{t("Контекст: что видит Copilot", "Context: what Copilot sees")}</text>
     {chips}
     {ar(270, 82, 356)}
     <path d="M286 242V454" stroke="var(--dim)" stroke-width="3" fill="none"/>
@@ -267,7 +267,7 @@ def s_model():
     <text x="765" y="273" text-anchor="middle" class="s26b" fill="var(--green)">{t("Ответ", "Answer")}</text>
     </svg>'''
     code = ('<span class="cm"># L03</span>\n'
-            'resp = client.models.generate_content(\n'
+            'response = client.models.generate_content(\n'
             '    model=MODEL,\n'
             '    contents=question + file_text)')
     return dict(min=4, html=f'''
@@ -306,7 +306,7 @@ def s_teams():
   {head(t("Teams", "Teams"), t("Teams: встреча превращается в решения и задачи", "Teams: a meeting becomes decisions and action items"))}
   <div class="body">
     <div class="mock dk teams">
-      <div class="bar">{dots()}<span class="ttl">{t("Prime delivery rule — собрание", "Prime delivery rule — meeting")}</span><span class="rec"><i></i>{t("запись и расшифровка", "recording and transcript")}</span>{sch()}</div>
+      <div class="bar">{dots()}<span class="ttl">{t("Правило доставки Prime — встреча", "Prime delivery rule — meeting")}</span><span class="rec"><i></i>{t("запись и расшифровка", "recording and transcript")}</span>{sch()}</div>
       <div class="tm-body">
         <div class="call">
           <div class="tiles">
@@ -331,17 +331,17 @@ def s_teams():
   </div>''',
                 notes=notes(
                     t("⏱ 5 мин. «Анна не вела записей. Записи вёл Copilot.»", "⏱ 5 min. “Anna took no notes. Copilot did.”"),
-                    t("Панель справа — то, что Copilot собрал по расшифровке: три решения, два открытых вопроса, три задачи с именами. Тот же текст лежит у нас в файле meeting_notes.md. Покажите его студентам, сравните со слайдом.",
-                      "The pane on the right is what Copilot builds from the transcript: three decisions, two open questions, three tasks with names. The same text is in our file meeting_notes.md. Show it to the students and compare with the slide."),
-                    t("Что важно знать: итоги работают, только если встреча записана и расшифрована, и у вас есть Copilot с лицензией. Без этого берите бесплатный Copilot Chat и вставляйте текст заметок сами. Это тот же приём: показать ассистенту нужное.",
-                      "What to know: the recap works only if the meeting is recorded and transcribed and you have licensed Copilot. Without it, use free Copilot Chat and paste the notes yourself. It is the same trick: show the assistant the right thing."),
+                    t("Панель справа — то, что Copilot собрал по расшифровке: три решения, два открытых вопроса, три задачи с именами. Тот же текст лежит у нас в файле meeting_notes.md. Покажите его студентам, сравните со слайдом. Флаг — это переключатель в коде: правило можно включить и выключить, не меняя программу. Стейджинг — тестовый сервер.",
+                      "The pane on the right is what Copilot builds from the transcript: three decisions, two open questions, three tasks with names. The same text is in our file meeting_notes.md. Show it to the students and compare with the slide. A flag (feature flag) is a switch in the code: the rule can be turned on and off without changing the program. Staging is a test server."),
+                    t("Что важно знать: итоги работают, только если встреча записана и расшифрована, и у вас есть Copilot с лицензией. Без этого берите бесплатный Copilot Chat и вставляйте текст заметок сами. Это тот же приём: показать ассистенту нужное. Сверьте перед занятием: функция итогов зависит от лицензии и настроек записи.",
+                      "What to know: the recap works only if the meeting is recorded and transcribed and you have licensed Copilot. Without it, use free Copilot Chat and paste the notes yourself. It is the same trick: show the assistant the right thing. Check before class: the recap depends on the licence and recording settings."),
                     t("Если кнопка не там, где на схеме: «кнопка переехала, правило осталось». Не больше 90 секунд на поиск, дальше вставьте текст в чат.",
                       "If the button is not where the schematic shows it: “the button moved, the rule did not.” No more than 90 seconds of searching, then paste the text into the chat.")))
 
 
 # ---------------------------------------------------------------- 06 Word
 def s_word():
-    prompt = t("Используя только эти заметки, напиши бриф на одну страницу: решения, открытые вопросы, ответственные. В конце перечисли предложения, которые добавил ты.",
+    prompt = t("Используя только эти заметки, напиши бриф на одну страницу: решения, открытые вопросы, ответственные. В конце перечисли предложения, которые ты добавил от себя.",
                "Using only these notes, write a one-page brief: decisions, open questions, owners. At the end list which sentences are yours.")
     return dict(min=5, html=f'''
   {head(t("Word", "Word"), t("Word: из заметок — бриф на одну страницу", "Word: from notes to a one-page brief"))}
@@ -354,8 +354,8 @@ def s_word():
           <h3>{t("Бриф: бесплатная доставка для Prime", "Brief: free delivery for Prime")}</h3>
           <p><span class="src">{t("Подписчики Prime получают бесплатную доставку от заказа $75 внутри города. От $100 бесплатно для всех, как раньше. Вне зоны ничего не меняется.",
                                   "Prime subscribers get free delivery from a $75 order inside the city. From $100 it is free for everyone, as before. Nothing changes outside the zone.")}</span></p>
-          <p><span class="src">{t("Павел делает правило за флагом на стейджинге, Ола обновляет ответ для поддержки. Кто ведёт запуск флага — пока открытый вопрос.",
-                                  "Pavel builds the rule behind a flag on staging, Ola updates the support reply. Who owns the flag rollout is still open.")}</span></p>
+          <p><span class="src">{t("Павел включает правило через переключатель (feature flag), сначала только на тестовом сервере. Ола обновляет ответ для поддержки. Кто включит переключатель для всех — пока открытый вопрос.",
+                                  "Pavel puts the rule behind a switch (a feature flag), first on the test server only. Ola updates the support reply. Who flips the switch for everyone is still open.")}</span></p>
           <p><span class="inv">{t("Ожидаемый эффект: больше повторных заказов.", "Expected effect: more repeat orders.")}</span></p>
           <div class="co c1">{t("из заметок", "from the notes")}</div>
           <div class="co c2">{t("слова Copilot: в заметках этого нет", "Copilot’s words: not in the notes")}</div>
@@ -363,7 +363,7 @@ def s_word():
         <div class="pane">
           <div class="ph"><span class="spark">&#10022;</span> Copilot</div>
           <div class="me">{prompt}</div>
-          <div class="ai">{t("Готово. Добавил я: «Ожидаемый эффект…».", "Done. Added by me: “Expected effect…”.")}</div>
+          <div class="ai">{t("Готово. От себя добавил: «Ожидаемый эффект…».", "Done. Added by me: “Expected effect…”.")}</div>
         </div>
       </div>
     </div>
@@ -394,7 +394,7 @@ def s_outlook_excel():
         <div class="bar">{dots()}<span class="ttl">Outlook — {t("ответ поддержки", "support reply")}</span>{sch()}</div>
         <div class="ol-body">{ml}
           <div class="sum"><div class="sh"><span class="spark">&#10022;</span> {t("Кратко", "Summary")}</div>
-          {t("Prime: бесплатно от $75, только город. Ола просит одну фразу для ответа. Открыто: кто её отправит.", "Prime: free from $75, city only. Ola wants one sentence for the reply. Open: who sends it.")}</div>
+          {t("Prime: бесплатно от $75, только город. Ола просит одну фразу для ответа поддержки.", "Prime: free from $75, city only. Ola wants one sentence for the support reply.")}</div>
         </div>
       </div>
       <div class="mock lt excel">
@@ -443,8 +443,9 @@ def s_money():
       <div class="stack" style="gap:18px;">
         <div class="pbox" style="--k:var(--violet)"><div class="ph">GitHub Copilot</div>{ghr}</div>
         <div class="pbox" style="--k:var(--cyan)"><div class="ph">Microsoft</div>
-          <div class="pr"><span class="n">Copilot Chat</span><span class="d">{t("с рабочим аккаунтом Microsoft 365: веб и то, что вы открыли или приложили", "with a Microsoft 365 work account: the web and what you open or attach")}</span><span class="v g">{t("входит", "included")}</span></div>
-          <div class="pr"><span class="n">{t("С лицензией", "Licensed")}</span><span class="d">{t("Microsoft 365 Copilot, Enterprise / Business, оплата за год", "Microsoft 365 Copilot, Enterprise / Business, billed yearly")}</span><span class="v">$30 / $23.50</span></div>
+          <div class="pr"><span class="n">Copilot Chat</span><span class="d">{t("с рабочей подпиской Microsoft 365: веб и то, что вы открыли или приложили", "with a Microsoft 365 work account: the web and what you open or attach")}</span><span class="v g">{t("входит", "included")}</span></div>
+          <div class="pr"><span class="n">Business</span><span class="d">{t("Microsoft 365 Copilot, при оплате за год", "Microsoft 365 Copilot, billed yearly")}</span><span class="v">$23.50</span></div>
+          <div class="pr"><span class="n">Enterprise</span><span class="d">{t("то же, при оплате за год", "same, billed yearly")}</span><span class="v">$30</span></div>
         </div>
       </div>
     </div>
@@ -483,7 +484,7 @@ def s_issue():
           <h5>{t("Исполнитель", "Assignees")}</h5><div class="it"><span class="av a2">P</span> Pavel</div>
           <h5>{t("Метки", "Labels")}</h5><div class="it"><span class="lbl">feature</span></div>
           <h5>Copilot</h5><div class="it off">{t("Назначить на Copilot", "Assign to Copilot")}</div>
-          <div class="hint">{t("Облачный агент: платные тарифы. Разбор в L16.", "Cloud agent: paid plans. Covered in L16.")}</div>
+          <div class="hint">{t("Облачный агент: на Free его нет. Разбор в L16.", "Cloud agent: not on Free. Covered in L16.")}</div>
         </div>
       </div>
     </div>
@@ -507,7 +508,7 @@ def s_editor():
             added.update(range(j1, j2))
     first = min(added)
     rows = ""
-    for idx in range(10, len(sol)):  # file lines 11..end
+    for idx in range(12, len(sol)):  # file lines 13..end
         line = sol[idx]
         if idx == first:
             typed = "    if order.zone"
@@ -518,21 +519,21 @@ def s_editor():
             rows += f'<div class="ln"><i>{idx + 1}</i><span>{esc(line)}</span></div>'
     return dict(min=6, html=f'''
   {head(t("Редактор", "The editor"), t("В редакторе Copilot помогает тремя способами", "In the editor Copilot helps in three ways"),
-        t("<b>Подсказка</b> дописывает строку, <b>чат</b> отвечает про открытый файл, <b>агент</b> сам правит файлы и запускает тесты.",
-          "<b>Completion</b> finishes your line, <b>chat</b> answers about the open file, an <b>agent</b> edits files and runs tests itself."))}
+        t("<b>1 Подсказка</b> дописывает строку, <b>2 чат</b> отвечает про открытый файл, <b>3 агент</b> сам правит файлы и запускает тесты.",
+          "<b>1 Completion</b> finishes your line, <b>2 chat</b> answers about the open file, <b>3 agent</b> edits files and runs tests itself."))}
   <div class="body" style="margin-top:14px;">
     <div class="mock dk vsc">
       <div class="bar">{dots()}<span class="ttl">delivery_fee.py — courier-app — VS Code</span>{sch()}</div>
       <div class="vs-body">
         <div class="act"><i></i><i></i><i></i></div>
         <div class="exp"><h6>{t("ПРОЕКТ", "PROJECT")}</h6><div class="f">ISSUE.md</div><div class="f on">delivery_fee.py</div><div class="f">test_delivery_fee.py</div><div class="f">copilot-instructions.md</div></div>
-        <div class="ed"><div class="tab">delivery_fee.py</div>{rows}
+        <div class="ed"><div class="tab">delivery_fee.py</div><span class="pill p1">{t("1 подсказка", "1 completion")}</span>{rows}<div class="gcap">{t("серый текст = подсказка, Tab принимает", "grey text = completion, Tab accepts")}</div>
           <div class="term"><b>{t("ТЕРМИНАЛ", "TERMINAL")}</b><div>$ python -m unittest -v</div><div class="ok">Ran {N_TESTS} tests ... OK</div></div>
         </div>
-        <div class="chat"><div class="ph"><span class="spark">&#10022;</span> Copilot</div>
+        <div class="chat"><div class="ph"><span class="spark">&#10022;</span> Copilot <span class="pill p2">{t("2 чат", "2 chat")}</span></div>
           <div class="me">{t("Прочитай ISSUE.md и инструкции, предложи план. Не правь.", "Read ISSUE.md and the instructions, propose a plan. Do not edit.")}</div>
           <div class="ai">{t("План: 1) ветка для Prime в городе от 75, 2) правило $100 не трогать, 3) три теста.", "Plan: 1) a Prime branch for the city from 75, 2) leave the $100 rule, 3) three tests.")}</div>
-          <div class="me">{t("Сделай и запусти тесты.", "Implement it and run the tests.")}</div>
+          <span class="pill p3">{t("3 агент", "3 agent")}</span><div class="me">{t("Сделай и запусти тесты.", "Implement it and run the tests.")}</div>
           <div class="ai">{t(f"Готово: +{N_LOGIC} строки в delivery_fee.py, +{N_NEW} теста. Тесты запущены.", f"Done: +{N_LOGIC} lines in delivery_fee.py, +{N_NEW} tests. Tests ran.")}</div>
         </div>
       </div>
@@ -552,9 +553,9 @@ def s_result():
     tests = "".join(f'<div><span class="nm">{x["name"]}</span> <span class="ok">... {x["result"]}</span></div>' for x in ART["tests"])
     return dict(min=6, html=f'''
   {head(t("Результат", "The result"), t(f"Результат: {N_LOGIC} строки в diff и {N_TESTS} зелёных тестов", f"The result: a {N_LOGIC}-line diff and {N_TESTS} green tests"),
-        t("Это настоящий запуск, не рисунок. Смотрите на diff и тесты, а не на слово «готово».", "This is a real run, not a drawing. Look at the diff and the tests, not at the word “done”."))}
+        t("Это настоящий запуск, не рисунок. Diff — точный список добавленных и убранных строк. Смотрите на него и на тесты, а не на слово «готово».", "This is a real run, not a drawing. A diff is the exact list of added and removed lines. Look at it and at the tests, not at the word “done”."))}
   <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:1.5fr 1fr;gap:36px;align-items:start;flex:none;">
+    <div class="row" style="grid-template-columns:1.65fr 1fr;gap:32px;align-items:start;flex:none;">
       <div class="stack" style="gap:8px;"><div class="prompt-label">git diff -U1</div>{diff_block(DL)}</div>
       <div class="stack" style="gap:18px;">
         <div><div class="prompt-label">python -m unittest -v</div>
@@ -594,13 +595,15 @@ def s_pr():
           <div class="fh">{fl[0][5:] if fl[0].startswith("FILE ") else fl[0]} <small>+{ART["files"]["delivery_fee.py"]["added"]} −{ART["files"]["delivery_fee.py"]["removed"]}</small></div>
           {diff_block(fl[1:], "dif nb")}
           <div class="rc"><span class="av a5">&#10022;</span><div><b>Copilot</b> <small>{t("ревью", "review")}</small>
-            <div>{t("Тест на границу 74.99 уже есть. Подумайте про <code>Decimal</code> для денег.", "The 74.99 boundary test is already there. Consider <code>Decimal</code> for money.")}</div></div></div>
+            <div>{t("Тест на границу 74.99 уже есть. Подумайте про <code>Decimal</code> — точный тип для денег вместо float.", "The 74.99 boundary test is already there. Consider <code>Decimal</code>, an exact type for money, instead of float.")}</div></div></div>
+          <div class="rc rp"><span class="av a2">P</span><div><b>Pavel</b> <small>{t("ответ", "reply")}</small>
+            <div>{t("Decimal возьму в отдельную задачу #14; здесь оставляю float, как во всём файле.", "Decimal goes into a separate issue #14; here I keep float, like the rest of the file.")}</div></div></div>
           <div class="fh2">test_delivery_fee.py <small>+{n_t} −0</small></div>
         </div>
       </div>
       <div class="stack" style="gap:18px;justify-content:center;">
         <div class="status ok"><span class="tick">&#10003;</span><div><b>{t("Одобрено: Ола", "Approved: Ola")}</b><small>{t("человек принимает решение", "a person decides")}</small></div></div>
-        <div class="status ok"><span class="tick">&#10003;</span><div><b>{t(f"Проверки: тесты {N_TESTS}/{N_TESTS}", f"Checks: tests {N_TESTS}/{N_TESTS}")}</b><small>{t("тесты — ворота", "tests are the gate")}</small></div></div>
+        <div class="status ok"><span class="tick">&#10003;</span><div><b>{t(f"Проверки: тесты {N_TESTS}/{N_TESTS}", f"Checks: tests {N_TESTS}/{N_TESTS}")}</b><small>{t("не прошли тесты — не принимаем", "tests are the gate")}</small></div></div>
         <div class="status"><span class="tick c">&#10022;</span><div><b>{t("Copilot: 1 комментарий", "Copilot: 1 comment")}</b><small>{t("это совет, не приказ", "a suggestion, not an order")}</small></div></div>
       </div>
     </div>
@@ -629,7 +632,7 @@ def s_instr():
                    for i, (r, e) in enumerate(zip(rules, ev)))
     return dict(min=3, html=f'''
   {head(t("Правила команды", "Team rules"), t("copilot-instructions.md — README для робота", "copilot-instructions.md: a README for the robot"),
-        t("Короткий файл с правилами команды. Copilot читает его каждый раз.", "A short file of team rules. Copilot reads it every time."))}
+        t("Короткий файл с правилами команды. Copilot читает его при каждом запросе в чат и при ревью.", "A short file of team rules. Copilot reads it on every chat request and review."))}
   <div class="body" style="margin-top:14px;">
     <div class="file">
       <div class="fb">.github/copilot-instructions.md <span>{t("что из этого видно в результате", "where it shows in the result")}</span></div>
@@ -638,7 +641,7 @@ def s_instr():
   </div>''',
                 notes=notes(
                     t("⏱ 3 мин. «Правило 4, “добавляй тесты на границу”, — причина, почему тест на 74.99 вообще существует.»", "⏱ 3 min. “Rule 4, ‘add boundary tests’, is why the 74.99 test exists.”"),
-                    t("Это пользовательские инструкции: файл правил, который ассистент читает перед каждым запросом. Лежит в папке .github, в начале проекта. Пять строк слева, а справа то, где каждая видна в нашем результате.",
+                    t("Это инструкции для Copilot (custom instructions): файл правил, который ассистент читает перед каждым запросом. Лежит в папке .github, в начале проекта. Пять строк слева, а справа то, где каждая видна в нашем результате.",
                       "These are custom instructions: a file of rules the assistant reads before every request. It lives in the .github folder at the start of the project. Five lines on the left, and on the right where each one shows in our result."),
                     t("Совет: файл должен быть коротким. Длинный свод правил никто не соблюдает, ни люди, ни роботы. Пишите правила, которые можно проверить по diff или по тестам.",
                       "Tip: keep the file short. Nobody follows a long rulebook, neither people nor robots. Write rules you can check in the diff or in the tests.")))
@@ -649,10 +652,10 @@ def s_doors():
     def pin(c):
         return (f'<svg viewBox="0 0 48 60" width="48" height="60"><path d="M24 2C12 2 4 11 4 22c0 15 20 36 20 36s20-21 20-36C44 11 36 2 24 2z" fill="var(--{c})"/>'
                 f'<circle cx="24" cy="22" r="8" fill="var(--bg)"/></svg>')
-    doors = [("violet", t("Редактор", "Editor"), "VS Code, JetBrains, Visual Studio", t("Вы пишете код: подсказка, чат, агент", "You write code: completion, chat, agent"), t("Сегодня", "Today"), t("есть на Free", "on Free"), "green"),
-             ("cyan", "github.com", t("issue и pull request", "issues and pull requests"), t("Вы просите ревью на странице изменения", "You ask for a review on the change page"), t("Сегодня", "Today"), t("зависит от тарифа", "depends on the plan"), "amber"),
-             ("green", t("Терминал", "Terminal"), "Copilot CLI", t("Вы пишете задачу в командной строке", "You type a task in the command line"), "L16", t("есть на Free", "on Free"), "green"),
-             ("amber", t("Облако", "Cloud"), t("облачный агент", "cloud agent"), t("Берёт issue и сам открывает pull request", "Takes an issue and opens a pull request itself"), "L16", t("платные тарифы", "paid plans"), "amber")]
+    doors = [("violet", t("Редактор", "Editor"), "VS Code, JetBrains, Visual Studio", t("Павел: «Сделай по ISSUE.md и запусти тесты»", "Pavel: “Do ISSUE.md and run the tests”"), t("Сегодня", "Today"), t("есть на Free", "on Free"), "green"),
+             ("cyan", "github.com", t("issue и pull request", "issues and pull requests"), t("Анна: «Copilot, сделай ревью #13»", "Anna: “Copilot, review #13”"), t("Сегодня", "Today"), t("зависит от тарифа", "depends on the plan"), "amber"),
+             ("green", t("Терминал", "Terminal"), "Copilot CLI", t("«Покажи, какие тесты упали»", "“Show me which tests failed”"), "L16", t("есть на Free", "on Free"), "green"),
+             ("amber", t("Облако", "Cloud"), t("облачный агент", "cloud agent"), t("Назначить issue #12 на Copilot → он откроет PR", "Assign issue #12 to Copilot → it opens a PR"), "L16", t("платные тарифы", "paid plans"), "amber")]
     cols = ""
     for c, h, sub, what, badge, free, fc in doors:
         cols += f'''<div class="door" style="--k:var(--{c})"><div class="pin">{pin(c)}</div><div class="dh">{h}</div><div class="ds">{sub}</div>
@@ -684,21 +687,21 @@ def s_break():
 
 # ---------------------------------------------------------------- 16 Windows
 def s_windows():
-    keys = [("Ctrl", 84, False), ("Win", 84, False), ("Alt", 84, False), ("", 150, False), ("Alt", 84, False), ("", 100, True), ("Ctrl", 84, False)]
+    keys = [("Ctrl", 84, False), ("Win", 84, False), ("Alt", 84, False), ("", 150, False), ("Alt", 84, False), ("", 150, True), ("Ctrl", 84, False)]
     x, ks = 10, ""
     for lab, w, hl in keys:
         if hl:
             ks += (f'<rect x="{x}" y="14" width="{w}" height="64" rx="9" fill="var(--green)" fill-opacity=".25" stroke="var(--green)" stroke-width="4"/>'
-                   f'<path d="M{x + 34} 46a16 16 0 1 1 32 0 16 16 0 0 1-32 0z" fill="none" stroke="var(--green)" stroke-width="3.5"/>')
+                   f'<text x="{x + w / 2}" y="55" text-anchor="middle" class="s26b" fill="var(--green)">&#10022; Copilot</text>')
         else:
             ks += (f'<rect x="{x}" y="14" width="{w}" height="64" rx="9" fill="var(--surface)" stroke="var(--line)" stroke-width="2"/>'
                    f'<text x="{x + w / 2}" y="54" text-anchor="middle" class="s26" fill="var(--muted)">{lab}</text>')
         x += w + 10
     row2 = "".join(f'<rect x="{10 + i * 98}" y="14" width="88" height="40" rx="8" fill="var(--surface)" fill-opacity=".6" stroke="var(--line)"/>' for i in range(7))
-    ks = row2 + f'<g transform="translate(0 58)">{ks}</g>'
-    kb = f'<svg viewBox="0 0 {x} 156" class="fig" style="width:100%;height:auto">{ks}</svg>'
+    ks = f'<g transform="translate(0 0)">{ks}</g>'
+    kb = f'<svg viewBox="0 0 {x} 94" class="fig" style="width:100%;height:auto">{ks}</svg>'
     chips = [t("Чат и голос", "Chat and voice"), t("Vision: видит выбранное окно", "Vision: sees the window you pick"),
-             t("Поиск по файлам: docx, xlsx, pptx, txt, pdf", "File search: docx, xlsx, pptx, txt, pdf"), t("Скриншоты", "Screenshots")]
+             t("Поиск по файлам: docx, xlsx, pptx, txt, pdf", "File search: docx, xlsx, pptx, txt, pdf"), t("Скриншот экрана и вопрос по нему", "Screenshot of the screen, then a question about it")]
     cl = "".join(f"<li>{c}</li>" for c in chips)
     return dict(min=6, html=f'''
   {head(t("Windows", "Windows"), t("Windows: Copilot видит только то окно, которое вы показали", "Windows: Copilot sees only the window you shared"))}
@@ -707,10 +710,10 @@ def s_windows():
       <div class="mock dk desk">
         <div class="bar">{dots()}<span class="ttl">Windows</span>{sch()}</div>
         <div class="dk-body">
-          <div class="np"><div class="nb"><i></i> release_checklist.txt</div><div class="nl">{CHECKLIST[0]}</div><div class="nl">{CHECKLIST[1]}</div><div class="nl">{CHECKLIST[2]}</div><div class="shared">{t("окно показано Copilot", "window shared with Copilot")}</div></div>
+          <div class="np"><div class="nb"><i></i> release_checklist.txt</div><div class="nl">{CHECKLIST[0]}</div><div class="nl">{CHECKLIST[1]}</div><div class="nl">{CHECKLIST[2]}</div><div class="shared">{t("Copilot видит это окно", "Copilot sees this window")}</div></div>
           <div class="cpw"><div class="ph"><span class="spark">&#10022;</span> Copilot</div>
             <div class="me">{t("Что в этом окне?", "What is in this window?")}</div>
-            <div class="ai">{t("Это чек-лист релиза, шесть пунктов.", "This is a release checklist, six items.")}</div>
+            <div class="ai">{t("Это чек-лист релиза: тесты зелёные, порог $75 для Prime, флаг пока только на тестовом сервере.", "This is a release checklist: tests green, the $75 Prime threshold, the flag on the test server only.")}</div>
             <div class="comp"><span>&#127908;</span><span class="vis">&#9673; Vision</span><span class="in">{t("Спросите о чём угодно", "Ask me anything")}</span></div></div>
         </div>
         <div class="tb"><span class="sb"></span><span class="sr"></span><i></i><i></i><i></i><span class="clk">09:15</span></div>
@@ -746,9 +749,9 @@ def s_notepad():
       <div class="stack" style="gap:22px;">
         <div class="ask-card">
           <div class="me">{t("Какой пункт поймает изменение платы вне зоны?", "Which item catches an outside-zone fee change?")}</div>
-          <div class="ai"><span class="spark">&#10022;</span> {t("Пункт 6: «Откатите флаг, если плата вне зоны неожиданно изменилась».", "Item 6: “Roll back the flag if outside-zone fees change unexpectedly.”")}</div>
+          <div class="ai"><span class="spark">&#10022;</span> {t("Пункт 6: «Roll back the flag if outside-zone fees change unexpectedly» — откатить флаг, если плата вне зоны неожиданно изменилась.", "Item 6: “Roll back the flag if outside-zone fees change unexpectedly.”")}</div>
         </div>
-        <div class="note" style="--k:var(--green)">{t("Файл открыт, значит ответ по файлу. Нет кнопки: <b>вставьте текст в чат</b>.", "The file is open, so the answer is about the file. No button: <b>paste the text into the chat</b>.")}</div>
+        <div class="note" style="--k:var(--green)">{t("Файл открыт, значит ответ по файлу. Нет Vision — <b>вставьте текст в чат</b>.", "The file is open, so the answer is about the file. No Vision: <b>paste the text into the chat</b>.")}</div>
       </div>
     </div>
   </div>''',
@@ -766,8 +769,8 @@ def s_six():
              (t("В задаче есть числа и что не должно меняться", "The issue has numbers and what must not change"), "$75 · $100 · $18.00"),
              (t("Изменение маленькое", "The change is small"), t(f"+{N_LOGIC} строки логики", f"+{N_LOGIC} lines of logic")),
              (t("Тесты зелёные и проверяют границу", "Tests are green and check the boundary"), t(f"{N_TESTS} из {N_TESTS} · 75 и 74.99", f"{N_TESTS} of {N_TESTS} · 75 and 74.99")),
-             (t("Ревью прочитано и на него ответили", "The review was read and answered"), t("1 комментарий Copilot", "1 Copilot comment")),
-             (t("Доказательства сохранены", "Evidence is kept"), t("3 скриншота + checklist.md", "3 screenshots + checklist.md"))]
+             (t("Ревью прочитано и на него ответили", "The review was read and answered"), t("1 комментарий Copilot · ответ Павла", "1 Copilot comment · Pavel’s reply")),
+             (t("Доказательства сохранены", "Evidence is kept"), t("слайды 11, 12, 17 + checklist.md", "slides 11, 12, 17 + checklist.md"))]
     rows = "".join(f'<div class="ck"><svg viewBox="0 0 44 44" width="44" height="44"><circle cx="22" cy="22" r="20" fill="var(--green)"/><path d="M12 23l7 7 13-15" fill="none" stroke="#0b0f17" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
                    f'<span class="tx2">{a}</span><span class="vl">{b}</span></div>' for a, b in items)
     return dict(min=5, html=f'''
@@ -791,7 +794,7 @@ def s_limits():
     <g transform="translate(222 160)" fill="none" stroke="var(--amber)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="14"/><path d="M28 24l66 50M70 60l12-12M82 72l12-12"/></g>
     <text x="170" y="388" text-anchor="middle" class="s23b" fill="var(--cyan)">COPILOT = </text>
     <text x="170" y="420" text-anchor="middle" class="s23b" fill="var(--cyan)">YOU, FASTER</text>
-    </svg>'''.replace("COPILOT = ", t("Copilot = это", "Copilot is")).replace("YOU, FASTER", t("вы, но быстрее", "you, but faster"))
+    </svg>'''.replace("COPILOT = ", t("Copilot — это вы,", "Copilot is")).replace("YOU, FASTER", t("только быстрее", "you, but faster"))
     traps = [("red", t("Не тот аккаунт", "Wrong account"), t("Вы вошли не туда, и Copilot видит не те файлы.", "You signed in to the wrong one, and Copilot sees the wrong files.")),
              ("amber", t("Секрет в чате", "A secret in the chat"), t("Пароль, ключ, данные клиента: ничего этого в запрос не вставляем.", "A password, a key, customer data: none of it goes into a request.")),
              ("violet", t("«Готово!»", "“Done!”"), t("Слово ничего не доказывает. Смотрите diff и тесты.", "The word proves nothing. Look at the diff and the tests."))]
@@ -823,10 +826,12 @@ def s_hw():
 ├── test_delivery_fee.py
 ├── checklist.md
 └── README.md   <span class="cm"># {t("3 скриншота", "3 screenshots")}</span>
-<span class="cm">+ {t("ссылка на один принятый pull request", "+ a link to one merged pull request")}</span>'''
+<span class="cm">{t("скриншоты: бриф, Copilot в редакторе, PR", "screenshots: brief, Copilot in editor, PR")}
++ {t("ссылка на один принятый pull request", "a link to one merged pull request")}</span>'''
     bl = [t("<b>Фича:</b> правило Prime или своё, например «дождь: +$2 вне зоны».", "<b>Feature:</b> the Prime rule or your own, for example “rain: +$2 outside the zone”."),
           t("<b>Инструменты:</b> только бесплатные: GitHub Copilot Free в VS Code и Copilot Chat.", "<b>Tools:</b> free ones only: GitHub Copilot Free in VS Code and Copilot Chat."),
           t("<b>Сначала</b> выключите обучение на ваших данных в настройках GitHub.", "<b>First</b> switch off training on your data in GitHub settings."),
+          t("<b>Ревью:</b> Copilot-ревью на pull request может быть платным — хватит комментария человека, на который вы ответили.", "<b>Review:</b> Copilot review on a PR may be paid; a human comment that you answered is enough."),
           t("<b>Оценка:</b> шесть проверок со слайда 18. Данные только придуманные.", "<b>Grading:</b> the six checks of slide 18. Synthetic data only.")]
     li = "".join(f"<li>{b}</li>" for b in bl)
     return dict(min=7, html=f'''

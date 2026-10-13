@@ -614,3 +614,56 @@ ul.list.big { gap: 30px; } ul.list.big li { font-size: 25px; line-height: 1.4; p
 .files { font-size: 22px; }
 
 .files { font-size: 24px; line-height: 1.7; } ul.list.big li { font-size: 26px; }
+
+/* L07 critic fixes */
+.vsc .ln { font-size: 19px; line-height: 30px; } .vsc .ln em { color: #94a3b8; background: rgba(148,163,184,.14); }
+.vsc .gcap { font-size: 17px; color: #94a3b8; padding: 4px 0 0 46px; }
+.vsc .vs-body { grid-template-columns: 46px 230px 1fr 372px; }
+.vsc .ed { position: relative; } .vsc .ed .tab { margin-bottom: 8px; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 17px; font-weight: 700; padding: 3px 12px; border-radius: 6px; color: #0b0f17; white-space: nowrap; }
+.pill.p1 { background: var(--cyan); margin: 0 0 6px 8px; } .pill.p2 { background: var(--violet); margin-left: auto; } .pill.p3 { background: var(--amber); margin: 0 0 6px 30px; }
+.mock .me, .mock .ai { font-size: 19px; }
+.teams .tm-body { grid-template-columns: 1fr 1.15fr; } .teams .pane li { font-size: 22px; } .teams .pane h4 { font-size: 19px; }
+.word .page { font-size: 24px; } .word .page h3 { font-size: 30px; } .word .pane .me, .word .pane .ai { font-size: 21px; }
+.excel table { font-size: 20px; } .excel th { font-size: 19px; } .outlook .mail { font-size: 21px; } .outlook .mock, .excel, .outlook { min-height: 520px; }
+.dif, .tout { font-size: 17px; line-height: 26px; }
+.gh .rc.rp { border-color: #30363d; background: #11161d; margin-top: 8px; } .gh .rc.rp small { color: #8b949e; }
+.desk .small, .kb + .small { font-size: 19px; }
+.door { min-height: 400px; } .door .db { margin-top: 18px; } .door .df { margin-top: auto; }
+ul.list.big { gap: 18px; } ul.list.big li { font-size: 24px; }
+
+.vsc .vs-body { grid-template-columns: 40px 210px 1fr 330px; }
+.vsc .ln { font-size: 17px; line-height: 30px; } .vsc .exp .f { font-size: 17px; }
+.pill.p1 { align-self: flex-start; } .pill.p3 { margin-bottom: 6px; }
+.vsc .chat .me, .vsc .chat .ai { font-size: 18px; }
+.teams .tm-body { height: 520px; } .teams .pane { padding: 14px 24px; } .teams .pane li { font-size: 21px; padding: 2px 0 2px 18px; } .teams .pane li::before { top: 12px; }
+.teams .pane h4 { margin: 8px 0 3px; } .teams .ask { margin-top: 10px; }
+.teams .tile .av { width: 66px; height: 66px; font-size: 30px; }
+
+/* L07 fill pass */
+.slide[data-n="2"] .strip .ic { width: 160px; height: 160px; } .slide[data-n="2"] .strip .ic svg { width: 92px; height: 92px; } .slide[data-n="2"] .strip .line { top: 138px; }
+.slide[data-n="2"] .strip .nm { font-size: 33px; } .slide[data-n="2"] .strip .ex { font-size: 27px; } .slide[data-n="2"] .strip .st { gap: 16px; }
+.slide[data-n="4"] .row { grid-template-columns: 1.9fr 1fr !important; } .slide[data-n="4"] pre.code.sm { font-size: 22px; } .slide[data-n="4"] .note { font-size: 23px; }
+.slide[data-n="7"] .mock { min-height: 600px; } .slide[data-n="7"] .outlook .mail { padding: 14px 0; } .slide[data-n="7"] .excel td { padding: 6px 8px; }
+.slide[data-n="7"] .mock .sum { font-size: 21px; }
+.slide[data-n="9"] .gh .gh-body { min-height: 580px; } .slide[data-n="9"] .gh .cm ul { font-size: 26px; line-height: 1.6; } .slide[data-n="9"] .gh h3 { font-size: 38px; }
+.slide[data-n="13"] .file .rr { padding: 24px 0; } .slide[data-n="13"] .file .rl { font-size: 26px; } .slide[data-n="13"] .file .ev { font-size: 24px; }
+.slide[data-n="14"] .door { min-height: 520px; } .slide[data-n="14"] .door .dw { font-size: 26px; } .slide[data-n="14"] .door .dh { font-size: 36px; }
+.slide[data-n="16"] .desk .dk-body { height: 560px; } .slide[data-n="16"] .desk .np { width: 372px; top: 40px; } .slide[data-n="16"] .desk .np .nl { font-size: 19px; padding: 8px 12px; }
+.slide[data-n="16"] .desk .cpw { top: 30px; bottom: 26px; } .slide[data-n="16"] .desk .cpw .me, .slide[data-n="16"] .desk .cpw .ai { font-size: 21px; }
+.slide[data-n="16"] ul.list li { font-size: 26px; } .slide[data-n="16"] .kb { padding: 22px 22px; } .slide[data-n="16"] .small { font-size: 21px; }
+.slide[data-n="17"] .notepad .np-body { font-size: 22px; min-height: 520px; } .slide[data-n="17"] .ask-card .me { font-size: 24px; } .slide[data-n="17"] .ask-card .ai { font-size: 25px; } .slide[data-n="17"] .note { font-size: 24px; }
+.slide[data-n="18"] .ck { padding: 20px 0; } .slide[data-n="18"] .ck .tx2 { font-size: 29px; } .slide[data-n="18"] .ck .vl { font-size: 24px; }
+.slide[data-n="19"] .row { grid-template-columns: .7fr 1.3fr !important; } .slide[data-n="19"] .trap { padding: 18px 22px; } .slide[data-n="19"] .trap .th { font-size: 29px; } .slide[data-n="19"] .trap .td { font-size: 23px; } .slide[data-n="19"] .plaque { font-size: 22px; }
+.slide[data-n="20"] .files { font-size: 30px; line-height: 1.75; padding: 22px 26px; } .slide[data-n="20"] ul.list.big li { font-size: 28px; } .slide[data-n="20"] ul.list.big { gap: 28px; } .slide[data-n="20"] .prompt-label { font-size: 18px; }
+.slide[data-n="21"] .rules .rule .t { font-size: 32px; } .slide[data-n="21"] .rules { gap: 28px !important; } .slide[data-n="21"] .strip.sm .ic { width: 96px; height: 96px; } .slide[data-n="21"] .strip.sm .ic svg { width: 56px; height: 56px; } .slide[data-n="21"] .strip.sm .line { top: 82px; } .slide[data-n="21"] .strip.sm .nm { font-size: 25px; } .slide[data-n="21"] .next .nh { font-size: 38px; } .slide[data-n="21"] .next .mini { font-size: 21px; } .slide[data-n="21"] .next .nd { font-size: 23px; }
+.slide[data-n="2"] .strip .ex { font-size: 29px; } .slide[data-n="2"] .strip .st { gap: 20px; }
+.slide[data-n="14"] .door { min-height: 570px; }
+.slide[data-n="20"] .files { font-size: 32px; } .slide[data-n="20"] ul.list.big li { font-size: 30px; } .slide[data-n="20"] ul.list.big { gap: 34px; }
+.slide[data-n="4"] pre.code.sm { font-size: 19px; }
+.slide[data-n="4"] pre.code.sm { font-size: 17px; }
+.slide[data-n="2"] .strip .ex { font-size: 27px; }
+.slide[data-n="16"] .body { margin-top: 34px; } .slide[data-n="16"] .desk .dk-body { height: 470px; } .slide[data-n="16"] .desk .np .nl { font-size: 18px; padding: 5px 12px; }
+.slide[data-n="20"] .row { grid-template-columns: 1fr 1fr !important; } .slide[data-n="20"] .files { font-size: 25px; line-height: 1.8; } .slide[data-n="20"] ul.list.big li { font-size: 28px; } .slide[data-n="20"] ul.list.big { gap: 30px; }
+.slide[data-n="2"] .body, .slide[data-n="20"] .body { justify-content: flex-start; margin-top: 40px; }
+.slide[data-n="2"] .body, .slide[data-n="20"] .body { margin-top: 80px; }
