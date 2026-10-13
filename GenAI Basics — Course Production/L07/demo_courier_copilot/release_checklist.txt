@@ -1,0 +1,8 @@
+Courier app: release checklist
+==============================
+1. Unit tests are green.
+2. Anna confirms: Prime threshold = $75, city zone only.
+3. Feature flag is on in staging only.
+4. Ola updates the support reply before the production release.
+5. Compare the delivery-cost number for 24 hours after the release.
+6. Roll back the flag if outside-zone fees change unexpectedly.
