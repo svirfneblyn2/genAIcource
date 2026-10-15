@@ -10,7 +10,7 @@ Deck structure: example video, three access layers (chat, web studio, API), how 
 - **Media:** `deck_v2/make_media.py` → `assets/v2/video/*.mp4` (re-encoded copies of `demo_veo_showcase/` clips: 960×540, H.264 CRF 27, no audio, ~6 MB total) and `assets/v2/img/*.jpg` (posters, failure frames, QA frames, noise schematic, stills).
 - **Plan / facts:** `L05_09_Deck_Fix_Plan_v2.md` (author decisions at the top take priority), `L05_08_Source_Notes_Research_2026-10.md`.
 - **Case clips:** `demo_veo_showcase/`: Veo 3.1 (`veo-3.1-generate-001`), 1280×720, 8 s each, with audio; `courier_delivery_final.mp4` = 8 + 8 + 8 s with two 0.5 s transitions = 23 s; `trainwreck_naive_t2v.mp4` = naive one-prompt text-to-video.
-- The v1 decks (`presentation_L05_Video_Generation.html` / `_EN.html`, 17 slides) and the legacy `*.py` generators in this folder are kept for reference only (outdated models).
+- The v1 decks (17 slides, outdated models) were removed on 2026-10-15; they are in git history (tag `archive/pre-cleanup-2026-10-15`). The `*.py` scripts in `demo_veo_showcase/` produced the source clips and are kept for reference.
 - **Aligned with the 21-slide deck (2026-10-12):** instructor scripts (`L05_02_*`), cheatsheets (`L05_00_*`), homework (`L05_05_*`), live-demo runbooks (`L05_04_*`, slide references only), lesson graph (`L05_10_*`). The notebook `L05_Video_Generation_API_Pipeline.ipynb` (copy in `/notebooks`) uses the real Veo 3.1 API via `google-genai`; paid calls are off by default (`RUN_PAID = False`); its prompt-slot reference still points to old slide 8 (now slide 10). `L05_01_Lecture_Text_READY.md` is outdated (marked at the top).
 
 ## Slide map (21 slides, 90 minutes incl. 5-minute break)
