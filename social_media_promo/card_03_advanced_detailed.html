@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced GenAI — Инженерная программа по темам</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: #070912;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 15% 18%, rgba(168, 85, 247, 0.20) 0%, transparent 45%),
+        radial-gradient(circle at 85% 25%, rgba(59, 130, 246, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(245, 158, 11, 0.10) 0%, transparent 50%),
+        url('assets/bg_neural.png') center/cover no-repeat;
+      opacity: 0.70;
+      pointer-events: none;
+    }
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 1920px;
+      height: 1080px;
+      padding: 36px 48px 28px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+      padding-bottom: 16px;
+    }
+    .kicker-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .badge-hub {
+      background: rgba(168, 85, 247, 0.22);
+      border: 1px solid rgba(168, 85, 247, 0.55);
+      color: #c084fc;
+      font-size: 11.5px;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .kicker-text {
+      color: #94a3b8;
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .main-title {
+      font-size: 42px;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      line-height: 1.15;
+    }
+    .main-title span {
+      background: linear-gradient(90deg, #c084fc, #818cf8, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stats-pills {
+      display: flex;
+      gap: 12px;
+    }
+    .stat-pill {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 18px;
+      border-radius: 12px;
+      text-align: right;
+    }
+    .stat-pill .num {
+      font-size: 18px;
+      font-weight: 850;
+      color: #c084fc;
+      font-family: monospace;
+    }
+    .stat-pill .lbl {
+      font-size: 11px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* 4x2 Modules Grid */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 16px;
+      margin: 16px 0;
+      flex-grow: 1;
+    }
+
+    .mod-card {
+      background: rgba(12, 18, 32, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+    }
+    .mod-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3.5px;
+      background: #c084fc;
+    }
+    .mod-card.c-blue::before { background: #38bdf8; }
+    .mod-card.c-emerald::before { background: #10b981; }
+    .mod-card.c-amber::before { background: #f59e0b; }
+    .mod-card.c-indigo::before { background: #818cf8; }
+    .mod-card.c-rose::before { background: #f43f5e; }
+    .mod-card.c-benchmark::before { background: linear-gradient(90deg, #10b981, #38bdf8); }
+
+    .mod-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .mod-tag {
+      font-size: 11px;
+      font-weight: 850;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 5px;
+      background: rgba(168, 85, 247, 0.18);
+      color: #c084fc;
+    }
+    .c-blue .mod-tag { background: rgba(56, 189, 248, 0.18); color: #38bdf8; }
+    .c-emerald .mod-tag { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+    .c-amber .mod-tag { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+    .c-indigo .mod-tag { background: rgba(129, 140, 248, 0.18); color: #a5b4fc; }
+    .c-rose .mod-tag { background: rgba(244, 63, 94, 0.18); color: #fb7185; }
+    .c-benchmark .mod-tag { background: rgba(16, 185, 129, 0.22); color: #34d399; }
+
+    .mod-focus {
+      font-size: 11.5px;
+      color: #94a3b8;
+      font-weight: 600;
+      font-family: monospace;
+    }
+
+    .mod-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+      line-height: 1.25;
+    }
+
+    .mod-bullets {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+    .mod-bullet {
+      font-size: 13px;
+      color: #cbd5e1;
+      line-height: 1.4;
+      padding-left: 14px;
+      position: relative;
+    }
+    .mod-bullet::before {
+      content: "▹";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #c084fc;
+      font-weight: 900;
+    }
+    .c-blue .mod-bullet::before { color: #38bdf8; }
+    .c-emerald .mod-bullet::before { color: #34d399; }
+    .c-amber .mod-bullet::before { color: #fbbf24; }
+    .c-indigo .mod-bullet::before { color: #a5b4fc; }
+    .c-rose .mod-bullet::before { color: #fb7185; }
+
+    .mod-bullet b {
+      color: #ffffff;
+      font-weight: 650;
+    }
+
+    .mod-deliverable {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      padding: 8px 11px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .deliv-lbl {
+      font-size: 10px;
+      font-weight: 850;
+      font-family: monospace;
+      color: #c084fc;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .c-blue .deliv-lbl { color: #38bdf8; }
+    .c-emerald .deliv-lbl { color: #34d399; }
+    .c-amber .deliv-lbl { color: #fbbf24; }
+    .c-indigo .deliv-lbl { color: #a5b4fc; }
+    .c-rose .deliv-lbl { color: #fb7185; }
+    .c-benchmark .deliv-lbl { color: #34d399; }
+
+    .deliv-txt {
+      font-size: 11.5px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Benchmark card custom style */
+    .mod-card.c-benchmark {
+      background: linear-gradient(135deg, rgba(16, 24, 40, 0.95), rgba(15, 30, 48, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .benchmark-stat {
+      font-size: 32px;
+      font-weight: 900;
+      color: #34d399;
+      font-family: monospace;
+      margin: 6px 0 2px 0;
+      line-height: 1;
+    }
+    .benchmark-desc {
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    /* Footer */
+    .footer-bar {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 14px;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(14px);
+    }
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .core-axiom {
+      font-size: 14px;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .core-axiom strong {
+      color: #c084fc;
+    }
+    .footer-right {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .author-tag {
+      color: #fff;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <div class="kicker-row">
+          <span class="badge-hub">ADVANCED ENGINEERING TRACK</span>
+          <span class="kicker-text">7 Production Modules • C4 Architecture • Resilient AI Systems</span>
+        </div>
+        <h1 class="main-title">Advanced GenAI: <span>Инженерная программа по темам</span></h1>
+      </div>
+      <div class="stats-pills">
+        <div class="stat-pill">
+          <div class="num">7</div>
+          <div class="lbl">Модулей</div>
+        </div>
+        <div class="stat-pill">
+          <div class="num">C4</div>
+          <div class="lbl">Архитектура</div>
+        </div>
+        <div class="stat-pill">
+          <div class="num">SLA &amp; OTel</div>
+          <div class="lbl">Продакшн</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 4x2 Modules Grid -->
+    <div class="modules-grid">
+      <!-- M01 -->
+      <div class="mod-card c-blue">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 01</span>
+            <span class="mod-focus">Cloud AI Infra</span>
+          </div>
+          <h3 class="mod-title">Cloud AI &amp; Enterprise Security</h3>
+          <div class="mod-bullets">
+            <div class="mod-bullet"><b>Облачные платформы:</b> AWS Bedrock, Azure OpenAI, GCP Vertex AI.</div>
+            <div class="mod-bullet"><b>Identity &amp; Security:</b> SSO, IAM роли, VPC Peering, JWT валидация.</div>
+            <div class="mod-bullet"><b>Operations:</b> Data Residency, управление квотами и биллингом.</div>
+          </div>
+        </div>
+        <div class="mod-deliverable">
+          <span class="deliv-lbl">АРТЕФАКТ:</span>
+          <span class="deliv-txt">C4 Container диаграмма корпоративного контура</span>
+        </div>
+      </div>
+
+      <!-- M02 -->
+      <div class="mod-card">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 02</span>
+            <span class="mod-focus">Agent Orchestration</span>
+          </div>
+          <h3 class="mod-title">Agent Frameworks &amp; State Machines</h3>
+          <div class="mod-bullets">
+            <div class="mod-bullet"><b>Конечные автоматы:</b> LangGraph, StateGraph, циклы и ветвления.</div>
+            <div class="mod-bullet"><b>Топологии:</b> Supervisor, Router, Hierarchical Multi-Agent Swarms.</div>
+            <div class="mod-bullet"><b>Human-in-the-Loop:</b> Точки согласования, прерывание и Resume.</div>
+          </div>
+        </div>
+        <div class="mod-deliverable">
+          <span class="deliv-lbl">АРТЕФАКТ:</span>
+          <span class="deliv-txt">Рабочий LangGraph демо-пакет мультиагента</span>
+        </div>
+      </div>
+
+      <!-- M03 -->
+      <div class="mod-card c-emerald">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 03</span>
+            <span class="mod-focus">Production RAG</span>
+          </div>
+          <h3 class="mod-title">Vector Stores &amp; Hybrid Retrieval</h3>
+          <div class="mod-bullets">
+            <div class="mod-bullet"><b>Индексация:</b> HNSW, IVFFlat, trade-off скорости и точности.</div>
+            <div class="mod-bullet"><b>Гибридный поиск:</b> Dense Vectors + BM25 полнотекстовый поиск.</div>
+            <div class="mod-bullet"><b>Enterprise RAG:</b> Cross-Encoder Rerankers, ACL trimming документов.</div>
+          </div>
+        </div>
+        <div class="mod-deliverable">
+          <span class="deliv-lbl">АРТЕФАКТ:</span>
+          <span class="deliv-txt">Offline 4-актный RAG стенд с HNSW и BM25</span>
+        </div>
+      </div>
+
+      <!-- M04 -->
+      <div class="mod-card c-indigo">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 04</span>
+            <span class="mod-focus">Agentic Workflows</span>
+          </div>
+          <h3 class="mod-title">Coding Agents &amp; CI/CD Pipelines</h3>
+          <div class="mod-bullets">
+            <div class="mod-bullet"><b>Spec-Driven разработка:</b> генерация кода по спецификациям.</div>
+            <div class="mod-bullet"><b>Автономные агенты:</b> headless coding agents в пайплайнах CI/CD.</div>
+            <div class="mod-bullet"><b>Автотестирование:</b> автоматическая генерация тестов и ревью PR.</div>
+          </div>
+        </div>
+        <div class="mod-deliverable">
+          <span class="deliv-lbl">АРТЕФАКТ:</span>
+          <span class="deliv-txt">Пайплайн автономной генерации фичей и тестов</span>
+        </div>
+      </div>
+
+      <!-- M05 -->
+      <div class="mod-card c-amber">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 05</span>
+            <span class="mod-focus">Evaluation &amp; OTel</span>
+          </div>
+          <h3 class="mod-title">LLM Evals, Tracing &amp; Observability</h3>
+          <div class="mod-bullets">
+            <div class="mod-bullet"><b>Авто-оценка качества:</b> DeepEval, Ragas, синтетические датасеты.</div>
+            <div class="mod-bullet"><b>Production Tracing:</b> OpenTelemetry, LangSmith, Phoenix, спаны.</div>
+            <div class="mod-bullet"><b>Регрессионный контроль:</b> CI/CD гейты качества перед релизом.</div>
+          </div>
+        </div>
+        <div class="mod-deliverable">
+          <span class="deliv-lbl">АРТЕФАКТ:</span>
+          <span class="deliv-txt">OTel трейсинг пайплайн и CI/CD eval harness</span>
+        </div>
+      </div>
+
+      <!-- M06 -->
+      <div class="mod-card c-rose">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 06</span>
+            <span class="mod-focus">Resilient Runtime</span>
+          </div>
+          <h3 class="mod-title">Building Resilient Production Agents</h3>
+          <div class="mod-bullets">
+            <div class="mod-bullet"><b>Долгосрочная память:</b> Episodic &amp; Semantic memory persistence.</div>
+            <div class="mod-bullet"><b>Безопасное исполнение:</b> Tool sandboxing, изоляция среды.</div>
+            <div class="mod-bullet"><b>Blast Radius:</b> Green/Yellow/Red границы и управление ретраями.</div>
+          </div>
+        </div>
+        <div class="mod-deliverable">
+          <span class="deliv-lbl">АРТЕФАКТ:</span>
+          <span class="deliv-txt">Сэндбокс-рантайм агента с валидацией лимитов</span>
+        </div>
+      </div>
+
+      <!-- M07 -->
+      <div class="mod-card">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 07</span>
+            <span class="mod-focus">Protocol Standards</span>
+          </div>
+          <h3 class="mod-title">Model Context Protocol (MCP) Deep Dive</h3>
+          <div class="mod-bullets">
+            <div class="mod-bullet"><b>Внутренности протокола:</b> JSON-RPC, Server-Sent Events, stdio.</div>
+            <div class="mod-bullet"><b>Разработка серверов:</b> custom MCP серверы на Python &amp; TypeScript.</div>
+            <div class="mod-bullet"><b>Enterprise интеграции:</b> безопасное подключение Jira, SQL, GitHub.</div>
+          </div>
+        </div>
+        <div class="mod-deliverable">
+          <span class="deliv-lbl">АРТЕФАКТ:</span>
+          <span class="deliv-txt">Production MCP сервер с аутентификацией</span>
+        </div>
+      </div>
+
+      <!-- Benchmark Card -->
+      <div class="mod-card c-benchmark">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">CASE STUDY</span>
+            <span class="mod-focus">Dawn Foods Win</span>
+          </div>
+          <h3 class="mod-title" style="color: #34d399;">EPAM CodeMie Benchmark</h3>
+          <div class="benchmark-stat">+35% SDLC</div>
+          <div class="benchmark-desc">
+            Реальный результат внедрения AI-ассистентов в разработку фичей, автогенерацию unit-тестов и архитектурную документацию в Dawn Foods.
+          </div>
+        </div>
+        <div class="mod-deliverable">
+          <span class="deliv-lbl">ФОКУС:</span>
+          <span class="deliv-txt">Решение 85% скрытых инфраструктурных задач</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-bar">
+      <div class="footer-left">
+        <div class="core-axiom">
+          <strong>Инженерная аксиома:</strong> Выход в продакшн требует не просто промптинга, а строгих контрактов данных, изоляции и наблюдаемости.
+        </div>
+      </div>
+      <div class="footer-right">
+        <span>Инструктор: <b class="author-tag">Игорь Рубанович</b> (EPAM Systems)</span>
+        <span>•</span>
+        <span>C4 Blueprints &amp; Live Demos</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced GenAI — Mobile Card (4:5)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1080px;
+      height: 1350px;
+      background: #070912;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 18% 15%, rgba(168, 85, 247, 0.22) 0%, transparent 50%),
+        radial-gradient(circle at 82% 45%, rgba(59, 130, 246, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 40% 85%, rgba(245, 158, 11, 0.12) 0%, transparent 50%),
+        url('assets/bg_neural.png') center/cover no-repeat;
+      opacity: 0.70;
+      pointer-events: none;
+    }
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 1080px;
+      height: 1350px;
+      padding: 38px 44px 30px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 1px solid rgba(168, 85, 247, 0.25);
+      padding-bottom: 16px;
+    }
+    .top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .badge-hub {
+      background: rgba(168, 85, 247, 0.22);
+      border: 1px solid rgba(168, 85, 247, 0.55);
+      color: #c084fc;
+      font-size: 11.5px;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 11px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .stats-pills {
+      display: flex;
+      gap: 10px;
+    }
+    .stat-tag {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 8px;
+    }
+    .stat-tag b {
+      color: #c084fc;
+      font-family: monospace;
+      font-size: 13.5px;
+    }
+
+    .main-title {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      line-height: 1.15;
+      margin-bottom: 4px;
+    }
+    .main-title span {
+      background: linear-gradient(90deg, #c084fc, #818cf8, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .main-sub {
+      font-size: 15px;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+
+    /* 8 Strips Stack (7 modules + 1 case study) */
+    .modules-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 14px 0;
+      flex-grow: 1;
+    }
+
+    .mod-card {
+      background: rgba(12, 18, 32, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px 20px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+    .mod-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4.5px;
+      border-radius: 14px 0 0 14px;
+      background: #c084fc;
+    }
+    .mod-card.c-blue::before { background: #38bdf8; }
+    .mod-card.c-emerald::before { background: #10b981; }
+    .mod-card.c-amber::before { background: #f59e0b; }
+    .mod-card.c-indigo::before { background: #818cf8; }
+    .mod-card.c-rose::before { background: #f43f5e; }
+    .mod-card.c-case::before { background: #34d399; }
+
+    .mod-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .mod-pill {
+      font-size: 11px;
+      font-weight: 850;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 5px;
+      background: rgba(168, 85, 247, 0.18);
+      color: #c084fc;
+    }
+    .c-blue .mod-pill { background: rgba(56, 189, 248, 0.18); color: #38bdf8; }
+    .c-emerald .mod-pill { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+    .c-amber .mod-pill { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+    .c-indigo .mod-pill { background: rgba(129, 140, 248, 0.18); color: #a5b4fc; }
+    .c-rose .mod-pill { background: rgba(244, 63, 94, 0.18); color: #fb7185; }
+    .c-case .mod-pill { background: rgba(16, 185, 129, 0.22); color: #34d399; }
+
+    .mod-focus-tag {
+      font-size: 12px;
+      color: #94a3b8;
+      font-family: monospace;
+      font-weight: 600;
+    }
+
+    .mod-title {
+      font-size: 19.5px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .mod-topics {
+      font-size: 14px;
+      color: #cbd5e1;
+      line-height: 1.4;
+    }
+    .mod-topics b {
+      color: #ffffff;
+      font-weight: 650;
+    }
+
+    /* Case study card custom */
+    .mod-card.c-case {
+      background: linear-gradient(135deg, rgba(16, 24, 42, 0.95), rgba(15, 34, 48, 0.95));
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 16px 20px;
+    }
+    .case-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .case-left h3 {
+      font-size: 19px;
+      font-weight: 850;
+      color: #34d399;
+      margin-bottom: 2px;
+    }
+    .case-left p {
+      font-size: 13.5px;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+    .case-badge-val {
+      font-size: 30px;
+      font-weight: 900;
+      font-family: monospace;
+      color: #34d399;
+      white-space: nowrap;
+    }
+
+    /* Footer */
+    .footer-bar {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(168, 85, 247, 0.25);
+      border-radius: 14px;
+      padding: 14px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(14px);
+    }
+    .footer-author h4 {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .footer-author p {
+      font-size: 12.5px;
+      color: #94a3b8;
+    }
+    .footer-axiom {
+      text-align: right;
+    }
+    .footer-axiom span {
+      display: inline-block;
+      background: #c084fc;
+      color: #0c081e;
+      font-weight: 850;
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-family: monospace;
+      margin-bottom: 2px;
+    }
+    .footer-axiom p {
+      font-size: 12.5px;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="top-meta">
+        <span class="badge-hub">ADVANCED ENGINEERING TRACK</span>
+        <div class="stats-pills">
+          <div class="stat-tag"><b>7</b> Модулей</div>
+          <div class="stat-tag"><b>C4</b> Архитектура</div>
+          <div class="stat-tag"><b>SLA &amp; OTel</b> Продакшн</div>
+        </div>
+      </div>
+      <h1 class="main-title">Advanced GenAI: <span>Инженерный стек</span></h1>
+      <p class="main-sub">Преодоление 85% скрытой инфраструктуры: LangGraph, HNSW RAG, OTel, sandbox и автономные мультиагенты.</p>
+    </header>
+
+    <!-- 8 Strips (7 modules + case) -->
+    <div class="modules-stack">
+      <!-- M01 -->
+      <div class="mod-card c-blue">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 01</span>
+          <span class="mod-focus-tag">Cloud AI Infra</span>
+        </div>
+        <h3 class="mod-title">Cloud AI Platforms &amp; Enterprise Security</h3>
+        <p class="mod-topics">
+          AWS Bedrock, Azure OpenAI, GCP Vertex AI • IAM, SSO, VPC Peering • Data Residency &amp; Quotas.
+        </p>
+      </div>
+
+      <!-- M02 -->
+      <div class="mod-card">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 02</span>
+          <span class="mod-focus-tag">Agent Orchestration</span>
+        </div>
+        <h3 class="mod-title">Agent Frameworks &amp; State Machines</h3>
+        <p class="mod-topics">
+          LangGraph &amp; StateGraph • Топологии Supervisor, Router, Hierarchical Swarms • Human-in-the-Loop gates.
+        </p>
+      </div>
+
+      <!-- M03 -->
+      <div class="mod-card c-emerald">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 03</span>
+          <span class="mod-focus-tag">Production RAG</span>
+        </div>
+        <h3 class="mod-title">Vector Stores &amp; Hybrid Retrieval</h3>
+        <p class="mod-topics">
+          HNSW индексы • Гибридный поиск (Dense + BM25) • Cross-Encoder Rerankers • Document ACL Trimming.
+        </p>
+      </div>
+
+      <!-- M04 -->
+      <div class="mod-card c-indigo">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 04</span>
+          <span class="mod-focus-tag">Agentic Workflows</span>
+        </div>
+        <h3 class="mod-title">Coding Agents &amp; CI/CD Pipelines</h3>
+        <p class="mod-topics">
+          Spec-driven разработка кодовыми агентами • Headless агенты в CI/CD • Автогенерация тестов и ревью PR.
+        </p>
+      </div>
+
+      <!-- M05 -->
+      <div class="mod-card c-amber">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 05</span>
+          <span class="mod-focus-tag">Evaluation &amp; OTel</span>
+        </div>
+        <h3 class="mod-title">LLM Evals, Tracing &amp; Observability</h3>
+        <p class="mod-topics">
+          DeepEval, Ragas &amp; синтетические датасеты • OpenTelemetry спаны • LangSmith / Phoenix • Регрессионный CI/CD.
+        </p>
+      </div>
+
+      <!-- M06 -->
+      <div class="mod-card c-rose">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 06</span>
+          <span class="mod-focus-tag">Resilient Runtime</span>
+        </div>
+        <h3 class="mod-title">Building Resilient Production Agents</h3>
+        <p class="mod-topics">
+          Долгосрочная память (Episodic/Semantic) • Sandboxing вызовов инструментов • Blast Radius границы (Green/Yellow/Red).
+        </p>
+      </div>
+
+      <!-- M07 -->
+      <div class="mod-card">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 07</span>
+          <span class="mod-focus-tag">Protocol Standards</span>
+        </div>
+        <h3 class="mod-title">Model Context Protocol (MCP) Deep Dive</h3>
+        <p class="mod-topics">
+          Протокол JSON-RPC / SSE / stdio • Разработка custom MCP серверов • Коннекторы корпоративных систем (Jira, SQL).
+        </p>
+      </div>
+
+      <!-- Case Study Benchmark -->
+      <div class="mod-card c-case">
+        <div class="case-row">
+          <div class="case-left">
+            <h3>EPAM CodeMie @ Dawn Foods</h3>
+            <p>Ускорение SDLC в разработке фичей, автотестах и архитектурных спеках в реальном enterprise кейсе.</p>
+          </div>
+          <div class="case-badge-val">+35% SDLC</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-bar">
+      <div class="footer-author">
+        <h4>Игорь Рубанович</h4>
+        <p>Engineering Manager II &amp; AI Ambassador @ EPAM</p>
+      </div>
+      <div class="footer-axiom">
+        <span>C4 BLUEPRINTS</span>
+        <p>Production стенды &amp; offline демо-пакеты</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
