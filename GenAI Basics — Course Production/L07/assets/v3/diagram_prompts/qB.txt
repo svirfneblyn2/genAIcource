@@ -1,0 +1,15 @@
+16:9 side-by-side comparison diagram, two large panels of equal width.
+
+LEFT panel, monospace tag «ASSISTANT», big subtitle «You drive». Vertical flow of 3 steps with thin connecting lines and outline icons:
+1) person-silhouette outline icon (no face) — «You ask: “Shorten this paragraph”»
+2) document icon with side pane — «It answers inside Word»
+3) cursor-click outline icon — «You accept, then do the next step yourself»
+Bottom line in light grey: «One request → one answer»
+
+RIGHT panel, border highlighted sky blue, monospace tag «AGENT», big subtitle «It drives, you approve». Flow:
+1) target outline icon — «You set a goal: “Prepare Friday’s client meeting”»
+2) a circular loop arrow with text inside «plan → act → check», three thin branches to outline icons labeled «Email», «Calendar», «Files»
+3) check-mark-in-square outline icon — «You review and approve»
+Bottom line in light grey: «One goal → many steps, then your OK»
+
+STYLE (strict): enterprise product-diagram look, like Microsoft Azure / Fluent architecture diagrams or a consulting firm slide. Solid very dark navy background #0b0f17 filling the whole image edge to edge (it will sit on a dark slide). Panels in slightly lighter navy #121a28 with thin 1px slate-grey borders and 12px rounded corners. Icons: thin 1.5px outline line icons, geometric, professional, monochrome light grey #c9d4e3 with sky-blue #38bdf8 accent details only. NO cartoon faces, NO robots, NO mascots, NO brains, NO sparkles, NO emoji, NO people illustrations with faces. Text: clean geometric sans-serif (like Onest/Inter), white #f1f5f9 for headings, muted grey-blue #9aa8bc for small text, small uppercase monospace labels in sky blue for section tags. All text in ENGLISH, perfectly spelled, large and readable, minimal words. No title at the top of the image (the slide has its own title). Flat, no gradients, no 3D, no glow, lots of breathing room.
