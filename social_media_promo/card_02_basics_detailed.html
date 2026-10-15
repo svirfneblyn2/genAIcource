@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>GenAI Basics — Полная программа по темам</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: #060911;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 12% 18%, rgba(56, 189, 248, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 88% 30%, rgba(16, 185, 129, 0.14) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(59, 130, 246, 0.10) 0%, transparent 50%),
+        url('assets/bg_neural.png') center/cover no-repeat;
+      opacity: 0.70;
+      pointer-events: none;
+    }
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 1920px;
+      height: 1080px;
+      padding: 36px 48px 28px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+      padding-bottom: 16px;
+    }
+    .kicker-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .badge-hub {
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: #38bdf8;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .kicker-text {
+      color: #94a3b8;
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .main-title {
+      font-size: 42px;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      line-height: 1.15;
+    }
+    .main-title span {
+      background: linear-gradient(90deg, #38bdf8, #2dd4bf, #a7f3d0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stats-pills {
+      display: flex;
+      gap: 12px;
+    }
+    .stat-pill {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 10px 18px;
+      border-radius: 12px;
+      text-align: right;
+    }
+    .stat-pill .num {
+      font-size: 18px;
+      font-weight: 850;
+      color: #38bdf8;
+      font-family: monospace;
+    }
+    .stat-pill .lbl {
+      font-size: 11px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* 6 Modules Grid */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 18px;
+      margin: 16px 0;
+      flex-grow: 1;
+    }
+
+    .mod-card {
+      background: rgba(11, 18, 32, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45);
+      position: relative;
+      overflow: hidden;
+    }
+    .mod-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3.5px;
+      background: #38bdf8;
+    }
+    .mod-card.m2::before { background: #10b981; }
+    .mod-card.m3::before { background: #6366f1; }
+    .mod-card.m4::before { background: #a855f7; }
+    .mod-card.m5::before { background: #f59e0b; }
+    .mod-card.m6::before { background: #ec4899; }
+
+    .mod-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .mod-tag {
+      font-size: 11.5px;
+      font-weight: 850;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 5px;
+    }
+    .m1 .mod-tag { background: rgba(56, 189, 248, 0.18); color: #38bdf8; }
+    .m2 .mod-tag { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+    .m3 .mod-tag { background: rgba(99, 102, 241, 0.18); color: #818cf8; }
+    .m4 .mod-tag { background: rgba(168, 85, 247, 0.18); color: #c084fc; }
+    .m5 .mod-tag { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+    .m6 .mod-tag { background: rgba(236, 72, 153, 0.18); color: #f472b6; }
+
+    .mod-lessons-count {
+      font-size: 12px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .mod-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .lesson-items {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-bottom: 12px;
+    }
+    .lesson-row {
+      display: flex;
+      gap: 10px;
+      font-size: 13.5px;
+      line-height: 1.38;
+    }
+    .l-code {
+      font-family: monospace;
+      font-weight: 850;
+      font-size: 13px;
+      color: #38bdf8;
+      white-space: nowrap;
+      margin-top: 1px;
+    }
+    .m2 .l-code { color: #34d399; }
+    .m3 .l-code { color: #818cf8; }
+    .m4 .l-code { color: #c084fc; }
+    .m5 .l-code { color: #fbbf24; }
+    .m6 .l-code { color: #f472b6; }
+
+    .l-desc {
+      color: #cbd5e1;
+    }
+    .l-desc b {
+      color: #ffffff;
+      font-weight: 650;
+    }
+
+    .mod-practice {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 9px;
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .practice-lbl {
+      font-size: 10px;
+      font-weight: 850;
+      font-family: monospace;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    .m2 .practice-lbl { color: #34d399; }
+    .m3 .practice-lbl { color: #818cf8; }
+    .m4 .practice-lbl { color: #c084fc; }
+    .m5 .practice-lbl { color: #fbbf24; }
+    .m6 .practice-lbl { color: #f472b6; }
+
+    .practice-txt {
+      font-size: 12px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Footer */
+    .footer-bar {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 14px;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(14px);
+    }
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .core-axiom {
+      font-size: 14px;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .core-axiom strong {
+      color: #38bdf8;
+    }
+    .footer-right {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+    .author-tag {
+      color: #fff;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <div class="kicker-row">
+          <span class="badge-hub">FOUNDATIONAL TRACK</span>
+          <span class="kicker-text">GenAI Basics • 16 Applied Lessons • 6 Core Modules</span>
+        </div>
+        <h1 class="main-title">GenAI Basics: <span>Полная программа по темам</span></h1>
+      </div>
+      <div class="stats-pills">
+        <div class="stat-pill">
+          <div class="num">16</div>
+          <div class="lbl">Занятий</div>
+        </div>
+        <div class="stat-pill">
+          <div class="num">6</div>
+          <div class="lbl">Модулей</div>
+        </div>
+        <div class="stat-pill">
+          <div class="num">100%</div>
+          <div class="lbl">Код &amp; Практика</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 6 Modules Grid -->
+    <div class="modules-grid">
+      <!-- M1 -->
+      <div class="mod-card m1">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 1</span>
+            <span class="mod-lessons-count">Занятия 01–03</span>
+          </div>
+          <h3 class="mod-title">Фундамент, LLM &amp; Python SDK</h3>
+          <div class="lesson-items">
+            <div class="lesson-row">
+              <span class="l-code">L01</span>
+              <span class="l-desc"><b>Ментальные модели:</b> AI vs ML vs GenAI, Karpathy 1.0–3.0, Аксиома 10/90, выбор инструментов.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L02</span>
+              <span class="l-desc"><b>Физика LLM:</b> BPE токены, промптинг, N-shot, контекстное окно, эмбеддинги и основы RAG.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L03</span>
+              <span class="l-desc"><b>Python SDK:</b> Первый вызов API, streaming, температура 0.0, Structured JSON и валидация Pydantic.</span>
+            </div>
+          </div>
+        </div>
+        <div class="mod-practice">
+          <span class="practice-lbl">ПРАКТИКА:</span>
+          <span class="practice-txt">Colab-тетрадь: API SDK, Pydantic-схемы, бенчмарк Glovo Courier</span>
+        </div>
+      </div>
+
+      <!-- M2 -->
+      <div class="mod-card m2">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 2</span>
+            <span class="mod-lessons-count">Занятия 04–06</span>
+          </div>
+          <h3 class="mod-title">Мультимодальный GenAI</h3>
+          <div class="lesson-items">
+            <div class="lesson-row">
+              <span class="l-code">L04</span>
+              <span class="l-desc"><b>Image Generation:</b> Midjourney, FLUX.1, Nano Banana Pro, control patterns, seed, consistent character.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L05</span>
+              <span class="l-desc"><b>Video Models:</b> Google Veo, Runway Gen-4.5, Kling 3.0, camera vectors, асинхронные API генерации.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L06</span>
+              <span class="l-desc"><b>Речевые модели:</b> Whisper STT, ElevenLabs TTS, границы синтеза речи, Voice-to-Text пайплайны.</span>
+            </div>
+          </div>
+        </div>
+        <div class="mod-practice">
+          <span class="practice-lbl">ПРАКТИКА:</span>
+          <span class="practice-txt">Python-пайплайн асинхронной генерации медиа и галерея промптов</span>
+        </div>
+      </div>
+
+      <!-- M3 -->
+      <div class="mod-card m3">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 3</span>
+            <span class="mod-lessons-count">Занятия 07–09</span>
+          </div>
+          <h3 class="mod-title">Корпоративные экосистемы &amp; Данные</h3>
+          <div class="lesson-items">
+            <div class="lesson-row">
+              <span class="l-code">L07</span>
+              <span class="l-desc"><b>Copilot Ecosystem:</b> Microsoft 365 Copilot, GitHub Copilot, Agent Mode, Copilot+ PC NPU, Dawn Foods кейс.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L08</span>
+              <span class="l-desc"><b>AI для аналитики:</b> Advanced Data Analysis, Code Interpreter, автоматическая визуализация и SQL.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L09</span>
+              <span class="l-desc"><b>Claude &amp; Artifacts:</b> Claude 3.7 Sonnet, артефакты, управление проектами, системные инструкции.</span>
+            </div>
+          </div>
+        </div>
+        <div class="mod-practice">
+          <span class="practice-lbl">ПРАКТИКА:</span>
+          <span class="practice-txt">Project Northstar: M365 fixture, sample_repo pytest, checklist</span>
+        </div>
+      </div>
+
+      <!-- M4 -->
+      <div class="mod-card m4">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 4</span>
+            <span class="mod-lessons-count">Занятие 10</span>
+          </div>
+          <h3 class="mod-title">Open-Source &amp; Локальный инференс</h3>
+          <div class="lesson-items">
+            <div class="lesson-row">
+              <span class="l-code">L10</span>
+              <span class="l-desc"><b>Семейства моделей:</b> Llama 3, Mistral, Qwen, DeepSeek — открытые веса и лицензии.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L10</span>
+              <span class="l-desc"><b>Локальный запуск:</b> Ollama, LM Studio, форматы GGUF, квантование (4-bit/8-bit), VRAM расчет.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L10</span>
+              <span class="l-desc"><b>Облачные GPU:</b> Развертывание инференс-эндпоинтов на RunPod и vLLM за минуты.</span>
+            </div>
+          </div>
+        </div>
+        <div class="mod-practice">
+          <span class="practice-lbl">ПРАКТИКА:</span>
+          <span class="practice-txt">Локальный запуск Ollama + вызов через OpenAI-compatible API</span>
+        </div>
+      </div>
+
+      <!-- M5 -->
+      <div class="mod-card m5">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 5</span>
+            <span class="mod-lessons-count">Занятия 11–13</span>
+          </div>
+          <h3 class="mod-title">Агенты, Tool Use &amp; MCP</h3>
+          <div class="lesson-items">
+            <div class="lesson-row">
+              <span class="l-code">L11</span>
+              <span class="l-desc"><b>Function Calling:</b> JSON Schema инструментов, цикл tool execution, создание первого агента.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L12</span>
+              <span class="l-desc"><b>Model Context Protocol (MCP):</b> Стандарт интеграции инструментов, клиент-хост-сервер.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L13</span>
+              <span class="l-desc"><b>SDK &amp; Custom GPTs:</b> OpenAI Responses API, Assistants v2, Agents SDK, stateful потоки.</span>
+            </div>
+          </div>
+        </div>
+        <div class="mod-practice">
+          <span class="practice-lbl">ПРАКТИКА:</span>
+          <span class="practice-txt">Автономный агент с вызовом внешних API и MCP-сервером</span>
+        </div>
+      </div>
+
+      <!-- M6 -->
+      <div class="mod-card m6">
+        <div>
+          <div class="mod-header">
+            <span class="mod-tag">МОДУЛЬ 6</span>
+            <span class="mod-lessons-count">Занятия 14–16</span>
+          </div>
+          <h3 class="mod-title">UI, Безопасность &amp; Coding Agents</h3>
+          <div class="lesson-items">
+            <div class="lesson-row">
+              <span class="l-code">L14</span>
+              <span class="l-desc"><b>Rapid Web UI:</b> Создание интерактивных прототипов на Streamlit с потоковым выводом.</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L15</span>
+              <span class="l-desc"><b>Security &amp; Safety:</b> Jailbreaks, Prompt Injection, PII фильтрация, матрица Blast Radius (Green/Yellow/Red).</span>
+            </div>
+            <div class="lesson-row">
+              <span class="l-code">L16</span>
+              <span class="l-desc"><b>Coding Agents в IDE:</b> Разработка в Cursor и Antigravity, spec-driven development, CI/CD агенты.</span>
+            </div>
+          </div>
+        </div>
+        <div class="mod-practice">
+          <span class="practice-lbl">ПРАКТИКА:</span>
+          <span class="practice-txt">Рабочий Streamlit MVP с PII защитой и кодогенерацией в IDE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-bar">
+      <div class="footer-left">
+        <div class="core-axiom">
+          <strong>Цель курса:</strong> Сформировать устойчивое системное видение и инженерную базу для внедрения AI на реальных проектах.
+        </div>
+      </div>
+      <div class="footer-right">
+        <span>Автор курса: <b class="author-tag">Игорь Рубанович</b> (EPAM Systems)</span>
+        <span>•</span>
+        <span>Домашки на GitHub</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

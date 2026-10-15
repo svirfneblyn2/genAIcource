@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>GenAI Basics — Mobile Card (4:5)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1080px;
+      height: 1350px;
+      background: #060911;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 20% 15%, rgba(56, 189, 248, 0.20) 0%, transparent 50%),
+        radial-gradient(circle at 80% 40%, rgba(16, 185, 129, 0.16) 0%, transparent 50%),
+        radial-gradient(circle at 30% 85%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
+        url('assets/bg_neural.png') center/cover no-repeat;
+      opacity: 0.70;
+      pointer-events: none;
+    }
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 36px 36px;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 1080px;
+      height: 1350px;
+      padding: 40px 44px 32px 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Header */
+    .header {
+      border-bottom: 1px solid rgba(56, 189, 248, 0.25);
+      padding-bottom: 18px;
+    }
+    .top-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .badge-hub {
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      color: #38bdf8;
+      font-size: 12px;
+      font-weight: 850;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .stats-pills {
+      display: flex;
+      gap: 10px;
+    }
+    .stat-tag {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #cbd5e1;
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 5px 14px;
+      border-radius: 8px;
+    }
+    .stat-tag b {
+      color: #38bdf8;
+      font-family: monospace;
+      font-size: 13.5px;
+    }
+
+    .main-title {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      line-height: 1.15;
+      margin-bottom: 6px;
+    }
+    .main-title span {
+      background: linear-gradient(90deg, #38bdf8, #2dd4bf, #a7f3d0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .main-sub {
+      font-size: 15.5px;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* 6 Vertical Module Strips */
+    .modules-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin: 16px 0;
+      flex-grow: 1;
+    }
+
+    .mod-card {
+      background: rgba(12, 18, 32, 0.84);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      padding: 18px 22px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+      position: relative;
+    }
+    .mod-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4.5px;
+      border-radius: 15px 0 0 15px;
+      background: #38bdf8;
+    }
+    .mod-card.m2::before { background: #10b981; }
+    .mod-card.m3::before { background: #6366f1; }
+    .mod-card.m4::before { background: #a855f7; }
+    .mod-card.m5::before { background: #f59e0b; }
+    .mod-card.m6::before { background: #ec4899; }
+
+    .mod-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .mod-pill {
+      font-size: 11.5px;
+      font-weight: 850;
+      font-family: monospace;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 5px;
+    }
+    .m1 .mod-pill { background: rgba(56, 189, 248, 0.18); color: #38bdf8; }
+    .m2 .mod-pill { background: rgba(16, 185, 129, 0.18); color: #34d399; }
+    .m3 .mod-pill { background: rgba(99, 102, 241, 0.18); color: #818cf8; }
+    .m4 .mod-pill { background: rgba(168, 85, 247, 0.18); color: #c084fc; }
+    .m5 .mod-pill { background: rgba(245, 158, 11, 0.18); color: #fbbf24; }
+    .m6 .mod-pill { background: rgba(236, 72, 153, 0.18); color: #f472b6; }
+
+    .mod-lessons-tag {
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .mod-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: -0.01em;
+    }
+
+    .mod-topics {
+      font-size: 14.5px;
+      color: #cbd5e1;
+      line-height: 1.45;
+      margin-bottom: 10px;
+    }
+    .mod-topics b {
+      color: #ffffff;
+      font-weight: 650;
+    }
+
+    .mod-practice-strip {
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 8px;
+      padding: 7px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .practice-badge {
+      font-size: 10.5px;
+      font-weight: 850;
+      font-family: monospace;
+      color: #38bdf8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    .m2 .practice-badge { color: #34d399; }
+    .m3 .practice-badge { color: #818cf8; }
+    .m4 .practice-badge { color: #c084fc; }
+    .m5 .practice-badge { color: #fbbf24; }
+    .m6 .practice-badge { color: #f472b6; }
+
+    .practice-text {
+      font-size: 13px;
+      color: #cbd5e1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Footer */
+    .footer-bar {
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 14px;
+      padding: 14px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(14px);
+    }
+    .footer-author h4 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+    }
+    .footer-author p {
+      font-size: 12.5px;
+      color: #94a3b8;
+    }
+    .footer-axiom {
+      text-align: right;
+    }
+    .footer-axiom span {
+      display: inline-block;
+      background: #38bdf8;
+      color: #04101e;
+      font-weight: 850;
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-family: monospace;
+      margin-bottom: 2px;
+    }
+    .footer-axiom p {
+      font-size: 12.5px;
+      color: #cbd5e1;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="top-meta">
+        <span class="badge-hub">FOUNDATIONAL TRACK</span>
+        <div class="stats-pills">
+          <div class="stat-tag"><b>16</b> Занятий</div>
+          <div class="stat-tag"><b>6</b> Модулей</div>
+          <div class="stat-tag"><b>100%</b> Практика</div>
+        </div>
+      </div>
+      <h1 class="main-title">GenAI Basics: <span>Программа по темам</span></h1>
+      <p class="main-sub">Системное видение, физика LLM, Python SDK, мультимодальность и первые автономные агенты.</p>
+    </header>
+
+    <!-- 6 Stacked Modules -->
+    <div class="modules-stack">
+      <!-- M1 -->
+      <div class="mod-card m1">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 1</span>
+          <span class="mod-lessons-tag">L01 – L03</span>
+        </div>
+        <h3 class="mod-title">Фундамент, LLM &amp; Python SDK</h3>
+        <p class="mod-topics">
+          <b>L01:</b> AI/ML/GenAI &amp; Karpathy 1.0–3.0 • <b>L02:</b> BPE токены, промптинг, N-shot, embeddings &amp; RAG • <b>L03:</b> Python SDK, streaming, Pydantic JSON.
+        </p>
+        <div class="mod-practice-strip">
+          <span class="practice-badge">ПРАКТИКА:</span>
+          <span class="practice-text">Colab-тетрадь: API SDK, Pydantic валидация, Glovo Courier</span>
+        </div>
+      </div>
+
+      <!-- M2 -->
+      <div class="mod-card m2">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 2</span>
+          <span class="mod-lessons-tag">L04 – L06</span>
+        </div>
+        <h3 class="mod-title">Мультимодальный GenAI (Медиа)</h3>
+        <p class="mod-topics">
+          <b>L04:</b> Image synthesis (Midjourney, FLUX, Nano Banana) • <b>L05:</b> Video models (Veo, Kling, Runway) • <b>L06:</b> Voice STT/TTS (Whisper, ElevenLabs).
+        </p>
+        <div class="mod-practice-strip">
+          <span class="practice-badge">ПРАКТИКА:</span>
+          <span class="practice-text">Python API конвейер генерации медиа и промпт-шаблоны</span>
+        </div>
+      </div>
+
+      <!-- M3 -->
+      <div class="mod-card m3">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 3</span>
+          <span class="mod-lessons-tag">L07 – L09</span>
+        </div>
+        <h3 class="mod-title">Корпоративные экосистемы &amp; Аналитика</h3>
+        <p class="mod-topics">
+          <b>L07:</b> Microsoft 365 Copilot &amp; GitHub Agent Mode • <b>L08:</b> AI для данных &amp; Code Interpreter • <b>L09:</b> Claude 3.7 Sonnet, Artifacts &amp; Projects.
+        </p>
+        <div class="mod-practice-strip">
+          <span class="practice-badge">ПРАКТИКА:</span>
+          <span class="practice-text">Project Northstar: M365 fixture, sample_repo pytest</span>
+        </div>
+      </div>
+
+      <!-- M4 -->
+      <div class="mod-card m4">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 4</span>
+          <span class="mod-lessons-tag">L10</span>
+        </div>
+        <h3 class="mod-title">Open-Source &amp; Локальный инференс</h3>
+        <p class="mod-topics">
+          <b>L10:</b> Открытые модели Llama 3, Mistral, DeepSeek • Локальный запуск в Ollama &amp; LM Studio • Квантование GGUF • GPU кластеры RunPod.
+        </p>
+        <div class="mod-practice-strip">
+          <span class="practice-badge">ПРАКТИКА:</span>
+          <span class="practice-text">Локальный запуск Ollama с OpenAI-compatible вызовом</span>
+        </div>
+      </div>
+
+      <!-- M5 -->
+      <div class="mod-card m5">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 5</span>
+          <span class="mod-lessons-tag">L11 – L13</span>
+        </div>
+        <h3 class="mod-title">Агенты, Tool Use &amp; MCP</h3>
+        <p class="mod-topics">
+          <b>L11:</b> Function Calling &amp; первый агент • <b>L12:</b> Архитектура Model Context Protocol (MCP) • <b>L13:</b> OpenAI Responses API &amp; Agents SDK.
+        </p>
+        <div class="mod-practice-strip">
+          <span class="practice-badge">ПРАКТИКА:</span>
+          <span class="practice-text">Автономный агент с вызовом внешних API и MCP-сервером</span>
+        </div>
+      </div>
+
+      <!-- M6 -->
+      <div class="mod-card m6">
+        <div class="mod-top">
+          <span class="mod-pill">МОДУЛЬ 6</span>
+          <span class="mod-lessons-tag">L14 – L16</span>
+        </div>
+        <h3 class="mod-title">UI, Безопасность &amp; Coding Agents</h3>
+        <p class="mod-topics">
+          <b>L14:</b> Быстрый UI на Streamlit • <b>L15:</b> Jailbreak, Prompt Injection, PII, Blast Radius • <b>L16:</b> Coding Agents в IDE (Cursor &amp; Antigravity).
+        </p>
+        <div class="mod-practice-strip">
+          <span class="practice-badge">ПРАКТИКА:</span>
+          <span class="practice-text">Streamlit MVP с PII фильтрацией и кодогенерацией в IDE</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer-bar">
+      <div class="footer-author">
+        <h4>Игорь Рубанович</h4>
+        <p>Engineering Manager II &amp; AI Ambassador @ EPAM</p>
+      </div>
+      <div class="footer-axiom">
+        <span>АКСИОМА 10/90</span>
+        <p>10% вызов модели • 90% инженерная обвязка</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

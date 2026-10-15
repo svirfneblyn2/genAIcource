@@ -118,12 +118,22 @@ def build():
     dest_dir = r"G:\My Drive\Advanced GenAI — Course Production\M02 — Agent Frameworks and Orchestration — DONE"
     print(f"Step 6: Copying deliverables to Google Drive folder:\n  {dest_dir}")
     if os.path.exists(dest_dir):
-        dest_html = os.path.join(dest_dir, os.path.basename(html_output_path))
-        dest_pdf = os.path.join(dest_dir, os.path.basename(pdf_output_path))
-        shutil.copy2(html_output_path, dest_html)
-        shutil.copy2(pdf_output_path, dest_pdf)
-        print(f"  [SUCCESS] Copied HTML: {dest_html} ({os.path.getsize(dest_html)} bytes)")
-        print(f"  [SUCCESS] Copied PDF:  {dest_pdf} ({os.path.getsize(dest_pdf)} bytes)")
+        files_to_deploy = [
+            html_output_path,
+            pdf_output_path,
+            os.path.join(MODULE_DIR, "M02_01_Lecture_Text_READY.md"),
+            os.path.join(MODULE_DIR, "M02_01_Lecture_Text_READY.docx"),
+            os.path.join(MODULE_DIR, "M02_02_Full_Instructor_Script_READY.md"),
+            os.path.join(MODULE_DIR, "M02_02_Full_Instructor_Script_READY.docx"),
+            os.path.join(MODULE_DIR, "M02_Instructor_Console_Click_Guide_and_Homework.md"),
+            os.path.join(MODULE_DIR, "M02_Instructor_Console_Click_Guide_and_Homework.docx"),
+            os.path.join(MODULE_DIR, "M02_Instructor_Live_Demo_Kit.zip")
+        ]
+        for src in files_to_deploy:
+            if os.path.exists(src):
+                dst = os.path.join(dest_dir, os.path.basename(src))
+                shutil.copy2(src, dst)
+                print(f"  [SUCCESS] Copied: {os.path.basename(src)} ({os.path.getsize(dst)} bytes)")
     else:
         print(f"  [WARNING] Destination directory {dest_dir} does not exist. Skipping copy.")
 

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>GenAI Courses Overview — Basics & Advanced</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      width: 1920px;
+      height: 1080px;
+      background: #070a11;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Ambient Background */
+    .bg-layer {
+      position: absolute;
+      inset: 0;
+      background: 
+        radial-gradient(circle at 18% 22%, rgba(56, 189, 248, 0.16) 0%, transparent 45%),
+        radial-gradient(circle at 82% 22%, rgba(168, 85, 247, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(16, 185, 129, 0.10) 0%, transparent 50%),
+        url('assets/bg_neural.png') center/cover no-repeat;
+      opacity: 0.70;
+      pointer-events: none;
+    }
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 1920px;
+      height: 1080px;
+      padding: 38px 48px 32px 48px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 18px;
+    }
+    .kicker-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .badge-hub {
+      background: rgba(56, 189, 248, 0.18);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: #38bdf8;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .kicker-text {
+      color: #94a3b8;
+      font-size: 13.5px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .main-title {
+      font-size: 42px;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      line-height: 1.15;
+    }
+    .main-title span {
+      background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .instructor-badge {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 12px 22px;
+      border-radius: 14px;
+      backdrop-filter: blur(14px);
+    }
+    .inst-info h4 {
+      font-size: 16px;
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .inst-info p {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    /* Columns Layout */
+    .columns-arena {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 26px;
+      margin-top: 18px;
+      flex-grow: 1;
+      min-height: 0;
+    }
+
+    /* Course Card */
+    .course-card {
+      background: rgba(11, 17, 30, 0.82);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      padding: 22px 26px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5);
+    }
+    .course-card.basics {
+      border-top: 3.5px solid #38bdf8;
+    }
+    .course-card.advanced {
+      border-top: 3.5px solid #a855f7;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .course-pill {
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      font-family: monospace;
+    }
+    .basics .course-pill {
+      background: rgba(56, 189, 248, 0.18);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+    .advanced .course-pill {
+      background: rgba(168, 85, 247, 0.18);
+      color: #c084fc;
+      border: 1px solid rgba(168, 85, 247, 0.35);
+    }
+
+    .meta-tag {
+      font-size: 12.5px;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
+    .card-head-title {
+      font-size: 28px;
+      font-weight: 850;
+      color: #ffffff;
+      margin-bottom: 4px;
+      letter-spacing: -0.015em;
+    }
+    .card-head-desc {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.38;
+      margin-bottom: 14px;
+    }
+
+    /* Modules List */
+    .modules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      flex-grow: 1;
+    }
+    .module-item {
+      background: rgba(18, 26, 43, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 11px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .module-idx {
+      font-size: 11.5px;
+      font-weight: 850;
+      font-family: monospace;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+      margin-top: 1px;
+    }
+    .basics .module-idx {
+      background: rgba(56, 189, 248, 0.18);
+      color: #38bdf8;
+    }
+    .advanced .module-idx {
+      background: rgba(168, 85, 247, 0.18);
+      color: #c084fc;
+    }
+
+    .module-content {
+      flex-grow: 1;
+    }
+    .module-title {
+      font-size: 15px;
+      font-weight: 750;
+      color: #f8fafc;
+      margin-bottom: 2px;
+    }
+    .module-topics {
+      font-size: 12.5px;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+    .module-topics b {
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    /* Tech Stack Pills */
+    .stack-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .tech-pill {
+      font-size: 11px;
+      font-family: monospace;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Footer Banner */
+    .footer-bar {
+      margin-top: 16px;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      border-radius: 14px;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(14px);
+    }
+    .axiom-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .axiom-badge {
+      background: #38bdf8;
+      color: #04101e;
+      font-weight: 900;
+      font-size: 12px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      letter-spacing: 0.05em;
+    }
+    .axiom-text {
+      font-size: 14px;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+    .axiom-text strong {
+      color: #38bdf8;
+    }
+    .footer-stats {
+      display: flex;
+      gap: 24px;
+    }
+    .stat-item {
+      text-align: right;
+    }
+    .stat-val {
+      font-size: 14px;
+      font-weight: 750;
+      color: #fff;
+    }
+    .stat-lbl {
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-layer"></div>
+  <div class="grid-overlay"></div>
+
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div>
+        <div class="kicker-row">
+          <span class="badge-hub">ENTERPRISE CURRICULUM</span>
+          <span class="kicker-text">Applied Engineering • Hands-on AI Production</span>
+        </div>
+        <h1 class="main-title">Два инженерных курса: <span>GenAI Basics &amp; Advanced</span></h1>
+      </div>
+      <div class="instructor-badge">
+        <div class="inst-info">
+          <h4>Игорь Рубанович</h4>
+          <p>Engineering Manager II &amp; AI Ambassador @ EPAM</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main 2 Columns -->
+    <div class="columns-arena">
+      <!-- Left: GenAI Basics -->
+      <div class="course-card basics">
+        <div class="card-top">
+          <span class="course-pill">ФУНДАМЕНТАЛЬНЫЙ ТРЕК</span>
+          <span class="meta-tag">16 занятий • 6 модулей • Hands-on Colab &amp; GitHub</span>
+        </div>
+        <h2 class="card-head-title">GenAI Basics: Системный фундамент</h2>
+        <p class="card-head-desc">
+          Переход от наивных промптов к системной архитектуре. Четкие ментальные модели, физика токенов, SDK, мультимодальность и первые автономные агенты.
+        </p>
+
+        <div class="modules-list">
+          <div class="module-item">
+            <span class="module-idx">M1</span>
+            <div class="module-content">
+              <div class="module-title">Ментальные модели &amp; Python SDK (L01–L03)</div>
+              <div class="module-topics">Парадигмы Karpathy 1.0/2.0/3.0 • BPE-токены и контекст • Streaming &amp; Pydantic JSON</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M2</span>
+            <div class="module-content">
+              <div class="module-title">Мультимодальный GenAI (L04–L06)</div>
+              <div class="module-topics">Image Synthesis (Midjourney, FLUX) • Video Models (Veo, Kling, Runway) • STT/TTS аудио</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M3</span>
+            <div class="module-content">
+              <div class="module-title">Экосистемы, Copilot &amp; Аналитика (L07–L09)</div>
+              <div class="module-topics">Microsoft 365 Copilot &amp; GitHub Agent Mode • Code Interpreter • Claude 3.7 &amp; Artifacts</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M4</span>
+            <div class="module-content">
+              <div class="module-title">Open-Source &amp; Локальный инференс (L10)</div>
+              <div class="module-topics">Открытые веса: Llama 3, Mistral, DeepSeek • Запуск в Ollama &amp; GGUF • GPU кластеры RunPod</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M5</span>
+            <div class="module-content">
+              <div class="module-title">Агенты, Tool Use &amp; MCP (L11–L13)</div>
+              <div class="module-topics">Function Calling в коде • Архитектура Model Context Protocol (MCP) • Responses API &amp; SDK</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M6</span>
+            <div class="module-content">
+              <div class="module-title">UI, Безопасность &amp; Coding Agents (L14–L16)</div>
+              <div class="module-topics">Быстрый UI на Streamlit • Защита от инъекций, PII &amp; Blast Radius • Разработка в Cursor &amp; Antigravity</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-bar">
+          <span class="tech-pill">Python</span>
+          <span class="tech-pill">Gemini 2.5</span>
+          <span class="tech-pill">GPT-4o</span>
+          <span class="tech-pill">Pydantic</span>
+          <span class="tech-pill">Ollama</span>
+          <span class="tech-pill">Streamlit</span>
+          <span class="tech-pill">MCP</span>
+          <span class="tech-pill">GitHub Copilot</span>
+        </div>
+      </div>
+
+      <!-- Right: Advanced GenAI -->
+      <div class="course-card advanced">
+        <div class="card-top">
+          <span class="course-pill">ПРОДВИНУТЫЙ ТРЕК</span>
+          <span class="meta-tag">7 модулей • C4-архитектура • Enterprise SLA &amp; Observability</span>
+        </div>
+        <h2 class="card-head-title">Advanced GenAI: Production &amp; Agents</h2>
+        <p class="card-head-desc">
+          Проектирование надежных enterprise-систем. Преодоление 85% "подводной части айсберга": LangGraph, HNSW RAG, OTel, безопасность и мультиагенты.
+        </p>
+
+        <div class="modules-list">
+          <div class="module-item">
+            <span class="module-idx">M1</span>
+            <div class="module-content">
+              <div class="module-title">Cloud AI Infra &amp; Enterprise Security</div>
+              <div class="module-topics">AWS Bedrock, Azure OpenAI, GCP Vertex AI • IAM, SSO, VPC Peering • Data Residency &amp; Quotas</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M2</span>
+            <div class="module-content">
+              <div class="module-title">Agent Frameworks &amp; Orchestration</div>
+              <div class="module-topics">LangGraph &amp; State Machines • Supervisor, Hierarchical Swarms • Human-in-the-Loop gates</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M3</span>
+            <div class="module-content">
+              <div class="module-title">Vector Stores &amp; Production RAG</div>
+              <div class="module-topics">HNSW индексы • Гибридный поиск (Dense + BM25) • Cross-Encoder Rerankers • ACL Trimming</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M4</span>
+            <div class="module-content">
+              <div class="module-title">Agentic Development &amp; Workflows</div>
+              <div class="module-topics">Spec-driven разработка агентами • Автономные Coding Agents в CI/CD • Headless автотесты</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M5</span>
+            <div class="module-content">
+              <div class="module-title">LLM Evals, Tracing &amp; Observability</div>
+              <div class="module-topics">DeepEval, Ragas &amp; Синтетические тесты • OpenTelemetry, LangSmith, Phoenix • Регрессионный CI/CD</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M6</span>
+            <div class="module-content">
+              <div class="module-title">Resilient Production Agents</div>
+              <div class="module-topics">Долгосрочная память (Episodic/Semantic) • Sandboxing инструментов • Blast Radius управление</div>
+            </div>
+          </div>
+
+          <div class="module-item">
+            <span class="module-idx">M7</span>
+            <div class="module-content">
+              <div class="module-title">Model Context Protocol (MCP) Deep Dive</div>
+              <div class="module-topics">Протокол JSON-RPC / SSE • Разработка custom MCP серверов • Корпоративные коннекторы (Jira, SQL)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="stack-bar">
+          <span class="tech-pill">LangGraph</span>
+          <span class="tech-pill">HNSW / Qdrant</span>
+          <span class="tech-pill">OpenTelemetry</span>
+          <span class="tech-pill">DeepEval</span>
+          <span class="tech-pill">AWS Bedrock</span>
+          <span class="tech-pill">Azure OpenAI</span>
+          <span class="tech-pill">MCP SDK</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Banner -->
+    <footer class="footer-bar">
+      <div class="axiom-box">
+        <span class="axiom-badge">АКСИОМА 10/90</span>
+        <span class="axiom-text">
+          Вызов модели — это <strong>10%</strong> решения. Остальные <strong>90%</strong> — схемы Pydantic, безопасность, ACL, rate-limiting, трейсинг и оркестрация.
+        </span>
+      </div>
+      <div class="footer-stats">
+        <div class="stat-item">
+          <div class="stat-val">EPAM CodeMie @ Dawn Foods</div>
+          <div class="stat-lbl">35% ускорение SDLC в реальном кейсе</div>
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -9,7 +9,7 @@ SLIDE_DATA = {
     "title": "AWS Implementation: Bedrock-Centered Stack",
     "lead": "How AWS services implement the two-lane support assistant topology.",
     "section": "Cloud Implementation: AWS",
-    "takeaway": "AWS provides a seamless serverless AI stack when coupled with existing AWS IAM and VPC infrastructure.",
+    "takeaway": "AWS provides a managed serverless AI runtime when coupled with existing AWS IAM and VPC infrastructure.",
     "svg": svg_frame(f"""<g transform="translate(40, 15)">
         <!-- Layer 1: App & User Interface Lane -->
         <g transform="translate(0, 0)">

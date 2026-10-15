@@ -1,0 +1,18 @@
+{
+ "note": "We ran the notebook on a free Colab account. To keep the example reproducible, the voice note was made with a text-to-speech voice; you record your own voice.",
+ "said": "I need a cover image for the menu of a small coffee shop. Morning, a cup of cappuccino with latte art on a wooden table, and a croissant next to it. Warm, soft light from the window, cozy. At the top, the words Morning Menu.",
+ "transcript": "I need a cover image for the menu of a small coffee shop. Morning. A cup of cappuccino with latte art on a wooden table. And a croissant next to it. Warm. Soft light from the window. Cozy. At the top. The words morning menu.",
+ "a2": "The words were all correct, but Whisper broke my sentences into short pieces (\"Warm. Soft light…\", \"At the top. The words…\") and wrote \"morning menu\" in small letters, so it no longer looked like a caption. I pasted a corrected version into `corrected_transcript`: joined \"Warm, soft light\" and wrote \"Morning Menu\" in quotes. The log showed `[STEP 2] using the corrected transcript`.",
+ "style": "photo",
+ "format": "landscape 16:9",
+ "prompt": "A cup of cappuccino with latte art and a croissant on a wooden table, featuring \"Morning Menu\" at the top. Photorealistic photo, close-up, eye-level shot, bathed in warm, soft window light, conveying a cozy morning mood.",
+ "a3": "Everything I asked for is there: one cup, latte art, croissant, wooden table, warm window light, cozy mood and the caption in quotes. Gemini added \"close-up, eye-level shot\" on its own, which I did not ask for. It also lost the purpose: the words \"menu cover\" are gone, so the model does not know this should be a cover with space for text.",
+ "edit": "show only one cup of cappuccino, keep everything else the same",
+ "prompt5": "A single cup of cappuccino, only one cup, with latte art and a croissant on a wooden table, featuring \"Morning Menu\" at the top. Photorealistic photo, close-up, eye-level shot, bathed in warm, soft window light, conveying a cozy morning mood.",
+ "img4": "img4.jpg",
+ "img5": "img5.jpg",
+ "img6": "img6.jpg",
+ "a5": "The edit did not work. Gemini changed the prompt correctly (\"A single cup of cappuccino, only one cup\"), but SD-Turbo still drew two cups. The composition stayed almost the same because the notebook keeps the same random seed; only the latte art and the croissants changed a little. Small image models are bad at counting objects, so a count edit is hard for them.",
+ "a6": "1. **Which image is closer?** The right one (after rewriting): sharp, clear table, warm light, croissants. The left one looks like a double exposure, with croissants floating in the air.\n\n2. **What did the prompt add?** Composition (\"close-up, eye-level\"), a clear style (\"photorealistic photo\") and the light description. Without them the model mixed the scene: you can see that in the blurry left image.\n\n3. **What went wrong in both?** Two cups instead of one, and no \"Morning Menu\" caption at all.",
+ "a7": "Most mistakes happened at the image step: SD-Turbo ignored the number of cups and never drew the \"Morning Menu\" caption, even when the prompt asked for it clearly. Whisper heard every word but changed the punctuation, so I fixed the transcript by hand before Gemini used it. Gemini wrote a good prompt but added a camera angle I had not asked for and dropped the words \"menu cover\". Next time I would say \"menu cover with empty space at the top for text\" in my brief and leave the caption for a designer, because this model cannot write text."
+}

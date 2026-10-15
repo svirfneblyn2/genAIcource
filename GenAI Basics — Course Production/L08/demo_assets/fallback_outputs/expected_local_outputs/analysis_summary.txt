@@ -1,0 +1,7 @@
+Rows: raw=73; clean=72; duplicate order_ids removed=1.
+Missing region values labeled UNKNOWN=1.
+Domain anomalies retained for review (returns > orders)=1.
+Total revenue (deduplicated) = $256,045.00.
+Top channel by revenue = Organic ($67,580.00).
+Revenue change 2026-01 -> 2026-06 = +64.7%.
+Causal caveat: historical channel revenue/ROAS does not prove incremental effect. Do not reallocate budget solely from this descriptive analysis.

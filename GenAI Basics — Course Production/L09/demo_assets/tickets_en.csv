@@ -1,0 +1,13 @@
+﻿id,email,area,priority,days,status,owner,summary
+T-101,k.ivanova@mail.example,Delivery,P1,4,Open,Marta,Order paid but not delivered for 4 days
+T-102,d.saidov@mail.example,Address,P2,3,Open,Oleg,"Courier can't find the address, second time"
+T-103,n.park@mail.example,Packaging,P3,1,Waiting customer,Anya,Asked for a photo of the damaged package
+T-104,a.khan@mail.example,Payment,P1,1,Open,Ravi,Charged twice for one order
+T-105,m.lee@mail.example,Refund,P2,6,Open,,No owner after the queue was changed
+T-106,s.orlova@mail.example,Courier app,P1,5,Open,Marta,Couriers can't mark orders as delivered
+T-107,j.novak@mail.example,Receipt,P2,2,Closed,Oleg,Wrong address on the receipt — fixed
+T-108,r.aliev@mail.example,Notifications,P3,8,Open,Anya,Typo in a push notification
+T-109,t.kim@mail.example,Courier app,P2,5,Open,Ravi,App crashes when taking a photo
+T-110,e.petrova@mail.example,Security,P1,2,Open,,Customer sees other people's orders
+T-111,b.usmanov@mail.example,Promo codes,P2,1,Waiting engineering,Marta,Promo code doesn't apply in the app
+T-112,l.grin@mail.example,Zones,P3,4,Open,Oleg,Courier asks to change delivery zone

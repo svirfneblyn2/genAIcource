@@ -9,6 +9,13 @@ import fitz
 from .slides import ALL_SLIDES
 from .template import render_deck
 
+BANNED_SLOP = [
+    r"\bdelve\b", r"\btestament\b", r"\btapestry\b", r"\bunleash\b",
+    r"\bseamless\b", r"\bgame-changer\b", r"\brevolutionary\b", r"\bpivotal\b",
+    r"\bbeacon\b", r"\bcornerstone\b", r"\bfoster\b", r"\bembark\b",
+    r"\bfurthermore\b", r"it is important to note", r"in conclusion", r"let us explore"
+]
+
 def build():
     print("================================================================================")
     print("STARTING ADVANCED GENAI MODULE 01 BUILD & EXPORT PIPELINE")
@@ -43,6 +50,23 @@ def build():
         raise ValueError(f"Punctuation check failed: {len(en_dash_matches)} en-dashes found!")
 
     print("  [SUCCESS] Zero em-dashes and zero en-dashes confirmed.")
+
+    # Step 3B: Anti-slop vocabulary check
+    print("Step 3B: Validating anti-slop vocabulary rules...")
+    slop_violations = []
+    for pattern in BANNED_SLOP:
+        matches = list(re.finditer(pattern, html_content, re.IGNORECASE))
+        if matches:
+            for m in matches[:3]:
+                snippet = html_content[max(0, m.start()-30):min(len(html_content), m.end()+30)]
+                slop_violations.append(f"Pattern '{pattern}': ...{snippet}...")
+
+    if slop_violations:
+        for v in slop_violations:
+            print(f"  [ERROR] Banned AI slop detected: {v}")
+        raise ValueError(f"Anti-slop check failed: {len(slop_violations)} occurrences found!")
+
+    print("  [SUCCESS] Anti-slop check passed cleanly.")
 
     with open(html_output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
@@ -94,12 +118,19 @@ def build():
     dest_dir = r"G:\My Drive\Advanced GenAI — Course Production\M01 — Cloud AI Capabilities Overview — DONE"
     print(f"Step 6: Copying deliverables to Google Drive folder:\n  {dest_dir}")
     if os.path.exists(dest_dir):
-        dest_html = os.path.join(dest_dir, os.path.basename(html_output_path))
-        dest_pdf = os.path.join(dest_dir, os.path.basename(pdf_output_path))
-        shutil.copy2(html_output_path, dest_html)
-        shutil.copy2(pdf_output_path, dest_pdf)
-        print(f"  [SUCCESS] Copied HTML: {dest_html} ({os.path.getsize(dest_html)} bytes)")
-        print(f"  [SUCCESS] Copied PDF:  {dest_pdf} ({os.path.getsize(dest_pdf)} bytes)")
+        files_to_deploy = [
+            html_output_path,
+            pdf_output_path,
+            os.path.join(MODULE_DIR, "M01_01_Lecture_Text_FINAL.md"),
+            os.path.join(MODULE_DIR, "M01_02_Full_Instructor_Script_FINAL.md"),
+            os.path.join(MODULE_DIR, "M01_Instructor_Console_Click_Guide_and_Homework.md"),
+            os.path.join(MODULE_DIR, "M01_Instructor_Console_Click_Guide_and_Homework.docx")
+        ]
+        for src in files_to_deploy:
+            if os.path.exists(src):
+                dst = os.path.join(dest_dir, os.path.basename(src))
+                shutil.copy2(src, dst)
+                print(f"  [SUCCESS] Copied: {os.path.basename(src)} ({os.path.getsize(dst)} bytes)")
     else:
         print(f"  [WARNING] Destination directory {dest_dir} does not exist. Skipping copy.")
 

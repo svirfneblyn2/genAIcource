@@ -98,7 +98,7 @@ SLIDE_DATA = {
     """),
     "notes": {
         "goal": "Explain Google Cloud selection logic. Emphasize BigQuery analytics synergy, context length advantages, and warn about regional rollout differences.",
-        "talkTrack": "Explain Google Cloud selection logic. It is especially strong when the assistant is tied to analytics, BigQuery, search/grounding, data engineering, or Google Cloud-native workflows. The ability to pass 1M tokens into Gemini 1.5 Flash at low cost is a game-changer for document-heavy enterprises. However, warn students that product rebranding moves fast, and they must verify regional model availability before committing to European or APAC data boundaries.",
+        "talkTrack": "Explain Google Cloud selection logic. It is especially strong when the assistant is tied to analytics, BigQuery, search/grounding, data engineering, or Google Cloud-native workflows. The ability to pass 1M tokens into Gemini 1.5 Flash at low cost fundamentally accelerates document-heavy enterprise workflows. However, warn students that product rebranding moves fast, and they must verify regional model availability before committing to European or APAC data boundaries.",
         "timing": "75:00 - 80:00 (5 min)"
     }
 }
