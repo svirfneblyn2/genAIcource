@@ -1,0 +1,53 @@
+{
+  "diff": "diff --git a/delivery_fee.py b/delivery_fee.py\nindex 5ffdf91..1c183d5 100644\n--- a/delivery_fee.py\n+++ b/delivery_fee.py\n@@ -14,6 +14,8 @@ def delivery_fee(order: Order) -> float:\n         raise ValueError(\"subtotal must be non-negative\")\n     if order.subtotal >= 100:\n         return 0.0\n+    if order.zone.upper() == \"CITY\" and order.is_prime and order.subtotal >= 75:\n+        return 0.0\n     if order.zone.upper() == \"CITY\":\n         return 7.50\n     return 18.00\ndiff --git a/test_delivery_fee.py b/test_delivery_fee.py\nindex afb6905..514efdc 100644\n--- a/test_delivery_fee.py\n+++ b/test_delivery_fee.py\n@@ -12,6 +12,15 @@ class DeliveryFeeTests(unittest.TestCase):\n     def test_free_delivery_from_100(self):\n         self.assertEqual(delivery_fee(Order(100, \"CITY\")), 0.0)\n \n+    def test_prime_free_at_75(self):\n+        self.assertEqual(delivery_fee(Order(75, \"CITY\", True)), 0.0)\n+\n+    def test_prime_below_75_pays(self):\n+        self.assertEqual(delivery_fee(Order(74.99, \"CITY\", True)), 7.50)\n+\n+    def test_non_prime_at_75_pays(self):\n+        self.assertEqual(delivery_fee(Order(75, \"CITY\", False)), 7.50)\n+\n     def test_negative_subtotal_rejected(self):\n         with self.assertRaises(ValueError):\n             delivery_fee(Order(-1, \"CITY\"))\n",
+  "diff_u1": "diff --git a/delivery_fee.py b/delivery_fee.py\nindex 5ffdf91..1c183d5 100644\n--- a/delivery_fee.py\n+++ b/delivery_fee.py\n@@ -16,2 +16,4 @@ def delivery_fee(order: Order) -> float:\n         return 0.0\n+    if order.zone.upper() == \"CITY\" and order.is_prime and order.subtotal >= 75:\n+        return 0.0\n     if order.zone.upper() == \"CITY\":\ndiff --git a/test_delivery_fee.py b/test_delivery_fee.py\nindex afb6905..514efdc 100644\n--- a/test_delivery_fee.py\n+++ b/test_delivery_fee.py\n@@ -14,2 +14,11 @@ class DeliveryFeeTests(unittest.TestCase):\n \n+    def test_prime_free_at_75(self):\n+        self.assertEqual(delivery_fee(Order(75, \"CITY\", True)), 0.0)\n+\n+    def test_prime_below_75_pays(self):\n+        self.assertEqual(delivery_fee(Order(74.99, \"CITY\", True)), 7.50)\n+\n+    def test_non_prime_at_75_pays(self):\n+        self.assertEqual(delivery_fee(Order(75, \"CITY\", False)), 7.50)\n+\n     def test_negative_subtotal_rejected(self):\n",
+  "tests": [
+    {
+      "name": "test_city_standard",
+      "result": "ok"
+    },
+    {
+      "name": "test_free_delivery_from_100",
+      "result": "ok"
+    },
+    {
+      "name": "test_negative_subtotal_rejected",
+      "result": "ok"
+    },
+    {
+      "name": "test_non_prime_at_75_pays",
+      "result": "ok"
+    },
+    {
+      "name": "test_outside_standard",
+      "result": "ok"
+    },
+    {
+      "name": "test_prime_below_75_pays",
+      "result": "ok"
+    },
+    {
+      "name": "test_prime_free_at_75",
+      "result": "ok"
+    }
+  ],
+  "test_output": "test_city_standard (test_delivery_fee.DeliveryFeeTests.test_city_standard) ... ok\ntest_free_delivery_from_100 (test_delivery_fee.DeliveryFeeTests.test_free_delivery_from_100) ... ok\ntest_negative_subtotal_rejected (test_delivery_fee.DeliveryFeeTests.test_negative_subtotal_rejected) ... ok\ntest_non_prime_at_75_pays (test_delivery_fee.DeliveryFeeTests.test_non_prime_at_75_pays) ... ok\ntest_outside_standard (test_delivery_fee.DeliveryFeeTests.test_outside_standard) ... ok\ntest_prime_below_75_pays (test_delivery_fee.DeliveryFeeTests.test_prime_below_75_pays) ... ok\ntest_prime_free_at_75 (test_delivery_fee.DeliveryFeeTests.test_prime_free_at_75) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.000s\n\nOK\n",
+  "tests_total": 7,
+  "tests_baseline": 4,
+  "tests_ok": true,
+  "tests_new": 3,
+  "files": {
+    "delivery_fee.py": {
+      "added": 2,
+      "removed": 0
+    },
+    "test_delivery_fee.py": {
+      "added": 9,
+      "removed": 0
+    }
+  },
+  "logic_added": 2,
+  "logic_removed": 0,
+  "tests_added_lines": 9,
+  "ok_lines": 7
+}
