@@ -47,14 +47,14 @@ Never mix document parsing and indexing with the real-time query path. Ingestion
 
 ### 4. Text Embeddings and Vector Space Geometry
 Text embeddings project unstructured natural language strings into continuous, high-dimensional vector spaces:
-$$\mathbf{e} = f_{	heta}(	ext{text}) \in \mathbb{R}^d$$
+$$\mathbf{e} = f_{	heta}(\text{text}) \in \mathbb{R}^d$$
 where $d$ typically ranges from 384 (compact models like MiniLM) to 1536 (OpenAI text-embedding-3-small) or 3072 (text-embedding-3-large).
 
 In this geometric space, semantic proximity corresponds to geometric distance. The primary similarity metric in production search is **Cosine Similarity**:
-$$	ext{CosineSimilarity}(\mathbf{u}, \mathbf{v}) = rac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\|_2 \|\mathbf{v}\|_2} = rac{\sum_{i=1}^d u_i v_i}{\sqrt{\sum_{i=1}^d u_i^2} \sqrt{\sum_{i=1}^d v_i^2}}$$
+$$\text{CosineSimilarity}(\mathbf{u}, \mathbf{v}) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\|_2 \|\mathbf{v}\|_2} = \frac{\sum_{i=1}^d u_i v_i}{\sqrt{\sum_{i=1}^d u_i^2} \sqrt{\sum_{i=1}^d v_i^2}}$$
 
 When embeddings are normalized to unit length during ingestion ($\|\mathbf{u}\|_2 = 1.0, \|\mathbf{v}\|_2 = 1.0$), the denominator evaluates to 1.0, and Cosine Similarity simplifies to the **Dot Product**:
-$$	ext{CosineSimilarity}(\mathbf{u}, \mathbf{v}) = \mathbf{u} \cdot \mathbf{v} = \sum_{i=1}^d u_i v_i$$
+$$\text{CosineSimilarity}(\mathbf{u}, \mathbf{v}) = \mathbf{u} \cdot \mathbf{v} = \sum_{i=1}^d u_i v_i$$
 This simplification reduces computational overhead from square roots and divisions to a single hardware-accelerated matrix multiplication (GEMV / GEMM on AVX-512 or Tensor Cores).
 
 ### 5. Chunking Strategies and Boundary Engineering
@@ -72,7 +72,7 @@ Metadata filters apply deterministic boolean constraints to the search space:
 
 ### 7. Approximate Nearest Neighbors (ANN): HNSW, IVF, and Quantization
 Exhaustive nearest-neighbor search requires comparing query vector $\mathbf{q}$ against all $N$ vectors in the corpus:
-$$	ext{Complexity: } O(N \cdot d)$$
+$$\text{Complexity: } O(N \cdot d)$$
 For $N = 10,000,000$ vectors at $d=1536$, a single query requires 15.3 billion floating-point operations, introducing prohibitive multi-second latency.
 
 Production vector databases use **Approximate Nearest Neighbors (ANN)** algorithms that trade a 1-2% drop in recall for orders-of-magnitude latency reduction:
@@ -92,15 +92,15 @@ Production vector databases use **Approximate Nearest Neighbors (ANN)** algorith
 System architects must calculate memory requirements before deploying vector infrastructure.
 For $N = 1,000,000$ vectors at $d=1536$ dimensions:
 - **Raw float32 storage**:
-  $$1,000,000 	imes 1536 	imes 4 	ext{ bytes} = 6,144,000,000 	ext{ bytes} pprox 6.14 	ext{ GB}$$
+  $$1,000,000 	imes 1536 	imes 4 \text{ bytes} = 6,144,000,000 \text{ bytes} \approx 6.14 \text{ GB}$$
 - **HNSW Graph Index Overhead**:
   Graph connectivity edges ($M=16$ to $32$ neighbors per node) add an additional 1.5x to 2.0x memory overhead:
-  $$6.14 	ext{ GB} 	imes 1.75 pprox 10.75 	ext{ GB RAM}$$
+  $$6.14 \text{ GB} 	imes 1.75 \approx 10.75 \text{ GB RAM}$$
 - **Metadata and Payload Storage**:
   Text content, document IDs, timestamps, and ACL strings typically consume 2 to 5 KB per chunk:
-  $$1,000,000 	imes 3 	ext{ KB} = 3.0 	ext{ GB}$$
-- **Total Required Memory**: $pprox 14 	ext{ to } 16 	ext{ GB RAM}$ for 1 million unquantized vectors.
-- **With SQ8 Quantization (int8)**: The raw vector footprint shrinks to $1.54 	ext{ GB}$, fitting the entire vector index comfortably into under $4 	ext{ GB}$ of RAM.
+  $$1,000,000 	imes 3 \text{ KB} = 3.0 \text{ GB}$$
+- **Total Required Memory**: $\approx 14 \text{ to } 16 \text{ GB RAM}$ for 1 million unquantized vectors.
+- **With SQ8 Quantization (int8)**: The raw vector footprint shrinks to $1.54 \text{ GB}$, fitting the entire vector index comfortably into under $4 \text{ GB}$ of RAM.
 
 ### 9. Lexical, Dense, and Hybrid Retrieval Fusion
 Dense bi-encoder embeddings excel at conceptual paraphrasing (matching *"laptop replacement"* to *"emergency hardware loan"*), but fail on exact alphanumeric strings, error codes (`ERR-404-B12`), model numbers (`Phoenix-7000`), or personal names.
@@ -109,17 +109,17 @@ Production systems implement **Hybrid Retrieval**:
 - **Dense Vector Search**: Captures high-level semantic intent.
 - **Sparse BM25 Inverted Index**: Captures exact keyword presence, terminology, and unique identifiers.
 - **Reciprocal Rank Fusion (RRF)**: Combines disparate score distributions without needing score calibration:
-  $$	ext{RRF\_Score}(d) = \sum_{m \in \{	ext{dense}, 	ext{sparse}\}} rac{1}{k + 	ext{Rank}_m(d)}$$
+  $$\text{RRF\_Score}(d) = \sum_{m \in \{\text{dense}, \text{sparse}\}} \frac{1}{k + \text{Rank}_m(d)}$$
   where $k$ is an empirical smoothing constant (typically $k=60$). RRF ensures that items ranking well across both dense and sparse pipelines are boosted to the top.
 
 ### 10. Cross-Encoder Reranking
 First-stage retrieval (bi-encoder + BM25) prioritizes high recall across millions of documents at low latency (10-20ms). However, bi-encoders compute document embeddings independently of the query.
 
 A **Cross-Encoder Reranker** (such as BGE-Reranker or Cohere Rerank) accepts query and candidate text concatenated as a single input sequence:
-$$	ext{Score} = 	ext{CrossEncoder}([	ext{Query} \,;\, 	ext{Document}])$$
+$$\text{Score} = \text{CrossEncoder}([\text{Query} \,;\, \text{Document}])$$
 This allows full multi-head cross-attention across every query token and document token simultaneously, delivering significantly higher relevance precision. Because cross-encoders are compute-intensive, production systems use a two-stage retrieval pipeline:
-1. First Stage: Hybrid search retrieves top-50 candidates ($15	ext{ms}$).
-2. Second Stage: Cross-encoder reranks top-50 down to the top-5 highest-confidence chunks ($40	ext{ms}$).
+1. First Stage: Hybrid search retrieves top-50 candidates ($15\text{ms}$).
+2. Second Stage: Cross-encoder reranks top-50 down to the top-5 highest-confidence chunks ($40\text{ms}$).
 
 ### 11. Context Assembly and the "Lost in the Middle" Phenomenon
 Research by Liu et al. (Stanford) revealed that transformer attention exhibits a pronounced U-shaped curve over long context windows:

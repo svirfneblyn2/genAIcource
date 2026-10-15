@@ -120,5 +120,13 @@ class TestLiveDemoScenarios(unittest.TestCase):
         self.assertTrue(res["circuit_broken"])
         self.assertFalse(res["reconciled"])
 
+    def tearDown(self):
+        for db in ["test_sc1.db", "test_sc2.db", "test_sc3.db"]:
+            if os.path.exists(db):
+                try:
+                    os.remove(db)
+                except Exception:
+                    pass
+
 if __name__ == "__main__":
     unittest.main()

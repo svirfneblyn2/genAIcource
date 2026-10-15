@@ -31,26 +31,29 @@ d:\Repos\genAIcource\
 │       └── L03_First_API_Call_and_Prompt_Patterns.ipynb  # copy of notebooks/ (Colab)
 │
 └── Advanced GenAI — Course Production\   # Advanced engineering course (M01 - M07)
-    ├── assets\                           # SVG blueprints, diagrams, imagery
-    ├── shared_tools\                     # Shared builder generators (make_base.py)
-    ├── M01\                              # Cloud AI Capabilities Overview
-    │   ├── deck_builder\                 # Automated modular HTML & PDF slide builder
-    │   ├── presentation_M01_Cloud_AI_Overview.html
-    │   ├── presentation_M01_Cloud_AI_Overview.pdf
+    ├── M01\                              # Cloud AI Capabilities Overview (AWS Bedrock, Azure Foundry, Vertex AI)
+    │   ├── deck_builder\                 # Automated modular HTML & PDF slide builder (27 slides)
+    │   ├── presentation_M01_Cloud_AI_Overview.html / .pdf
+    │   ├── M01_01_Lecture_Text_FINAL.md / .docx
+    │   ├── M01_02_Full_Instructor_Script_FINAL.md / .docx
     │   └── M01_Instructor_Console_Click_Guide_and_Homework.md / .docx
-    ├── M02\                              # Agent Frameworks & Orchestration
-    │   ├── deck_builder\
-    │   ├── presentation_M02_Agent_Frameworks.html
-    │   ├── presentation_M02_Agent_Frameworks.pdf
-    │   ├── m02_live_demo_package\
-    │   └── M02_Instructor_Console_Click_Guide_and_Homework.md / .docx
-    └── M03\                              # Vector Stores and RAG
-        ├── deck_builder\
-        ├── presentation_M03_Vector_Stores_and_RAG.html
-        ├── presentation_M03_Vector_Stores_and_RAG.pdf
-        ├── m03_live_demo\                # Offline 4-act Python RAG demo suite
+    ├── M02\                              # Agent Frameworks & Orchestration (State Machines, LangGraph, HITL)
+    │   ├── deck_builder\                 # Automated modular HTML & PDF slide builder (27 slides)
+    │   ├── presentation_M02_Agent_Frameworks.html / .pdf
+    │   ├── M02_01_Lecture_Text_READY.md / .docx
+    │   ├── M02_02_Full_Instructor_Script_READY.md / .docx
+    │   ├── M02_Instructor_Console_Click_Guide_and_Homework.md / .docx
+    │   ├── M02_Instructor_Live_Demo_Kit.zip
+    │   └── m02_live_demo_package\        # Turnkey Accounts Payable Agent (Web UI & CLI modes)
+    └── M03\                              # Vector Stores and RAG (HNSW, BM25+Dense RRF, Lost-in-the-Middle)
+        ├── deck_builder\                 # Automated modular HTML & PDF slide builder (26 slides)
+        ├── presentation_M03_Vector_Stores_and_RAG.html / .pdf
+        ├── M03_01_Lecture_Text_FINAL.md / .docx
+        ├── M03_02_Full_Instructor_Script_FINAL.md / .docx
+        ├── homework_M03.md               # 2-track homework (Architecture vs Python)
         ├── instructor_prep_M03_ru.html   # Visual instructor prep guide
-        └── M03_01_Lecture_Text_FINAL.md / M03_02_Full_Instructor_Script_FINAL.md
+        ├── M03_Instructor_Live_Demo_Kit.zip
+        └── m03_live_demo\                # Offline 4-act Python enterprise RAG demo suite
 ```
 
 ---
