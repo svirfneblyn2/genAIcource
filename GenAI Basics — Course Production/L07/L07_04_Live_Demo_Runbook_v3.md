@@ -281,4 +281,4 @@ Agent Builder сам заполнил: **имя** «Помощник подде�
 ## 10. Итог демо (30 секунд)
 «Одно правило во всех окнах: **показали нужное, попросили структуру и честный список добавленного, проверили по источнику**. Без лицензии Copilot видит только то, что вы ему дали (мы так и сделали для Teams, Word и Excel); с лицензией — ваши встречи и файлы сам; агент — то же самое, только правила записаны один раз.»
 
-*Файлы:* `demo_courier_copilot/` (`meeting_notes.md`, `release_checklist.txt`, `orders.csv`, `fallback_outputs/`), наши снимки `assets/v3/img/own_*` (в том числе `own_ab_*` — сборка агента). Факты об Agent Builder и Windows: `L07_13_Research_Windows_AgentBuilder_2026-10-13.md`. Перепроверить перед записью: `README_v3.md`.
+*Файлы:* `demo_courier_copilot/` (`meeting_notes.md`, `release_checklist.txt`, `orders.csv`, `fallback_outputs/`), наши снимки `assets/v3/img/own_*` (в том числе `own_ab_*` — сборка агента). Факты об Agent Builder и Windows: `L07_13_Research_Windows_AgentBuilder_2026-10-13.md`. Перепроверить перед записью: `README.md`.

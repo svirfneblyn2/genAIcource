@@ -98,4 +98,4 @@ Agent (sl. 17): city $7.50 • outside $18.00 • “Prime, $80, outside the cit
 **Game (sl. 20):** 1-B • 2-A • 3-C • 4-A.
 
 ### Verify before recording
-Plan names and prices (sl. 6), Copilot Business promo dates • Autopilot, Code, @Copilot in Teams (preview, may change at Ignite 17–20 Nov) • Vision for work accounts • the model list in the menu (sl. 4) • Windows limits (sl. 9) and Agent Builder button labels (sl. 16–17) • both sign-ins work on the demo PC and the school account shows **New agent** • whether you have a licence for live Teams and Word. Full list: `README_v3.md`, section “Verify before recording”.
+Plan names and prices (sl. 6), Copilot Business promo dates • Autopilot, Code, @Copilot in Teams (preview, may change at Ignite 17–20 Nov) • Vision for work accounts • the model list in the menu (sl. 4) • Windows limits (sl. 9) and Agent Builder button labels (sl. 16–17) • both sign-ins work on the demo PC and the school account shows **New agent** • whether you have a licence for live Teams and Word. Full list: `README.md`, section “Verify before recording”.

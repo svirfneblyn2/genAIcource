@@ -10,7 +10,7 @@ Files
 - `fallback_outputs/` - deterministic results if a Copilot button is missing or the UI changed.
 
 Check before class: `cd sample_repo && python smoke_check.py` (baseline: 4 tests pass).
-The real diff and the 7-test output used on slides 11-13 come from `../deck_v2/make_artifacts.py`.
+The real diff and the 7-test output used on slide 20 come from `../deck_v3/make_artifacts.py`.
 
 Rule for the demo: judge Copilot by the diff and the tests, not by the word "done".
 If a button moved, the rule did not: show the fallback and move on after 90 seconds.

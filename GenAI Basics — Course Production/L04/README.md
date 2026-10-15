@@ -7,13 +7,13 @@ Practical lesson on AI image generation for engineers. Begins with an interactiv
 
 ## Source of Truth
 - **Slide decks (27 slides, RU/EN):** `presentation_L04_Image_Generation_Services_and_Prompts_v2.html` / `_EN_v2.html` + PDFs with the same basenames (`_v2.pdf`, `_EN_v2.pdf`). Self-contained HTML (inline CSS/JS, speaker notes on `N`, slide grid on `G`, break timer on slide 16). Fix list: `L04_09_Deck_Fix_Plan_v2.md`; fact source: `L04_08_Source_Notes_Research_2026-10.md`.
-- The v1 decks (`presentation_L04_Image_Generation_Services_and_Prompts.html` / `_EN.html`, 25 slides) are kept for reference only and contain outdated model names. `deck/*.py` is stale (2026-10-02) and does not reproduce either version — edit the v2 HTML directly.
+- The v1 decks (25 slides, outdated model names) were removed on 2026-10-15; they are in git history (tag `archive/pre-cleanup-2026-10-15`). `deck/*.py` is stale (2026-10-02) and does not reproduce either version — edit the v2 HTML directly.
 - **Visual Assets:**
   - `assets/hook/`: 6 portraits in the style of each era (GAN 2014, StyleGAN 2018, Stable Diffusion 2022, Midjourney v5 2023, FLUX.1 2024, Nano Banana Pro 2025), all generated in 2026.
   - `assets/examples/web/*.jpg`: control-pattern generations (A–E series, V1–V6 lexicon, `denoise_0–3` diffusion steps, reference photos).
   - `assets/v2/ar_0–3.jpg`: autoregressive patch-by-patch schematic (built with PIL from `denoise_3.jpg`) for slide 06.
   - Ecosystem diagram (slide 05), studio / chat workflow schematics (slides 09–10) are HTML/CSS inside the deck, labeled as schematics.
-  - Legacy, used only by v1: `assets/ui/*.jpg` (generated UI mock-ups), `assets/visual_ai_ecosystem_layers.png`, `assets/visual_prompt_anatomy_c4.png`.
+  - `assets/ui/chatgpt_logo.jpg` is still read by `deck/slides_v3.py`; the other v1-only UI mock-ups and diagrams were removed on 2026-10-15.
 - **Colab:** `notebooks/L04_Image_Generation_Prompts_and_Patterns.ipynb` ([open in Colab](https://colab.research.google.com/github/svirfneblyn2/genAIcource/blob/main/notebooks/L04_Image_Generation_Prompts_and_Patterns.ipynb)); copy in this folder. Model: `gemini-3.1-flash-image` (Nano Banana 2). Steps 1–6 = lesson patterns, Step 7 = prompt template, Step 8 = homework export (`prompts.md` + images zip).
 - **Instructor materials:** `L04_00_Lecture_Cheatsheet.md` / `_EN.md` (1-page speaker reference, v2 numbering), `L04_02_Instructor_Script_90MIN.md` / `_EN.md` (90-minute script, aligned to the v2 deck: 27 slides, v2 numbering and October 2026 facts).
 - **Homework:** `L04_05_Homework.md` / `_EN.md` — Track A (product photo shoot) or Track B (Glovo courier character, L01 benchmark), comparing a creative studio (Leonardo.ai) with a multimodal chat (ChatGPT / Gemini).
@@ -50,4 +50,4 @@ Practical lesson on AI image generation for engineers. Begins with an interactiv
 | 27 | Summary & L05 teaser | 4 rules; L05 = video generation (Kling, Veo, Runway) |
 
 ## Production Package (cleaned 2026-10-11, deck v2 added 2026-10-12)
-The folder contains the canonical deliverables: v2 HTML decks and PDFs (RU/EN), 90-minute scripts, speaker cheatsheets, live demo prompt copybooks, homework guides, research notes, the fix plan and the Colab notebook. v1 decks and their PDFs remain alongside for reference.
+The folder contains the canonical deliverables: v2 HTML decks and PDFs (RU/EN), 90-minute scripts, speaker cheatsheets, live demo prompt copybooks, homework guides, research notes, the fix plan and the Colab notebook.

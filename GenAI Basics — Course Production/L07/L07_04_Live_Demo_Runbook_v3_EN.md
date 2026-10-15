@@ -281,4 +281,4 @@ Click **Create**: “Your agent was created successfully! This agent is currentl
 ## 10. Demo wrap-up (30 seconds)
 “One rule in every window: **show what is needed, ask for structure and an honest list of what was added, check against the source**. Without a licence Copilot sees only what you gave it (which is what we did for Teams, Word and Excel); with a licence, it reaches your meetings and files itself; an agent is the same thing with the rules written down once.”
 
-*Files:* `demo_courier_copilot/` (`meeting_notes.md`, `release_checklist.txt`, `orders.csv`, `fallback_outputs/`), our captures `assets/v3/img/own_*` (including `own_ab_*`, the agent build). Agent Builder and Windows facts: `L07_13_Research_Windows_AgentBuilder_2026-10-13.md`. Verify before recording: `README_v3.md`.
+*Files:* `demo_courier_copilot/` (`meeting_notes.md`, `release_checklist.txt`, `orders.csv`, `fallback_outputs/`), our captures `assets/v3/img/own_*` (including `own_ab_*`, the agent build). Agent Builder and Windows facts: `L07_13_Research_Windows_AgentBuilder_2026-10-13.md`. Verify before recording: `README.md`.

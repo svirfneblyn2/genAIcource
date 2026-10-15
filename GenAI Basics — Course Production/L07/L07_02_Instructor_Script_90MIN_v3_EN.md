@@ -7,7 +7,7 @@
 **Deck controls:** `←/→` navigate, `N` speaker notes, `G` all slides, `F` fullscreen.
 **Source of truth:** `deck_v3/build.py` (slide text, minutes in `MINUTES`, speaker notes). This script is generated from it (`deck_v3/make_docs.py`); if anything differs, `build.py` wins.
 **Materials:** the demo kit `demo_courier_copilot/` (`meeting_notes.md`, `release_checklist.txt`, `orders.csv`, `fallback_outputs/`; `sample_repo/` is the backup example for slide 20 and the bridge to L16), runbook `L07_04_Live_Demo_Runbook_v3_EN.md`, homework `L07_05_Homework_v3_EN.md`, cheatsheet `L07_00_Lecture_Cheatsheet_v3_EN.md`, plan `L07_11_Lesson_Plan_v3_Ecosystem.md`.
-**Facts:** as of 13 Oct 2026, sources in `L07_12_Research_MS_Ecosystem_2026-10-13.md`. Prices on slide 7 only. The “verify before recording” list is in `README_v3.md`.
+**Facts:** as of 13 Oct 2026, sources in `L07_12_Research_MS_Ecosystem_2026-10-13.md`. Prices on slide 7 only. The “verify before recording” list is in `README.md`.
 
 > **Before you start (Teams):** two live demos: A (slide 8, Copilot Chat on the IT Park school account + a picture in the personal account) and B (slide 9, Vision over `release_checklist.txt`). Teams polls on slides 2 and 22. Share your **whole screen**: you need the Copilot app and Notepad. Our IT Park account is **Copilot Chat (Basic)**, with no Microsoft 365 Copilot licence, so Teams, Word and Excel (slides 11–13) are shown from the slides. Rule: “the button moved, the rule did not”, at most 90 seconds of searching, then the slide with the ready result.
 
