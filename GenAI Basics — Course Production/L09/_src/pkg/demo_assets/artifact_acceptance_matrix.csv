@@ -1,0 +1,6 @@
+test_id,acceptance_test,pass_fail,evidence,revision_needed
+A1,Every stale P1 ticket is visible above the fold,,,
+A2,Missing owners are called out explicitly,,,
+A3,No private notes or emails are exposed,,,
+A4,Artifact can be understood by a non-technical user in three minutes,,,
+A5,Core output remains readable without external dependencies,,,

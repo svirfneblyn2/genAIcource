@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lesson 06: Speech and Audio AI — Voice Synthesis, Whisper, Foley Sound Design, and AI Music</title>
+<style>
+
+:root {
+  --bg: #0b0f17;
+  --surface: #121a28;
+  --surface-card: #0f1624;
+  --line: rgba(148, 163, 184, 0.18);
+  --fg: #f1f5f9;
+  --muted: #9aa8bc;
+  --dim: #5f6e84;
+  --cyan: #38bdf8;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --violet: #c084fc;
+  --display: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --body: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --mono: 'JetBrains Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: #05080e; color: var(--fg); font-family: var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+.stage { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform: translate(-50%, -50%) scale(var(--s, 1)); transform-origin: center; background: var(--bg); overflow: hidden; border-radius: 6px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.slide { position: absolute; inset: 0; padding: 50px 72px 58px; display: none; flex-direction: column; }
+.slide.active { display: flex; }
+
+/* Cover Slide */
+.cover { padding: 0 !important; overflow: hidden; }
+.cover .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .45; }
+.cover .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,23,.97) 0%, rgba(11,15,23,.90) 50%, rgba(11,15,23,.45) 100%); }
+.cover .txt { position: relative; padding: 0 76px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 1120px; z-index: 2; }
+.cover .kicker { font-family: var(--mono); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); margin-bottom: 12px; }
+.cover h1 { font-family: var(--display); font-size: 84px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; color: var(--fg); margin: 0; }
+.cover h2 { font-size: 32px; font-weight: 600; line-height: 1.3; color: var(--cyan); margin-top: 18px; text-wrap: balance; }
+.cover p { font-size: 21px; line-height: 1.5; color: var(--muted); margin-top: 18px; max-width: 880px; }
+.cover .axiom-box { margin-top: 20px; padding: 16px 22px; background: rgba(56,189,248,.07); border: 1px solid rgba(56,189,248,.3); border-radius: 12px; max-width: 880px; font-size: 17px; line-height: 1.45; color: #cbd5e1; }
+.cover .axiom-box b { color: var(--cyan); }
+.cover .keys { position: absolute; left: 76px; bottom: 26px; font-family: var(--mono); font-size: 13px; color: var(--dim); z-index: 2; }
+
+/* Standard Typography */
+.kicker { font-family: var(--mono); font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--k, var(--cyan)); margin-bottom: 10px; }
+.title { font-family: var(--display); font-weight: 700; font-size: 42px; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; max-width: 1450px; }
+.lead { font-size: 20px; line-height: 1.38; color: var(--muted); margin-top: 8px; max-width: 1350px; text-wrap: balance; }
+.body { flex: 1 1 0; min-height: 0; margin-top: 20px; display: flex; flex-direction: column; justify-content: center; }
+.foot { position: absolute; left: 72px; right: 72px; bottom: 20px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+/* Grid Layouts */
+.row { display: grid; gap: 28px; flex: 1 1 0; min-height: 0; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.stack { display: flex; flex-direction: column; gap: 14px; min-height: 0; min-width: 0; }
+.center { justify-content: center; }
+
+/* Visual UI & Diagram Layouts */
+.row.img-split { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 32px; align-items: center; }
+.row.img-split-reverse { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 32px; align-items: center; }
+.pic-frame { border-radius: 12px; border: 1px solid var(--line); overflow: hidden; background: #000; box-shadow: 0 16px 40px rgba(0,0,0,0.5); display: flex; max-height: 530px; }
+.pic-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* Cards & Elements */
+.card-box { background: var(--surface-card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+.card-box.active { border-color: var(--cyan); }
+.card-label { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--k, var(--cyan)); }
+.pt { display: flex; flex-direction: column; gap: 6px; }
+.pt .h { font-size: 20px; font-weight: 700; line-height: 1.25; }
+.pt .d { font-size: 16px; line-height: 1.38; color: var(--muted); }
+.pt .d b { color: var(--fg); font-weight: 600; }
+.note { font-size: 17px; line-height: 1.45; color: var(--muted); border-left: 3px solid var(--k, var(--cyan)); padding: 4px 0 4px 16px; }
+.note b { color: var(--fg); }
+code, .code-inline { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; color: #e2e8f0; }
+
+.audio-tile { background: #0a0e17; border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+.audio-badge { position: absolute; top: 14px; right: 14px; font-family: var(--mono); font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(0,0,0,.7); font-weight: 700; }
+.waveform-box { height: 120px; border-radius: 8px; background: #131d2e; display: flex; align-items: center; justify-content: center; position: relative; border: 1px dashed rgba(255,255,255,.1); gap: 4px; padding: 0 20px; }
+.wave-bar { width: 5px; background: var(--cyan); border-radius: 3px; height: var(--h, 40%); opacity: 0.85; }
+.play-btn { width: 44px; height: 44px; border-radius: 50%; background: rgba(192,132,252,.2); border: 2px solid var(--violet); display: flex; align-items: center; justify-content: center; color: var(--violet); font-size: 18px; margin-right: 12px; }
+
+.stepper { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.step-item { background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.step-item.active { border-color: var(--cyan); background: rgba(56,189,248,.08); }
+.step-item.done { border-color: var(--green); }
+.step-num { font-family: var(--mono); font-size: 12px; color: var(--dim); font-weight: 700; }
+.step-item.active .step-num { color: var(--cyan); }
+.step-item.done .step-num { color: var(--green); }
+.step-title { font-size: 16px; font-weight: 700; }
+.step-sub { font-size: 13px; color: var(--muted); }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 16px; }
+table.t th { text-align: left; font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 700; padding: 0 12px 10px; border-bottom: 1px solid var(--line); }
+table.t td { padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: middle; line-height: 1.35; }
+table.t td:first-child { color: var(--fg); font-weight: 600; white-space: nowrap; }
+
+.drawer { position: fixed; right: 0; top: 0; bottom: 0; width: 440px; background: #0f172a; border-left: 1px solid #334155; transform: translateX(100%); transition: transform .25s ease; z-index: 1000; padding: 28px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.drawer.open { transform: translateX(0); }
+.drawer .hd { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
+.drawer .tx { font-size: 17px; line-height: 1.5; color: #cbd5e1; }
+
+.grid { position: fixed; inset: 0; background: rgba(5,8,14,.92); backdrop-filter: blur(10px); display: none; grid-template-columns: repeat(6, 1fr); gap: 14px; padding: 40px; z-index: 2000; overflow-y: auto; }
+.grid.open { display: grid; }
+.grid button { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; color: var(--fg); text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 8px; font-family: var(--body); }
+.grid button:hover { border-color: var(--cyan); }
+.grid button.cur { border-color: var(--cyan); background: rgba(56,189,248,.1); }
+.grid button span { font-family: var(--mono); font-size: 12px; color: var(--cyan); }
+
+.timer-box { font-family: var(--mono); font-size: 120px; font-weight: 800; color: var(--amber); text-align: center; line-height: 1; margin: 16px 0; }
+.timer-btn { align-self: center; background: var(--amber); color: #0b0f17; font-family: var(--mono); font-size: 18px; font-weight: 700; padding: 14px 32px; border: none; border-radius: 8px; cursor: pointer; }
+.timer-btn:hover { background: #f59e0b; }
+
+@media print {
+  @page { size: 1600px 900px; margin: 0; }
+  body { overflow: visible; background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .stage { position: static; transform: none; width: 1600px; height: auto; border-radius: 0; box-shadow: none; overflow: visible; }
+  .slide { position: relative; display: flex !important; width: 1600px; height: 900px; break-after: page; page-break-after: always; }
+  .drawer, .grid, button { display: none !important; }
+}
+
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+
+<!-- SLIDE 01: COVER -->
+<section class="slide cover active" data-n="1">
+  <img class="hero-bg" src="assets/l06_cover_hero.png" alt="Speech and Audio AI Hero">
+  <div class="shade"></div>
+  <div class="txt">
+    <div class="kicker">GenAI Basics • Lesson 06 • Module 2: Multimodality (Module Finale)</div>
+    <h1>Speech & Audio AI</h1>
+    <h2>Voice Synthesis, Whisper, Foley Sound Design & AI Music</h2>
+    <p>From 1D acoustic pressure waves and mel-spectrograms to discrete neural codecs (EnCodec/DAC), word-level timestamps in Whisper, ElevenLabs and Suno production consoles, Google's audio stack, and synchronized multi-stem audio with Sidechain Ducking.</p>
+    <div class="axiom-box">
+      <b>THE 10/90 AXIOM IN GENERATIVE AUDIO:</b> Generating raw acoustic waveforms with a neural network is only <b>10% of production success</b>. The remaining <b>90%</b> is Voice Activity Detection (VAD), LUFS loudness compliance, word-level subtitle alignment, anti-spoofing security, sub-150ms conversational latency, and multi-stem audio engineering.
+    </div>
+  </div>
+  <div class="keys">← → Navigate • N Speaker Notes • G Grid View • F Fullscreen</div>
+  <template class="notes">Welcome everyone. Today we conclude Module 2. Audio represents at least 50% of the cinematic and emotional impact of any video deliverable.</template>
+</section>
+
+<!-- SLIDE 02: HOOK QUIZ -->
+<section class="slide" data-n="2">
+  <div class="kicker" style="--k:var(--amber)">Interactive Hook • Blind Listening Test</div>
+  <h2 class="title">The Auditory Turing Test: Can Your Ears Detect 2026 AI Audio?</h2>
+  <p class="lead">Four professional audio recordings. Write in the chat: which clips are physical microphone recordings, and which were synthesized by neural networks?</p>
+  <div class="body">
+    <div class="row c4">
+      <div class="audio-tile">
+        <div class="audio-badge" style="color:var(--cyan)">CLIP [A]</div>
+        <div class="waveform-box">
+          <div class="play-btn">▶</div>
+          <div class="wave-bar" style="--h:30%"></div><div class="wave-bar" style="--h:70%"></div><div class="wave-bar" style="--h:95%"></div><div class="wave-bar" style="--h:40%"></div><div class="wave-bar" style="--h:85%"></div><div class="wave-bar" style="--h:60%"></div>
+        </div>
+        <div class="pt"><div class="h">Studio Voiceover</div><div class="d">Rich documentary voice, subtle breath intakes, natural dental sibilants.</div></div>
+      </div>
+      <div class="audio-tile">
+        <div class="audio-badge" style="color:var(--green)">CLIP [B]</div>
+        <div class="waveform-box">
+          <div class="play-btn">▶</div>
+          <div class="wave-bar" style="--h:20%"></div><div class="wave-bar" style="--h:50%"></div><div class="wave-bar" style="--h:80%"></div><div class="wave-bar" style="--h:90%"></div><div class="wave-bar" style="--h:40%"></div><div class="wave-bar" style="--h:30%"></div>
+        </div>
+        <div class="pt"><div class="h">Bicycle Foley SFX</div><div class="d">Tires splashing violently through rain puddle, chain rattle, wet pavement.</div></div>
+      </div>
+      <div class="audio-tile">
+        <div class="audio-badge" style="color:var(--amber)">CLIP [C]</div>
+        <div class="waveform-box">
+          <div class="play-btn">▶</div>
+          <div class="wave-bar" style="--h:60%"></div><div class="wave-bar" style="--h:80%"></div><div class="wave-bar" style="--h:75%"></div><div class="wave-bar" style="--h:90%"></div><div class="wave-bar" style="--h:65%"></div><div class="wave-bar" style="--h:85%"></div>
+        </div>
+        <div class="pt"><div class="h">Acoustic Jazz Trio</div><div class="d">Grand piano, brushed snare drum, acoustic walking upright bass.</div></div>
+      </div>
+      <div class="audio-tile">
+        <div class="audio-badge" style="color:var(--violet)">CLIP [D]</div>
+        <div class="waveform-box">
+          <div class="play-btn">▶</div>
+          <div class="wave-bar" style="--h:40%"></div><div class="wave-bar" style="--h:60%"></div><div class="wave-bar" style="--h:55%"></div><div class="wave-bar" style="--h:70%"></div><div class="wave-bar" style="--h:50%"></div><div class="wave-bar" style="--h:35%"></div>
+        </div>
+        <div class="pt"><div class="h">Support Phone Call</div><div class="d">130ms conversational turn-taking, conversational barge-in, natural filler words.</div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--amber)"><b>Chat Question:</b> Which of these 4 clips are 100% AI generation? Give students 45 seconds to submit answers.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>02 / 24</span></div>
+  <template class="notes">Gather responses. Many assume Clip C or A is human. Reveal on Slide 03: all 4 are 100% generative AI from 2026!</template>
+</section>
+
+<!-- SLIDE 03: EVOLUTION -->
+<section class="slide" data-n="3">
+  <div class="kicker">Evolution of Neural Audio • 2020–2026</div>
+  <h2 class="title">All 4 Clips Are 100% AI! The Journey Beyond Robotic Comb-Filtering</h2>
+  <p class="lead">In just six years, speech and audio AI advanced from metallic GPS navigators to human-grade conversational voice agents.</p>
+  <div class="body">
+    <div class="row c4">
+      <div class="card-box">
+        <div class="card-label">2020–2021 • ROBOTIC BUZZ</div>
+        <div class="pt"><div class="h">WaveNet & FastSpeech</div><div class="d"><b>Snapshot:</b> Harsh metallic comb-filtering, flat robotic cadences, 16kHz bandwidth limitation.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">2022–2023 • ASR & STUDIO PROSODY</div>
+        <div class="pt"><div class="h">OpenAI Whisper & ElevenLabs v1</div><div class="d"><b>Snapshot:</b> Whisper solves speech recognition at scale; ElevenLabs introduces emotional expressiveness and voice cloning.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">2024–2025 • NEURAL CODECS & MUSIC</div>
+        <div class="pt"><div class="h">Suno v3, Udio & EnCodec</div><div class="d"><b>Snapshot:</b> Full 3-minute stereo arrangements with vocals; text-to-Foley effects (SFX); discrete acoustic tokens.</div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">2026 • ON-DEVICE VOICE AGENTS</div>
+        <div class="pt"><div class="h">Cartesia Sonic, Whisper v3 & Suno v4</div><div class="d"><b>Snapshot:</b> Sub-150ms conversational turnaround, studio 48kHz fidelity, instantaneous speech translation preserving original timbre.</div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--cyan)"><b>The 2026 Frontier:</b> Timbre and naturalness are solved problems. The industry battle has shifted to <b>ultra-low latency (&lt;150ms)</b> and <b>deterministic multi-stem mixing</b>.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>03 / 24</span></div>
+  <template class="notes">Evolution timeline. Sound is fundamentally harder than text because one second of audio contains 44,100 floating-point numbers.</template>
+</section>
+
+<!-- SLIDE 04: ROADMAP -->
+<section class="slide" data-n="4">
+  <div class="kicker">Course Progression • Module 2 Finale</div>
+  <h2 class="title">Concluding Multimodality: Bringing Mute Clips from L05 to Life</h2>
+  <p class="lead">Module 2 connects text prompts to the physical sensory world. L04 captured frames, L05 synthesized motion. Today we complete the sensory experience.</p>
+  <div class="body">
+    <div class="stepper" style="margin-bottom:24px;">
+      <div class="step-item done"><div class="step-num">M1 • COMPLETE</div><div class="step-title">LLM Core</div><div class="step-sub">L01–L03: Prompts & APIs</div></div>
+      <div class="step-item done"><div class="step-num">L04 • COMPLETE</div><div class="step-title">Images</div><div class="step-sub">C2_rain, packshot assets</div></div>
+      <div class="step-item done"><div class="step-num">L05 • COMPLETE</div><div class="step-title">Video</div><div class="step-sub">I2V, cameras, cuts</div></div>
+      <div class="step-item active"><div class="step-num">L06 • HERE</div><div class="step-title">Audio & Speech</div><div class="step-sub">TTS, Whisper, Foley, Music</div></div>
+      <div class="step-item"><div class="step-num">M3 • NEXT</div><div class="step-title">Ecosystem</div><div class="step-sub">L07: Copilot, M365 & Dev</div></div>
+      <div class="step-item"><div class="step-num">M4–M6</div><div class="step-title">Agents & Code</div><div class="step-sub">L08–L16: MCP, Production</div></div>
+    </div>
+    <div class="row c2">
+      <div class="card-box" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">WHAT WE INHERITED FROM LESSON 05</div>
+        <div class="pt"><div class="h">Silent 5-Second Video Takes</div><div class="d">Our Glovo courier in the rain (<code>shot2_bike_rain.mp4</code>) and rotating coffee mug (<code>packshot_360.mp4</code>) look cinematic but remain completely mute.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">WHAT L06 DELIVERS FOR FULL PRODUCTION</div>
+        <div class="pt"><div class="h">3-Stem Synchronized Master Soundtrack</div><div class="d"><b>1. Voiceover Narration:</b> Clear, studio-articulated narrative lines.<br><b>2. Foley SFX:</b> Splashing water, bicycle hub rattle, ambient rain reflections.<br><b>3. Background Music:</b> Thematic score with automated sidechain ducking.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>04 / 24</span></div>
+  <template class="notes">Bridge from L05 to L06. Closing the multimodal sensory loop: text to image, image to video, video to soundtrack.</template>
+</section>
+
+<!-- SLIDE 05: SOUND PHYSICS & CODECS (WITH DIAGRAM) -->
+<section class="slide" data-n="5">
+  <div class="kicker">Sound Physics & Neural Networks • Waves to Tokens</div>
+  <h2 class="title">Sound Physics: Waveforms, Mel-Spectrograms, and Neural Audio Codecs</h2>
+  <p class="lead">How modern Transformer architectures model continuous 48kHz audio via Residual Vector Quantization (RVQ).</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/audio_codec_rvq_arch.png" alt="Neural Audio Codec RVQ Architecture">
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">1. CONTINUOUS 1D PCM WAVEFORM</div>
+          <div class="pt"><div class="h">44,100 Float Samples / Sec</div><div class="d">Sound is a continuous air-pressure wave. Feeding raw sample floats directly into an LLM context window would exhaust memory in two seconds.</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">2. SHORT-TIME FOURIER TRANSFORM (STFT)</div>
+          <div class="pt"><div class="h">2D Mel-Spectrograms</div><div class="d">Decomposes audio into overlapping 25ms windows mapped onto psychoacoustic frequency bins. This serves as Whisper's input representation.</div></div>
+        </div>
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">3. NEURAL CODECS (EnCodec / DAC)</div>
+          <div class="pt"><div class="h">RVQ: Down to ~50 Tokens / Sec</div><div class="d"><b>Residual Vector Quantization:</b> Compresses 48kHz studio audio through hierarchical codebooks into discrete tokens that standard Transformer decoders can predict autoregressively!</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>05 / 24</span></div>
+  <template class="notes">Walk through the RVQ diagram on the left. RVQ codebooks quantize the residual error of the previous stage, turning analog sound into a tokenized language.</template>
+</section>
+
+<!-- SLIDE 06: WHISPER ARCHITECTURE -->
+<section class="slide" data-n="6">
+  <div class="kicker">Speech-to-Text (STT) • Whisper Architecture</div>
+  <h2 class="title">OpenAI Whisper: Dual-Tower Transformer and Word-Level Subtitle Alignment</h2>
+  <p class="lead">The global standard for speech recognition: from 30-second audio windows to frame-accurate subtitle timing.</p>
+  <div class="body">
+    <div class="row c3">
+      <div class="card-box">
+        <div class="card-label">AUDIO ENCODER (CONV + ATTENTION)</div>
+        <div class="pt"><div class="h">30-Second Audio Chunks</div><div class="d">Consumes 80/128-channel mel-spectrograms. Two 1D convolutional layers downsample time 4x, followed by self-attention blocks extracting acoustic embeddings.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">TEXT DECODER (PREFIX TOKENS)</div>
+        <div class="pt"><div class="h">Task Control Prefix Prompts</div><div class="d">Autoregressive decoder steered by prefix tokens: <code>&lt;|startoftranscript|&gt;</code>, language <code>&lt;|en|&gt;</code>, task <code>&lt;|transcribe|&gt;</code> or <code>&lt;|translate|&gt;</code> (direct English translation).</div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--green)">
+        <div class="card-label" style="color:var(--green)">WORD-LEVEL TIMESTAMPS</div>
+        <div class="pt"><div class="h">Subtitle Automation</div><div class="d">Flag <code>word_timestamps=True</code> analyzes Cross-Attention weight matrices using Dynamic Time Warping (DTW) to compute exact millisecond boundaries for every word.</div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--green)"><b>Production Impact:</b> Word-level timestamps enable automated Python pipelines to generate burn-in video subtitles and kinetic text animations without manual keyframing.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>06 / 24</span></div>
+  <template class="notes">Explain the dual-tower architecture. For video editing, word-level timestamps are indispensable.</template>
+</section>
+
+<!-- SLIDE 07: WHISPER IN PROD & WEB PLAYGROUND (UI SCREENSHOT) -->
+<section class="slide" data-n="7">
+  <div class="kicker">Whisper in Production • Mitigating Failure Modes</div>
+  <h2 class="title">Whisper Playground Console: Eliminating Silence Loops via Silero VAD</h2>
+  <p class="lead">Why raw Whisper hallucinates during silence and how Silero VAD paired with CTranslate2 solves it.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/whisper_playground_ui.png" alt="OpenAI Whisper Playground UI">
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--red)">
+          <div class="card-label" style="color:var(--red)">FAILURE: INFINITE REPETITION LOOPS</div>
+          <div class="pt"><div class="h">Hallucinations During Pauses</div><div class="d">When speech stops, Whisper's autoregressive decoder latches onto background hiss and enters infinite hallucination loops: <i>"Thank you for watching! Like & subscribe..."</i>.</div></div>
+        </div>
+        <div class="card-box active" style="border-color:var(--green)">
+          <div class="card-label" style="color:var(--green)">MITIGATION: SILERO VAD (1MB NET)</div>
+          <div class="pt"><div class="h">Upstream Silence Stripping</div><div class="d"><b>Voice Activity Detection:</b> Scans audio in 2ms, strips silence, and sends verified voice chunks to Whisper. Completely prevents repetition loops!</div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">RUNTIME: FASTER-WHISPER (CTRANSLATE2)</div>
+          <div class="pt"><div class="h">4x Speedup via C++ & INT8</div><div class="d">INT8/FP16 quantization reduces VRAM by 50% while accelerating transcription throughput 4x over vanilla PyTorch.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>07 / 24</span></div>
+  <template class="notes">Examine the Whisper UI screenshot: spectrogram at top, model selection, word-level timestamp output. Pair with Silero VAD for production stability.</template>
+</section>
+
+<!-- SLIDE 08: TTS LANDSCAPE & ELEVENLABS STUDIO (UI SCREENSHOT) -->
+<section class="slide" data-n="8">
+  <div class="kicker">Text-to-Speech (TTS) • ElevenLabs Studio Console</div>
+  <h2 class="title">TTS Landscape 2026: Studio Warmth vs. Sub-150ms Conversational Latency</h2>
+  <p class="lead">The speech synthesis market is divided into high-fidelity studio models, ultra-low latency conversational agents, and local open-weight engines.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/elevenlabs_studio_ui.png" alt="ElevenLabs Speech Synthesis Studio UI">
+      </div>
+      <div class="stack center">
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">1. STUDIO CLOUD BENCHMARK (ElevenLabs v2)</div>
+          <div class="pt"><div class="h">48kHz Studio Warmth, 32+ Languages</div><div class="d">Benchmark for video narration. Studio UI: voice selector (Adam, Custom PVC Clone), Stability & Similarity sliders, text editor with SSML phonetic tags. Latency ~350ms.</div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--amber)">
+          <div class="card-label" style="color:var(--amber)">2. REAL-TIME AGENTS (Cartesia Sonic)</div>
+          <div class="pt"><div class="h">135ms Time-to-First-Audio</div><div class="d">State-Space Model architecture engineered specifically for telephony agents and live conversational systems.</div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--green)">
+          <div class="card-label" style="color:var(--green)">3. OPEN-WEIGHT LOCAL (Kokoro-82M)</div>
+          <div class="pt"><div class="h">82M Params, Apache 2.0, $0 API Cost</div><div class="d">Runs locally on CPU or in-browser via WebAssembly with zero data exfiltration.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>08 / 24</span></div>
+  <template class="notes">Break down the ElevenLabs Studio UI: note the Stability and Similarity Boost sliders, voice selector, and phonetic script editing.</template>
+</section>
+
+<!-- SLIDE 09: SPEECH DIRECTING & CONTROLS -->
+<section class="slide" data-n="9">
+  <div class="kicker">Directing Speech • Expressive TTS Prompting</div>
+  <h2 class="title">Directing Cadence: Punctuation as Musical Notation, SSML, and Stability</h2>
+  <p class="lead">Controlling narrator breath intake, cadence pauses, and emotional intensity without phonetic degradation.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box">
+        <div class="card-label">PUNCTUATION AS MUSICAL NOTATION</div>
+        <div class="pt"><div class="h">Breaths, Pauses & Emphasis</div><div class="d">
+          • <b>Ellipses (<code>...</code>):</b> Forces the acoustic model to take an audible breath and decelerate pacing.<br>
+          • <b>Em-Dashes (<code>—</code>):</b> Introduces a dramatic cadence pause before key narrative reveals.<br>
+          • <b>CAPITAL LETTERS:</b> Signals pitch accentuation and prosodic emphasis.<br>
+          • <b>SSML & IPA Tags:</b> <code>&lt;break time="0.5s"/&gt;</code> and exact phonetic tags: <code>&lt;phoneme alphabet="ipa" ph="ɡloʊvoʊ"&gt;Glovo&lt;/phoneme&gt;</code>.
+        </div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">ELEVENLABS SLIDER CALIBRATION</div>
+        <div class="pt"><div class="h">Stability: Dramatic Range vs. Monotone</div><div class="d">
+          • <b>Stability = 0.30–0.40:</b> High emotional range, dynamic whispers, and trailer-style theatrical acting.<br>
+          • <b>Stability = 0.80–0.90:</b> Uniform, authoritative delivery suited for legal disclaimers and IVR menus.<br>
+          • <b>Similarity Boost = 0.75:</b> High speaker fidelity without amplifying reference microphone noise floor.
+        </div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--amber)"><b>Production Rule:</b> Never set Stability to 1.0 (results in robotic monotone) or below 0.20 (causes random pitch cracking). Commercial video sweet spot: <b>0.35–0.45</b>.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>09 / 24</span></div>
+  <template class="notes">Writing for TTS is different from visual text. Punctuation acts as tempo and breath cues.</template>
+</section>
+
+<!-- SLIDE 10: VOICE CLONING -->
+<section class="slide" data-n="10">
+  <div class="kicker">Voice Cloning • Architectural Paradigms</div>
+  <h2 class="title">Voice Cloning: Instant (d-Vectors) vs. Professional (LoRA PVC)</h2>
+  <p class="lead">Two fundamentally different approaches: fast zero-shot speaker conditioning vs. deep weight fine-tuning.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box">
+        <div class="card-label">INSTANT VOICE CLONING (IVC / ZERO-SHOT)</div>
+        <div class="pt"><div class="h">60-Second Audio Sample • d-Vector</div><div class="d">
+          • <b>Mechanism:</b> Extracts a 512-dimensional speaker embedding vector and conditions synthesis on the fly.<br>
+          • <b>Speed & Cost:</b> Instant setup (5s), $0 fine-tuning overhead.<br>
+          • <b>Pitfall:</b> ~80% acoustic similarity. Room reverberation and laptop microphone hiss become permanently baked into every generation!
+        </div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">PROFESSIONAL VOICE CLONING (PVC / FINE-TUNING)</div>
+        <div class="pt"><div class="h">45 Minutes Studio Recording • LoRA Weights</div><div class="d">
+          • <b>Mechanism:</b> Fine-tunes model weights (LoRA) over 2–4 hours on enterprise GPUs using dry studio stems.<br>
+          • <b>Outcome:</b> 98% fidelity, ability to whisper, shout, and reproduce intimate vocal formants.<br>
+          • <b>Governance:</b> Requires active identity verification via Voice Captcha.
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>10 / 24</span></div>
+  <template class="notes">Compare Instant vs PVC. Instant is good for prototyping; production commercial media requires PVC from dry recordings.</template>
+</section>
+
+<!-- SLIDE 11: SECURITY & WATERMARKING -->
+<section class="slide" data-n="11">
+  <div class="kicker">Security & Ethics • Biometric Defense</div>
+  <h2 class="title">Audio Security: Threat Vectors, Dynamic Voice Captcha, and SynthID</h2>
+  <p class="lead">Protecting enterprise systems from voice fraud and unauthorized voice cloning.</p>
+  <div class="body">
+    <div class="row c3">
+      <div class="card-box" style="border-color:var(--red)">
+        <div class="card-label" style="color:var(--red)">2026 THREAT VECTORS</div>
+        <div class="pt"><div class="h">Fraud & Deepfakes</div><div class="d">
+          • <b>CEO Voice Fraud:</b> Vishing targeting corporate finance for urgent wire transfers.<br>
+          • <b>Biometric Spoofing:</b> Defeating banking voice authentication.<br>
+          • <b>Fabricated Evidence:</b> Synthetic compromising audio of public figures.
+        </div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--green)">
+        <div class="card-label" style="color:var(--green)">DYNAMIC VOICE CAPTCHA</div>
+        <div class="pt"><div class="h">Consent Verification</div><div class="d">
+          Platform generates a dynamic, randomized cryptographic phrase with the current timestamp that the voice owner must read live into camera.
+        </div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">IN-BAND WATERMARKING</div>
+        <div class="pt"><div class="h">Google SynthID & PerTh</div><div class="d">
+          Imperceptible phase modulations embedded into harmonics. Undetectable by human ears, yet mathematically verifiable even after MP3 compression and street noise re-recording!
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>11 / 24</span></div>
+  <template class="notes">Security and governance. Google SynthID Audio and ElevenLabs PerTh ensure legal provenance without compromising acoustic quality.</template>
+</section>
+
+<!-- SLIDE 12: BLAST RADIUS MATRIX -->
+<section class="slide" data-n="12">
+  <div class="kicker">Enterprise Governance • Blast Radius Matrix</div>
+  <h2 class="title">Blast Radius in Audio: Green, Yellow, and Red Risk Boundaries</h2>
+  <p class="lead">Clear boundaries for deploying neural audio across enterprise applications.</p>
+  <div class="body">
+    <div class="row c3">
+      <div class="card-box" style="border-color:var(--green)">
+        <div class="card-label" style="color:var(--green)">GREEN ZONE (AUTONOMOUS)</div>
+        <div class="pt"><div class="h">Foley, Drafts & Consented Dubbing</div><div class="d">
+          • Text-to-Foley environmental sound effects.<br>
+          • Scratch voiceovers for internal prototype reels.<br>
+          • Creator-authorized video dubbing (Creator Tools case).<br>
+          <b>Damage Risk: 0%. Fully Autonomous.</b>
+        </div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">YELLOW ZONE (HUMAN-IN-THE-LOOP)</div>
+        <div class="pt"><div class="h">Customer Bots & Brand Ads</div><div class="d">
+          • Frontline support voice bots (mandatory disclosure: <i>"Speaking with an AI assistant"</i>).<br>
+          • Broadcast brand commercials (mandatory audio QA sign-off by sound lead).<br>
+          <b>Reputational Risk: Moderate. Human-in-the-Loop.</b>
+        </div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--red)">
+        <div class="card-label" style="color:var(--red)">RED ZONE (STRICTLY FORBIDDEN)</div>
+        <div class="pt"><div class="h">Unconsented Cloning & Spoofing</div><div class="d">
+          • Cloning living persons without explicit legal consent.<br>
+          • Emergency services impersonation.<br>
+          • Bypassing financial voice biometrics.<br>
+          <b>Strictly Forbidden. Immediate legal liability.</b>
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>12 / 24</span></div>
+  <template class="notes">Reinforce the Blast Radius principle. Green zone can run on full autopilot; yellow requires oversight; red is blocked at the gateway.</template>
+</section>
+
+<!-- SLIDE 13: GOOGLE AUDIO & SPEECH ECOSYSTEM (INFOGRAPHIC DIAGRAM) -->
+<section class="slide" data-n="13">
+  <div class="kicker">Vendor Ecosystem • Google Architecture</div>
+  <h2 class="title">Google's Audio & Speech Ecosystem: Cloud Studio, DeepMind, and Gemini Native Audio</h2>
+  <p class="lead">From enterprise Cloud Speech APIs to DeepMind's foundation audio models and native multimodal audio in Gemini.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/google_audio_ecosystem.png" alt="Google Audio and Speech Ecosystem C4 Architecture">
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">1. GOOGLE CLOUD SPEECH STUDIO</div>
+          <div class="pt"><div class="h">Journey Voices & Chirp (USM 2B)</div><div class="d"><b>TTS:</b> Journey and Studio Voices — 48kHz studio-trained neural models with SSML tuning.<br><b>ASR:</b> Chirp model (Universal Speech Model 2B) provides speech recognition across 100+ languages in high-noise environments.</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">2. DEEPMIND AUDIO & LYRIA MUSIC</div>
+          <div class="pt"><div class="h">SoundStream, AudioLM & Lyria</div><div class="d">DeepMind pioneered <b>SoundStream</b> (RVQ neural codecs) and <b>Lyria</b> — their state-of-the-art music engine powering YouTube Dream Track and MusicFX.</div></div>
+        </div>
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">3. GEMINI NATIVE MULTIMODAL AUDIO</div>
+          <div class="pt"><div class="h">Direct Audio-In ➔ Audio-Out</div><div class="d"><b>Cascade-free intelligence:</b> Gemini perceives raw audio tokens directly without intermediate text conversion — hearing sarcasm, accents, laughter, and street noise! Includes <b>SynthID</b> watermarking.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>13 / 24</span></div>
+  <template class="notes">Dedicated deep dive into Google's audio offerings: Cloud Speech Studio, DeepMind audio engines, and Gemini's native audio-to-audio understanding.</template>
+</section>
+
+<!-- SLIDE 14: CREATOR TOOLS DUBBING PIPELINE -->
+<section class="slide" data-n="14">
+  <div class="kicker">Hands-On AI R&D Case Study • Creator Tools</div>
+  <h2 class="title">Speech-to-Speech: Multilingual Dubbing Across 100+ Languages with Timbre Lock</h2>
+  <p class="lead">The engineering pipeline behind automated video localization: LLM syllable budgeting and phase vocoders.</p>
+  <div class="body">
+    <div class="row c4">
+      <div class="card-box">
+        <div class="card-label">STAGE 1: TIMING EXTRACTION</div>
+        <div class="pt"><div class="h">Whisper + Silero VAD</div><div class="d">Extracts frame-accurate word boundaries and eliminates pauses to prevent timeline drift.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">STAGE 2: SYLLABLE BUDGET</div>
+        <div class="pt"><div class="h">LLM Syllable Budgeting</div><div class="d">Enforces strict syllable density limits during translation to prevent timeline expansion in target languages.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">STAGE 3: TIMBRE PRESERVATION</div>
+        <div class="pt"><div class="h">Voice Conversion</div><div class="d">Synthesizes target dialogue while preserving original speaker formants, pitch contours, and breath dynamics.</div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">STAGE 4: SCENE LOCK</div>
+        <div class="pt"><div class="h">Elastic Time-Stretch</div><div class="d">Phase Vocoder performs ±15% tempo adjustments without pitch distortion to match on-screen video cut points.</div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--cyan)"><b>The Outcome:</b> Viewers in Germany, Brazil, or Japan hear the creator speaking their native language with frame-accurate video synchronization!</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>14 / 24</span></div>
+  <template class="notes">Real-world R&D case study from Creator Tools. Syllable density differs dramatically between languages (German is ~25% longer than English).</template>
+</section>
+
+<!-- SLIDE 15: BREAK -->
+<section class="slide" data-n="15">
+  <div class="kicker" style="--k:var(--amber)">Midpoint Intermission • 5 Minutes</div>
+  <h2 class="title">Auditory Sensory Reset</h2>
+  <p class="lead">Processing acoustic architectures is cognitively demanding. Mute your audio, drink water, and give your ears complete silence.</p>
+  <div class="body" style="align-items:center;justify-content:center;">
+    <div class="timer-box" id="timer-disp">05:00</div>
+    <button class="timer-btn" id="timer-btn" onclick="toggleTimer()">START 5 MIN</button>
+    <div class="card-box" style="margin-top:24px;max-width:800px;text-align:center;">
+      <div class="card-label" style="color:var(--amber)">COMING UP IN PART TWO:</div>
+      <div style="font-size:18px;line-height:1.45;color:var(--fg);margin-top:6px;">
+        Foley SFX generation (ElevenLabs SFX) • Giant Stories storyboard sound matrix • AI music in Suno v4 • 3-stem mixing with Sidechain Ducking in Python • Sub-300ms real-time voice agents.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>15 / 24</span></div>
+  <template class="notes">Start the 5-minute timer. Strict rest only — no chat tasks. Both instructor and audience recharge their ears before Part 2.</template>
+</section>
+
+<!-- SLIDE 16: FOLEY SFX GENERATION (UI SCREENSHOT) -->
+<section class="slide" data-n="16">
+  <div class="kicker">Sound Effects (SFX AI) • ElevenLabs SFX Console</div>
+  <h2 class="title">Physical Sound Design: Generating Foley from Text via the 3-Slot Formula</h2>
+  <p class="lead">Eliminate hours of stock library hunting. Generative SFX models synthesize physical acoustic textures directly from material descriptions.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/elevenlabs_sfx_ui.png" alt="ElevenLabs Sound Effects Studio UI">
+      </div>
+      <div class="stack center">
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">THE 3-SLOT FOLEY PROMPT FORMULA</div>
+          <div class="pt"><div class="h">[Source Material] + [Kinetic Action] + [Acoustic Space]</div><div class="d">
+            1. <b>Material:</b> <code>rubber tires</code>, <code>ceramic mug</code>, <code>wet cobblestone</code>.<br>
+            2. <b>Kinetic Motion:</b> <code>splashing violently</code>, <code>scraping stone</code>.<br>
+            3. <b>Space Acoustics:</b> <code>outdoor alleyway reflections</code>, <code>dry soundstage</code>.
+          </div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">BENCHMARK PROMPT FOR GLOVO COURIER</div>
+          <div class="pt"><div class="h">Road Bike Splash Through Rain Puddle</div><div class="d"><code>Bicycle rubber tires splashing violently through a deep rainwater puddle on wet cobblestone, fine water spray, quiet evening city background hum, cinema foley</code></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>16 / 24</span></div>
+  <template class="notes">Walk through the ElevenLabs SFX UI screenshot: text prompt input, duration set to 5.0 seconds, prompt influence 75%, download 48kHz stereo stem.</template>
+</section>
+
+<!-- SLIDE 17: STORYBOARD SOUND MATRIX (GIANT STORIES CASE) -->
+<section class="slide" data-n="17">
+  <div class="kicker">Storyboard Sound Design • Production Matrix</div>
+  <h2 class="title">Production Sound Matrix: Creator Tools Giant Stories Case Study</h2>
+  <p class="lead">How real-world studios map Foley sound layers and musical hooks to each 5-second video cut before generation.</p>
+  <div class="body">
+    <table class="t">
+      <thead>
+        <tr>
+          <th>Shot #</th>
+          <th>Visual Scene Focus</th>
+          <th>Voiceover Line</th>
+          <th>Foley SFX Layer</th>
+          <th>Music Underscore Hook</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Shot 1</td>
+          <td>Wax-sealed wooden crate from 1929</td>
+          <td>"Untouched for almost a century..."</td>
+          <td>Hollow stone vault resonance, dripping water, rat skitter</td>
+          <td>Low bowed contrabass drone, 60 BPM, minor</td>
+        </tr>
+        <tr>
+          <td>Shot 2</td>
+          <td>Oil derrick drilling in Texas heat</td>
+          <td>"Digging blind, risking everything..."</td>
+          <td>Cicadas buzzing, heavy shovel scraping dry rock</td>
+          <td>Pulsing sub-bass beat every 2s, sparse percussion</td>
+        </tr>
+        <tr>
+          <td>Shot 3</td>
+          <td>Rotary newspaper printing press</td>
+          <td>"Until the morning headlines broke..."</td>
+          <td>Mechanical gear rhythm, ink spray hissing, paper flutter</td>
+          <td>Rising tremolo strings, accelerating tempo</td>
+        </tr>
+        <tr>
+          <td>Shot 4</td>
+          <td>Glovo courier speeding in rain</td>
+          <td>"Hot dinner delivered, whatever the storm."</td>
+          <td>Violent water spray, rain slicker rustle, bicycle hub click</td>
+          <td>Warm lo-fi chillhop beat, 74 BPM, ducked under speech</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:16px;border-color:var(--cyan)"><b>Cinematic Engineering Axiom:</b> Sound design is planned <b>before final editing</b>. Each shot possesses an acoustic specification across dialogue, Foley, and musical accents.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>17 / 24</span></div>
+  <template class="notes">Review the Giant Stories matrix. Sound design is not an afterthought; it is engineered scene by scene.</template>
+</section>
+
+<!-- SLIDE 18: SUNO V4 & UDIO STUDIO (UI SCREENSHOT) -->
+<section class="slide" data-n="18">
+  <div class="kicker">AI Music Generation • Suno v4 Studio Console</div>
+  <h2 class="title">Soundtrack Engineering: Instrumental Toggle, Arrangement Tags, and Demucs</h2>
+  <p class="lead">Synthesizing controlled background music without frequency collisions against dialogue.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/suno_v4_studio_ui.png" alt="Suno v4 Music Creation Studio UI">
+      </div>
+      <div class="stack center">
+        <div class="card-box active" style="border-color:var(--green)">
+          <div class="card-label" style="color:var(--green)">MANDATORY RULE: INSTRUMENTAL TOGGLE ON</div>
+          <div class="pt"><div class="h">No Vocals Under Narration!</div><div class="d">AI vocal lines clash directly with voiceover speech formants, completely destroying dialogue intelligibility. Always force instrumental mode!</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">STRUCTURAL ARRANGEMENT TAGS IN LYRICS</div>
+          <div class="pt"><div class="h">Steering Compositional Dynamics</div><div class="d">
+            Even in instrumental mode, the lyrics window directs arrangement: <code>[Intro: Chillhop acoustic]</code> ➔ <code>[Verse: 74 BPM]</code> ➔ <code>[Build-up: Cello]</code> ➔ <code>[Outro: Fade out]</code>.
+          </div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">STEM SEPARATION (DEMUCS v4)</div>
+          <div class="pt"><div class="h">Isolate Stems in One Click</div><div class="d">Splits generated audio into 4 stems: drums, bass, instruments, and vocals for independent fader control and ducking.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>18 / 24</span></div>
+  <template class="notes">Walk through the Suno v4 UI screenshot: Instrumental switch enabled, lyrics editor with tags, multi-track waveform player, and Demucs stem faders.</template>
+</section>
+
+<!-- SLIDE 19: MULTI-STEM MIXING & DUCKING (AUDIO DIAGRAM) -->
+<section class="slide" data-n="19">
+  <div class="kicker">Audio Engineering Standards • LUFS & Ducking</div>
+  <h2 class="title">3-Stem Mixing & Sidechain Ducking: Automated Music Attenuation</h2>
+  <p class="lead">Blending voiceover narration, Foley sound effects, and background music into a broadcast master without distortion.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/sidechain_ducking_diagram.png" alt="Sidechain Ducking Audio Engineering Diagram">
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">STEM 1 • VOICEOVER NARRATION</div>
+          <div class="pt"><div class="h">-14 LUFS (True Peak &lt; -1.0 dBFS)</div><div class="d">Center mono placement. High-pass filter below 80Hz to eliminate microphone rumble.</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">STEM 2 • FOLEY SFX</div>
+          <div class="pt"><div class="h">-18 LUFS (Stereo Field Placement)</div><div class="d">Synchronized to video cuts: water splash transient matches bicycle wheel hitting the puddle.</div></div>
+        </div>
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">STEM 3 • MUSIC WITH SIDECHAIN DUCKING</div>
+          <div class="pt"><div class="h">Dynamic -5 dB Gain Reduction</div><div class="d">Music sits at -18 LUFS during pauses. When narration speaks, automation ducks music down to <b>-23 LUFS</b>. Implemented in Python via <code>pydub</code>.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>19 / 24</span></div>
+  <template class="notes">Explain Sidechain Ducking using the diagram on the left: the voiceover envelope dynamically modulates the gain of the background music.</template>
+</section>
+
+<!-- SLIDE 20: REAL-TIME VOICE AGENTS (WATERFALL DIAGRAM) -->
+<section class="slide" data-n="20">
+  <div class="kicker">Interactive Systems • Voice Agents</div>
+  <h2 class="title">Real-Time Voice Agents: Sub-300ms Latency Budget and Barge-In Handling</h2>
+  <p class="lead">Why standard batch APIs fail for conversational agents and how streaming WebSockets achieve sub-300ms turnaround.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/voice_agent_latency_arch.png" alt="Real-Time Voice Agent Latency Waterfall">
+      </div>
+      <div class="stack center">
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">LATENCY BUDGET WATERFALL: 285 MS</div>
+          <div class="pt"><div class="h">Meeting the Human Perceptual Threshold</div><div class="d">
+            1. WebRTC Audio Ingest: <b>20ms</b><br>
+            2. Silero VAD End-of-Speech: <b>15ms</b><br>
+            3. Streaming Whisper Turbo STT: <b>80ms</b><br>
+            4. Groq LLaMA 3.3 First Token: <b>50ms</b><br>
+            5. Cartesia Sonic Streaming TTS: <b>90ms</b><br>
+            6. Client Playback Buffer: <b>30ms</b>
+          </div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--amber)">
+          <div class="card-label" style="color:var(--amber)">BARGE-IN INTERRUPT CIRCUIT</div>
+          <div class="pt"><div class="h">Instant Audio Cancellation</div><div class="d">When the user speaks over the bot, client VAD fires an interrupt signal over WebSocket. The server cancels inference, and speaker playback terminates within 20ms.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>20 / 24</span></div>
+  <template class="notes">Walk through the latency waterfall diagram on the left. Delays over 300ms feel unnatural to human listeners. Barge-in is essential for conversational fluidity.</template>
+</section>
+
+<!-- SLIDE 21: PYTHON CODE WALKTHROUGH -->
+<section class="slide" data-n="21">
+  <div class="kicker">Code Implementation • Python API Automation</div>
+  <h2 class="title">Code Automation: Whisper Word Timestamps and Multi-Stem Overlay</h2>
+  <p class="lead">Production script from our Colab notebook: from transcription parsing to synchronized video export.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box">
+        <div class="card-label">BLOCK 1: WHISPER WORD-LEVEL TIMESTAMPS</div>
+        <pre style="font-family:var(--mono);font-size:14px;line-height:1.45;color:#e2e8f0;background:#060a12;padding:14px;border-radius:8px;overflow-x:auto;">
+import whisper
+
+model = whisper.load_model("large-v3-turbo")
+result = model.transcribe("voice.wav", word_timestamps=True)
+
+for segment in result["segments"]:
+    for word in segment["words"]:
+        print(f"[{word['start']:.2f}s -> {word['end']:.2f}s] {word['word']}")
+        </pre>
+      </div>
+      <div class="card-box">
+        <div class="card-label">BLOCK 2: MULTI-STEM OVERLAY IN PYDUB</div>
+        <pre style="font-family:var(--mono);font-size:14px;line-height:1.45;color:#e2e8f0;background:#060a12;padding:14px;border-radius:8px;overflow-x:auto;">
+from pydub import AudioSegment
+
+voice = AudioSegment.from_file("voice.wav") - 2  # -14 LUFS
+sfx   = AudioSegment.from_file("sfx.wav") - 6    # -18 LUFS
+music = AudioSegment.from_file("music.wav") - 12 # -22 LUFS
+
+# Render multi-stem master
+mix = music.overlay(sfx).overlay(voice)
+mix.export("final_soundtrack.wav", format="wav")
+        </pre>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--cyan)"><b>Colab Notebook:</b> <code>notebooks/L06_Speech_and_Audio_AI_Pipeline.ipynb</code> runs for $0 on free GPUs, includes synthetic stem generators, and builds final videos.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>21 / 24</span></div>
+  <template class="notes">Walk through the Python implementation in Colab. Whisper word boundaries feed subtitle generators; pydub renders the mix.</template>
+</section>
+
+<!-- SLIDE 22: AUDIO QA CHECKLIST -->
+<section class="slide" data-n="22">
+  <div class="kicker">Quality Assurance • Audio QA</div>
+  <h2 class="title">Audio Quality Assurance Checklist: 4 Critical Acoustic Defects</h2>
+  <p class="lead">An engineering audit checklist before releasing generative audio assets to broadcast.</p>
+  <div class="body">
+    <div class="row c4">
+      <div class="card-box" style="border-color:var(--red)">
+        <div class="card-label" style="color:var(--red)">1. DIGITAL CLIPPING</div>
+        <div class="pt"><div class="h">Peaks &gt; -1.0 dBFS</div><div class="d"><b>Symptom:</b> Harsh crackling on mobile speakers. <b>Remedy:</b> Brickwall limiter on master bus set to -1.0 dBFS.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">2. PHASE COMB-FILTERING</div>
+        <div class="pt"><div class="h">Metallic 3kHz Resonance</div><div class="d"><b>Symptom:</b> Hollow telephone-like timbre. <b>Remedy:</b> Upgrade vocoder to 48kHz and notch offending frequencies.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">3. PROSODY DRIFT</div>
+        <div class="pt"><div class="h">Erratic Pitch Shifts</div><div class="d"><b>Symptom:</b> Narrator abruptly jumps from calm to shouting. <b>Remedy:</b> Increase Stability slider to 0.45–0.50.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">4. LIP-SYNC LATENCY</div>
+        <div class="pt"><div class="h">Visual Lag &gt; 40ms</div><div class="d"><b>Symptom:</b> Mouth closes before acoustic consonants land. <b>Remedy:</b> Nudge track against Whisper timestamps.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>22 / 24</span></div>
+  <template class="notes">Engineering QA audit. The audio_qa.md checklist is a required deliverable for homework submissions.</template>
+</section>
+
+<!-- SLIDE 23: HOMEWORK -->
+<section class="slide" data-n="23">
+  <div class="kicker" style="--k:var(--cyan)">Practical Exercise • Homework Assignment #6</div>
+  <h2 class="title">Homework Assignment #6: Producing a 3-Stem Soundtrack for Lesson 05 Video</h2>
+  <p class="lead">Take your 5-second video render from Lesson 05 and engineer a professional 3-layer audio package.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box active" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">SUBMISSION REQUIREMENTS</div>
+        <div class="pt"><div class="h">3 Isolated Stems + Muxed Video</div><div class="d">
+          1. <b>Stem 1 (Voiceover):</b> One concise narrative line in ElevenLabs / Cartesia / Kokoro.<br>
+          2. <b>Stem 2 (Foley SFX):</b> Physical sound effect via 3-slot formula in ElevenLabs SFX.<br>
+          3. <b>Stem 3 (Music):</b> Instrumental score in Suno v4 / Udio ducked under voice.<br>
+          4. Render final video container: <code>final_video_with_audio.mp4</code>.
+        </div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">GITHUB REPOSITORY FOLDER STRUCTURE</div>
+        <pre style="font-family:var(--mono);font-size:14px;line-height:1.45;color:#e2e8f0;background:#060a12;padding:14px;border-radius:8px;">
+genai-homeworks/L06/
+├── 01_voiceover.mp3          # Voiceover
+├── 02_foley_sfx.mp3          # Foley SFX
+├── 03_music_bg.mp3           # Music
+├── final_video_with_audio.mp4# Final Render
+├── audio_spec.md             # Specification
+└── audio_qa.md               # QA Audit
+        </pre>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--cyan)"><b>Submission:</b> Add <code>ihar_rubanovich@epam.com</code> as a collaborator on your GitHub repository. Feedback within 48 hours.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>23 / 24</span></div>
+  <template class="notes">Explain homework requirements. Emphasize submitting the 3 isolated stems alongside the final muxed video.</template>
+</section>
+
+<!-- SLIDE 24: SUMMARY & MODULE 3 TEASER -->
+<section class="slide" data-n="24">
+  <div class="kicker" style="--k:var(--green)">Module 2 Conclusion • Transition to Software Engineering</div>
+  <h2 class="title">Module 2 Summary: 4 Engineering Laws of Audio and Lesson 07 Preview</h2>
+  <p class="lead">Module 2 (Multimodality) is complete! You can now produce studio-grade images, video, and broadcast audio.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box active" style="border-color:var(--green)">
+        <div class="card-label" style="color:var(--green)">4 ENGINEERING LAWS OF AUDIO IN GENAI</div>
+        <div class="pt"><div class="h">Core Principles to Remember</div><div class="d">
+          1. <b>VAD First:</b> Never pass raw audio into Whisper without upstream Silero VAD silence pruning.<br>
+          2. <b>Punctuation Governs Breath:</b> Shape TTS rhythm and cadence using ellipses and em-dashes.<br>
+          3. <b>Instrumental Only for Video:</b> Never generate AI vocals in background music beneath dialogue.<br>
+          4. <b>Sidechain Ducking:</b> Always attenuate background music by -5 dB whenever speech occurs.
+        </div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">PREVIEW: MODULE 3 • LESSON 07 COPILOT ECOSYSTEM</div>
+        <div class="pt"><div class="h">AI in Software Engineering</div><div class="d">
+          • <b>Microsoft 365 Copilot & GitHub Copilot:</b> Semantic Index and Graph grounding.<br>
+          • <b>Agent Mode in VS Code:</b> Autonomous bug fixes and terminal agent workflows.<br>
+          • <b>Real-World Win:</b> EPAM CodeMie @ Dawn Foods (35% SDLC acceleration).
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 06 • Speech & Audio AI</span><span>24 / 24</span></div>
+  <template class="notes">Congratulate the audience on graduating Module 2! Open mic for questions.</template>
+</section>
+
+</main>
+
+<div class="drawer" id="drawer">
+  <div class="hd" id="drawer-hd">SLIDE 01 / 24</div>
+  <div class="tx" id="drawer-tx"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+
+let cur = 1;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+const stage = document.getElementById('stage');
+const drawer = document.getElementById('drawer');
+const grid = document.getElementById('grid');
+
+function fit() {
+  const sx = window.innerWidth / 1600;
+  const sy = window.innerHeight / 900;
+  const s = Math.min(sx, sy);
+  stage.style.setProperty('--s', s);
+}
+window.addEventListener('resize', fit);
+fit();
+
+function show(n) {
+  if (n < 1) n = 1;
+  if (n > total) n = total;
+  slides.forEach(s => s.classList.remove('active'));
+  slides[n - 1].classList.add('active');
+  cur = n;
+  updateDrawer();
+  updateGrid();
+}
+
+function updateDrawer() {
+  const s = slides[cur - 1];
+  const t = s.querySelector('template.notes');
+  document.getElementById('drawer-tx').innerHTML = t ? t.innerHTML : '<em>Нет заметок к этому слайду.</em>';
+  document.getElementById('drawer-hd').innerText = `СЛАЙД ${String(cur).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+}
+
+function updateGrid() {
+  document.querySelectorAll('.grid button').forEach((b, idx) => {
+    b.classList.toggle('cur', idx + 1 === cur);
+  });
+}
+
+function buildGrid() {
+  grid.innerHTML = '';
+  slides.forEach((s, idx) => {
+    const btn = document.createElement('button');
+    const titleEl = s.querySelector('.title, h1');
+    const t = titleEl ? titleEl.innerText : `Слайд ${idx + 1}`;
+    btn.innerHTML = `<span>СЛАЙД ${String(idx + 1).padStart(2, '0')}</span>${t}`;
+    btn.onclick = () => { show(idx + 1); grid.classList.remove('open'); };
+    grid.appendChild(btn);
+  });
+}
+buildGrid();
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { show(cur + 1); }
+  else if (e.key === 'ArrowLeft') { show(cur - 1); }
+  else if (e.key === 'Home') { show(1); }
+  else if (e.key === 'End') { show(total); }
+  else if (e.key.toLowerCase() === 'n') { drawer.classList.toggle('open'); }
+  else if (e.key.toLowerCase() === 'g') { grid.classList.toggle('open'); }
+  else if (e.key.toLowerCase() === 'f') {
+    if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+    else { document.exitFullscreen(); }
+  }
+});
+
+let timerInt = null;
+let timeLeft = 300;
+function toggleTimer() {
+  const btn = document.getElementById('timer-btn');
+  const disp = document.getElementById('timer-disp');
+  if (timerInt) {
+    clearInterval(timerInt);
+    timerInt = null;
+    btn.innerText = 'СТАРТ 5 МИН';
+  } else {
+    btn.innerText = 'ПАУЗА';
+    timerInt = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timerInt);
+        timerInt = null;
+        disp.innerText = '00:00';
+        btn.innerText = 'ВРЕМЯ ВЫШЛО';
+        return;
+      }
+      const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const s = String(timeLeft % 60).padStart(2, '0');
+      disp.innerText = `${m}:${s}`;
+    }, 1000);
+  }
+}
+
+</script>
+</body>
+</html>

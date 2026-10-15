@@ -1,0 +1,33 @@
+USER: Build a support triage dashboard from support_tickets.csv
+CLAUDE REQUESTS TOOL:
+{
+  "type": "tool_use",
+  "name": "read_csv_summary",
+  "input": {
+    "path": "support_tickets.csv",
+    "group_by": [
+      "severity",
+      "owner"
+    ]
+  }
+}
+APPLICATION SENDS TOOL RESULT:
+{
+  "p1_stale": [
+    "T-1001",
+    "T-1006"
+  ],
+  "missing_owner": [
+    "T-1005",
+    "T-1010"
+  ],
+  "owner_load": {
+    "Marta": 3,
+    "Jon": 3,
+    "Ravi": 2,
+    "Anya": 2,
+    "missing": 2
+  }
+}
+CLAUDE FINAL RESPONSE:
+Create dashboard with stale P1 section above the fold and owner-missing warning.

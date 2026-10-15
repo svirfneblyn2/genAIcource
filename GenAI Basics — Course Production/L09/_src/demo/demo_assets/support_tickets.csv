@@ -1,0 +1,13 @@
+ticket_id,customer,product_area,severity,age_days,status,owner,summary
+T-1001,Acme Bank,Billing,P1,4,Open,Marta,"Production invoice mismatch, customer blocked"
+T-1002,Northwind Labs,API,P2,3,Open,Jon,Webhook failures after credential rotation
+T-1003,Blue River,Mobile,P3,1,Waiting Customer,Anya,Screenshot missing
+T-1004,Helio Foods,Reporting,P1,1,Open,Ravi,Executive dashboard numbers disagree
+T-1005,Cedar School,Login,P2,6,Open,,Owner missing after queue migration
+T-1006,Orbit Retail,Checkout,P1,5,Open,Marta,Checkout timeout for EU customers
+T-1007,Evergreen NGO,Exports,P2,2,Closed,Jon,CSV export encoding fixed
+T-1008,Red Kite,Search,P3,8,Open,Anya,Low relevance in archived project search
+T-1009,Polar Studio,Media,P2,5,Open,Ravi,Video upload intermittently fails
+T-1010,Quantum Care,Security,P1,2,Open,,"Possible permission regression, owner not assigned"
+T-1011,Atlas Games,Payments,P2,1,Waiting Engineering,Marta,"Sandbox succeeds, production fails"
+T-1012,Saffron Travel,Notifications,P3,4,Open,Jon,Email template typo

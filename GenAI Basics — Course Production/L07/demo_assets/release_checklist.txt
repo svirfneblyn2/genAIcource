@@ -1,0 +1,8 @@
+Northstar release checklist
+===========================
+1. Unit tests green.
+2. Product acceptance confirms VIP threshold = 75 USD for US orders only.
+3. Feature flag enabled in staging only.
+4. Support macro updated before production rollout.
+5. Compare shipping-margin metric for 24 hours after release.
+6. Roll back the flag if international shipping changes unexpectedly.

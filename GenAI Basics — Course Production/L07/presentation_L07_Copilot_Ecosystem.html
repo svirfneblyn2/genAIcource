@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 07: Экосистема Copilot — GitHub, Microsoft 365 и локальный контекст | GenAI Basics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0f17;
+  --surface: #121a28;
+  --surface-card: #0f1624;
+  --line: rgba(148, 163, 184, 0.18);
+  --fg: #f1f5f9;
+  --muted: #9aa8bc;
+  --dim: #5f6e84;
+  --cyan: #38bdf8;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --violet: #c084fc;
+  --blue: #60a5fa;
+  --display: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --body: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --mono: 'JetBrains Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: #05080e; color: var(--fg); font-family: var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+.stage { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform: translate(-50%, -50%) scale(var(--s, 1)); transform-origin: center; background: var(--bg); overflow: hidden; border-radius: 6px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.slide { position: absolute; inset: 0; padding: 48px 72px 56px; display: none; flex-direction: column; }
+.slide.active { display: flex; }
+
+/* Typography */
+.kicker { font-family: var(--mono); font-size: 13.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--k, var(--cyan)); margin-bottom: 8px; }
+.title { font-family: var(--display); font-weight: 700; font-size: 44px; line-height: 1.14; letter-spacing: -0.02em; text-wrap: balance; max-width: 1450px; }
+.lead { font-size: 20px; line-height: 1.38; color: var(--muted); margin-top: 8px; max-width: 1380px; text-wrap: balance; }
+.body { flex: 1 1 0; min-height: 0; margin-top: 20px; display: flex; flex-direction: column; justify-content: center; }
+.foot { position: absolute; left: 72px; right: 72px; bottom: 18px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+/* Layout grids */
+.row { display: grid; gap: 28px; flex: 1 1 0; min-height: 0; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.stack { display: flex; flex-direction: column; gap: 16px; min-height: 0; min-width: 0; }
+.center { justify-content: center; }
+
+/* Cards & containers */
+.card-box { background: var(--surface-card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.card-box.active { border-color: var(--cyan); }
+.card-label { font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--k, var(--cyan)); }
+.pt { display: flex; flex-direction: column; gap: 5px; }
+.pt .h { font-size: 22px; font-weight: 700; line-height: 1.25; }
+.pt .d { font-size: 17.5px; line-height: 1.38; color: var(--muted); }
+.pt .d b { color: var(--fg); font-weight: 600; }
+.mark { color: var(--k, var(--cyan)); }
+.note { font-size: 18px; line-height: 1.45; color: var(--muted); border-left: 3px solid var(--k, var(--cyan)); padding: 4px 0 4px 16px; }
+.note b { color: var(--fg); }
+code, .code-inline { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; color: #e2e8f0; }
+
+/* Prompt blocks */
+.prompt { font-family: var(--mono); font-size: 16px; line-height: 1.45; background: var(--surface); border-radius: 10px; padding: 16px 20px; color: #dbe4f0; white-space: pre-wrap; border: 1px solid var(--line); }
+.prompt .s { color: var(--cyan); font-weight: 700; }
+.prompt .g { color: var(--green); font-weight: 700; }
+.prompt .m { color: var(--amber); }
+.prompt .x { color: var(--red); font-weight: 700; }
+.prompt .v { color: var(--violet); font-weight: 700; }
+
+/* Tables */
+table.t { width: 100%; border-collapse: collapse; font-size: 16.5px; }
+table.t th { text-align: left; font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 700; padding: 0 10px 8px; border-bottom: 1px solid var(--line); }
+table.t td { padding: 10px; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: middle; line-height: 1.35; }
+table.t td:first-child { color: var(--fg); font-weight: 600; white-space: nowrap; }
+table.t td.c { text-align: center; } table.t th.c { text-align: center; }
+
+/* Stepper */
+.stepper { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.step-item { background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.step-item.active { border-color: var(--cyan); background: rgba(56,189,248,.08); }
+.step-item.done { border-color: var(--green); }
+.step-num { font-family: var(--mono); font-size: 11px; color: var(--dim); font-weight: 700; }
+.step-item.active .step-num { color: var(--cyan); }
+.step-item.done .step-num { color: var(--green); }
+.step-title { font-size: 15px; font-weight: 700; }
+.step-sub { font-size: 12px; color: var(--muted); }
+
+/* Drawer & Navigation */
+.drawer { position: fixed; right: 0; top: 0; bottom: 0; width: 440px; background: #0f172a; border-left: 1px solid #334155; transform: translateX(100%); transition: transform .25s ease; z-index: 1000; padding: 28px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.drawer.open { transform: translateX(0); }
+.drawer .hd { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
+.drawer .tx { font-size: 18px; line-height: 1.5; color: #cbd5e1; }
+.grid { position: fixed; inset: 0; background: rgba(5,8,14,.92); backdrop-filter: blur(10px); display: none; grid-template-columns: repeat(6, 1fr); gap: 14px; padding: 40px; z-index: 2000; overflow-y: auto; }
+.grid.open { display: grid; }
+.grid button { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; color: var(--fg); text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 8px; font-family: var(--body); }
+.grid button:hover { border-color: var(--cyan); }
+.grid button.cur { border-color: var(--cyan); background: rgba(56,189,248,.1); }
+.grid button span { font-family: var(--mono); font-size: 12px; color: var(--cyan); }
+
+@media print {
+  @page { size: 1600px 900px; margin: 0; }
+  body { overflow: visible; background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .stage { position: static; transform: none; width: 1600px; height: auto; border-radius: 0; box-shadow: none; overflow: visible; }
+  .slide { position: relative; display: flex !important; width: 1600px; height: 900px; break-after: page; page-break-after: always; }
+  .drawer, .grid, button { display: none !important; }
+}
+</style>
+</head>
+<body>
+
+<main class="stage" id="stage">
+
+<!-- SLIDE 01: TITLE -->
+<section class="slide active" data-n="1">
+  <div class="kicker">GenAI Basics • Урок 07 • Модуль 3: Среда инженера и аналитика</div>
+  <h1 class="title">Экосистема Copilot: GitHub, Microsoft 365 и локальный контекст</h1>
+  <p class="lead">Одно семейное имя, три операционных контура, разные источники правды и границы безопасности.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center" style="gap:18px;">
+        <div class="card-box" style="border-color:var(--cyan);background:rgba(56,189,248,.04);">
+          <div class="card-label">АКСИОМА 10/90 В ЭКОСИСТЕМЕ COPILOT</div>
+          <div style="font-size:20.5px;line-height:1.45;color:var(--fg);">
+            Вызов большой модели — это лишь <b>10% архитектуры</b>.<br>
+            Остальные <b>90%</b> — это авторитетный источник контекста (Microsoft Graph / Git repo), усечение прав доступа (Permission Trimming), границы действий и обязательная верификация человеком.
+          </div>
+        </div>
+        <div class="note"><b>Инженерный принцип:</b> Вопрос не в том, на какую кнопку Copilot нажать. Вопрос в том, <i>где физически живет правда задачи</i> и <i>какие действия ассистенту разрешено совершать</i>.</div>
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="background:var(--surface);">
+          <div class="card-label" style="color:var(--amber)">ПЛАН 90-МИНУТНОГО ЗАНЯТИЯ</div>
+          <ul style="list-style:none;display:flex;flex-direction:column;gap:11px;font-size:18px;color:var(--muted);padding-left:4px;">
+            <li>🔹 <b>Таксономия Copilot:</b> код (GitHub), документы (M365) и устройство (Windows)</li>
+            <li>🔹 <b>Архитектура Grounding:</b> Microsoft Graph, Semantic Index и Enterprise Data Protection</li>
+            <li>🔹 <b>Формула промпта:</b> 4 официальных ингредиента Microsoft Learn (Goal, Context, Source, Expectations)</li>
+            <li>🔹 <b>GitHub Copilot в деталях:</b> Ghost text, Chat в IDE, Agent Mode и Copilot CLI</li>
+            <li>🔹 <b>Live Demo (Project Northstar):</b> единая бизнес-задача через три контура</li>
+            <li>🔹 <b>Практический артефакт:</b> построение личной Copilot Operating Map</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>01 / 21</span></div>
+  <template class="notes">Открываем Модуль 3. Задаем строгий инженерный тон: Copilot — не волшебный чат, а зонтичный бренд над разными источниками данных и правами доступа. Задача урока — научить студентов безопасно и эффективно выбирать инструмент под задачу.</template>
+</section>
+
+<!-- SLIDE 02: INSTRUCTOR PROFILE -->
+<section class="slide" data-n="2">
+  <div class="kicker">Профиль инструктора • Экспертиза и контакты</div>
+  <h2 class="title">Игорь Рубанович (Ihar Rubanovich)</h2>
+  <p class="lead">Engineering Manager II & AI Ambassador @ EPAM Systems. Практик внедрения AI в SDLC и продуктовый инжиниринг.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center" style="gap:16px;">
+        <div class="card-box" style="border-left:4px solid var(--cyan);">
+          <div class="card-label">ПРОФЕССИОНАЛЬНЫЙ ФОКУС</div>
+          <div style="font-size:18.5px;line-height:1.45;color:var(--fg);">
+            • 10+ лет в разработке и руководстве delivery-командами в enterprise.<br>
+            • Системное внедрение AI-Assisted Development: CodeMie, Copilot, Cursor.<br>
+            • Верифицированный кейс: <b>EPAM CodeMie @ Dawn Foods</b> — ускорение SDLC на 35% в фичах, тестах и архитектурной документации.
+          </div>
+        </div>
+        <div class="card-box" style="border-left:4px solid var(--green);">
+          <div class="card-label" style="color:var(--green)">ПРАКТИЧЕСКИЙ AI R&D (PET-PROJECT)</div>
+          <div style="font-size:18px;line-height:1.45;color:var(--fg);">
+            Архитектор и разработчик <b>Creator Tools</b> — набор AI-инструментов для авторов YouTube, помогающих экономить время на производстве контента, оптимизировать процессы и зарабатывать больше.
+          </div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="background:var(--surface);">
+          <div class="card-label" style="color:var(--amber)">РЕГЛАМЕНТ СВЯЗИ И СДАЧИ ДОМАШНИХ РАБОТ</div>
+          <div style="font-size:18px;line-height:1.5;color:var(--muted);">
+            • Официальный email для добавления в коллабораторы GitHub:<br>
+            <code style="font-size:19px;color:var(--cyan);display:inline-block;margin:6px 0;">ihar_rubanovich@epam.com</code><br>
+            • Все домашние задания сдаются через Pull Request в репозиторий <code>genai-homeworks</code>.<br>
+            • Личное инженерное ревью кода и матриц от спикера в течение недели.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>02 / 21</span></div>
+  <template class="notes">Кратко представляемся: EPAM, AI Ambassador, опыт CodeMie на проекте Dawn Foods. Отдельно фиксируем роль Creator Tools как прикладного R&D пет-проекта. Обращаем внимание студентов на email для GitHub-коллаборации.</template>
+</section>
+
+<!-- SLIDE 03: ROADMAP -->
+<section class="slide" data-n="3">
+  <div class="kicker">Дорожная карта курса • 16 занятий • 6 модулей</div>
+  <h2 class="title">Где мы находимся: старт Модуля 3 (Среда инженера)</h2>
+  <p class="lead">Мы прошли фундаментальные основы API и мультимодальность. Теперь переходим к инструментам повседневной инженерной работы.</p>
+  <div class="body">
+    <div class="stepper" style="margin-bottom:24px;">
+      <div class="step-item done"><div class="step-num">МОДУЛЬ 1 • ГОТОВО</div><div class="step-title">Фундамент & API</div><div class="step-sub">L01–L03: Токены, промпты, SDK</div></div>
+      <div class="step-item done"><div class="step-num">МОДУЛЬ 2 • ГОТОВО</div><div class="step-title">Мультимодальность</div><div class="step-sub">L04–L06: Картинки, видео, звук</div></div>
+      <div class="step-item active"><div class="step-num">МОДУЛЬ 3 • ВЫ ЗДЕСЬ</div><div class="step-title">Среда инженера</div><div class="step-sub">L07–L09: Copilot, Data, Claude</div></div>
+      <div class="step-item"><div class="step-num">МОДУЛЬ 4 • ПЛАН</div><div class="step-title">Локальный AI</div><div class="step-sub">L10: Ollama, LM Studio, RunPod</div></div>
+      <div class="step-item"><div class="step-num">МОДУЛЬ 5 • ПЛАН</div><div class="step-title">Агенты и MCP</div><div class="step-sub">L11–L13: Function Calling, MCP</div></div>
+      <div class="step-item"><div class="step-num">МОДУЛЬ 6 • ПЛАН</div><div class="step-title">Продакшен</div><div class="step-sub">L14–L16: Streamlit, Безопасность</div></div>
+    </div>
+    <div class="card-box" style="background:var(--surface);">
+      <div class="card-label">СОДЕРЖАНИЕ МОДУЛЯ 3 (УРОКИ 07–09)</div>
+      <div style="font-size:18px;line-height:1.5;color:var(--muted);">
+        • <b>Урок 07 (сегодня):</b> Экосистема Copilot — границы контекста между GitHub, Microsoft 365 и Windows; операционная карта.<br>
+        • <b>Урок 08:</b> AI для анализа данных — Code Interpreter, выполнение Python в песочнице, проверка контрактов данных.<br>
+        • <b>Урок 09:</b> Экосистема Claude и Артефакты — переход от чата к верстаку, Claude Projects и системный промптинг.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>03 / 21</span></div>
+  <template class="notes">Показываем место урока в сквозной программе. Модули 1 и 2 закрыты. В Модуле 3 учимся не писать нейросети, а эффективно использовать промышленные экосистемы ассистентов в работе.</template>
+</section>
+
+<!-- SLIDE 04: GITHUB WORKFLOW & HOMEWORK PROTOCOL -->
+<section class="slide" data-n="4">
+  <div class="kicker">Инженерный регламент • Сдача и верификация ДЗ</div>
+  <h2 class="title">Протокол домашних заданий: репозиторий и артефакты</h2>
+  <p class="lead">Все работы сдаются по канонам командной разработки: ветки, pull request'ы, структурированные маркдауны и тесты.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="prompt">
+<span class="s">СТРУКТУРА ВАШЕГО РЕПОЗИТОРИЯ:</span>
+genai-homeworks/
+├── L01/ ...
+├── L02/ ...
+├── <span class="g">L07/</span>
+│   ├── <span class="s">copilot_operating_map.md</span>    <span class="m"># Операционная карта 3 задач</span>
+│   ├── <span class="s">prompt_northstar_m365.txt</span>   <span class="m"># 4-ингредиентный промпт</span>
+│   └── <span class="s">shipping_diff_review.md</span>     <span class="m"># Ревью diff и вывод тестов</span>
+└── README.md
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">ПРАВИЛА И КРИТЕРИИ ПРИЁМКИ</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--muted);">
+            1. Ветка <code>feat/L07-copilot-operating-map</code> от актуального main.<br>
+            2. Инвайт <code>ihar_rubanovich@epam.com</code> в Collaborators репозитория.<br>
+            3. PR с описанием: какие 3 задачи взяты и почему выбраны именно эти поверхности.<br>
+            4. <b>Критерий качества:</b> отсутствие иллюзий автономии — для каждой задачи четко назван human checkpoint и сохраненный артефакт (evidence).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>04 / 21</span></div>
+  <template class="notes">Напоминаем регламент сдачи. Домашка этого урока — не абстрактный разговор, а четкий инженерный документ (Copilot Operating Map), который студенты внедрят в свои рабочие проекты.</template>
+</section>
+
+<!-- SLIDE 05: COPILOT LANDSCAPE 2026 -->
+<section class="slide" data-n="5">
+  <div class="kicker">Индустриальный контекст • Эволюция ассистентов</div>
+  <h2 class="title">Эволюция Copilot: от серого таба к экосистеме 2026 года</h2>
+  <p class="lead">Почему фраза «я делаю это через Copilot» лишена смысла без уточнения контекста, модели данных и рантайма.</p>
+  <div class="body">
+    <div class="row c3">
+      <div class="card-box">
+        <div class="card-label" style="color:var(--muted)">2021 — 2022: GHOST TEXT</div>
+        <div class="pt"><div class="h">Умный автокомплит</div><div class="d">Модель Codex предсказывала следующие строки кода по открытому файлу. Локальный контекст — несколько килобайт. Роль: печатная машинка с ускорением ввода.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label" style="color:var(--blue)">2023 — 2024: CHAT & RAG</div>
+        <div class="pt"><div class="h">Разговорный интерфейс</div><div class="d">Появление боковых чатов в IDE и интеграция с Microsoft Graph. Поиск по корпоративным документам через Semantic Index. Роль: умный консультант по документации и коду.</div></div>
+      </div>
+      <div class="card-box active">
+        <div class="card-label" style="color:var(--cyan)">2025 — 2026: AGENTS & ORCHESTRATION</div>
+        <div class="pt"><div class="h">Агентные среды и тулы</div><div class="d">Agent Mode в VS Code, автономное выполнение тестов, MCP-коннекторы, Copilot Studio, фоновые PR-агенты и NPU-интеграция в Copilot+ PC. Роль: автономный ассистент с контролем границ.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>05 / 21</span></div>
+  <template class="notes">Объясняем динамику развития. Показываем, что в 2026 году Copilot перестал быть просто чатом в углу экрана. Это мульти-поверхностная экосистема, выполняющая действия в репозиториях, облаках и на локальных устройствах.</template>
+</section>
+
+<!-- SLIDE 06: TAXONOMY OF SURFACES -->
+<section class="slide" data-n="6">
+  <div class="kicker">Таксономия семейств • Архитектурное разделение</div>
+  <h2 class="title">Одно имя — три мира: где живет авторитетный контекст</h2>
+  <p class="lead">Фундаментальное правило архитектора: выбирайте поверхность не по логотипу, а по источнику правды данных.</p>
+  <div class="body">
+    <table class="t">
+      <thead>
+        <tr>
+          <th>Контекст задачи</th>
+          <th>Семейство Copilot</th>
+          <th>Авторитетный источник правды</th>
+          <th>Типовые действия</th>
+          <th>Контур управления (Control Plane)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--cyan);font-weight:700;">Software Delivery</span></td>
+          <td><b>GitHub Copilot</b> (IDE, CLI, Cloud)</td>
+          <td>Git репозиторий, issue, PR, AST кода, тесты</td>
+          <td>Рефакторинг, тесты, правка файлов, ревью PR</td>
+          <td>Политики GitHub Org / Enterprise, настройки репозитория</td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--green);font-weight:700;">Knowledge Work</span></td>
+          <td><b>Microsoft 365 Copilot</b></td>
+          <td>Microsoft Graph: почта, Teams, SharePoint, Word</td>
+          <td>Саммари встреч, драфт брифа, анализ таблиц Excel</td>
+          <td>M365 Admin Center, Entra ID, Purview DLP, ACL</td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--amber);font-weight:700;">Local / Device</span></td>
+          <td><b>Windows / Copilot+ PC</b></td>
+          <td>Локальный экран, буфер, файлы ОС, NPU датчики</td>
+          <td>Поиск локальных файлов, скриншоты, Click to Do</td>
+          <td>Групповые политики Windows, локальные права пользователя</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:20px;">
+      <b>Золотое правило:</b> Если задача — написать код функции, идти в M365 Copilot бессмысленно (он не видит git tree). Если задача — выяснить решения руководства с закрытого митинга, GitHub Copilot бессилен (он не имеет доступа к корпоративному календарю и Teams).
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>06 / 21</span></div>
+  <template class="notes">Ключевая концептуальная таблица лекции. Разбираем по строкам: источник правды ➔ разрешенные действия ➔ кто управляет доступом. Студенты должны четко классифицировать свои рабочие задачи.</template>
+</section>
+
+<!-- SLIDE 07: GROUNDING ARCHITECTURE -->
+<section class="slide" data-n="7">
+  <div class="kicker">Архитектура систем • C4 Container Diagram</div>
+  <h2 class="title">Архитектура Grounding: как корпоративные данные попадают в LLM</h2>
+  <p class="lead">Модель не знает ваших корпоративных документов заранее — оркестратор заземляет промпт перед вызовом нейросети.</p>
+  <div class="body">
+    <div class="row c4" style="gap:18px;">
+      <div class="card-box">
+        <div class="card-label">1. ПЕРЕХВАТ И ПРЕОБРАБОТКА</div>
+        <div class="pt"><div class="h">Пользовательский ввод</div><div class="d">Сотрудник пишет запрос в Teams или Word. Оркестратор парсит контекст приложения, извлекает метаданные пользователя и инициирует семантический поиск.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan);background:rgba(56,189,248,.04);">
+        <div class="card-label" style="color:var(--cyan)">2. GRAPH & SEMANTIC INDEX</div>
+        <div class="pt"><div class="h">Извлечение фактов</div><div class="d">Обращение к Microsoft Graph. Semantic Index находит векторно близкие документы в SharePoint/OneDrive с обязательным учетом прав текущего аккаунта (ACL).</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">3. LLM ОБОГАЩЕНИЕ</div>
+        <div class="pt"><div class="h">Генерация ответа</div><div class="d">Базовая модель получает гигантский системный промпт: <i>Запрос пользователя + Извлеченные проверенные фрагменты документов + Инструкции формата</i>.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--green);background:rgba(52,211,153,.04);">
+        <div class="card-label" style="color:var(--green)">4. EDP & БЕЗОПАСНОСТЬ</div>
+        <div class="pt"><div class="h">Enterprise Data Protection</div><div class="d">Пост-процессинг ответа: проверка на PII/DLP, разметка ссылок на первоисточник (Citations). Никакие корпоративные данные не используются для дообучения глобальных моделей.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>07 / 21</span></div>
+  <template class="notes">Показываем конвейер заземления (Grounding). Подчеркиваем: модель не учится на письмах компании. Каждый запрос — это динамический RAG-пайплайн внутри периметра безопасности Microsoft 365.</template>
+</section>
+
+<!-- SLIDE 08: M365 BOUNDARIES & APPS -->
+<section class="slide" data-n="8">
+  <div class="kicker">Microsoft 365 Copilot • Контуры приложений</div>
+  <h2 class="title">Контекстные оболочки в офисных приложениях</h2>
+  <p class="lead">Разделяйте «Chat with Web» и «Grounded in Work Data». Каждое приложение меняет границы доступного контекста.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--amber);">
+          <div class="card-label" style="color:var(--amber)">РЕЖИМЫ COPILOT CHAT</div>
+          <div style="font-size:18px;line-height:1.45;color:var(--fg);">
+            • <b>Web Grounded (Интернет):</b> Поиск по общедоступной сети. Не видит файлы компании. Используется для отраслевых бенчмарков и общих справок.<br>
+            • <b>Work Grounded (Корпоративный):</b> Подключен к тенанту. Видит ваши чаты, письма и доступные документы SharePoint.
+          </div>
+        </div>
+        <div class="note"><b>Внимание на переключатель:</b> В интерфейсе Copilot Chat есть физический тоггл «Web / Work». Если сотрудник задает вопрос о проекте в режиме Web — модель галлюцинирует или ищет во внешнем вебе.</div>
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">СПЕЦИАЛИЗАЦИЯ ПРИЛОЖЕНИЙ</div>
+          <div style="font-size:17px;line-height:1.4;color:var(--muted);">
+            • <b>Outlook:</b> Саммари длинных тредов писем, черновики ответов с учетом предыдущих договоренностей.<br>
+            • <b>Teams:</b> Мгновенная выжимка решений митинга по стенограмме, список неназначенных action items.<br>
+            • <b>Word:</b> Синтез черновика спецификации из нескольких разрозненных заметок и файлов.<br>
+            • <b>Excel:</b> Формулы, поиск аномалий и сводные когорты (требует форматирования данных как Excel Table).<br>
+            • <b>PowerPoint:</b> Превращение документа Word в черновик слайдовой структуры.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>08 / 21</span></div>
+  <template class="notes">Разбираем прикладное поведение. Объясняем разницу тумблера Web / Work в Copilot Chat. Проговариваем требования Excel (работает только с форматированными таблицами) и Teams (нужна включенная расшифровка митинга).</template>
+</section>
+
+<!-- SLIDE 09: 4 PROMPT INGREDIENTS (MICROSOFT LEARN) -->
+<section class="slide" data-n="9">
+  <div class="kicker">Методология Microsoft Learn • Стандарт промптинга</div>
+  <h2 class="title">Формула промпта для Copilot: 4 обязательных ингредиента</h2>
+  <p class="lead">Microsoft учит сотрудников не писать абстрактные пожелания, а собирать структурированный рабочий запрос.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="prompt">
+<span class="s">[GOAL / ЦЕЛЬ]:</span>
+Сформируй структурированный бриф для службы поддержки по запуску правила бесплатной VIP-доставки.
+
+<span class="g">[CONTEXT / КОНТЕКСТ]:</span>
+Мы готовим выкатку обновления для курьеров и операторов в эти выходные. Саппорту нужно четко знать критерии активации и исключения.
+
+<span class="m">[SOURCE / ИСТОЧНИК]:</span>
+Используй только прикрепленный файл <code style="color:#fff;">meeting_notes_fixture.docx</code> и протокол решений менеджмента.
+
+<span class="x">[EXPECTATIONS / ОЖИДАНИЯ]:</span>
+Формат: маркдаун с разделами (Критерии, Пограничные случаи, Открытые вопросы). Объем до 300 слов. Добавь цитаты первоисточника.
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">АНАТОМИЯ ИНГРЕДИЕНТОВ</div>
+          <div class="pt"><div class="h">1. Goal (Цель)</div><div class="d">Четкий глагол действия: суммаризируй, выдели риски, напиши таблицу.</div></div>
+          <div class="pt"><div class="h">2. Context (Контекст)</div><div class="d">Кто целевая аудитория документа и зачем этот результат создается.</div></div>
+          <div class="pt"><div class="h">3. Source (Источник)</div><div class="d">Явная ссылка на авторитетный файл, ссылку или стенограмму (символ <code>/</code> в чате).</div></div>
+          <div class="pt"><div class="h">4. Expectations (Ожидания)</div><div class="d">Жесткие ограничения по стилю, длине, тону и обязательным пунктам.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>09 / 21</span></div>
+  <template class="notes">Разбираем методику Microsoft Learn. Проводим параллель с L02: закон конкретики и структуры работает везде. Показываем, что указание конкретного Source (источника) отсекает 95% галлюцинаций.</template>
+</section>
+
+<!-- SLIDE 10: PERMISSION TRIMMING & SECURITY -->
+<section class="slide" data-n="10">
+  <div class="kicker">Безопасность и комплаенс • Архитектурные риски</div>
+  <h2 class="title">Permission Trimming: почему безопасность зависит от гигиены данных</h2>
+  <p class="lead">Copilot не создает новую модель доступа — он строго наследует существующие права пользователя в организации.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--green)">
+          <div class="card-label" style="color:var(--green)">ФИЧА: ZERO TRUST ПО УМОЛЧАНИЮ</div>
+          <div style="font-size:18px;line-height:1.45;color:var(--fg);">
+            • Если у инженера нет доступа к папке «Budgets 2026» в SharePoint, Copilot никогда не прочитает и не процитирует эти файлы.<br>
+            • Запросы сотрудника обрабатываются изолированно внутри тенанта компании.<br>
+            • Нет утечек между организациями и между департаментами с разделенными правами.
+          </div>
+        </div>
+        <div class="card-box" style="border-color:var(--red)">
+          <div class="card-label" style="color:var(--red)">ГЛАВНЫЙ РИСК: ОВЕРШЕРИНГ (OVERSHARING)</div>
+          <div style="font-size:18px;line-height:1.45;color:var(--fg);">
+            • До эры AI документ с зарплатами или сокращениями мог лежать на общедоступном диске годами, и никто о нем не знал.<br>
+            • <b>Copilot находит всё:</b> любой сотрудник, спросив <i>«какие изменения планируются в штате?»</i>, моментально получит скрытый документ через Semantic Index.<br>
+            • Внедрение Copilot требует предварительного аудита прав в SharePoint и Teams!
+          </div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="background:var(--surface);">
+          <div class="card-label" style="color:var(--cyan)">ENTERPRISE DATA PROTECTION (EDP)</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--muted);">
+            • <b>No Training:</b> Промпты и корпоративные документы не используются для обучения базовых моделей OpenAI/Microsoft.<br>
+            • <b>Data Residency:</b> Данные остаются внутри выбранного географического региона (EU/US).<br>
+            • <b>Purview Compliance:</b> Поддержка меток чувствительности (Sensitivity Labels), шифрования и автоматического журналирования аудита.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>10 / 21</span></div>
+  <template class="notes">Важнейший слайд по корпоративной безопасности. Объясняем феномен овершеринга. Подчеркиваем: если в компании бардак с правами на папки, внедрение Copilot сделает этот бардак публичным в первый же день.</template>
+</section>
+
+<!-- SLIDE 11: GITHUB COPILOT 4 MODES -->
+<section class="slide" data-n="11">
+  <div class="kicker">GitHub Copilot • Инструментарий разработчика</div>
+  <h2 class="title">4 операционных режима GitHub Copilot</h2>
+  <p class="lead">Разделяйте синхронную работу в редакторе, агентный режим в терминале и асинхронное облачное ревью.</p>
+  <div class="body">
+    <div class="row c4" style="gap:16px;">
+      <div class="card-box">
+        <div class="card-label">1. GHOST TEXT</div>
+        <div class="pt"><div class="h">Inline автодополнение</div><div class="d">Серый текст по нажатию <code>Tab</code>. Срабатывает прямо в редакторе по курсору. Быстрое написание рутинных функций и циклов.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">2. IDE CHAT & SLASH</div>
+        <div class="pt"><div class="h">Диалог в сайдбаре</div><div class="d">Чат с участниками: <code>@workspace</code> (знание репозитория), <code>@terminal</code>. Команды: <code>/explain</code>, <code>/fix</code>, <code>/tests</code>, <code>/doc</code>.</div></div>
+      </div>
+      <div class="card-box active">
+        <div class="card-label" style="color:var(--cyan)">3. AGENT MODE / EDITS</div>
+        <div class="pt"><div class="h">Мультифайловый агент</div><div class="d">Copilot Edits & Agent Mode. Ассистент правит сразу несколько файлов, выполняет команды в терминале, но требует аппрува человека!</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">4. CLI & CLOUD AGENT</div>
+        <div class="pt"><div class="h">Терминал и PR ревью</div><div class="d">Терминальный <code>copilot</code> CLI и облачные агенты на GitHub.com: автоматическая генерация саммари Pull Request и предварительное ревью кода.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>11 / 21</span></div>
+  <template class="notes">Классифицируем 4 режима работы разработчика. Обращаем внимание на смену парадигмы: от простой строчки автокомплита к агентному режиму (Agent Mode), где модель меняет файлы и запускает тесты.</template>
+</section>
+
+<!-- SLIDE 12: CONTEXT ENGINEERING IN IDE -->
+<section class="slide" data-n="12">
+  <div class="kicker">Инженерия контекста • IDE Workspace</div>
+  <h2 class="title">Что видит Copilot в вашей IDE: стек контекста</h2>
+  <p class="lead">Контекст в редакторе кода — это не магия, а строго сконструированный инженерный стек.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box" style="background:var(--surface);">
+          <div class="card-label">ИЕРАРХИЯ СБОРА КОНТЕКСТА В VS CODE</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--muted);">
+            1. <b>Курсор и активный файл:</b> код вокруг курсора (Prefix & Suffix).<br>
+            2. <b>Открытые вкладки (Neighbor Tabs):</b> файлы, открытые в редакторе прямо сейчас.<br>
+            3. <b>Корпоративные инструкции:</b> файл <code>.github/copilot-instructions.md</code> в корне репозитория (кодирует кодстайл и правила).<br>
+            4. <b>Индекс рабочей области (Workspace Index):</b> локальные эмбеддинги структуры проекта и классов.<br>
+            5. <b>Внешние инструменты (MCP / Extensions):</b> подключенные базы данных и API.
+          </div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="prompt">
+<span class="s">ПРИМЕР .github/copilot-instructions.md:</span>
+- Всегда используй строгую типизацию Python (type hints).
+- При изменении бизнес-логики обязательно создавай unit-тесты на pytest.
+- Сохраняй публичный контракт существующих классов.
+- Никогда не хардкодь тарифы и ключи — выноси в параметры конфига.
+- Перед редактированием кода кратко объясни свой план действий.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>12 / 21</span></div>
+  <template class="notes">Учим инженерии контекста. Объясняем трюк с открытыми вкладками (если Copilot ошибается в типах, откройте в соседней вкладке файл с их объявлением). Рассказываем про файл copilot-instructions.md как стандарт управления моделью в команде.</template>
+</section>
+
+<!-- SLIDE 13: WINDOWS & COPILOT+ PC -->
+<section class="slide" data-n="13">
+  <div class="kicker">Локальное устройство • Windows Ecosystem</div>
+  <h2 class="title">Windows Copilot и Copilot+ PC: облако vs локальный NPU</h2>
+  <p class="lead">Разделяйте облачное веб-приложение ассистента и аппаратные AI-возможности новой операционной системы.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label" style="color:var(--blue)">ОБЛАЧНОЕ ПРИЛОЖЕНИЕ COPILOT НА WINDOWS</div>
+          <div style="font-size:18px;line-height:1.45;color:var(--muted);">
+            • Стандартное веб/десктоп приложение (PWA).<br>
+            • Поддерживает голосовой ввод, распознавание скриншотов, поиск настроек системы.<br>
+            • Требует подключения к интернету и аккаунта Microsoft / Entra ID.<br>
+            • Данные обрабатываются в облачном дата-центре.
+          </div>
+        </div>
+        <div class="card-box" style="border-color:var(--cyan);background:rgba(56,189,248,.04);">
+          <div class="card-label" style="color:var(--cyan)">ЛОКАЛЬНЫЕ ФУНКЦИИ COPILOT+ PC (NPU 40+ TOPS)</div>
+          <div style="font-size:18px;line-height:1.45;color:var(--fg);">
+            • <b>Recall:</b> локальный семантический снимок истории работы (полностью на устройстве, с возможностью паузы и шифрования).<br>
+            • <b>Click to Do:</b> контекстные действия с объектами на экране без отправки скриншота в стороннее облако.<br>
+            • <b>Live Captions & Studio Effects:</b> аппаратный перевод речи и обработка видеопотока веб-камеры с задержкой 0 мс.
+          </div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="note" style="border-color:var(--amber);">
+          <b>Региональные различия (EEA vs US):</b> В зависимости от законодательства (например, DMA в Евросоюзе) и корпоративных политик некоторые функции (Recall, Click to Do) могут быть заблокированы администратором или недоступны в регионе. Всегда проверяйте статус фичи на целевой машине!
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>13 / 21</span></div>
+  <template class="notes">Разбираем третий контур — локальное устройство. Проводим черту между веб-интерфейсом и функциями Copilot+ PC на NPU. Объясняем архитектурный смысл локального ИИ: приватность и отсутствие сетевой задержки.</template>
+</section>
+
+<!-- SLIDE 14: SCENARIO PROJECT NORTHSTAR -->
+<section class="slide" data-n="14">
+  <div class="kicker">Сквозной бизнес-кейс • Project Northstar</div>
+  <h2 class="title">Сквозной кейс: сквозная задача через 3 контекста</h2>
+  <p class="lead">Бизнес-задача: внедрение правила бесплатной VIP-доставки. Как поток работы проходит через три инструмента.</p>
+  <div class="body">
+    <div class="row c3">
+      <div class="card-box" style="border-left:4px solid var(--green);">
+        <div class="card-label" style="color:var(--green)">1. БИЗНЕС-РЕШЕНИЕ В M365</div>
+        <div class="pt"><div class="h">Встреча руководства</div><div class="d">Решение зафиксировано в сырых заметках встречи. Через <b>Microsoft 365 Copilot</b> генерируем согласованный бриф для саппорта с явными цитатами и списком открытых вопросов.</div></div>
+      </div>
+      <div class="card-box" style="border-left:4px solid var(--cyan);">
+        <div class="card-label" style="color:var(--cyan)">2. РЕАЛИЗАЦИЯ В GITHUB</div>
+        <div class="pt"><div class="h">Код и unit-тесты</div><div class="d">В репозитории заведен issue. Через <b>GitHub Copilot Agent Mode</b> обновляем класс <code>VIPShippingCalculator</code> в Python, генерируем тесты и прогоняем их через <code>pytest</code>.</div></div>
+      </div>
+      <div class="card-box" style="border-left:4px solid var(--amber);">
+        <div class="card-label" style="color:var(--amber)">3. ПРОВЕРКА В WINDOWS / LOCAL</div>
+        <div class="pt"><div class="h">Релизный чек-лист</div><div class="d">Инженер сверяет локальный файл <code>release_checklist.txt</code>, флаги стейджинга и конфигурацию окружения перед включением фиче-флага.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>14 / 21</span></div>
+  <template class="notes">Ставим сквозной кейс перед перерывом. Показываем, что в реальной компании работа никогда не замыкается в одной тулзе: бриф живет в документах, код — в гите, релиз — на машине разработчика.</template>
+</section>
+
+<!-- SLIDE 15: MIDPOINT BREAK -->
+<section class="slide" data-n="15">
+  <div class="kicker" style="color:var(--amber)">Экватор занятия • Перезагрузка внимания</div>
+  <h2 class="title">Перерыв 5 минут: отдых для глаз и чашка кофе</h2>
+  <p class="lead">Строгое правило: никаких рабочих заданий и вопросов в чат во время паузы. Перезагрузите внимание перед живым демо.</p>
+  <div class="body">
+    <div class="stack center" style="align-items:center;gap:24px;">
+      <div id="clock" style="font-family:var(--mono);font-size:110px;font-weight:700;color:var(--cyan);letter-spacing:.04em;">05:00</div>
+      <div style="display:flex;gap:18px;">
+        <button id="timerStart" style="font-family:var(--mono);font-size:18px;font-weight:700;padding:14px 28px;border-radius:8px;background:var(--cyan);color:#0b0f17;border:none;cursor:pointer;">СТАРТ 5 МИН</button>
+        <button id="timerReset" style="font-family:var(--mono);font-size:18px;font-weight:700;padding:14px 28px;border-radius:8px;background:var(--surface);color:var(--fg);border:1px solid var(--line);cursor:pointer;">СБРОС</button>
+      </div>
+      <div class="note" style="border-color:var(--amber);max-width:800px;text-align:center;">
+        <b>Во второй части:</b> Живое демо Microsoft 365 Copilot на реальном файле заметок, работа в Agent Mode в VS Code с автозапуском тестов, разбор факапов и шаблон домашки.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>15 / 21</span></div>
+  <template class="notes">Запустить таймер кнопкой СТАРТ. Отключить микрофон. Никаких вопросов в чат! Отдых 5 минут перед практическим блоком.</template>
+</section>
+
+<!-- SLIDE 16: LIVE DEMO PART 1 - M365 -->
+<section class="slide" data-n="16">
+  <div class="kicker">Практика • Live Demo Часть 1</div>
+  <h2 class="title">Демо 1: Microsoft 365 Copilot — синтез брифа из митинга</h2>
+  <p class="lead">Берем файл заметок руководства meeting_notes_fixture.docx и собираем бриф для саппорта по 4 ингредиентам.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--cyan)">
+          <div class="card-label">ДЕМО-СЦЕНАРИЙ В СТУДИИ</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--muted);">
+            1. Открываем Word или M365 Copilot Chat.<br>
+            2. Прикрепляем файл заметок через <code>/</code>.<br>
+            3. Вводим 4-компонентный промпт (Goal, Context, Source, Expectations).<br>
+            4. <b>Что проверяем в результате:</b><br>
+               • Перенесен ли порог заказа $50 для бесплатной доставки.<br>
+               • Сформирован ли список открытых вопросов (например, возврат при сбое).<br>
+               • Стоят ли цитаты первоисточника со ссылкой на абзацы файла.
+          </div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="background:var(--surface);">
+          <div class="card-label" style="color:var(--green)">ОЖИДАЕМЫЙ РЕЗУЛЬТАТ (EVIDENCE)</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--fg);">
+            Сгенерированный документ <code>m365_expected_brief.md</code>:<br>
+            • Четкие критерии для операторов первой линии.<br>
+            • Ноль выдуманных правил, отсутствовавших в первоисточнике.<br>
+            • Документ готов к согласованию руководителем службы поддержки.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>16 / 21</span></div>
+  <template class="notes">Переключаемся на экран Word или демо-файл. Показываем вживую работу промпта. Обращаем внимание аудитории на то, как Copilot ставит квадратные скобки со сносками на первоисточник.</template>
+</section>
+
+<!-- SLIDE 17: LIVE DEMO PART 2 - GITHUB AGENT MODE -->
+<section class="slide" data-n="17">
+  <div class="kicker">Практика • Live Demo Часть 2</div>
+  <h2 class="title">Демо 2: GitHub Copilot Agent Mode в VS Code</h2>
+  <p class="lead">Реализуем бизнес-логику в репозитории: чтение ISSUE.md, планирование, код, тесты и проверка diff.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="prompt">
+<span class="s">ПРОМПТ ДЛЯ AGENT MODE В VS CODE:</span>
+@workspace Прочитай ISSUE.md и правила в .github/copilot-instructions.md.
+1. Предложи план изменений для внедрения правила VIP бесплатной доставки.
+2. Реализуй метод в sample_repo/shipping.py.
+3. Добавь граничные unit-тесты в sample_repo/test_shipping.py.
+4. Запусти smoke_check.py и подтверди, что все тесты зеленые.
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label" style="color:var(--amber)">КОНТРОЛЬНЫЙ ЧЕКПОИНТ РАЗРАБОТЧИКА</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--muted);">
+            • <b>Не верьте на слово:</b> если агент пишет «all tests pass», посмотрите на реальный вывод в терминале!<br>
+            • <b>Инспекция diff:</b> перед нажатием «Accept» откройте построчный diff и проверьте, не удалил ли агент существующие проверки.<br>
+            • <b>Командный терминал:</b> подтверждайте выполнение только тех shell-команд, назначение которых вам понятно.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>17 / 21</span></div>
+  <template class="notes">Показываем VS Code. Запускаем Agent Mode. Демонстрируем, как агент сам генерирует план, предлагает диффы в файлах и запрашивает разрешение на запуск теста в терминале. Принимаем изменения только после зеленого pytest.</template>
+</section>
+
+<!-- SLIDE 18: PRODUCTION CHRONICLES -->
+<section class="slide" data-n="18">
+  <div class="kicker">Инженерный опыт • Производственные хроники</div>
+  <h2 class="title">Хроники продакшена: 4 фиаско индустрии vs победа</h2>
+  <p class="lead">Чему учат реальные инциденты при внедрении Copilot в enterprise-компаниях.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--red);">
+          <div class="card-label" style="color:var(--red)">4 КАТАСТРОФИЧЕСКИХ ФАКАПА ИНДУСТРИИ</div>
+          <div style="font-size:16.5px;line-height:1.4;color:var(--muted);">
+            1. <b>Утечка компенсаций через Semantic Index:</b> открытая папка HR привела к тому, что Copilot показал сотрудникам зарплаты коллег при вопросе о премиях.<br>
+            2. <b>Галлюцинация флага в CLI:</b> разработчик запустил предложенную Copilot команду с выдуманным флагом, стершим конфигурацию стейджинга.<br>
+            3. <b>Галлюцинация пакета (Package Hallucination):</b> кодинг-ассистент посоветовал несуществующий npm-пакет, который злоумышленники зарегистрировали и внедрили вредонос.<br>
+            4. <b>Ложная уверенность в тестах:</b> разработчик принял PR от агента без запуска CI; код падал с синтаксической ошибкой.
+          </div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--green);background:rgba(52,211,153,.04);">
+          <div class="card-label" style="color:var(--green)">ENTERPRISE ПОБЕДА: EPAM CODEMIE @ DAWN FOODS</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--fg);">
+            • <b>35% ускорение SDLC:</b> внедрение AI-ассистентов в командах разработки продуктов Dawn Foods.<br>
+            • <b>Секрет успеха:</b> жесткие корпоративные инструкции, шаблоны задач, изоляция контекста и 100% обязательное peer-review человеком перед мерджем в релизную ветку.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>18 / 21</span></div>
+  <template class="notes">Разбираем реальные кейсы. Связываем с правилом Blast Radius из L01. Показываем победу Dawn Foods как пример правильной дисциплины: AI пишет код быстро, но человек несет персональную ответственность за архитектуру и тесты.</template>
+</section>
+
+<!-- SLIDE 19: DECISION MATRIX -->
+<section class="slide" data-n="19">
+  <div class="kicker">Принятие решений • Архитектурный выбор</div>
+  <h2 class="title">Матрица выбора инструмента: 4 проверочных вопроса</h2>
+  <p class="lead">Чек-лист перед стартом любой задачи: как определить правильную поверхность и избежать рисков.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">4 ВОПРОСА ОПЕРАЦИОННОЙ КАРТЫ</div>
+          <div class="pt"><div class="h">1. Где авторитетный источник правды?</div><div class="d">Репозиторий (код), M365 Graph (документы/письма) или локальная ОС.</div></div>
+          <div class="pt"><div class="h">2. Каковы границы действия ассистента?</div><div class="d">Только совет, черновик файла, запуск тестов или создание PR.</div></div>
+          <div class="pt"><div class="h">3. В чем заключается чекпоинт человека?</div><div class="d">Инспекция diff, запуск unit-тестов, факт-чекинг ссылок.</div></div>
+          <div class="pt"><div class="h">4. Какой артефакт сохраняется в качестве evidence?</div><div class="d">Pull Request, версия документа в SharePoint, лог тестов CI.</div></div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="note" style="border-color:var(--cyan);">
+          <b>Когда Copilot использовать ЗАПРЕЩЕНО:</b><br>
+          • Проведение финансовых транзакций без прямого участия человека.<br>
+          • Прямой деплой кода в production без прохождения CI-пайплайна.<br>
+          • Обработка закрытых PII/медицинских данных на поверхностях без подтвержденного статуса Enterprise Data Protection.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>19 / 21</span></div>
+  <template class="notes">Даем студентам алгоритм принятия решений. Эти 4 вопроса — основа домашнего задания. Проговариваем «красную зону» (Blast Radius), где автономные действия модели категорически запрещены.</template>
+</section>
+
+<!-- SLIDE 20: HOMEWORK ASSIGNMENT -->
+<section class="slide" data-n="20">
+  <div class="kicker">Домашнее задание • Практический артефакт</div>
+  <h2 class="title">Домашнее задание: Построение Copilot Operating Map</h2>
+  <p class="lead">Разберите 3 реальные рабочие задачи из своей практики и спроектируйте для них безопасную операционную карту.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--cyan)">
+          <div class="card-label">СТРУКТУРА ОПЕРАЦИОННОЙ КАРТЫ (3 СТРОКИ)</div>
+          <div style="font-size:17px;line-height:1.45;color:var(--muted);">
+            Для каждой из 3 задач заполните колонки:<br>
+            • <b>Task:</b> Конкретное действие (например, «Рефакторинг калькулятора тарифов Glovo»).<br>
+            • <b>Surface:</b> GitHub VS Code Agent Mode / M365 Word / Copilot CLI.<br>
+            • <b>Context Source:</b> Ветка git, файл тикета Jira, заметки созвона.<br>
+            • <b>Allowed Action:</b> Редактирование файлов и запуск локальных тестов.<br>
+            • <b>Human Checkpoint:</b> Проверка diff и прогон coverage > 90%.<br>
+            • <b>Evidence:</b> Ссылка на PR с зеленым CI.<br>
+            • <b>Policy Dependency:</b> Корпоративная политика запрета на сторонние MCP.
+          </div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="background:var(--surface);">
+          <div class="card-label" style="color:var(--green)">ДОПОЛНИТЕЛЬНЫЙ ПУНКТ: 4-КОМПОНЕНТНЫЙ ПРОМПТ</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--fg);"><br>
+            Для одной из задач напишите эталонный промпт по стандарту Microsoft:<br>
+            <span style="color:var(--cyan);">[Goal]</span> + <span style="color:var(--green);">[Context]</span> + <span style="color:var(--amber);">[Source]</span> + <span style="color:var(--red)">[Expectations]</span>.<br><br>
+            Сдайте файл <code>copilot_operating_map.md</code> в папку <code>L07/</code> вашего репозитория <code>genai-homeworks</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>20 / 21</span></div>
+  <template class="notes">Формулируем домашнее задание. Подчеркиваем: это практический инструмент, который студенты смогут сразу показать своим тимлидам. Эталонный бенчмарк — кейс доставки Glovo или Project Northstar.</template>
+</section>
+
+<!-- SLIDE 21: SUMMARY & QA -->
+<section class="slide" data-n="21">
+  <div class="kicker">Финал занятия • Итоги и анонс L08</div>
+  <h2 class="title">Итоги урока, открытый микрофон и анонс Урока 08</h2>
+  <p class="lead">4 ключевых вывода сегодняшней лекции. Готов ответить на ваши вопросы.</p>
+  <div class="body">
+    <div class="row c2" style="align-items:center;">
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label" style="color:var(--green)">4 ГЛАВНЫХ ВЫВОДА ЗАНЯТИЯ</div>
+          <div style="font-size:17.5px;line-height:1.45;color:var(--muted);">
+            1. <b>Copilot — это портфель инструментов:</b> выбор зависит от того, где физически живет правда задачи.<br>
+            2. <b>Контекст важнее модели:</b> качество ответа определяется заземлением через Graph или Git workspace.<br>
+            3. <b>Стандарт 4 ингредиентов:</b> Goal + Context + Source + Expectations устраняет 95% галлюцинаций.<br>
+            4. <b>Контроль человека обязателен:</b> diff, тесты и цитаты — единственная защита от галлюцинаций.
+          </div>
+        </div>
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--violet);background:rgba(192,132,252,.04);">
+          <div class="card-label" style="color:var(--violet)">СЛЕДУЮЩИЙ УРОК • L08: AI FOR DATA ANALYSIS</div>
+          <div style="font-size:18px;line-height:1.45;color:var(--fg);">
+            <b>Анализ данных и Code Interpreter:</b><br>
+            Почему модель не должна быть калькулятором? Как запускать Python в изолированной песочнице для расчета бизнес-метрик, проверки контрактов данных и построения достоверных графиков.<br><br>
+            <i>Микрофоны открыты — задавайте вопросы в чат и голосом!</i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 07 • Экосистема Copilot</span><span>21 / 21</span></div>
+  <template class="notes">Подводим итоги. Открываем микрофон для вопросов. Делаем интригующий тизер Урока 08: объясняем, почему LLM никогда нельзя доверять математические вычисления в уме и как работает Code Interpreter.</template>
+</section>
+
+</main>
+
+<aside class="drawer" id="drawer"><div class="hd"></div><div class="tx"></div></aside>
+<div class="grid" id="grid"></div>
+
+<script>
+const T = {start: 'СТАРТ 5 МИН', pause: 'ПАУЗА', done: 'ВРЕМЯ ВЫШЛО', notes: 'ЗАМЕТКИ СПИКЕРА'};
+(function () {
+  const stage = document.getElementById('stage');
+  const slides = [...document.querySelectorAll('.slide')];
+  const total = slides.length;
+  const drawer = document.getElementById('drawer');
+  const grid = document.getElementById('grid');
+  let cur = 1;
+
+  function fit() {
+    const s = Math.min(window.innerWidth / 1600, window.innerHeight / 900) * 0.98;
+    stage.style.setProperty('--s', s);
+  }
+
+  function show(n) {
+    if (n < 1 || n > total) return;
+    cur = n;
+    slides.forEach((el, i) => el.classList.toggle('active', i + 1 === n));
+    const notes = slides[n - 1].querySelector('.notes');
+    drawer.querySelector('.hd').textContent = `${T.notes} • ${String(n).padStart(2, '0')} / ${total}`;
+    drawer.querySelector('.tx').innerHTML = notes ? notes.innerHTML : '';
+    if (location.hash !== '#' + n) history.replaceState(null, '', '#' + n);
+    grid.querySelectorAll('button').forEach((b, i) => b.classList.toggle('cur', i + 1 === n));
+  }
+
+  slides.forEach((el, i) => {
+    const b = document.createElement('button');
+    const t = el.querySelector('.title, h1, h2');
+    b.innerHTML = `<span>${String(i + 1).padStart(2, '0')}</span>${t ? t.textContent : ''}`;
+    b.onclick = () => { show(i + 1); grid.classList.remove('open'); };
+    grid.appendChild(b);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); show(cur + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); show(cur - 1); }
+    else if (e.key === 'Home') show(1);
+    else if (e.key === 'End') show(total);
+    else if (e.key.toLowerCase() === 'n') drawer.classList.toggle('open');
+    else if (e.key.toLowerCase() === 'g') grid.classList.toggle('open');
+    else if (e.key.toLowerCase() === 'f') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    } else if (e.key === 'Escape') { grid.classList.remove('open'); drawer.classList.remove('open'); }
+  });
+
+  stage.addEventListener('click', (e) => {
+    if (e.target.closest('button')) return;
+    const r = stage.getBoundingClientRect();
+    show(e.clientX > r.left + r.width / 3 ? cur + 1 : cur - 1);
+  });
+  window.addEventListener('resize', fit);
+  window.addEventListener('hashchange', () => show(parseInt(location.hash.slice(1), 10) || 1));
+
+  let left = 300, timer = null;
+  const clock = document.getElementById('clock');
+  const startBtn = document.getElementById('timerStart');
+  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+  if (startBtn) {
+    startBtn.onclick = () => {
+      if (timer) { clearInterval(timer); timer = null; startBtn.textContent = T.start; return; }
+      startBtn.textContent = T.pause;
+      timer = setInterval(() => {
+        left = Math.max(0, left - 1); clock.textContent = fmt(left);
+        if (!left) { clearInterval(timer); timer = null; startBtn.textContent = T.done; }
+      }, 1000);
+    };
+    document.getElementById('timerReset').onclick = () => {
+      clearInterval(timer); timer = null; left = 300; clock.textContent = fmt(left); startBtn.textContent = T.start;
+    };
+  }
+
+  fit();
+  show(parseInt(location.hash.slice(1), 10) || 1);
+})();
+</script>
+</body>
+</html>

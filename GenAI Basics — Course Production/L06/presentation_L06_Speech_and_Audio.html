@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Урок 06: Речь и аудио AI — синтез речи, Whisper, саунд-дизайн Foley и генерация музыки</title>
+<style>
+
+:root {
+  --bg: #0b0f17;
+  --surface: #121a28;
+  --surface-card: #0f1624;
+  --line: rgba(148, 163, 184, 0.18);
+  --fg: #f1f5f9;
+  --muted: #9aa8bc;
+  --dim: #5f6e84;
+  --cyan: #38bdf8;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #f87171;
+  --violet: #c084fc;
+  --display: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --body: 'Onest', 'Segoe UI', Arial, sans-serif;
+  --mono: 'JetBrains Mono', Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: #05080e; color: var(--fg); font-family: var(--body); overflow: hidden; -webkit-font-smoothing: antialiased; }
+
+.stage { position: absolute; left: 50%; top: 50%; width: 1600px; height: 900px; transform: translate(-50%, -50%) scale(var(--s, 1)); transform-origin: center; background: var(--bg); overflow: hidden; border-radius: 6px; box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+.slide { position: absolute; inset: 0; padding: 50px 72px 58px; display: none; flex-direction: column; }
+.slide.active { display: flex; }
+
+/* Cover Slide */
+.cover { padding: 0 !important; overflow: hidden; }
+.cover .hero-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .45; }
+.cover .shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11,15,23,.97) 0%, rgba(11,15,23,.90) 50%, rgba(11,15,23,.45) 100%); }
+.cover .txt { position: relative; padding: 0 76px; height: 100%; display: flex; flex-direction: column; justify-content: center; max-width: 1120px; z-index: 2; }
+.cover .kicker { font-family: var(--mono); font-size: 15px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); margin-bottom: 12px; }
+.cover h1 { font-family: var(--display); font-size: 84px; font-weight: 800; line-height: 1.02; letter-spacing: -0.035em; color: var(--fg); margin: 0; }
+.cover h2 { font-size: 32px; font-weight: 600; line-height: 1.3; color: var(--cyan); margin-top: 18px; text-wrap: balance; }
+.cover p { font-size: 21px; line-height: 1.5; color: var(--muted); margin-top: 18px; max-width: 880px; }
+.cover .axiom-box { margin-top: 20px; padding: 16px 22px; background: rgba(56,189,248,.07); border: 1px solid rgba(56,189,248,.3); border-radius: 12px; max-width: 880px; font-size: 17px; line-height: 1.45; color: #cbd5e1; }
+.cover .axiom-box b { color: var(--cyan); }
+.cover .keys { position: absolute; left: 76px; bottom: 26px; font-family: var(--mono); font-size: 13px; color: var(--dim); z-index: 2; }
+
+/* Standard Typography */
+.kicker { font-family: var(--mono); font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--k, var(--cyan)); margin-bottom: 10px; }
+.title { font-family: var(--display); font-weight: 700; font-size: 42px; line-height: 1.15; letter-spacing: -0.02em; text-wrap: balance; max-width: 1450px; }
+.lead { font-size: 20px; line-height: 1.38; color: var(--muted); margin-top: 8px; max-width: 1350px; text-wrap: balance; }
+.body { flex: 1 1 0; min-height: 0; margin-top: 20px; display: flex; flex-direction: column; justify-content: center; }
+.foot { position: absolute; left: 72px; right: 72px; bottom: 20px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 13px; color: var(--dim); }
+
+/* Grid Layouts */
+.row { display: grid; gap: 28px; flex: 1 1 0; min-height: 0; }
+.c2 { grid-template-columns: 1fr 1fr; }
+.c3 { grid-template-columns: repeat(3, 1fr); }
+.c4 { grid-template-columns: repeat(4, 1fr); }
+.stack { display: flex; flex-direction: column; gap: 14px; min-height: 0; min-width: 0; }
+.center { justify-content: center; }
+
+/* Visual UI & Diagram Layouts */
+.row.img-split { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 32px; align-items: center; }
+.row.img-split-reverse { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 32px; align-items: center; }
+.pic-frame { border-radius: 12px; border: 1px solid var(--line); overflow: hidden; background: #000; box-shadow: 0 16px 40px rgba(0,0,0,0.5); display: flex; max-height: 530px; }
+.pic-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* Cards & Elements */
+.card-box { background: var(--surface-card); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+.card-box.active { border-color: var(--cyan); }
+.card-label { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; color: var(--k, var(--cyan)); }
+.pt { display: flex; flex-direction: column; gap: 6px; }
+.pt .h { font-size: 20px; font-weight: 700; line-height: 1.25; }
+.pt .d { font-size: 16px; line-height: 1.38; color: var(--muted); }
+.pt .d b { color: var(--fg); font-weight: 600; }
+.note { font-size: 17px; line-height: 1.45; color: var(--muted); border-left: 3px solid var(--k, var(--cyan)); padding: 4px 0 4px 16px; }
+.note b { color: var(--fg); }
+code, .code-inline { font-family: var(--mono); font-size: .88em; background: rgba(255,255,255,.07); padding: 2px 7px; border-radius: 6px; color: #e2e8f0; }
+
+.audio-tile { background: #0a0e17; border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; position: relative; }
+.audio-badge { position: absolute; top: 14px; right: 14px; font-family: var(--mono); font-size: 11px; padding: 3px 8px; border-radius: 4px; background: rgba(0,0,0,.7); font-weight: 700; }
+.waveform-box { height: 120px; border-radius: 8px; background: #131d2e; display: flex; align-items: center; justify-content: center; position: relative; border: 1px dashed rgba(255,255,255,.1); gap: 4px; padding: 0 20px; }
+.wave-bar { width: 5px; background: var(--cyan); border-radius: 3px; height: var(--h, 40%); opacity: 0.85; }
+.play-btn { width: 44px; height: 44px; border-radius: 50%; background: rgba(192,132,252,.2); border: 2px solid var(--violet); display: flex; align-items: center; justify-content: center; color: var(--violet); font-size: 18px; margin-right: 12px; }
+
+.stepper { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+.step-item { background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+.step-item.active { border-color: var(--cyan); background: rgba(56,189,248,.08); }
+.step-item.done { border-color: var(--green); }
+.step-num { font-family: var(--mono); font-size: 12px; color: var(--dim); font-weight: 700; }
+.step-item.active .step-num { color: var(--cyan); }
+.step-item.done .step-num { color: var(--green); }
+.step-title { font-size: 16px; font-weight: 700; }
+.step-sub { font-size: 13px; color: var(--muted); }
+
+table.t { width: 100%; border-collapse: collapse; font-size: 16px; }
+table.t th { text-align: left; font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); font-weight: 700; padding: 0 12px 10px; border-bottom: 1px solid var(--line); }
+table.t td { padding: 9px 12px; border-bottom: 1px solid var(--line); color: var(--muted); vertical-align: middle; line-height: 1.35; }
+table.t td:first-child { color: var(--fg); font-weight: 600; white-space: nowrap; }
+
+.drawer { position: fixed; right: 0; top: 0; bottom: 0; width: 440px; background: #0f172a; border-left: 1px solid #334155; transform: translateX(100%); transition: transform .25s ease; z-index: 1000; padding: 28px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.drawer.open { transform: translateX(0); }
+.drawer .hd { font-family: var(--mono); font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); }
+.drawer .tx { font-size: 17px; line-height: 1.5; color: #cbd5e1; }
+
+.grid { position: fixed; inset: 0; background: rgba(5,8,14,.92); backdrop-filter: blur(10px); display: none; grid-template-columns: repeat(6, 1fr); gap: 14px; padding: 40px; z-index: 2000; overflow-y: auto; }
+.grid.open { display: grid; }
+.grid button { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px; color: var(--fg); text-align: left; cursor: pointer; display: flex; flex-direction: column; gap: 8px; font-family: var(--body); }
+.grid button:hover { border-color: var(--cyan); }
+.grid button.cur { border-color: var(--cyan); background: rgba(56,189,248,.1); }
+.grid button span { font-family: var(--mono); font-size: 12px; color: var(--cyan); }
+
+.timer-box { font-family: var(--mono); font-size: 120px; font-weight: 800; color: var(--amber); text-align: center; line-height: 1; margin: 16px 0; }
+.timer-btn { align-self: center; background: var(--amber); color: #0b0f17; font-family: var(--mono); font-size: 18px; font-weight: 700; padding: 14px 32px; border: none; border-radius: 8px; cursor: pointer; }
+.timer-btn:hover { background: #f59e0b; }
+
+@media print {
+  @page { size: 1600px 900px; margin: 0; }
+  body { overflow: visible; background: var(--bg); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .stage { position: static; transform: none; width: 1600px; height: auto; border-radius: 0; box-shadow: none; overflow: visible; }
+  .slide { position: relative; display: flex !important; width: 1600px; height: 900px; break-after: page; page-break-after: always; }
+  .drawer, .grid, button { display: none !important; }
+}
+
+</style>
+</head>
+<body>
+<main class="stage" id="stage">
+
+<!-- SLIDE 01: COVER -->
+<section class="slide cover active" data-n="1">
+  <img class="hero-bg" src="assets/l06_cover_hero.png" alt="Speech and Audio AI Hero">
+  <div class="shade"></div>
+  <div class="txt">
+    <div class="kicker">GenAI Basics • Урок 06 • Модуль 2: Мультимодальность (Финал Модуля)</div>
+    <h1>Речь и аудио AI</h1>
+    <h2>Синтез речи, Whisper, саунд-дизайн Foley и генерация музыки</h2>
+    <p>От одномерных звуковых волн и мел-спектрограмм к дискретным нейрокодекам (EnCodec/DAC), пословным таймкодам Whisper, студиям ElevenLabs и Suno, звуковой экосистеме Google и синхронизированному мультитреку со Sidechain Ducking.</p>
+    <div class="axiom-box">
+      <b>АКСИОМА 10/90 В ГЕНЕРАТИВНОМ ЗВУКЕ:</b> Генерация сырой формы волны нейросетью — это лишь <b>10% успеха</b>. Остальные <b>90%</b> — это Voice Activity Detection (VAD), нормализация громкости LUFS, пословная привязка субтитров, защита от дипфейков, задержка менее 150 мс и сведение стемов в Python.
+    </div>
+  </div>
+  <div class="keys">← → листать • N заметки спикера • G все слайды • F полный экран</div>
+  <template class="notes">Приветствие. Завершаем Модуль 2. Кинематограф и реклама на 50% состоят из звука. Плохой визуал зритель готов простить, но плохой или рассинхронизированный звук заставляет закрыть видео в первые 3 секунды.</template>
+</section>
+
+<!-- SLIDE 02: HOOK QUIZ -->
+<section class="slide" data-n="2">
+  <div class="kicker" style="--k:var(--amber)">Интерактивный хук • Слепой тест</div>
+  <h2 class="title">Слепой тест: отличите студийный микрофон от ИИ 2026 года</h2>
+  <p class="lead">Четыре аудиофрагмента профессионального уровня. Напишите в чат: какие из них записаны микрофоном вживую, а какие сгенерированы нейросетью?</p>
+  <div class="body">
+    <div class="row c4">
+      <div class="audio-tile">
+        <div class="audio-badge" style="color:var(--cyan)">КЛИП [A]</div>
+        <div class="waveform-box">
+          <div class="play-btn">▶</div>
+          <div class="wave-bar" style="--h:30%"></div><div class="wave-bar" style="--h:70%"></div><div class="wave-bar" style="--h:95%"></div><div class="wave-bar" style="--h:40%"></div><div class="wave-bar" style="--h:85%"></div><div class="wave-bar" style="--h:60%"></div>
+        </div>
+        <div class="pt"><div class="h">Дикторская начитка</div><div class="d">Бархатный тембр документалиста, естественный вдох, звонкие согласные.</div></div>
+      </div>
+      <div class="audio-tile">
+        <div class="audio-badge" style="color:var(--green)">КЛИП [B]</div>
+        <div class="waveform-box">
+          <div class="play-btn">▶</div>
+          <div class="wave-bar" style="--h:20%"></div><div class="wave-bar" style="--h:50%"></div><div class="wave-bar" style="--h:80%"></div><div class="wave-bar" style="--h:90%"></div><div class="wave-bar" style="--h:40%"></div><div class="wave-bar" style="--h:30%"></div>
+        </div>
+        <div class="pt"><div class="h">Фоли-шум велосипеда</div><div class="d">Шины режут гравийную лужу, звон цепи, реалистичный мокрый асфальт.</div></div>
+      </div>
+      <div class="audio-tile">
+        <div class="audio-badge" style="color:var(--amber)">КЛИП [C]</div>
+        <div class="waveform-box">
+          <div class="play-btn">▶</div>
+          <div class="wave-bar" style="--h:60%"></div><div class="wave-bar" style="--h:80%"></div><div class="wave-bar" style="--h:75%"></div><div class="wave-bar" style="--h:90%"></div><div class="wave-bar" style="--h:65%"></div><div class="wave-bar" style="--h:85%"></div>
+        </div>
+        <div class="pt"><div class="h">Акустический джаз</div><div class="d">Живое пианино, щеточки по малому барабану, пульсирующий контрабас.</div></div>
+      </div>
+      <div class="audio-tile">
+        <div class="audio-badge" style="color:var(--violet)">КЛИП [D]</div>
+        <div class="waveform-box">
+          <div class="play-btn">▶</div>
+          <div class="wave-bar" style="--h:40%"></div><div class="wave-bar" style="--h:60%"></div><div class="wave-bar" style="--h:55%"></div><div class="wave-bar" style="--h:70%"></div><div class="wave-bar" style="--h:50%"></div><div class="wave-bar" style="--h:35%"></div>
+        </div>
+        <div class="pt"><div class="h">Звонок в техподдержку</div><div class="d">Диалог с задержкой 130 мс, перебивание собеседника, междометия «угу», «да-да».</div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--amber)"><b>Вопрос в чат:</b> Напишите в чат, какие из 4 фрагментов — 100% нейросетевая генерация? Дать студентам 45 секунд на ответы.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>02 / 24</span></div>
+  <template class="notes">Слушаем ответы в чате. Студенты часто думают, что джаз (C) или дыхание (A) точно настоящие. Раскрываем карты на следующем слайде: все 4 — чистый ИИ 2026 года!</template>
+</section>
+
+<!-- SLIDE 03: EVOLUTION -->
+<section class="slide" data-n="3">
+  <div class="kicker">Эволюция нейрозвука • 2020–2026</div>
+  <h2 class="title">Все 4 клипа — 100% генерация ИИ! Хроника преодоления робота</h2>
+  <p class="lead">Все 4 фрагмента были синтезированы нейросетями. За 6 лет аудиотехнологии прошли путь от синтезаторов навигаторов до живых речевых агентов.</p>
+  <div class="body">
+    <div class="row c4">
+      <div class="card-box">
+        <div class="card-label">2020–2021 • РОБОТИЗИРОВАННЫЙ ЗВОН</div>
+        <div class="pt"><div class="h">WaveNet & FastSpeech</div><div class="d"><b>Срез:</b> Металлический фазовый шум, роботизированная интонация без пауз и эмоций, полоса пропускания 16 кГц.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">2022–2023 • ПРОРЫВ РАСПОЗНАВАНИЯ</div>
+        <div class="pt"><div class="h">OpenAI Whisper & ElevenLabs v1</div><div class="d"><b>Срез:</b> OpenAI Whisper решает задачу транскрибации; ElevenLabs вводит эмоциональную выразительность и клонирование.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">2024–2025 • НЕЙРОКОДЕКИ И МУЗЫКА</div>
+        <div class="pt"><div class="h">Suno v3, Udio & EnCodec</div><div class="d"><b>Срез:</b> Полноценные 3-минутные песни с вокалом и куплетами; текстовая генерация фоли-шумов (SFX); дискретные токены звука.</div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">2026 • ГОЛОСОВЫЕ АГЕНТЫ ON-DEVICE</div>
+        <div class="pt"><div class="h">Cartesia Sonic, Whisper v3 & Suno v4</div><div class="d"><b>Срез:</b> Задержка речевого цикла менее 150 мс, студийное качество 48 кГц, мгновенный перевод речи с сохранением оригинального тембра.</div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--cyan)"><b>Вызов 2026 года:</b> Вопрос естественности тембра закрыт. Главная битва идет за <b>минимальную задержку диалога (<150 мс)</b> и <b>мультитрековое сведение</b> без частотных конфликтов.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>03 / 24</span></div>
+  <template class="notes">Показываем хронологию. Подчеркиваем: звук сложнее текста тем, что секунда аудио — это 44 100 отсчетов амплитуды.</template>
+</section>
+
+<!-- SLIDE 04: ROADMAP -->
+<section class="slide" data-n="4">
+  <div class="kicker">Дорожная карта курса • Финал Модуля 2</div>
+  <h2 class="title">Завершение мультимодальности: озвучивание немых роликов из L05</h2>
+  <p class="lead">Модуль 2 переводит текстовые промпты в физический мир. В L04 мы зафиксировали кадры, в L05 оживили движение. Сегодня мы даем роликам голос, шумы и саундтрек.</p>
+  <div class="body">
+    <div class="stepper" style="margin-bottom:24px;">
+      <div class="step-item done"><div class="step-num">M1 • ГОТОВО</div><div class="step-title">База LLM</div><div class="step-sub">L01–L03: Промпты и API</div></div>
+      <div class="step-item done"><div class="step-num">L04 • ГОТОВО</div><div class="step-title">Картинки</div><div class="step-sub">Промпты, C2_rain, пэкшот</div></div>
+      <div class="step-item done"><div class="step-num">L05 • ГОТОВО</div><div class="step-title">Видео</div><div class="step-sub">I2V, камеры, монтаж</div></div>
+      <div class="step-item active"><div class="step-num">L06 • ЗДЕСЬ</div><div class="step-title">Речь и звук</div><div class="step-sub">TTS, Whisper, Foley, саундтрек</div></div>
+      <div class="step-item"><div class="step-num">M3 • ДАЛЕЕ</div><div class="step-title">Экосистема</div><div class="step-sub">L07: Copilot, M365 и Dev</div></div>
+      <div class="step-item"><div class="step-num">M4–M6</div><div class="step-title">Агенты и код</div><div class="step-sub">L08–L16: MCP, архитектура</div></div>
+    </div>
+    <div class="row c2">
+      <div class="card-box" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">ЧТО МЫ ПОЛУЧИЛИ ИЗ УРОКА 05</div>
+        <div class="pt"><div class="h">Немые 5-секундные видеодубли</div><div class="d">Курьер Glovo под дождем (<code>shot2_bike_rain.mp4</code>) и вращающаяся кружка кофе (<code>packshot_360.mp4</code>) безупречны визуально, но кинематографически мертвы без звука.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">ЧТО L06 ДАЕТ ДЛЯ ПОЛНОГО ПРОДАКШЕНА</div>
+        <div class="pt"><div class="h">3-слойный акустический саундтрек</div><div class="d"><b>1. Закадровый голос:</b> синтез речи диктора с точной артикуляцией.<br><b>2. Фоли SFX:</b> брызги луж, шелест дождевика, трещотка втулки велосипеда.<br><b>3. Музыка:</b> атмосферный фон с автоматическим приглушением (ducking).</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>04 / 24</span></div>
+  <template class="notes">Показываем преемственность. Модуль 2 логически закрывается: от текста к картинке, затем к видео, и наконец к полному аудиовизуальному продакшену.</template>
+</section>
+
+<!-- SLIDE 05: SOUND PHYSICS & CODECS (WITH DIAGRAM) -->
+<section class="slide" data-n="5">
+  <div class="kicker">Физика звука и нейросети • От волны к токенам</div>
+  <h2 class="title">Природа звука: форма волны, мел-спектрограммы и нейрокодеки</h2>
+  <p class="lead">Как трансформеры генерируют непрерывный 48 кГц звук: архитектура остаточного векторного квантования (RVQ).</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/audio_codec_rvq_arch.png" alt="Neural Audio Codec RVQ Architecture">
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">1. НЕПРЕРЫВНАЯ ВОЛНА PCM (1D)</div>
+          <div class="pt"><div class="h">44 100 чисел в секунду</div><div class="d">Звук — одномерная волна давления воздуха. Прямая подача в авторегрессионный трансформер переполнила бы контекстное окно за секунды.</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">2. ПРЕОБРАЗОВАНИЕ ФУРЬЕ (STFT)</div>
+          <div class="pt"><div class="h">Мел-спектрограммы (2D)</div><div class="d">Нарезка на окна по 25 мс с логарифмической шкалой частот Mel. Именно это принимает энкодер Whisper.</div></div>
+        </div>
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">3. НЕЙРОКОДЕКИ (EnCodec / DAC)</div>
+          <div class="pt"><div class="h">RVQ: всего ~50 токенов/сек</div><div class="d"><b>Остаточное векторное квантование:</b> сжимает 48 кГц звук в дискретные целочисленные токены, понятные обычным языковым моделям!</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>05 / 24</span></div>
+  <template class="notes">Разбираем архитектуру нейрокодеков. Обратите внимание на схему слева: RVQ Codebooks квантуют остаточную ошибку предыдущего слоя, сжимая студийный звук в компактную цепочку токенов.</template>
+</section>
+
+<!-- SLIDE 06: WHISPER ARCHITECTURE -->
+<section class="slide" data-n="6">
+  <div class="kicker">Speech-to-Text (STT) • Архитектура Whisper</div>
+  <h2 class="title">OpenAI Whisper: Encoder-Decoder и пословные таймкоды субтитров</h2>
+  <p class="lead">Стандарт распознавания речи в индустрии: от 30-секундных мел-спектрограмм к пословной синхронизации субтитров.</p>
+  <div class="body">
+    <div class="row c3">
+      <div class="card-box">
+        <div class="card-label">АУДИО-ЭНКОДЕР (СВЕРТКИ + ATTENTION)</div>
+        <div class="pt"><div class="h">30-секундные чанки</div><div class="d">Принимает 80/128-канальную мел-спектрограмму. Две 1D-свертки со страйдом 2 сжимают временную ось в 4 раза, после чего стек Transformer-блоков извлекает акустические эмбеддинги.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">ТЕКСТОВЫЙ ДЕКОДЕР (СПЕЦТОКЕНЫ)</div>
+        <div class="pt"><div class="h">Префиксные промпты задачи</div><div class="d">Авторегрессионный декодер управляется токенами: <code>&lt;|startoftranscript|&gt;</code>, язык <code>&lt;|ru|&gt;</code>, задача <code>&lt;|transcribe|&gt;</code> или <code>&lt;|translate|&gt;</code> (прямой перевод на английский).</div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--green)">
+        <div class="card-label" style="color:var(--green)">WORD-LEVEL TIMESTAMPS</div>
+        <div class="pt"><div class="h">Субтитры без ручной разметки</div><div class="d">Параметр <code>word_timestamps=True</code> анализирует матрицы Cross-Attention и методом Dynamic Time Warping вычисляет точные миллисекунды начала и конца каждого слова для монтажа.</div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--green)"><b>Инженерная ценность:</b> Пословные таймкоды позволяют видеомонтажному скрипту на Python автоматически нарезать речь на субтитры <code>.srt</code> и синхронизировать анимацию титров на экране.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>06 / 24</span></div>
+  <template class="notes">Объясняем двухбашенную структуру Whisper. Главное для видеопродакшна — word_timestamps, без которых невозможно автоматически генерировать кинематографические титры.</template>
+</section>
+
+<!-- SLIDE 07: WHISPER IN PROD & WEB PLAYGROUND (UI SCREENSHOT) -->
+<section class="slide" data-n="7">
+  <div class="kicker">Whisper в продакшене • Устранение сбоев</div>
+  <h2 class="title">Кабинет Whisper Playground: борьба с зацикливанием и Silero VAD</h2>
+  <p class="lead">Почему Whisper циклится в тишине и как связка с Silero VAD и CTranslate2 обеспечивает безотказный продакшен.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/whisper_playground_ui.png" alt="OpenAI Whisper Playground UI">
+      </div>
+      <div class="stack center">
+        <div class="card-box" style="border-color:var(--red)">
+          <div class="card-label" style="color:var(--red)">ПРОБЛЕМА: ПЕТЛИ ПОВТОРОВ В ТИШИНЕ</div>
+          <div class="pt"><div class="h">Галлюцинации Repetition Loops</div><div class="d">Когда диктор молчит, авторегрессионный декодер Whisper цепляется за шум и входит в бесконечный цикл: <i>«Спасибо за просмотр! Ставьте лайк...»</i>.</div></div>
+        </div>
+        <div class="card-box active" style="border-color:var(--green)">
+          <div class="card-label" style="color:var(--green)">РЕШЕНИЕ: SILERO VAD (1 МБ НЕЙРОСЕТЬ)</div>
+          <div class="pt"><div class="h">Предварительная вырезка пауз</div><div class="d"><b>Voice Activity Detection:</b> за 2 мс сканирует файл, вырезает паузы и тишину. Whisper получает только гарантированную речь, что на 100% исключает зацикливание.</div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">РАНТАЙМ: FASTER-WHISPER (CTRANSLATE2)</div>
+          <div class="pt"><div class="h">Ускорение в 4 раза на C++</div><div class="d">Квантование INT8/FP16 сокращает расход видеопамяти на 50% и ускоряет транскрибацию в 4 раза по сравнению с ванильным PyTorch.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>07 / 24</span></div>
+  <template class="notes">Смотрим на скриншот кабинета Whisper: сверху спектрограмма, выбор модели large-v3-turbo, пословные таймкоды. Справа объясняем Silero VAD — обязательный компонент продакшн-конвейера.</template>
+</section>
+
+<!-- SLIDE 08: TTS LANDSCAPE & ELEVENLABS STUDIO (UI SCREENSHOT) -->
+<section class="slide" data-n="8">
+  <div class="kicker">Синтез речи (TTS) • Кабинет ElevenLabs Studio</div>
+  <h2 class="title">Ландшафт TTS 2026: студийный ElevenLabs против сверхбыстрых агентов</h2>
+  <p class="lead">Рынок синтеза речи разделился на студийных лидеров, ультранизкую задержку для ботов и локальные $0 модели.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/elevenlabs_studio_ui.png" alt="ElevenLabs Speech Synthesis Studio UI">
+      </div>
+      <div class="stack center">
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">1. СТУДИЙНЫЙ ЭТАЛОН (ElevenLabs v2)</div>
+          <div class="pt"><div class="h">48 кГц, 32+ языка, эмоции</div><div class="d">Эталон для озвучки видео и дубляжа. В кабинете слева: выбор голоса и клонов; в центре: ползунки Stability и Similarity; справа: текст с SSML и фонетикой. Задержка ~350 мс.</div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--amber)">
+          <div class="card-label" style="color:var(--amber)">2. ДИАЛОГОВЫЕ АГЕНТЫ (Cartesia Sonic)</div>
+          <div class="pt"><div class="h">Задержка 135 мс до первого байта</div><div class="d">Архитектура State-Space Model. Создана специально для телефонных ботов и мгновенных ответов без задержки.</div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--green)">
+          <div class="card-label" style="color:var(--green)">3. ЛОКАЛЬНЫЙ OPEN-SOURCE (Kokoro-82M)</div>
+          <div class="pt"><div class="h">82 млн параметров, $0 API cost</div><div class="d">Лицензия Apache 2.0. Работает локально на CPU и в браузере через WebAssembly без передачи данных в облако.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>08 / 24</span></div>
+  <template class="notes">Разбираем интерфейс ElevenLabs: обращаем внимание студентов на ползунки Stability и Similarity Boost, а также на поле Text Script с фонетическими тегами.</template>
+</section>
+
+<!-- SLIDE 09: SPEECH DIRECTING & CONTROLS -->
+<section class="slide" data-n="9">
+  <div class="kicker">Режиссура речи • Промптинг TTS</div>
+  <h2 class="title">Управление диктором: пунктуация, SSML-теги и ползунки Stability</h2>
+  <p class="lead">Как управлять дыханием, паузами и эмоциональным накалом искусственного голоса без искажений.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box">
+        <div class="card-label">ПУНКТУАЦИЯ КАК НОТНАЯ ГРАМОТА</div>
+        <div class="pt"><div class="h">Вдохи, паузы и акценты</div><div class="d">
+          • <b>Многоточие (<code>...</code>):</b> принуждает модель сделать естественный вдох и замедлить темп.<br>
+          • <b>Длинное тире (<code>—</code>):</b> создает смысловую паузу перед кульминацией фразы.<br>
+          • <b>ЗАГЛАВНЫЕ БУКВЫ:</b> добавляют эмоциональное ударение и повышение тона.<br>
+          • <b>SSML & IPA:</b> тег <code>&lt;break time="0.5s"/&gt;</code> и фонетическая транскрипция для брендов: <code>&lt;phoneme alphabet="ipa" ph="ɡloʊvoʊ"&gt;Glovo&lt;/phoneme&gt;</code>.
+        </div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">КАЛИБРОВКА ПОЛЗУНКОВ ELEVENLABS</div>
+        <div class="pt"><div class="h">Stability: актерская игра vs стабильность</div><div class="d">
+          • <b>Stability = 0.30–0.40:</b> Высокая вариативность, шепот, драматические паузы, эмоциональный накал (кинотрейлеры, сторителлинг).<br>
+          • <b>Stability = 0.80–0.90:</b> Монотонная, академическая подача (юридические дисклеймеры, документация, банковские IVR).<br>
+          • <b>Similarity Boost = 0.75:</b> Высокая точность оригинального тембра без появления фазовых артефактов микрофона.
+        </div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--amber)"><b>Золотое правило:</b> Никогда не ставьте Stability на 1.0 (голос превратится в бездушного робота) и ниже 0.2 (появятся случайные фальцеты и срывы голоса). Оптимум для рекламы — <b>0.35–0.45</b>.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>09 / 24</span></div>
+  <template class="notes">Объясняем разницу между текстом для чтения глазами и текстом для диктора. Знаки препинания здесь работают как указатели дыхания.</template>
+</section>
+
+<!-- SLIDE 10: VOICE CLONING -->
+<section class="slide" data-n="10">
+  <div class="kicker">Клонирование голоса • Технологии</div>
+  <h2 class="title">Клонирование голоса: Instant (d-векторы) vs Professional (LoRA PVC)</h2>
+  <p class="lead">Два принципиально разных подхода к воспроизведению тембра человека: быстрый zero-shot против студийного обучения.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box">
+        <div class="card-label">INSTANT VOICE CLONING (IVC / ZERO-SHOT)</div>
+        <div class="pt"><div class="h">60 секунд аудио • d-вектор спикера</div><div class="d">
+          • <b>Как работает:</b> Сверточная сеть извлекает 512-мерный вектор эмбеддинга спикера и подмешивает его в базовую модель при генерации.<br>
+          • <b>Скорость и стоимость:</b> Готово за 5 секунд, $0 затрат на обучение.<br>
+          • <b>Ловушка:</b> Сходство ~80%. Если исходный сэмпл записан на плохой микрофон в комнате с эхом — это эхо навсегда впечатается во все генерации!
+        </div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">PROFESSIONAL VOICE CLONING (PVC / FINE-TUNING)</div>
+        <div class="pt"><div class="h">45 минут студии • Дообучение весов LoRA</div><div class="d">
+          • <b>Как работает:</b> Полный цикл дообучения адаптеров весов (LoRA) на GPU в течение 2–4 часов на чистых студийных записях.<br>
+          • <b>Результат:</b> 98% сходства, способность шептать, кричать и сохранять тончайшие обертоны и форманты живого человека.<br>
+          • <b>Стандарт:</b> Требует верификации согласия владельца голоса через Voice Captcha.
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>10 / 24</span></div>
+  <template class="notes">Сравниваем подходы. Для демо подходит Instant, но в коммерческий продакшен пускают только Professional Voice Cloning на чистом звуке.</template>
+</section>
+
+<!-- SLIDE 11: SECURITY & WATERMARKING -->
+<section class="slide" data-n="11">
+  <div class="kicker">Безопасность и этика • Аудио-биометрия</div>
+  <h2 class="title">Аудио-безопасность: векторы угроз, Voice Captcha и SynthID</h2>
+  <p class="lead">Как защитить бизнес от CEO-fraud, а голос от несанкционированного клонирования.</p>
+  <div class="body">
+    <div class="row c3">
+      <div class="card-box" style="border-color:var(--red)">
+        <div class="card-label" style="color:var(--red)">ВЕКТОРЫ УГРОЗ 2026</div>
+        <div class="pt"><div class="h">Мошенничество и дипфейки</div><div class="d">
+          • <b>CEO Voice Fraud:</b> Звонки финансовым директорам с имитацией голоса руководителя.<br>
+          • <b>Обход биометрии:</b> Атаки на банковские контакт-центры с подтверждением платежей голосом.<br>
+          • <b>Фейковые доказательства:</b> Синтез записей с компроматом на публичных лиц.
+        </div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--green)">
+        <div class="card-label" style="color:var(--green)">DYNAMIC VOICE CAPTCHA</div>
+        <div class="pt"><div class="h">Защита от чужих аудиозаписей</div><div class="d">
+          Платформа генерирует случайную динамическую фразу с текущим таймстемпом. Владелец обязан зачитать ее вслух в камеру. Украденная запись не пройдет проверку!
+        </div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">IN-BAND ВОТЕРМАРКИНГ</div>
+        <div class="pt"><div class="h">Google SynthID & PerTh</div><div class="d">
+          Микроскопическая фазовая модуляция гармоник. Человек ее не слышит, но спектральный детектор гарантированно выявляет ИИ даже после сжатия в MP3 и наложения шума улицы!
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>11 / 24</span></div>
+  <template class="notes">Этика и безопасность. Подчеркиваем: SynthID не слышен уху, но защищает авторские права и юридическую чистоту контента.</template>
+</section>
+
+<!-- SLIDE 12: BLAST RADIUS MATRIX -->
+<section class="slide" data-n="12">
+  <div class="kicker">Корпоративное управление • Матрица рисков</div>
+  <h2 class="title">Blast Radius в аудио: Зеленая, Желтая и Красная зоны</h2>
+  <p class="lead">Четкие границы допустимого применения нейрозвука в enterprise-проектах.</p>
+  <div class="body">
+    <div class="row c3">
+      <div class="card-box" style="border-color:var(--green)">
+        <div class="card-label" style="color:var(--green)">ЗЕЛЕНАЯ ЗОНА (АВТОНОМНО)</div>
+        <div class="pt"><div class="h">Фоли, черновики и авторский дубляж</div><div class="d">
+          • Генерация предметных звуковых шумов (шаги, брызги, ветер).<br>
+          • Черновые начитки внутренних презентаций.<br>
+          • Авторский дубляж собственных видеороликов (кейс Creator Tools).<br>
+          <b>Риск ущерба: 0%. Полная автономность.</b>
+        </div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">ЖЕЛТАЯ ЗОНА (HUMAN-IN-THE-LOOP)</div>
+        <div class="pt"><div class="h">Голосовые боты и реклама бренда</div><div class="d">
+          • Голосовые боты первой линии поддержки (обязателен аудиодисклеймер: <i>«С вами говорит AI»</i>).<br>
+          • Коммерческие рекламные ролики (обязателен аудит звукорежиссера на артефакты).<br>
+          <b>Риск репутации: средний. Контроль человека.</b>
+        </div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--red)">
+        <div class="card-label" style="color:var(--red)">КРАСНАЯ ЗОНА (СТРОГИЙ ЗАПРЕТ)</div>
+        <div class="pt"><div class="h">Клонирование без согласия и суд</div><div class="d">
+          • Клонирование голоса живых людей без письменного юридического согласия.<br>
+          • Генерация звонков от экстренных служб.<br>
+          • Обход голосовой биометрии банков.<br>
+          <b>Категорически запрещено. Уголовная ответственность.</b>
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>12 / 24</span></div>
+  <template class="notes">Повторяем концепцию Blast Radius для аудио: где ИИ можно запускать на автомате, а где необходим жесткий аудит.</template>
+</section>
+
+<!-- SLIDE 13: GOOGLE AUDIO & SPEECH ECOSYSTEM (INFOGRAPHIC DIAGRAM) -->
+<section class="slide" data-n="13">
+  <div class="kicker">Экосистема вендоров • Архитектура Google</div>
+  <h2 class="title">Что есть у Google со звуком: Cloud Studio, DeepMind и Gemini Native Audio</h2>
+  <p class="lead">От классических облачных сервисов речи к фундаментальным моделям DeepMind и прямому нативному аудио в Gemini.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/google_audio_ecosystem.png" alt="Google Audio and Speech Ecosystem C4 Architecture">
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">1. GOOGLE CLOUD SPEECH STUDIO</div>
+          <div class="pt"><div class="h">Journey Voices & Chirp (USM 2B)</div><div class="d"><b>TTS:</b> Journey и Studio Voices — студийные 48 кГц голоса с тонкой SSML-настройкой.<br><b>ASR:</b> Модель Chirp на базе 2-миллиардной Universal Speech Model распознает речь на 100+ языках в сложной акустике.</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">2. DEEPMIND AUDIO & LYRIA MUSIC</div>
+          <div class="pt"><div class="h">SoundStream, AudioLM & Lyria</div><div class="d">DeepMind создал <b>SoundStream</b> (пионер RVQ нейрокодеков) и <b>Lyria</b> — флагманский движок генерации музыки (лежит в основе YouTube Dream Track и MusicFX).</div></div>
+        </div>
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">3. GEMINI NATIVE MULTIMODAL AUDIO</div>
+          <div class="pt"><div class="h">Прямое Audio-In ➔ Audio-Out</div><div class="d"><b>Революция без каскада:</b> Gemini воспринимает звук напрямую без текстового посредника — слышит сарказм, смех, шум улицы и отвечает нативным голосом! Плюс защита <b>SynthID</b>.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>13 / 24</span></div>
+  <template class="notes">Специальный разбор технологий Google: от инфраструктурного Cloud Speech до фундаментальных моделей DeepMind и прямого аудио Gemini.</template>
+</section>
+
+<!-- SLIDE 14: CREATOR TOOLS DUBBING PIPELINE -->
+<section class="slide" data-n="14">
+  <div class="kicker">Практический R&D кейс • Creator Tools</div>
+  <h2 class="title">Speech-to-Speech и дубляж на 100+ языков с сохранением тембра</h2>
+  <p class="lead">Как устроен конвейер локализации видео для YouTube-авторов: управление слоговым бюджетом и фазовый вокодер.</p>
+  <div class="body">
+    <div class="row c4">
+      <div class="card-box">
+        <div class="card-label">ЭТАП 1: ТАЙМИНГИ И РЕЧЬ</div>
+        <div class="pt"><div class="h">Whisper + VAD</div><div class="d">Извлечение слов с точными временными границами и чистка пауз для исключения смещения монтажа.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">ЭТАП 2: БЮДЖЕТ СЛОГОВ</div>
+        <div class="pt"><div class="h">LLM Syllable Budget</div><div class="d">Промпт обязывает модель переводить с жестким ограничением числа слогов, предотвращая расползание хронометража.</div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">ЭТАП 3: ТЕМБР СПИКЕРА</div>
+        <div class="pt"><div class="h">Voice Conversion</div><div class="d">Синтез на целевом языке с сохранением оригинальных формант, высоты тона и дыхания автора.</div></div>
+      </div>
+      <div class="card-box active" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">ЭТАП 4: ПОДГОНКА В КАДР</div>
+        <div class="pt"><div class="h">Elastic Time-Stretch</div><div class="d">Фазовый вокодер (Phase Vocoder) сжимает темп речи на ±15% без изменения высоты тона под склейки видеоряда.</div></div>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--cyan)"><b>Результат:</b> Зритель в Бразилии или Германии слышит голос автора на своем языке с идеальным попаданием в монтажные склейки видеоряда!</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>14 / 24</span></div>
+  <template class="notes">Делимся реальным R&D-опытом Creator Tools. Главный вызов — разная длина языков: фраза на немецком на 25% длиннее английской.</template>
+</section>
+
+<!-- SLIDE 15: BREAK -->
+<section class="slide" data-n="15">
+  <div class="kicker" style="--k:var(--amber)">Экватор занятия • 5 минут отдыха</div>
+  <h2 class="title">Перезагрузка слухового аппарата</h2>
+  <p class="lead">Слуховое восприятие требует колоссальных энергетических затрат мозга. Отключите звук, выпейте воды, дайте ушам отдохнуть.</p>
+  <div class="body" style="align-items:center;justify-content:center;">
+    <div class="timer-box" id="timer-disp">05:00</div>
+    <button class="timer-btn" id="timer-btn" onclick="toggleTimer()">СТАРТ 5 МИН</button>
+    <div class="card-box" style="margin-top:24px;max-width:800px;text-align:center;">
+      <div class="card-label" style="color:var(--amber)">ВО ВТОРОЙ ПОЛОВИНЕ УРОКА:</div>
+      <div style="font-size:18px;line-height:1.45;color:var(--fg);margin-top:6px;">
+        Генерация шумов Foley (ElevenLabs SFX) • Звуковая матрица сториборда Giant Stories • Музыка в Suno v4 • Сведение 3 стемов со Sidechain Ducking на Python • Голосовые агенты реального времени (<300 мс).
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>15 / 24</span></div>
+  <template class="notes">Запускаем таймер. Строго отдых — никаких заданий в чат. Спикер и слушатели перезагружаются перед практической второй частью.</template>
+</section>
+
+<!-- SLIDE 16: FOLEY SFX GENERATION (UI SCREENSHOT) -->
+<section class="slide" data-n="16">
+  <div class="kicker">Sound Effects (SFX AI) • Кабинет ElevenLabs SFX</div>
+  <h2 class="title">Генерация фоли-шумов: предметный звук из текста по 3-слотовой формуле</h2>
+  <p class="lead">Больше не нужно искать звуки в стоковых библиотеках. Модели генерируют физические шумы по детальному описанию материалов.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/elevenlabs_sfx_ui.png" alt="ElevenLabs Sound Effects Studio UI">
+      </div>
+      <div class="stack center">
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">3-СЛОТОВАЯ ФОРМУЛА FOLEY-ПРОМПТА</div>
+          <div class="pt"><div class="h">[Источник] + [Действие] + [Пространство]</div><div class="d">
+            1. <b>Материал:</b> <code>rubber tires</code>, <code>ceramic mug</code>, <code>wet leather</code>.<br>
+            2. <b>Кинетика движения:</b> <code>splashing violently</code>, <code>scraping stone</code>.<br>
+            3. <b>Акустика пространства:</b> <code>outdoor alleyway reflections</code>, <code>hollow vault echo</code>.
+          </div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">ЭТАЛОННЫЙ ПРОМПТ ДЛЯ КУРЬЕРА GLOVO</div>
+          <div class="pt"><div class="h">Шоссейный велосипед под дождем</div><div class="d"><code>Bicycle rubber tires splashing violently through a deep rainwater puddle on wet cobblestone, fine water spray, quiet evening city background hum, cinema foley</code></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>16 / 24</span></div>
+  <template class="notes">Смотрим на скриншот кабинета ElevenLabs SFX: вводим промпт курьера, выставляем длительность 5.0 секунд, получаем 48 кГц стереофонический шум брызг.</template>
+</section>
+
+<!-- SLIDE 17: STORYBOARD SOUND MATRIX (GIANT STORIES CASE) -->
+<section class="slide" data-n="17">
+  <div class="kicker">Саунд-дизайн сториборда • Продакшн-матрица</div>
+  <h2 class="title">Звуковая партитура сториборда: кейс Creator Tools Giant Stories</h2>
+  <p class="lead">Как в реальном продакшне привязывать звуковые слои и музыкальные хуки к каждому 5-секундному видеошоту.</p>
+  <div class="body">
+    <table class="t">
+      <thead>
+        <tr>
+          <th>Шот #</th>
+          <th>Ключевой визуал сцены</th>
+          <th>Диктор (Voice-Over)</th>
+          <th>Foley SFX Layer</th>
+          <th>Музыкальный хук (Music)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Шот 1</td>
+          <td>Опечатанный ящик 1929 года в подвале</td>
+          <td>«Никто не открывал его почти сто лет...»</td>
+          <td>Гул каменного подвала, редкие капли воды, шуршание крысы</td>
+          <td>Низкий контрабасовый дрон, 60 BPM, минор</td>
+        </tr>
+        <tr>
+          <td>Шот 2</td>
+          <td>Бурение на нефть в техасской жаре</td>
+          <td>«Они копали вслепую, теряя последние деньги...»</td>
+          <td>Стрекот цикад, скрежет лопаты о сухой камень, глухой стук</td>
+          <td>Пульсирующий суб-бас, редкий перкуссионный щелчок</td>
+        </tr>
+        <tr>
+          <td>Шот 3</td>
+          <td>Ротационный типографский пресс</td>
+          <td>«Но утренняя газета перевернула всё...»</td>
+          <td>Механический грохот шестерен, шипение краски, шелест бумаги</td>
+          <td>Нарастающее тремоло струнных, разгон темпа</td>
+        </tr>
+        <tr>
+          <td>Шот 4</td>
+          <td>Курьер Glovo мчит под дождем</td>
+          <td>«Горячий ужин вовремя, несмотря на шторм.»</td>
+          <td>Хлесткие брызги лужи из-под колес, шелест дождевика</td>
+          <td>Теплый lo-fi бит 74 BPM с приглушением под голос</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note" style="margin-top:16px;border-color:var(--cyan)"><b>Принцип киноинженерии:</b> Саунд-дизайн проектируется <b>до начала монтажа</b>. Каждый шот имеет точную акустическую партитуру из двух стемов: предметных шумов и музыкального хука.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>17 / 24</span></div>
+  <template class="notes">Разбираем матрицу из 10-серийного проекта Giant Stories. Показываем, что звук не накладывается наугад, а жестко расписан по таймкодам.</template>
+</section>
+
+<!-- SLIDE 18: SUNO V4 & UDIO STUDIO (UI SCREENSHOT) -->
+<section class="slide" data-n="18">
+  <div class="kicker">Генерация музыки • Кабинет Suno v4 Studio</div>
+  <h2 class="title">Музыкальный продакшен: тумблер Instrumental, структурные теги и Demucs</h2>
+  <p class="lead">Как генерировать управляемый фоновый саундтрек без конфликтов с голосом диктора.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/suno_v4_studio_ui.png" alt="Suno v4 Music Creation Studio UI">
+      </div>
+      <div class="stack center">
+        <div class="card-box active" style="border-color:var(--green)">
+          <div class="card-label" style="color:var(--green)">ЖЕЛЕЗНОЕ ПРАВИЛО: INSTRUMENTAL ВКЛЮЧЕН</div>
+          <div class="pt"><div class="h">Никакого вокала под диктора!</div><div class="d">Если в фоновой музыке звучит сгенерированный вокал, он немедленно вступит в частотный конфликт с речью диктора, сделав слова неразборчивыми.</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">ТЕГИ РАЗМЕТКИ В ОКНЕ ТЕКСТА (LYRICS)</div>
+          <div class="pt"><div class="h">Управление структурой аранжировки</div><div class="d">
+            Даже в инструментальном режиме пишем: <code>[Intro: Chillhop acoustic]</code> ➔ <code>[Verse: 74 BPM]</code> ➔ <code>[Build-up: Cello]</code> ➔ <code>[Outro: Fade out]</code>.
+          </div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">РАЗДЕЛЕНИЕ НА СТЕМЫ (DEMUCS v4)</div>
+          <div class="pt"><div class="h">Изоляция дорожек в один клик</div><div class="d">Разбивка трека на 4 изолированных файла: барабаны, бас, инструменты и вокал для независимой регулировки громкости.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>18 / 24</span></div>
+  <template class="notes">Смотрим на кабинет Suno v4: сверху тумблер Instrumental Enabled, окно Lyrics с тегами, внизу мультитрек и фейдеры разделения стемов Demucs.</template>
+</section>
+
+<!-- SLIDE 19: MULTI-STEM MIXING & DUCKING (AUDIO DIAGRAM) -->
+<section class="slide" data-n="19">
+  <div class="kicker">Сведение звука • Стандарты LUFS</div>
+  <h2 class="title">Сведение 3 стемов и Sidechain Ducking: автоматическое приглушение музыки</h2>
+  <p class="lead">Как собрать голос диктора, фоли-шумы и музыку в сбалансированный мастер без цифрового клиппинга.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/sidechain_ducking_diagram.png" alt="Sidechain Ducking Audio Engineering Diagram">
+      </div>
+      <div class="stack center">
+        <div class="card-box">
+          <div class="card-label">СТЕМ 1 • ДИКТОРСКАЯ РЕЧЬ</div>
+          <div class="pt"><div class="h">-14 LUFS (Пики не выше -1.0 dBFS)</div><div class="d">Центральный моно-канал, срез частот ниже 80 Гц для удаления низкочастотного гула микрофона.</div></div>
+        </div>
+        <div class="card-box">
+          <div class="card-label">СТЕМ 2 • ФОЛИ SFX</div>
+          <div class="pt"><div class="h">-18 LUFS (Стерео-панорама)</div><div class="d">Синхронизация с видео: пик брызг колеса совпадает с кадром наезда на лужу.</div></div>
+        </div>
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">СТЕМ 3 • МУЗЫКА С SIDECHAIN DUCKING</div>
+          <div class="pt"><div class="h">Автоматическая просадка на -5 дБ</div><div class="d">В паузах музыка звучит на -18 LUFS. Как только звучит голос, автоматика приглушает музыку до <b>-23 LUFS</b>. Реализуется в Python через библиотеку <code>pydub</code>.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>19 / 24</span></div>
+  <template class="notes">Объясняем Sidechain Ducking по схеме слева: огибающая дикторского голоса управляет громкостью фоновой музыки, исключая кашу в миксе.</template>
+</section>
+
+<!-- SLIDE 20: REAL-TIME VOICE AGENTS (WATERFALL DIAGRAM) -->
+<section class="slide" data-n="20">
+  <div class="kicker">Интерактивный ИИ • Voice Agents</div>
+  <h2 class="title">Голосовые агенты реального времени: бюджет задержки &lt;300 мс и Barge-In</h2>
+  <p class="lead">Почему стандартные REST API неприменимы для диалога и как строится потоковый WebRTC-пайплайн.</p>
+  <div class="body">
+    <div class="row img-split">
+      <div class="pic-frame">
+        <img src="assets/voice_agent_latency_arch.png" alt="Real-Time Voice Agent Latency Waterfall">
+      </div>
+      <div class="stack center">
+        <div class="card-box active" style="border-color:var(--cyan)">
+          <div class="card-label" style="color:var(--cyan)">РАСЧЕТ БЮДЖЕТА ЗАДЕРЖКИ: 285 МС</div>
+          <div class="pt"><div class="h">Укладываемся в порог восприятия</div><div class="d">
+            1. Вход аудио WebRTC: <b>20 мс</b><br>
+            2. Детекция конца речи Silero VAD: <b>15 мс</b><br>
+            3. Распознавание речи Whisper Turbo: <b>80 мс</b><br>
+            4. Время до 1-го токена Groq LLaMA 3.3: <b>50 мс</b><br>
+            5. Потоковый синтез Cartesia Sonic: <b>90 мс</b><br>
+            6. Буфер вывода в динамик: <b>30 мс</b>
+          </div></div>
+        </div>
+        <div class="card-box" style="border-color:var(--amber)">
+          <div class="card-label" style="color:var(--amber)">ОБРАБОТКА ПЕРЕБИВАНИЯ (BARGE-IN)</div>
+          <div class="pt"><div class="h">Мгновенный обрыв генерации</div><div class="d">Если пользователь заговорил поверх агента, локальный VAD посылает сигнал сброса по WebSocket, сервер мгновенно отменяет генерацию, и динамик замолкает за 20 мс.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>20 / 24</span></div>
+  <template class="notes">Разбираем диаграмму водопада задержек. Человек воспринимает задержку выше 300 мс как зависание телефонной линии. Barge-in — обязательное требование к живому диалогу.</template>
+</section>
+
+<!-- SLIDE 21: PYTHON CODE WALKTHROUGH -->
+<section class="slide" data-n="21">
+  <div class="kicker">Практика в коде • Python API Automation</div>
+  <h2 class="title">Автоматизация в Python: извлечение таймкодов Whisper и сведение стемов</h2>
+  <p class="lead">Готовый пайплайн в Colab-ноутбуке: от транскрибации до автоматического наложения звука на видео.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box">
+        <div class="card-label">БЛОК 1: ПОСЛОВНЫЕ ТАЙМКОДЫ WHISPER</div>
+        <pre style="font-family:var(--mono);font-size:14px;line-height:1.45;color:#e2e8f0;background:#060a12;padding:14px;border-radius:8px;overflow-x:auto;">
+import whisper
+
+model = whisper.load_model("large-v3-turbo")
+result = model.transcribe("voice.wav", word_timestamps=True)
+
+for segment in result["segments"]:
+    for word in segment["words"]:
+        print(f"[{word['start']:.2f}s -> {word['end']:.2f}s] {word['word']}")
+        </pre>
+      </div>
+      <div class="card-box">
+        <div class="card-label">БЛОК 2: СВЕДЕНИЕ СО СТЕМАМИ В PYDUB</div>
+        <pre style="font-family:var(--mono);font-size:14px;line-height:1.45;color:#e2e8f0;background:#060a12;padding:14px;border-radius:8px;overflow-x:auto;">
+from pydub import AudioSegment
+
+voice = AudioSegment.from_file("voice.wav") - 2  # -14 LUFS
+sfx   = AudioSegment.from_file("sfx.wav") - 6    # -18 LUFS
+music = AudioSegment.from_file("music.wav") - 12 # -22 LUFS
+
+# Сведение слоев
+mix = music.overlay(sfx).overlay(voice)
+mix.export("final_soundtrack.wav", format="wav")
+        </pre>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--cyan)"><b>Ссылка на Colab:</b> Ноутбук <code>notebooks/L06_Speech_and_Audio_AI_Pipeline.ipynb</code> запускается за $0, содержит синтетические генераторы тестовых стемов и собирает итоговое видео с озвучкой.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>21 / 24</span></div>
+  <template class="notes">Показываем код из Colab. Подчеркиваем простоту интеграции: Whisper дает массив границ слов, а pydub сводит треки в пару строк.</template>
+</section>
+
+<!-- SLIDE 22: AUDIO QA CHECKLIST -->
+<section class="slide" data-n="22">
+  <div class="kicker">Контроль качества • Audio QA</div>
+  <h2 class="title">Чеклист контроля качества звука: 4 критических дефекта</h2>
+  <p class="lead">Инженерный чеклист аудита перед отправкой аудиоматериалов в продакшен.</p>
+  <div class="body">
+    <div class="row c4">
+      <div class="card-box" style="border-color:var(--red)">
+        <div class="card-label" style="color:var(--red)">1. ЦИФРОВОЙ КЛИППИНГ</div>
+        <div class="pt"><div class="h">Пики выше -1.0 dBFS</div><div class="d"><b>Симптом:</b> Треск и хрип на громких согласных. <b>Лечение:</b> Лимитер на мастер-шине с потолком -1.0 dBFS.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">2. ФАЗОВЫЙ ШУМ (3 кГц)</div>
+        <div class="pt"><div class="h">Гребенчатый телефонный фильтр</div><div class="d"><b>Симптом:</b> Металлический звон нейросети. <b>Лечение:</b> Переключение вокодера на 48 кГц и срез резонансов эквалайзером.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--amber)">
+        <div class="card-label" style="color:var(--amber)">3. ДРЕЙФ ИНТОНАЦИИ</div>
+        <div class="pt"><div class="h">Случайные скачки эмоций</div><div class="d"><b>Симптом:</b> Диктор резко переходит с шепота на крик. <b>Лечение:</b> Повышение ползунка Stability до 0.45–0.50.</div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">4. РАССИНХРОН ЛИПСИНКА</div>
+        <div class="pt"><div class="h">Задержка губ &gt; 40 мс</div><div class="d"><b>Симптом:</b> Губы смыкаются раньше звука согласных. <b>Лечение:</b> Сдвиг дорожки по таймкодам Whisper в видеоредакторе.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>22 / 24</span></div>
+  <template class="notes">Инженерный аудит качества. Чеклист audio_qa.md обязателен к заполнению в домашнем задании.</template>
+</section>
+
+<!-- SLIDE 23: HOMEWORK -->
+<section class="slide" data-n="23">
+  <div class="kicker" style="--k:var(--cyan)">Практическое задание • Домашка №6</div>
+  <h2 class="title">Домашнее задание №6: создание 3-слойного саундтрека для ролика из L05</h2>
+  <p class="lead">Возьмите ваш 5-секундный видеоролик из Урока 05 и создайте для него полноценное звуковое сопровождение.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box active" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">ЧТО НЕОБХОДИМО СДЕЛАТЬ</div>
+        <div class="pt"><div class="h">3 изолированных аудиостема</div><div class="d">
+          1. <b>Стем 1 (Голос диктора):</b> 1 фраза в ElevenLabs / Cartesia / Kokoro.<br>
+          2. <b>Стем 2 (Foley SFX):</b> предметный шум по 3-слотовой формуле в ElevenLabs SFX.<br>
+          3. <b>Стем 3 (Музыка):</b> инструментальный трек в Suno v4 / Udio с приглушением под голос.<br>
+          4. Свести дорожки с видеороликом в единый файл <code>final_video_with_audio.mp4</code>.
+        </div></div>
+      </div>
+      <div class="card-box">
+        <div class="card-label">СТРУКТУРА СДАЧИ В РЕПОЗИТОРИЙ GITHUB</div>
+        <pre style="font-family:var(--mono);font-size:14px;line-height:1.45;color:#e2e8f0;background:#060a12;padding:14px;border-radius:8px;">
+genai-homeworks/L06/
+├── 01_voiceover.mp3          # Диктор
+├── 02_foley_sfx.mp3          # Шумы Foley
+├── 03_music_bg.mp3           # Музыка
+├── final_video_with_audio.mp4# Готовый ролик
+├── audio_spec.md             # Спецификация
+└── audio_qa.md               # Чеклист QA
+        </pre>
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;border-color:var(--cyan)"><b>Сдача:</b> Добавить <code>ihar_rubanovich@epam.com</code> в коллабораторы вашего GitHub-репозитория. Ревью в течение 48 часов.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>23 / 24</span></div>
+  <template class="notes">Объясняем ДЗ. Главное — сдать все 3 изолированных стема и готовый смонтированный ролик.</template>
+</section>
+
+<!-- SLIDE 24: SUMMARY & MODULE 3 TEASER -->
+<section class="slide" data-n="24">
+  <div class="kicker" style="--k:var(--green)">Финал Модуля 2 • Переход к разработке ПО</div>
+  <h2 class="title">Итоги Модуля 2: 4 инженерных закона звука и анонс Урока 07 (Copilot)</h2>
+  <p class="lead">Модуль «Мультимодальность» завершен! Мы научились создавать картинки, видео и звук студийного качества.</p>
+  <div class="body">
+    <div class="row c2">
+      <div class="card-box active" style="border-color:var(--green)">
+        <div class="card-label" style="color:var(--green)">4 ИНЖЕНЕРНЫХ ЗАКОНА ЗВУКА В GENAI</div>
+        <div class="pt"><div class="h">Главные выводы занятия</div><div class="d">
+          1. <b>VAD First:</b> Никогда не отправляйте сырое аудио в Whisper без Silero VAD.<br>
+          2. <b>Пунктуация для дыхания:</b> Управляйте паузами и темпом диктора знаками препинания.<br>
+          3. <b>Instrumental для видео:</b> Запрещайте вокал в фоновой музыке под речь диктора.<br>
+          4. <b>Sidechain Ducking:</b> Музыка обязана проседать на -5 дБ, когда звучит голос.
+        </div></div>
+      </div>
+      <div class="card-box" style="border-color:var(--cyan)">
+        <div class="card-label" style="color:var(--cyan)">АНОНС МОДУЛЯ 3 • УРОК 07: COPILOT ECOSYSTEM</div>
+        <div class="pt"><div class="h">ИИ в разработке программного обеспечения</div><div class="d">
+          • <b>Microsoft 365 Copilot & GitHub Copilot:</b> архитектура Semantic Index и Graph.<br>
+          • <b>Agent Mode в VS Code:</b> автономное решение багов и терминальные агенты.<br>
+          • <b>Реальный кейс:</b> EPAM CodeMie @ Dawn Foods (ускорение SDLC на 35%).
+        </div></div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио AI</span><span>24 / 24</span></div>
+  <template class="notes">Поздравляем студентов с завершением Модуля 2! Открываем микрофон для вопросов.</template>
+</section>
+
+</main>
+
+<div class="drawer" id="drawer">
+  <div class="hd" id="drawer-hd">СЛАЙД 01 / 24</div>
+  <div class="tx" id="drawer-tx"></div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<script>
+
+let cur = 1;
+const slides = document.querySelectorAll('.slide');
+const total = slides.length;
+const stage = document.getElementById('stage');
+const drawer = document.getElementById('drawer');
+const grid = document.getElementById('grid');
+
+function fit() {
+  const sx = window.innerWidth / 1600;
+  const sy = window.innerHeight / 900;
+  const s = Math.min(sx, sy);
+  stage.style.setProperty('--s', s);
+}
+window.addEventListener('resize', fit);
+fit();
+
+function show(n) {
+  if (n < 1) n = 1;
+  if (n > total) n = total;
+  slides.forEach(s => s.classList.remove('active'));
+  slides[n - 1].classList.add('active');
+  cur = n;
+  updateDrawer();
+  updateGrid();
+}
+
+function updateDrawer() {
+  const s = slides[cur - 1];
+  const t = s.querySelector('template.notes');
+  document.getElementById('drawer-tx').innerHTML = t ? t.innerHTML : '<em>Нет заметок к этому слайду.</em>';
+  document.getElementById('drawer-hd').innerText = `СЛАЙД ${String(cur).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+}
+
+function updateGrid() {
+  document.querySelectorAll('.grid button').forEach((b, idx) => {
+    b.classList.toggle('cur', idx + 1 === cur);
+  });
+}
+
+function buildGrid() {
+  grid.innerHTML = '';
+  slides.forEach((s, idx) => {
+    const btn = document.createElement('button');
+    const titleEl = s.querySelector('.title, h1');
+    const t = titleEl ? titleEl.innerText : `Слайд ${idx + 1}`;
+    btn.innerHTML = `<span>СЛАЙД ${String(idx + 1).padStart(2, '0')}</span>${t}`;
+    btn.onclick = () => { show(idx + 1); grid.classList.remove('open'); };
+    grid.appendChild(btn);
+  });
+}
+buildGrid();
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { show(cur + 1); }
+  else if (e.key === 'ArrowLeft') { show(cur - 1); }
+  else if (e.key === 'Home') { show(1); }
+  else if (e.key === 'End') { show(total); }
+  else if (e.key.toLowerCase() === 'n') { drawer.classList.toggle('open'); }
+  else if (e.key.toLowerCase() === 'g') { grid.classList.toggle('open'); }
+  else if (e.key.toLowerCase() === 'f') {
+    if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); }
+    else { document.exitFullscreen(); }
+  }
+});
+
+let timerInt = null;
+let timeLeft = 300;
+function toggleTimer() {
+  const btn = document.getElementById('timer-btn');
+  const disp = document.getElementById('timer-disp');
+  if (timerInt) {
+    clearInterval(timerInt);
+    timerInt = null;
+    btn.innerText = 'СТАРТ 5 МИН';
+  } else {
+    btn.innerText = 'ПАУЗА';
+    timerInt = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        clearInterval(timerInt);
+        timerInt = null;
+        disp.innerText = '00:00';
+        btn.innerText = 'ВРЕМЯ ВЫШЛО';
+        return;
+      }
+      const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const s = String(timeLeft % 60).padStart(2, '0');
+      disp.innerText = `${m}:${s}`;
+    }, 1000);
+  }
+}
+
+</script>
+</body>
+</html>
