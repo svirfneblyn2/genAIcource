@@ -1,7 +1,7 @@
 # Capstone 1 • "Voice Brief → Image"
 
 **Course:** GenAI Basics  
-**Weight:** 50% of the final grade (Capstone 2 is the other 50%)  
+**Weight:** 30 of 100 course points  
 **When:** after Lesson L06  
 **Time needed:** 2–3 hours  
 **What you need:** a computer with the Chrome browser, a personal Google account (the same one you used in L03), a microphone or a phone  
