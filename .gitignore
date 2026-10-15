@@ -96,3 +96,6 @@ $RECYCLE.BIN/
 screenshot_*.png
 __TMP_*
 test.pdf
+
+# Regenerated demo outputs (reference copies live in fallback_outputs/)
+GenAI Basics — Course Production/L08/demo_assets/local_outputs/
