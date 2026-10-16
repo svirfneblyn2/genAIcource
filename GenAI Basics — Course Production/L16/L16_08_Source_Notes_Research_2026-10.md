@@ -6,7 +6,7 @@ Primary sources checked on 2026-10-16 for the v2 rebuild. Facts are marked VERIF
 
 | File | What |
 |---|---|
-| `assets/v2/img/claude_code_auto_mode.png` | own capture of claude.ai/code, 2026-10-16: “Auto mode is now Claude Code’s default permission mode” (mouse cursor removed) |
+| `assets/v2/img/claude_code_permissions_menu.png` | slide 8: own capture of claude.ai/code, 2026-10-16, permissions menu of a new session (Auto ✓ / Accept edits / Plan), menu zoomed 2× in the page before capture (sharp, ≥ 20 px text on the slide). Replaces `claude_code_auto_mode.png` (the one-time “Auto mode is now Claude Code’s default permission mode” notice, low resolution; it had been dismissed and could not be recaptured; git history keeps it). The notice text is quoted in the slide notes. |
 | `assets/v2/img/cover_terminal.png` | cover schematic generated with genai-assets |
 
 Slide 9 terminal block: real `pytest -q` output of the homework starter project (`L16_05_Homework*.md`), run locally on 2026-10-16 with Python 3.12 / pytest 9.1.1 (before the fix: `1 failed, 2 passed in 0.06s`; after a sample fix adding a `priority` parameter: `3 passed in 0.02s`; the traceback is shortened on the slide).

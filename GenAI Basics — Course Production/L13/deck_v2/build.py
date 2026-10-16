@@ -176,8 +176,8 @@ def s_retire():
   {head(t("Новость", "News"), t("GPTs в ChatGPT отключают 11 декабря 2026 — их переносят в плагины", "GPTs in ChatGPT retire on 11 December 2026 — they move into plugins"), k="amber")}
   <div class="body">
     <div class="prompt-label">{t("chatgpt.com/gpts · снято 16.10.2026", "chatgpt.com/gpts · captured 16.10.2026")}</div>
-    {shot("chatgpt_gpts_retire", boxes=[(1.0, 2.0, 98.0, 38.0, "amber")])}
-    <div class="shotcap" style="font-size:22px;margin-top:14px">{t("<b>Баннер:</b> «Перенесите свои GPT в плагины до 11 декабря» — то, что не перенесли, после этой даты станет недоступно.", "<b>Banner:</b> “Move your GPTs to plugins by 11 December. GPTs not moved will be unavailable after 11 December.”")}</div>
+    {shot(t("chatgpt_gpts_retire", "chatgpt_gpts_retire_en"), boxes=[(3.5, 5.0, 93.0, 90.0, "amber")])}
+    <div class="shotcap" style="font-size:22px;margin-top:14px">{t("<b>Баннер:</b> «Перенесите свои GPT в плагины до 11 декабря» — то, что не перенесли, после этой даты станет недоступно.", "<b>Banner:</b> GPTs not moved into plugins by 11 December become unavailable.")}</div>
     <div class="row" style="grid-template-columns:repeat(3,1fr);gap:32px;flex:none;margin-top:40px;">
       <div class="note" style="font-size:23px;--k:var(--green)">{t("<b>Переносится:</b> инструкции (станут «навыком» — сохранённой инструкцией плагина), файлы знаний, приложения.", "<b>Carried over:</b> instructions (become a “skill”, the plugin’s saved instructions), knowledge files, apps.")}</div>
       <div class="note" style="font-size:23px;--k:var(--red)">{t("<b>Не переносится:</b> свои Actions (вызовы API), выбранная модель, настройки доступа.", "<b>Not carried over:</b> custom Actions (API calls), the chosen model, sharing settings.")}</div>

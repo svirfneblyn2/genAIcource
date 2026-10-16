@@ -5,7 +5,7 @@
     python build.py --no-pdf # HTML only
 
 Every slide is one function; text is written as t("ru", "en") side by side so both
-languages stay in sync. No raster images: every visual is drawn in HTML.
+languages stay in sync. Raster images are only real captures in ../assets/v2/img (slides 5 and 10).
 Facts: ../L15_08_Source_Notes_Research_2026-10.md.
 """
 import math
@@ -175,20 +175,23 @@ def s_leak():
 
 
 def s_plans():
-    rows = [("red", t("ChatGPT Free / Plus / Pro", "ChatGPT Free / Plus / Pro"), t("чаты могут идти в обучение, пока не выключите: Settings → Data controls", "your chats may be used for training unless you switch it off: Settings → Data controls")),
+    rows = [("red", t("ChatGPT Free / Plus / Pro", "ChatGPT Free / Plus / Pro"), t("чаты могут идти в обучение, пока не выключите: Настройки → Управление данными", "your chats may be used for training unless you switch it off: Settings → Data controls")),
             ("amber", t("Claude Free / Pro / Max", "Claude Free / Pro / Max"), t("с августа 2025 выбираете сами; если разрешили — хранится до 5 лет", "since August 2025 you choose; if allowed, kept for up to 5 years")),
             ("green", t("ChatGPT Business/Enterprise · Claude for Work · Gemini в Workspace", "ChatGPT Business/Enterprise · Claude for Work · Gemini in Workspace"), t("по умолчанию не учатся на данных компании", "do not train on company data by default"))]
     return dict(min=5, html=f'''
   {head(t("Тарифы", "Plans"), t("Одна и та же модель, разные правила: личный тариф и рабочий обращаются с данными по-разному", "Same model, different rules: personal and business plans treat data differently"), k="amber")}
-  <div class="body" style="margin-top:12px;">
-    <div class="row" style="grid-template-columns:1.4fr 1fr;gap:44px;align-items:center;flex:none;">
+  <div class="body" style="margin-top:6px;">
+    <div class="row" style="grid-template-columns:1fr 900px;gap:40px;align-items:start;flex:none;">
       <div class="light big" style="gap:16px">{_lr(rows)}</div>
-      <div class="plaque" style="font-size:25px;line-height:1.5;padding:22px 26px">{t("<b>Рабочие данные — только в рабочий аккаунт</b> компании. Личный ChatGPT или Claude для документов клиентов не подходит, даже платный.", "<b>Work data goes only into the company’s business account.</b> A personal ChatGPT or Claude is not for customer documents, even a paid one.")}</div>
+      <div class="stack" style="gap:8px;"><div class="prompt-label">{t("chatgpt.com → Настройки → Управление данными · снято 16.10.2026", "chatgpt.com → Settings → Data controls · captured 16.10.2026")}</div>
+        {shot(t("chatgpt_data_controls", "chatgpt_data_controls_en"), marks=[(1, 87.0, t(84.0, 85.0), "red")], boxes=[(1.0, t(66.0, 71.0), 98.0, t(33.0, 28.0), "red")])}
+        <div class="shotcap" style="font-size:21px">{t("<b>①</b> «Помогите улучшить модель для всех»: выключено — чаты не идут в обучение. По умолчанию этот переключатель включён.", "<b>①</b> “Improve the model for everyone”: off — chats are not used for training. By default this switch is on.")}</div>
+        <div class="plaque" style="font-size:22px;line-height:1.45;padding:14px 22px;margin-top:14px">{t("<b>Рабочие данные — только в рабочий аккаунт</b> компании. Личный ChatGPT или Claude для документов клиентов не подходит, даже платный.", "<b>Work data goes only into the company’s business account.</b> A personal ChatGPT or Claude is not for customer documents, even a paid one.")}</div></div>
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 5 мин. Частая ошибка: «у меня платный ChatGPT Plus, значит безопасно». Нет: в личных тарифах ChatGPT по умолчанию может обучаться на ваших чатах, пока вы не выключите это в Settings → Data controls. У Claude с августа 2025 выбор за пользователем, и если обучение разрешено, данные хранятся до пяти лет.",
-                      "⏱ 5 min. A common mistake: “I have paid ChatGPT Plus, so it is safe”. No: personal ChatGPT plans may train on your chats by default until you switch it off in Settings → Data controls. Since August 2025 Claude lets the user choose, and if training is allowed, data is kept for up to five years."),
+                    t("⏱ 5 мин. Частая ошибка: «у меня платный ChatGPT Plus, значит безопасно». Нет: в личных тарифах ChatGPT по умолчанию может обучаться на ваших чатах, пока вы не выключите это в Настройки → Управление данными → «Помогите улучшить модель для всех» (справа — реальный снимок, переключатель выключен). У Claude с августа 2025 выбор за пользователем, и если обучение разрешено, данные хранятся до пяти лет.",
+                      "⏱ 5 min. A common mistake: “I have paid ChatGPT Plus, so it is safe”. No: personal ChatGPT plans may train on your chats by default until you switch it off in Settings → Data controls → “Improve the model for everyone” (on the right is a real capture with the switch off). Since August 2025 Claude lets the user choose, and if training is allowed, data is kept for up to five years."),
                     t("Рабочие тарифы — ChatGPT Business и Enterprise, Claude for Work, Gemini в Google Workspace — по умолчанию не обучаются на данных компании. Поэтому правило: рабочие документы — только в рабочий аккаунт, который выдала компания.",
                       "Business plans — ChatGPT Business and Enterprise, Claude for Work, Gemini in Google Workspace — do not train on company data by default. So the rule: work documents only go into the business account the company gave you.")))
 
@@ -345,17 +348,20 @@ def s_labels():
             ("amber", t("Нет метки ≠ сделал человек", "No mark ≠ made by a human"), t("и метка не доказывает, что содержание правда", "and a mark does not prove the content is true"))]
     return dict(min=5, html=f'''
   {head(t("Маркировка", "Labelling"), t("Законы уже требуют помечать ИИ-контент, прежде всего дипфейки; техника помогает метками и подписями", "Laws already require labelling AI content — deepfakes first; technology helps: invisible marks and signatures"), k="cyan")}
-  <div class="body" style="margin-top:12px;">
-    <div class="row" style="grid-template-columns:1.35fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="light big" style="gap:16px">{_lr(rows)}</div>
-      <div class="plaque" style="font-size:25px;line-height:1.5;padding:22px 26px">{t("<b>Маркировку уже требуют:</b> Китай (с 1.09.2025), Казахстан (с 18.01.2026), ЕС — ст. 50 (с 2.08.2026).<br><b>Россия</b> (пока не требует): закон 243-ФЗ, нормы о маркировке с 1.03.2027 — обязательность пока спорна.", "<b>Labelling is already required:</b> China (from 1.09.2025), Kazakhstan (from 18.01.2026), EU — Art. 50 (from 2.08.2026). <b>Russia</b>: law 243-FZ, labelling provisions from 1.03.2027 — whether mandatory is still disputed.")}</div>
+  <div class="body" style="margin-top:6px;">
+    <div class="row" style="grid-template-columns:1fr 760px;gap:36px;align-items:start;flex:none;">
+      <div class="stack" style="gap:22px"><div class="light big" style="gap:14px">{_lr(rows)}</div>
+      <div class="plaque" style="font-size:22px;line-height:1.45;padding:16px 22px">{t("<b>Маркировку уже требуют:</b> Китай (с 1.09.2025), Казахстан (с 18.01.2026), ЕС — ст. 50 (с 2.08.2026).<br><b>Россия</b> (пока не требует): закон 243-ФЗ, нормы о маркировке с 1.03.2027 — обязательность пока спорна.", "<b>Labelling is already required:</b> China (from 1.09.2025), Kazakhstan (from 18.01.2026), EU — Art. 50 (from 2.08.2026). <b>Russia</b>: law 243-FZ, labelling provisions from 1.03.2027 — whether mandatory is still disputed.")}</div></div>
+      <div class="stack" style="gap:8px;"><div class="prompt-label">{t("gemini.google.com · проверка картинки · снято 16.10.2026", "gemini.google.com · image check · captured 16.10.2026")}</div>
+        {shot(t("gemini_ai_check", "gemini_ai_check_en"), marks=[(1, 97.0, t(56.5, 66.0), "cyan")], boxes=[(1.0, t(55.5, 65.0), 98.0, t(43.5, 34.0), "cyan")])}
+        <div class="shotcap" style="font-size:20px">{t("<b>①</b> Gemini проверил свою же картинку (Verify AI) и нашёл подписи C2PA.", "<b>①</b> Gemini checked its own picture (Verify AI) and found C2PA credentials.")}</div></div>
     </div>
   </div>''',
                 notes=notes(
                     t("⏱ 5 мин. Общая нить законов разных стран — маркировка ИИ-контента. Китай требует видимые и скрытые метки с 1 сентября 2025. В ЕС статья 50 AI Act с 2 августа 2026: чат-бот должен сообщать, что он ИИ, генераторы — добавлять машиночитаемую метку, дипфейки — видимую пометку; для генераторов, выпущенных до 2 августа 2026, машиночитаемая метка обязательна с 2 декабря 2026 (по тексту Регламента 2026/1744; часть юрфирм называет 2 февраля 2027). Казахстан — с января 2026. В России закон 243-ФЗ от 26 июля 2026: нормы о маркировке для платформ больше 500 тысяч пользователей в день — с 1 марта 2027; источники расходятся, обязательна ли она.",
                       "⏱ 5 min. The common thread across countries’ laws is labelling AI content. China has required visible and hidden labels since 1 September 2025. In the EU, AI Act Article 50 from 2 August 2026: a chatbot must say it is AI, generators must add a machine-readable mark, deepfakes need a visible label; generators already on the market before 2 August 2026 have until 2 December 2026 to add the machine-readable mark (per the text of Regulation 2026/1744; some law firms say 2 February 2027). Kazakhstan — from January 2026. In Russia, law 243-FZ of 26 July 2026: labelling provisions for platforms with over 500 thousand daily users from 1 March 2027; sources disagree on whether it is mandatory."),
-                    t("Техника: SynthID от Google — невидимая метка прямо в изображении, звуке или тексте; проверить картинку можно в приложении Gemini. C2PA — подписанные сведения о происхождении файла, их поддерживают Adobe, Google, Microsoft, OpenAI и другие; но после скриншота они теряются. Два вывода: отсутствие метки не значит, что сделал человек, а наличие метки не значит, что содержание правдиво.",
-                      "Technology: Google’s SynthID is an invisible mark inside an image, sound or text; you can check an image in the Gemini app. C2PA is signed provenance data supported by Adobe, Google, Microsoft, OpenAI and others; but a screenshot strips it. Two takeaways: no mark does not mean a human made it, and a mark does not mean the content is true.")))
+                    t("Техника: SynthID от Google — невидимая метка прямо в изображении, звуке или тексте; проверить картинку можно в приложении Gemini — на снимке справа Gemini проверил свою же картинку и нашёл подписи C2PA от Google. C2PA — подписанные сведения о происхождении файла, их поддерживают Adobe, Google, Microsoft, OpenAI и другие; но после скриншота они теряются. Два вывода: отсутствие метки не значит, что сделал человек, а наличие метки не значит, что содержание правдиво.",
+                      "Technology: Google’s SynthID is an invisible mark inside an image, sound or text; you can check an image in the Gemini app — in the capture on the right Gemini checked its own picture and found Google’s C2PA credentials. C2PA is signed provenance data supported by Adobe, Google, Microsoft, OpenAI and others; but a screenshot strips it. Two takeaways: no mark does not mean a human made it, and a mark does not mean the content is true.")))
 
 
 def s_euact():

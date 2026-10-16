@@ -528,19 +528,20 @@ def s_summary():
 
 
 def s_hosts():
-    sh = shot("chatgpt_plugins", marks=[(1, 59.0, 6.0, "green"), (2, 58.5, 26.0, "violet"), (3, 3.0, 52.0, "cyan")],
-              boxes=[(61.5, 1.5, 37.5, 9.5, "green"), (61.0, 11.5, 38.5, 30.0, "violet"), (1.5, 50.0, 97.0, 50.0, "cyan")])
+    sh = shot(t("chatgpt_plugins", "chatgpt_plugins_en"),
+              marks=[(1, t(69.0, 77.0), 6.0, "green"), (2, t(22.0, 48.0), t(34.0, 35.5), "violet"), (3, 3.0, t(54.0, 50.0), "cyan")],
+              boxes=[(t(71.0, 79.0), 1.5, t(27.5, 18.0), 9.0, "green"), (t(24.0, 50.0), t(29.5, 31.5), t(72.0, 46.0), 8.5, "violet"),
+                     (1.5, t(53.0, 49.0), 97.0, t(46.5, 50.5), "cyan")])
     return dict(min=4, html=f'''
   {head(t("Где работает", "Where it works"), t("В ChatGPT это называется «Плагины»: туда тоже можно добавить свой MCP-сервер", "In ChatGPT this is called Plugins: you can add your own MCP server there too"), k="cyan")}
   <div class="body" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1.45fr 1fr;gap:36px;align-items:start;flex:none;">
-      <div class="stack" style="gap:8px;"><div class="prompt-label">{t("chatgpt.com → Плагины → Добавить · снято 16.10.2026", "chatgpt.com → Plugins → Add · captured 16.10.2026")}</div>{sh}
-        {zoom("chatgpt_add_mcp_zoom", 2, "violet", t("крупно", "zoomed"), 600)}
-        <div class="small" style="font-size:18px;margin-top:4px">{t("В английском интерфейсе: Plugins → Add → Add custom MCP server", "Russian UI: Плагины = Plugins · Добавить = Add · item 2 = Add custom MCP server")}</div></div>
+    <div class="row" style="grid-template-columns:553px 1fr;gap:44px;align-items:start;flex:none;">
+      <div class="stack" style="gap:8px;"><div class="prompt-label">{t("chatgpt.com/plugins → Добавить · 16.10.2026", "chatgpt.com/plugins → Add · 16.10.2026")}</div>{sh}</div>
       <div class="stack" style="gap:18px;">
         {legend([(1, "green", t("<b>Добавить</b>: меню создания", "<b>Add</b>: the create menu")),
                  (2, "violet", t("<b>Добавить пользовательский сервер MCP</b>: свой сервер по адресу в интернете", "<b>Add custom MCP server</b>: your own server by internet address")),
-                 (3, "cyan", t("<b>Готовые</b>: Gmail, Drive, GitHub, Calendar, Slack", "<b>Ready-made</b>: Gmail, Drive, GitHub, Calendar, Slack"))])}
+                 (3, "cyan", t("<b>Готовые</b>: Google Drive, Calendar, Slack, а также Gmail, GitHub, Outlook", "<b>Ready-made</b>: Google Drive, Calendar, Slack, plus Gmail, GitHub, Outlook"))])}
+        <div class="small" style="font-size:19px">{t("В английском интерфейсе: Plugins → Add → Add custom MCP server.", "In the Russian UI: Плагины → Добавить → Добавить пользовательский сервер MCP.")}</div>
         <div class="note" style="--k:var(--red)">{t("Свой сервер в ChatGPT — только на платных тарифах (режим разработчика); проверьте свой план.", "Your own server in ChatGPT needs a paid plan (developer mode); check yours.")}</div>
         <div class="note" style="--k:var(--amber)">{t("Ещё MCP понимают VS Code, Cursor, Codex (L16) и LM Studio (модель из L10).", "VS Code, Cursor, Codex (L16) and LM Studio (the L10 model) speak MCP too.")}</div>
       </div>
@@ -554,14 +555,14 @@ def s_hosts():
 
 
 def s_registry():
-    sh = shot("mcp_registry_crop", marks=[(1, 47.5, 12.0, "cyan"), (2, 97.0, 46.0, "amber")], boxes=[(0.8, 2.0, 46.0, 21.0, "cyan"), (0.8, 39.0, 98.4, 60.0, "amber")])
+    sh = shot("mcp_registry_crop", marks=[(1, 56.5, 10.0, "cyan"), (2, 97.0, 50.0, "amber")], boxes=[(0.6, 1.0, 54.0, 20.0, "cyan"), (0.6, 49.0, 98.8, 50.0, "amber")])
     return dict(min=4, html=f'''
   {head(t("Реестр", "Registry"), t("Официальный реестр: десятки тысяч серверов, и опубликовать может любой", "The official registry: tens of thousands of servers, and anyone can publish"), k="amber")}
   <div class="body" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1000px 1fr;gap:40px;align-items:start;flex:none;">
-      <div class="stack" style="gap:8px;"><div class="prompt-label">{t("registry.modelcontextprotocol.io · снято 16.10.2026", "registry.modelcontextprotocol.io · captured 16.10.2026")}</div>{sh}
-        <div class="note" style="--k:var(--red);margin-top:22px">{t("Реестр хранит только описания и не проверяет безопасность. Ищите <b>официальный сервер компании</b>: GitHub, Notion, Figma, Atlassian, Stripe, Slack делают свои.", "The registry stores descriptions only and does not vet security. Look for the <b>company’s official server</b>: GitHub, Notion, Figma, Atlassian, Stripe, Slack run their own.")}</div></div>
+    <div class="row" style="grid-template-columns:960px 1fr;gap:40px;align-items:start;flex:none;">
+      <div class="stack" style="gap:8px;"><div class="prompt-label">{t("registry.modelcontextprotocol.io · снято 16.10.2026", "registry.modelcontextprotocol.io · captured 16.10.2026")}</div>{sh}</div>
       <div class="stack" style="gap:22px;">
+        <div class="note" style="--k:var(--red)">{t("Реестр хранит только описания и не проверяет безопасность. Ищите <b>официальный сервер компании</b>: GitHub, Notion, Figma, Atlassian, Stripe, Slack делают свои.", "The registry stores descriptions only and does not vet security. Look for the <b>company’s official server</b>: GitHub, Notion, Figma, Atlassian, Stripe, Slack run their own.")}</div>
         {legend([(1, "cyan", t("<b>Официальный реестр</b>, пока в статусе превью", "<b>The official registry</b>, still in preview")), (2, "amber", t("<b>Недавно обновлённые</b>: опубликовать может любой", "<b>Recently updated</b>: anyone can publish"))])}
         <div class="stat" style="--k:var(--amber);margin-top:20px"><div class="n" style="font-size:68px">≈ {t("44 000", "44,000")}</div><div class="d">{t("серверов в реестре (наш подсчёт через его API, 16.10.2026)", "servers in the registry (our count via its API, 16.10.2026)")}</div></div>
       </div>

@@ -9,9 +9,11 @@ Primary sources checked on 2026-10-16 for the v2 rebuild of Lesson 12. Replaces 
 | `assets/v2/img/claude_connectors.png` | claude.ai + → Connectors menu (slide 5) | own capture for L09 (2026-10-13), reused |
 | `assets/v2/img/claude_permission.png` | claude.ai permission prompt for the Figma "Generate Diagram" tool (slide 6) | own capture for L09 (2026-10-13), reused |
 | `assets/v2/img/claude_permission_zoom.png` | 2× Pillow crop of the prompt's header line (slide 6 inset) | derived from `claude_permission.png` |
-| `assets/v2/img/chatgpt_plugins.png` | chatgpt.com Plugins page with the Add menu, Russian UI (slide 7) | own capture 2026-10-16 |
-| `assets/v2/img/chatgpt_add_mcp_zoom.png` | 2× Pillow crop of "Добавить пользовательский сервер MCP" (slide 7 inset) | derived from `chatgpt_plugins.png` |
-| `assets/v2/img/mcp_registry_crop.png` | registry.modelcontextprotocol.io: header + first two "Recently Updated" cards (slide 8) | Pillow crop of own capture 2026-10-16 (full capture removed; it is in git history) |
+| `assets/v2/img/chatgpt_plugins.png` | chatgpt.com/plugins with the Add menu open, Russian UI (RU slide 7): right half of the page (search, Add, menu, Google Drive / Calendar / Slack), shown at 1:1 | own capture 2026-10-16 (recaptured in the final screenshot round via Claude in Chrome, 1.25× device pixels; a cut-off word at the left edge painted over) |
+| `assets/v2/img/chatgpt_plugins_en.png` | the same view in the English UI (`?locale=en-US`, no account setting changed): Plugins → Add → Add custom MCP server (EN slide 7) | own capture 2026-10-16 |
+| `assets/v2/img/mcp_registry_crop.png` | registry.modelcontextprotocol.io: header + first two "Recently Updated" cards (slide 8), page zoomed to 135 % before capture so card text is ≥ 18 px on the slide | own capture 2026-10-16 (final screenshot round) |
+
+The 2× inset `chatgpt_add_mcp_zoom.png` was removed in the final screenshot round: the new slide 7 capture is readable at full size (git history keeps it).
 
 The schematics on slides 1–3, 13, 14 and 18 (n × m links, the MCP hub, nested layers, timeline, MCP vs A2A) are drawn in HTML/SVG in `deck_v2/build.py` with RU/EN labels; the earlier English-only PNGs (`n_times_m.png`, `mcp_hub.png`, `cover_right.png`) were removed on 2026-10-16.
 

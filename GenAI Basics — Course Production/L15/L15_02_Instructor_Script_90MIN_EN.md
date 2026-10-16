@@ -87,7 +87,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 **On screen:** Personal vs business plans: who trains on data by default.
 
 #### Speaker (5 min)
-> A common mistake: “I have paid ChatGPT Plus, so it is safe”. No: personal ChatGPT plans may train on your chats by default until you switch it off in Settings → Data controls. Since August 2025 Claude lets the user choose, and if training is allowed, data is kept for up to five years.
+> A common mistake: “I have paid ChatGPT Plus, so it is safe”. No: personal ChatGPT plans may train on your chats by default until you switch it off in Settings → Data controls → “Improve the model for everyone” (on the right is a real capture with the switch off). Since August 2025 Claude lets the user choose, and if training is allowed, data is kept for up to five years.
 >
 > Business plans — ChatGPT Business and Enterprise, Claude for Work, Gemini in Google Workspace — do not train on company data by default. So the rule: work documents only go into the business account the company gave you.
 
@@ -144,7 +144,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 #### Speaker (5 min)
 > The common thread across countries’ laws is labelling AI content. China has required visible and hidden labels since 1 September 2025. In the EU, AI Act Article 50 from 2 August 2026: a chatbot must say it is AI, generators must add a machine-readable mark, deepfakes need a visible label; generators already on the market before 2 August 2026 have until 2 December 2026 to add the machine-readable mark (per the text of Regulation 2026/1744; some law firms say 2 February 2027). Kazakhstan — from January 2026. In Russia, law 243-FZ of 26 July 2026: labelling provisions for platforms with over 500 thousand daily users from 1 March 2027; sources disagree on whether it is mandatory.
 >
-> Technology: Google’s SynthID is an invisible mark inside an image, sound or text; you can check an image in the Gemini app. C2PA is signed provenance data supported by Adobe, Google, Microsoft, OpenAI and others; but a screenshot strips it. Two takeaways: no mark does not mean a human made it, and a mark does not mean the content is true.
+> Technology: Google’s SynthID is an invisible mark inside an image, sound or text; you can check an image in the Gemini app — in the capture on the right Gemini checked its own picture and found Google’s C2PA credentials. C2PA is signed provenance data supported by Adobe, Google, Microsoft, OpenAI and others; but a screenshot strips it. Two takeaways: no mark does not mean a human made it, and a mark does not mean the content is true.
 
 ---
 

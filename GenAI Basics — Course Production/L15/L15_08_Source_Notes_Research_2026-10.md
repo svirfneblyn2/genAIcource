@@ -4,7 +4,12 @@ Primary sources checked on 2026-10-16 for the v2 rebuild. Each fact below is mar
 
 ## Images used in the deck
 
-None. The risk map, the data traffic light, the incident chains and the EU AI Act timeline are drawn in HTML by `deck_v2/build.py` (the generated traffic-light and risk-map images were dropped: English labels in the RU deck and wrong placement).
+| File | What | Source |
+|---|---|---|
+| `assets/v2/img/chatgpt_data_controls.png` / `_en.png` | slide 5: chatgpt.com → Settings → Data controls, rows "Shared links" and "Improve the model for everyone" (switch off in this account); RU UI and English UI (`?locale=en-US`, no setting changed); settings panel zoomed to 160 % in the page before capture | own capture via Claude in Chrome, 2026-10-16 |
+| `assets/v2/img/gemini_ai_check.png` / `_en.png` | slide 10: Gemini app (`?hl=ru` / `?hl=en`). Gemini first generated a synthetic picture (cartoon robot watering plants), then was asked "Was this image created with Google AI? Check it for a SynthID watermark." It ran its "Verify AI" check and answered that the file carries **C2PA Content Credentials** certified by Google LLC (Google Media Processing Services). Pillow: the empty band between the picture and the question removed, the third answer paragraph ("no technology is perfectly secure…") cut | own capture via Claude in Chrome, 2026-10-16 |
+
+Note for slide 10: in this check Gemini reported C2PA, not SynthID by name; the slide caption says so. The risk map, the data traffic light, the incident chains and the EU AI Act timeline are drawn in HTML by `deck_v2/build.py` (the generated traffic-light and risk-map images were dropped: English labels in the RU deck and wrong placement).
 
 The deck is an overview for beginners, not legal advice.
 

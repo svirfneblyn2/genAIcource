@@ -6,7 +6,8 @@ Primary sources checked on 2026-10-16. The lesson was rebuilt from the September
 
 | File | What |
 |---|---|
-| `assets/v2/img/chatgpt_gpts_retire.png` | chatgpt.com/gpts banner: "Перенесите свои GPT в плагины до 11 декабря" |
+| `assets/v2/img/chatgpt_gpts_retire.png` | chatgpt.com/gpts banner: "Перенесите свои GPT в плагины до 11 декабря" (RU slide 3); recaptured in the final screenshot round with the banner block zoomed to 160 % in the page (real UI, larger), so its text is ≥ 24 px on the slide |
+| `assets/v2/img/chatgpt_gpts_retire_en.png` | the same banner in the English UI (`?locale=en-US`): "Migrate your GPTs to plugins by December 11" (EN slide 3) |
 | `assets/v2/img/chatgpt_plugin_creator.png` | ChatGPT Plugins → Add → Create plugin: "@Plugin Creator, помоги мне создать плагин" (nothing sent) |
 | `assets/v2/img/claude_project_panel.png` | slide 4: recrop (Pillow) of the claude.ai project "Демо L09: поддержка курьеров" capture: title strip + right-hand panel (Instructions / Context / Memory / Scheduled) scaled ×2.2; the original captures `claude_project.png` / `claude_instructions.png` and the English schematics `assistant_recipe*.png`, `ladder.png`, `cover_right.png` were removed from the folder (git history) |
 | `assets/v2/img/claude_instructions_crop.png` | slide 5: the project instructions dialog cut just below the last instruction line (dialog closed with Cancel) |
