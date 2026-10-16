@@ -16,8 +16,8 @@ L15 = build.L15
 OUT = {"ru": L15 / "L15_02_Instructor_Script_90MIN.md", "en": L15 / "L15_02_Instructor_Script_90MIN_EN.md"}
 
 SCREEN = {
-    's_cover': ('Название урока; справа светофор данных.',
-                'Lesson title; the data traffic light on the right.'),
+    's_cover': ('Название урока.',
+                'Lesson title.'),
     's_hook': ('Карта рисков: как часто × ущерб, четыре риска.',
                 'Risk map: how often × damage, four risks.'),
     's_halluc': ('Три числа: 45% (EBU/BBC), 2 190 решений, штраф $5 000.',

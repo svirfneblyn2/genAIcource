@@ -4,10 +4,7 @@ Primary sources checked on 2026-10-16 for the v2 rebuild. Each fact below is mar
 
 ## Images used in the deck
 
-| File | What |
-|---|---|
-| `assets/v2/img/data_traffic.png` (+ `data_traffic_crop.png`, `cover_right.png`) | data traffic-light schematic, generated with genai-assets |
-| `assets/v2/img/risk_map.png` | generated but **not used** (wrong placement); slide 2 draws the risk map in HTML |
+None. The risk map, the data traffic light, the incident chains and the EU AI Act timeline are drawn in HTML by `deck_v2/build.py` (the generated traffic-light and risk-map images were dropped: English labels in the RU deck and wrong placement).
 
 The deck is an overview for beginners, not legal advice.
 

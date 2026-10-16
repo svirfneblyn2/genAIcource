@@ -5,8 +5,7 @@
     python build.py --no-pdf # HTML only
 
 Every slide is one function; text is written as t("ru", "en") side by side so both
-languages stay in sync. Images live in ../assets/v2/img/ (own captures 2026-10-16,
-own claude.ai and chatgpt.com captures, two schematics made with genai-assets).
+languages stay in sync. No raster images: every visual is drawn in HTML.
 Facts: ../L15_08_Source_Notes_Research_2026-10.md.
 """
 import math

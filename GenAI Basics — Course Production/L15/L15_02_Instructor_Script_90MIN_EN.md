@@ -42,7 +42,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 01 (00:00–02:00) • Responsible AI
 
-**On screen:** Lesson title; the data traffic light on the right.
+**On screen:** Lesson title.
 
 #### Speaker (2 min)
 > Welcome. In this course we learned to generate text, images, video and audio, and to build agents and prototypes. Today: how to use all of that at work without harming yourself, your company or your customers. No legal lecture: real cases, simple rules and what laws already require.
