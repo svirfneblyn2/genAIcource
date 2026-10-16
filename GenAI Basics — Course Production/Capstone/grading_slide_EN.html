@@ -23,11 +23,11 @@
   .lead { font-size: 23px; color: var(--muted); margin-top: 10px; }
 
   /* ---- stack ---- */
-  .chart { position: absolute; left: 76px; top: 230px; width: 560px; height: 600px; }
+  .chart { position: absolute; left: 76px; top: 230px; width: 680px; height: 600px; }
   .axis { position: absolute; left: 0; top: 0; width: 70px; height: 100%; }
   .tick { position: absolute; right: 12px; transform: translateY(50%); font-family: "JetBrains Mono", Consolas, monospace; font-size: 18px; color: var(--muted); }
-  .stack { position: absolute; left: 80px; top: 0; width: 290px; height: 100%; display: flex; flex-direction: column-reverse; border-radius: 14px; overflow: hidden; border: 2px solid var(--line); }
-  .seg { display: flex; align-items: center; gap: 14px; padding: 0 22px; color: #0b0f17; border-top: 3px solid var(--bg); }
+  .stack { position: absolute; left: 80px; top: 0; width: 260px; height: 100%; display: flex; flex-direction: column-reverse; border-radius: 14px; overflow: hidden; border: 2px solid var(--line); }
+  .seg { display: flex; align-items: center; gap: 12px; padding: 0 16px; color: #0b0f17; border-top: 3px solid var(--bg); }
   .seg b { font-size: 44px; font-weight: 800; line-height: 1; min-width: 56px; }
   .seg span { font-size: 21px; font-weight: 700; line-height: 1.15; }
   .hw  { height: 32%; background: var(--cyan); }
@@ -36,19 +36,21 @@
   .c1  { height: 30%; background: var(--violet); border-top: none; }
   .c2  { height: 30%; background: var(--pink); }
 
-  .pass { position: absolute; left: 66px; width: 318px; bottom: 60%; border-top: 4px dashed var(--amber); }
-  .br { position: absolute; left: 384px; width: 16px; border: 3px solid; border-left: none; border-radius: 0 8px 8px 0; }
-  .br.lo { bottom: 4px; height: calc(60% - 8px); border-color: var(--muted); }
-  .br.hi { top: 4px; height: calc(40% - 8px); border-color: var(--muted); }
-  .br-label { position: absolute; left: 414px; transform: translateY(50%); line-height: 1.2; }
+  .pass { position: absolute; left: 66px; width: 288px; bottom: 60%; border-top: 4px dashed var(--amber); }
+  .br { position: absolute; left: 354px; width: 16px; border: 3px solid; border-left: none; border-radius: 0 8px 8px 0; }
+  .br.lo { bottom: 4px; height: calc(60% - 8px); border-color: var(--amber); }
+  .br.hi { top: 4px; height: calc(40% - 8px); border-color: var(--green); }
+  .br.all { left: 526px; top: 4px; bottom: 4px; border-color: var(--text); }
+  .br-label.all { left: 556px; bottom: 50%; color: var(--text); }
+  .br-label { position: absolute; left: 384px; transform: translateY(50%); line-height: 1.2; }
   .br-label b { font-size: 52px; font-weight: 800; line-height: 1; display: block; }
   .br-label span { font-size: 19px; font-weight: 600; display: block; }
-  .br-label.lo { bottom: 30%; color: var(--muted); }
-  .pass-tag { position: absolute; left: 225px; bottom: 60%; transform: translate(-50%, 50%); background: var(--bg); border: 3px solid var(--amber); border-radius: 999px; padding: 6px 18px; color: var(--amber); font-size: 20px; font-weight: 800; white-space: nowrap; }
-  .br-label.hi { bottom: 80%; color: var(--muted); }
+  .br-label.lo { bottom: 30%; color: var(--amber); }
+  .pass-tag { position: absolute; left: 210px; bottom: 60%; transform: translate(-50%, 50%); background: var(--bg); border: 3px solid var(--amber); border-radius: 999px; padding: 6px 18px; color: var(--amber); font-size: 20px; font-weight: 800; white-space: nowrap; }
+  .br-label.hi { bottom: 80%; color: var(--green); }
 
   /* ---- breakdown ---- */
-  .parts { position: absolute; left: 700px; top: 230px; width: 824px; }
+  .parts { position: absolute; left: 770px; top: 230px; width: 754px; }
   .row { display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 22px; padding: 16px 0; border-bottom: 1px solid var(--line); }
   .row:first-child { border-top: 1px solid var(--line); }
   .dot { width: 18px; height: 52px; border-radius: 5px; }
@@ -59,7 +61,7 @@
   .total h3 { font-size: 26px; font-weight: 700; color: var(--muted); }
   .total .pts { font-size: 56px; font-weight: 800; }
 
-  .callout { position: absolute; left: 700px; top: 700px; width: 824px; background: var(--surface); border: 2px solid var(--amber); border-radius: 14px; padding: 18px 26px; display: flex; gap: 22px; align-items: center; }
+  .callout { position: absolute; left: 770px; top: 700px; width: 754px; background: var(--surface); border: 2px solid var(--amber); border-radius: 14px; padding: 18px 26px; display: flex; gap: 22px; align-items: center; }
   .callout .big { font-size: 52px; font-weight: 800; color: var(--amber); line-height: 1; }
   .callout p { font-size: 22px; line-height: 1.35; }
   .callout p b { color: var(--amber); }
@@ -90,6 +92,8 @@
     <div class="br-label hi"><b>40</b><span>homework +<br>attendance</span></div>
     <div class="br lo"></div>
     <div class="br-label lo"><b>60</b><span>30 + 30<br>capstones</span></div>
+    <div class="br all"></div>
+    <div class="br-label all"><b>100</b><span>points<br>in total</span></div>
     <div class="pass-tag">MINIMUM TO PASS · 60</div>
   </div>
 
