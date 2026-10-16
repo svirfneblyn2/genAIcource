@@ -93,7 +93,7 @@ def gb(v):
 # ---------------------------------------------------------------- slides
 def s_cover():
     return dict(min=2, cls="cover", html=f'''
-  <div class="bg"><img src="{IMG}cover_right.png" alt="" style="object-fit:contain;object-position:right center;background:#0b0f17;padding:40px 100px 40px 860px"></div>
+  <div class="bg"><img src="{IMG}cover_right.png" alt="" style="position:absolute;right:120px;top:170px;width:440px;height:540px;object-fit:contain"></div>
   <div class="shade"></div>
   <div class="txt">
     <div class="kicker">{t("GenAI Basics • Урок 13 • Модуль 3: модели и агенты", "GenAI Basics • Lesson 13 • Module 3: models & agents")}</div>
