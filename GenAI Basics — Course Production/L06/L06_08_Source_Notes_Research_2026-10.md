@@ -957,3 +957,17 @@ Corrections applied to the deck after the review:
 | Consent | The model card and README contain no consent mechanism; the reference voice in our demo is synthetic (Kokoro `af_heart`) | [P] README; own setup |
 
 Volatile: Qwen3-TTS versions and sizes, `qwen-tts` package API (CPU needs matching CPU builds of `torch` and `torchaudio`), third-party VRAM figures.
+
+---
+
+## Recheck before class, 2026-10-16
+
+All 12 volatile items above were rechecked against primary sources on the day of class. Only one changed:
+
+| Item | Change | Source |
+|---|---|---|
+| 7. Open ASR Leaderboard | New version "15-10-2026": OtterAI speech-v3.1 (proprietary) at **3.88%** average English WER (vendor-reported), then reson8 4.02%, zoom/scribe_v1 4.15%. Best open: Phi-4-multimodal 5.02%. Whisper large-v3 still 7.84%. Slide 14 now says "best commercial ≈ 4–5%, best open ≈ 5%, 15.10.2026"; the notes name the new leader. | Space commit 2026-10-15, `hf-audio/open-asr-leaderboard-results` |
+
+Unchanged and confirmed: Gemini 3.8 Flash TTS ($9 → $18 per 1M audio tokens from 2027-01-01; 30 voices; WAV 24 kHz); OpenAI shutdown dates and prices; ElevenLabs prices (v4 launch promo has ended, list price $0.08/1K); Suno Pro $8/month yearly, v6 current; Veo 3.1 $0.40/s with audio, $0.20/s without; Lyria 3.5 ($0.08/song, SynthID); Teams "Include sound"; OpenAI 13 voices. EU AI Act Art. 50 grace period confirmed on secondary sources only (EUR-Lex unreachable).
+
+New, own capture in Google AI Studio (2026-10-16, screenshots on slides 3, 8, 9): Generate speech playground with Gemini 3.8 Flash TTS (`gemini-3.8-flash-tts`), a separate Style field with presets (Whisper, Friendly, Narration, Promote…), a voice library ("Explore thousands of voices"), and Create voice with **Voice Design** (paid tier only: "Voice Design runs on the paid tier") and **Voice Replication** ("Clone a voice from a short recording… then verify it's yours"). The Get code button exports the same request as Python (`google-genai`).

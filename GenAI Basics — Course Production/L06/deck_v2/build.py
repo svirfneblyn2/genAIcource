@@ -79,6 +79,14 @@ def aud(name, title, sub="", k="cyan", env=None):
             f'<div class="pl">{t("▶ звук в HTML-версии", "▶ audio in the HTML version")}</div></div>')
 
 
+def shot(name, marks=(), boxes=(), style=""):
+    """Real screenshot (own capture, 2026-10-16) with numbered badges and highlight boxes in % of the image.
+    marks: (n, x%, y%, colour); boxes: (x%, y%, w%, h%, colour)."""
+    b = "".join(f'<div class="co" style="left:{x}%;top:{y}%;width:{w}%;height:{h}%;--k:var(--{k})"></div>' for x, y, w, h, k in boxes)
+    m = "".join(f'<div class="bn" style="left:{x}%;top:{y}%;--k:var(--{k})">{n}</div>' for n, x, y, k in marks)
+    return f'<div class="shot" style="{style}"><img src="{IMG}{name}.png" alt="">{b}{m}</div>'
+
+
 def steps(cur=0):
     """The 6-step pipeline strip; the current step is highlighted."""
     names = [t("Сценарий", "Script"), t("Текст для голоса", "Spoken text"), t("Голос", "Voice"),
@@ -155,8 +163,8 @@ def s_cover():
                 notes=notes(
                     t("⏱ 2 мин. Приветствие. Третий урок модуля «мультимодальность»: в L04 делали картинки, в L05 из них видео, сегодня даём ролику голос, звук и музыку.",
                       "⏱ 2 min. Welcome. Third lesson of the multimodality module: in L04 we made images, in L05 we turned them into video, today we add voice, sound and music."),
-                    t("План: готовый озвученный ролик, где генерировать, четыре задачи аудио-ИИ, как модель работает со звуком, что умеет звук внутри видеомоделей, затем пайплайн из 6 шагов, архитектуры распознавания речи и рынок. После перерыва: код, стоимость, приёмка, риски и согласие на голос, домашнее задание.",
-                      "Plan: a finished voiced video, where to generate, four audio tasks, how a model handles sound, what audio inside video models can do, then a 6-step pipeline, speech recognition architectures and the market. After the break: code, cost, acceptance, risks and voice consent, homework."),
+                    t("План: готовый озвученный ролик, где генерировать, четыре задачи аудио-ИИ, как модель работает со звуком, что умеет звук внутри видеомоделей, затем пайплайн из 6 шагов, локальные модели и рынок. После перерыва: агент клонирует голос, стоимость, приёмка, риски и согласие на голос, домашнее задание.",
+                      "Plan: a finished voiced video, where to generate, four audio tasks, how a model handles sound, what audio inside video models can do, then a 6-step pipeline, local models and the market. After the break: an agent clones a voice, cost, acceptance, risks and voice consent, homework."),
                     t("Перед стартом: " + TEAMS["ru"], "Before you start: " + TEAMS["en"])))
 
 
@@ -171,10 +179,11 @@ def s_hook():
       <div class="stack" style="gap:30px;">
         <div class="stat" style="--k:var(--cyan)"><div class="n">3 {t("реплики", "lines")}</div><div class="d">{t(f"{num(secs)} с речи; голос из <b>открытой модели</b> синтеза речи (скачивается и работает локально) на обычном ноутбуке", f"{num(secs)} s of speech from an <b>open-weight</b> text-to-speech model (downloadable, runs locally) on an ordinary laptop")}</div></div>
         <div class="stat" style="--k:var(--green)"><div class="n">3 {t("дорожки", "tracks")}</div><div class="d">{t("голос + звук, который Veo сгенерировал вместе с видео + музыка", "voice + the sound Veo generated with the video + music")}</div></div>
-        <div class="stat" style="--k:var(--amber)"><div class="n">{num(mix["lufs"])} LUFS</div><div class="d">{t("громкость в единицах Loudness Units relative to Full Scale (LUFS), как её слышит ухо: 0 = максимум, −14 = норма стриминговых сервисов, −23 = ТВ", "loudness in Loudness Units relative to Full Scale (LUFS), as the ear hears it: 0 = maximum, −14 = streaming norm, −23 = TV")}</div></div>
+        <div class="stat" style="--k:var(--amber)"><div class="n">{num(mix["lufs"])} LUFS</div><div class="d">{t("громкость как на Spotify и YouTube (их норма −14). Подробно на шаге 5", "loudness like Spotify and YouTube (their norm is −14). Details in step 5")}</div></div>
       </div>
     </div>
     <div style="margin-top:26px;display:flex;align-items:center;gap:18px;"><div class="prompt-label" style="margin:0">{t("Пайплайн урока", "Lesson pipeline")}</div><div class="steps big" style="margin:0">{steps().replace('<div class="steps">', '').replace('</div>', '')}</div></div>
+    <div class="small" style="margin-top:14px;font-size:19px">{t("Не слышите звук ролика? Напишите в чат.", "Can’t hear the video? Tell us in the chat.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 3 мин. Запустите ролик кликом, со звуком (23 секунды). Это тот же ролик из L05: три шота Veo 3.1. Спросите в чат: что вы слышите, сколько слоёв звука?",
@@ -204,17 +213,36 @@ def s_layers():
              ["OpenAI Audio", "Gemini API", "Google Cloud / Azure Speech", "ElevenLabs API", "Deepgram / AssemblyAI"],
              t("всё как параметры запроса; пакетная обработка, живой звук", "everything as request parameters; batch jobs, live audio"),
              t("за символ, токен или минуту", "per character, token or minute"), t("пайплайны, продукты, агенты", "pipelines, products, agents"), "Gemini API")
+    del c1, c2, c3  # the old three text cards; the slide now shows a real AI Studio screenshot
+    tts = shot("aistudio_tts",
+               marks=[(1, 3.0, 13.2, "cyan"), (2, 31.5, 17.4, "amber"), (3, 77.0, 5.0, "violet"), (4, 78.5, 94.5, "green")],
+               boxes=[(3.0, 13.2, 71.1, 20.9, "cyan"), (17.8, 15.1, 12.6, 4.6, "amber"), (78.4, 8.6, 20.5, 19.5, "violet"), (0.5, 90.0, 76.0, 9.5, "green")])
+    legend = "".join(f'<div style="--k:var(--{k})"><i>{n}</i><span>{s}</span></div>' for n, k, s in [
+        (1, "cyan", t("<b>Текст</b> реплики", "<b>Text</b> of the line")),
+        (2, "amber", t("<b>Стиль</b> отдельно: «спокойный диспетчер»", "<b>Style</b> separately: “calm dispatcher”")),
+        (3, "violet", t("<b>Модель</b> Gemini 3.8 Flash TTS", "<b>Model</b> Gemini 3.8 Flash TTS")),
+        (4, "green", t("<b>Готовый звук</b>: 5 с, скачать WAV", "<b>Result</b>: 5 s, download WAV"))])
     return dict(min=4, html=f'''
-  {head(t("Где генерировать", "Where to generate"), t("Три уровня доступа к аудиомоделям: чат, веб-студия, программный интерфейс (API)", "Three access layers for audio models: chat app, web studio, application programming interface (API)"), k="cyan")}
-  <div class="body" style="margin-top:16px;">
-    <div class="layers">{c1}{c2}{c3}</div>
-    <div class="note" style="margin-top:20px;--k:var(--green)">{t("<b>Четвёртый путь: открытые модели</b> (файлы модели скачиваются и запускаются на своём компьютере). Whisper (распознавание), Kokoro и Piper (синтез речи), MusicGen (музыка). $0 за минуту, но железо, установка и лицензии на вас. Наш пример сделан так.", "<b>A fourth path: open-weight models</b> (model files you download and run on your own machine). Whisper (speech recognition), Kokoro and Piper (speech synthesis), MusicGen (music). $0 per minute, but hardware, setup and licences are yours. Our example was made this way.")}</div>
+  {head(t("Где генерировать", "Where to generate"), t("Начинаем в веб-студии, автоматизируем через API", "Start in a web studio, automate with the API"), k="cyan")}
+  <div class="body" style="margin-top:12px;">
+    <div class="row" style="grid-template-columns:1.6fr 1fr;gap:36px;align-items:start;flex:none;">
+      <div class="stack" style="gap:10px;">
+        <div class="prompt-label">{t("Веб-студия · Google AI Studio → Generate speech · бесплатно", "Web studio · Google AI Studio → Generate speech · free")}</div>
+        {tts}
+      </div>
+      <div class="stack" style="gap:18px;">
+        <div class="legend">{legend}</div>
+        <div class="prompt-label" style="margin-top:6px">{t("API · кнопка Get code: тот же запрос кодом", "API · the Get code button: the same request as code")}</div>
+        {shot("aistudio_code")}
+      </div>
+    </div>
+    <div class="note" style="margin-top:20px;--k:var(--green)">{t("Ещё два пути: <b>чат</b> (ChatGPT, Gemini app: попробовать, голос почти не настроить) и <b>открытые модели на своём компьютере</b> (Kokoro, Piper, Whisper, MusicGen: $0, но железо и лицензии на вас; так сделан наш пример).", "Two more paths: a <b>chat app</b> (ChatGPT, Gemini app: good for trying, little control over the voice) and <b>open-weight models on your own machine</b> (Kokoro, Piper, Whisper, MusicGen: $0, but hardware and licences are yours; our example was made this way).")}</div>
   </div>''',
                 notes=notes(
-                    t("⏱ 4 мин. Та же схема, что в L04 и L05. Чат-приложения: голосовой режим ChatGPT, Gemini app с Gemini Live, и в Gemini app с сентября 2026 есть музыка на модели Lyria 3.5. Удобно попробовать, но голос, темп и длину почти не настроить.",
-                      "⏱ 4 min. Same structure as in L04 and L05. Chat apps: ChatGPT voice mode, the Gemini app with Gemini Live; since September 2026 the Gemini app also makes music with Lyria 3.5. Good for trying things, but you barely control the voice, pace and length."),
-                    t("Веб-студии: ElevenLabs (голоса, клонирование, звуковые эффекты, музыка, дубляж), Suno (песни), Google AI Studio (площадка для синтеза речи и музыки Gemini). Здесь делается домашнее задание.",
-                      "Web studios: ElevenLabs (voices, cloning, sound effects, music, dubbing), Suno (songs), Google AI Studio (playground for Gemini speech and music). This is where the homework happens."),
+                    t("⏱ 4 мин. Тот же выбор, что в L04 и L05: чат, веб-студия, API. Чат-приложения: голосовой режим ChatGPT, Gemini app с Gemini Live, и в Gemini app с сентября 2026 есть музыка на модели Lyria 3.5. Удобно попробовать, но голос, темп и длину почти не настроить.",
+                      "⏱ 4 min. The same choice as in L04 and L05: chat, web studio, API. Chat apps: ChatGPT voice mode, the Gemini app with Gemini Live; since September 2026 the Gemini app also makes music with Lyria 3.5. Good for trying things, but you barely control the voice, pace and length."),
+                    t("На скриншоте Google AI Studio, раздел Generate speech (снято 16.10.2026): 1 — текст реплики, 2 — стиль отдельным полем, 3 — модель и голос, 4 — готовый звук, его можно скачать. Это бесплатно и без кода; можно показать вживую за минуту. Другие веб-студии: ElevenLabs (голоса, клонирование, звуковые эффекты, музыка, дубляж), Suno (песни). Здесь делается домашнее задание.",
+                      "The screenshot is Google AI Studio, Generate speech (captured 16.10.2026): 1 the line text, 2 the style in its own field, 3 the model and voice, 4 the result, ready to download. Free and no code; you can show it live in a minute. Other web studios: ElevenLabs (voices, cloning, sound effects, music, dubbing), Suno (songs). This is where the homework happens."),
                     t("Программные интерфейсы, API: OpenAI (синтез, распознавание, Realtime), Gemini API (синтез речи, Live, Lyria), Google Cloud и Azure Speech, ElevenLabs API, Deepgram и AssemblyAI для распознавания. Оплата за символ текста, за аудиотокен или за минуту звука; сравним на слайде стоимости.",
                       "Application programming interfaces (APIs): OpenAI (speech synthesis, transcription, Realtime), Gemini API (speech generation, Live, Lyria), Google Cloud and Azure Speech, ElevenLabs API, Deepgram and AssemblyAI for transcription. Billed per character of text, per audio token or per minute of audio; we compare them on the cost slide."),
                     t("Открытые модели: наш пример целиком сделан ими на ноутбуке без видеокарты. Это бесплатно за минуту, но у каждой модели своя лицензия; MusicGen, например, только для некоммерческого использования.",
@@ -249,13 +277,13 @@ def s_how():
     env = ENV["vo_" + LANG + "_fine"]
     x0, x1 = line["start"] / 23.0, (line["end"] + 0.2) / 23.0
     return dict(min=4, html=f'''
-  {head(t("Принцип работы", "How it works"), t("Как модель синтеза речи превращает текст в звук", "How a text-to-speech model turns text into sound"), k="violet")}
+  {head(t("Принцип работы", "How it works"), t("Модель угадывает, как звучит текст, поэтому путает числа и имена", "The model guesses how text sounds, so it trips on numbers and names"), k="violet")}
   <div class="body">
     <div class="flow" style="--k:var(--violet);justify-content:center;gap:16px;">
       <div class="box">{t("Текст", "Text")}<small>{t("«", "“")}{line["spoken"].split(".")[0]}.{t("»", "”")}</small></div><div class="arr">→</div>
-      <div class="box hl">{t("Модель", "Model")}<small>{t("предсказывает аудиотокены", "predicts audio tokens")}</small></div><div class="arr">→</div>
-      <div class="box">{t("Аудиотокены", "Audio tokens")}<small>{t("12–50 в секунду", "12–50 per second")}</small></div><div class="arr">→</div>
-      <div class="box hl">{t("Декодер", "Decoder")}<small>{t("токены → отсчёты", "tokens → samples")}</small></div><div class="arr">→</div>
+      <div class="box hl">{t("Модель", "Model")}<small>{t("угадывает кусочки звука", "guesses chunks of sound")}</small></div><div class="arr">→</div>
+      <div class="box">{t("Кусочки звука", "Sound chunks")}<small>{t("аудиотокены, 12–50 в секунду", "audio tokens, 12–50 per second")}</small></div><div class="arr">→</div>
+      <div class="box hl">{t("Декодер", "Decoder")}<small>{t("собирает волну", "rebuilds the waveform")}</small></div><div class="arr">→</div>
       <div class="box">{t("Звук", "Sound")}<small>{t("24 000–48 000 чисел в секунду", "24,000–48,000 numbers per second")}</small></div>
     </div>
     <div style="margin-top:30px;">
@@ -263,7 +291,7 @@ def s_how():
       {wave(env, h=170, w=1440, color="var(--cyan)", gain=1.0, x0=x0, x1=x1)}
     </div>
     <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;flex:none;margin-top:26px;">
-      <div class="note" style="--k:var(--cyan)">{t("<b>Сколько данных:</b> секунда звука в студийном качестве = 48 000 чисел (Gemini отдаёт 24 000). Модель работает со сжатым видом: Gemini считает <b>25 аудиотокенов в секунду</b>, MusicGen <b>50 шагов</b>.", "<b>How much data:</b> one second of studio-quality audio is 48,000 numbers (Gemini returns 24,000). Models work with a compressed form: Gemini bills <b>25 audio tokens per second</b>, MusicGen takes <b>50 steps</b>.")}</div>
+      <div class="note" style="--k:var(--cyan)">{t("<b>Сжатие:</b> секунда звука — это десятки тысяч чисел. Модель работает с короткой «выжимкой» из нескольких десятков кусочков, декодер разворачивает её обратно в волну.", "<b>Compression:</b> a second of audio is tens of thousands of numbers. The model works with a short summary of a few dozen chunks; the decoder expands it back into a waveform.")}</div>
       <div class="note" style="--k:var(--amber)">{t("<b>Чего нет внутри:</b> словаря правил чтения. Модель выучила, как текст обычно звучит. Поэтому ошибается на <b>числах, именах, сокращениях</b>.", "<b>What is not inside:</b> a rulebook for reading. The model learned how text usually sounds, so it most often errs on <b>numbers, names and abbreviations</b>.")}</div>
     </div>
   </div>''',
@@ -326,14 +354,14 @@ def s_script():
       <tbody>{trs}<tr><td colspan="5" style="color:var(--muted)">{t("Музыка: одна подложка на все шоты, лоу-фай, без вокала", "Music: one bed for all shots, lo-fi, no vocals")}</td></tr></tbody>
     </table>
     <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;flex:none;margin-top:22px;">
-      <div class="stat" style="--k:var(--cyan)"><div class="n">≈ {num(words / secs)} {t("слова/с", "words/s")}</div><div class="d">{t("измерено на нашей озвучке; планируйте <b>2–2,5 слова в секунду</b>, чтобы осталась пауза", "measured on our voice-over; plan for <b>2–2.5 words per second</b> to leave a pause")}</div></div>
-      <div class="note" style="--k:var(--amber)">{t("<b>Шот 8 с ≈ 6 с речи</b> (по секунде тишины у склеек) <b>× 2–2,5 слова/с = 12–15 слов.</b> На русском планируйте 1,8–2,2 слова/с. Не влезает: сокращаем текст, голос не ускоряем.", "<b>An 8 s shot ≈ 6 s of speech</b> (about 1 s of silence at each cut) <b>× 2–2.5 words/s = 12–15 words.</b> If it does not fit, cut the text; do not speed up the voice.")}</div>
+      <div class="stat" style="--k:var(--cyan)"><div class="n">≈ {num(words / secs)} {t("слова/с", "words/s")}</div><div class="d">{t("наш голос: быстро, на грани. План: <b>≈ 2 слова/с</b>", "our voice: fast, on the edge. Plan: <b>2–2.5 words/s</b>")}</div></div>
+      <div class="note" style="--k:var(--amber)">{t("<b>Шот 8 с ≈ 6 с речи</b> (секунда тишины у склеек) <b>× 2 слова/с ≈ 12 слов.</b> Слова считаем в тексте для голоса: «шесть сорок две» = 3 слова. Не влезает: сокращаем текст, голос не ускоряем.", "<b>An 8 s shot ≈ 6 s of speech</b> (about 1 s of silence at each cut) <b>× 2–2.5 words/s = 12–15 words.</b> If it does not fit, cut the text; do not speed up the voice.")}</div>
     </div>
   </div>''',
                 notes=notes(
                     t("⏱ 5 мин. На слайде 7 L05 был полный шаблон сториборда из 7 колонок; в ДЗ L05 вы заполняли только видео-часть. Сегодня добавляем три звуковые колонки: закадровый текст, шумы, музыка. Одна строка = один шот = одна реплика.",
                       "⏱ 5 min. L05 slide 7 showed the full 7-column storyboard template; in the L05 homework you filled in only the video part. Today we add the three audio columns: voice-over, sound effects, music. One row = one shot = one line."),
-                    t(f"Бюджет слов. Наш голос говорит примерно {num(words / secs)} слова в секунду. Для плана берите 2–2,5 слова в секунду, а на русском 1,8–2,2: слова длиннее. И оставьте по секунде тишины у каждой склейки: в 8-секундном шоте около 6 секунд речи, то есть 12–15 слов. Если текст не влезает, сокращаем текст. Ускорять голос плохая идея: звучит неестественно.",
+                    t(f"Бюджет слов. Наш голос говорит примерно {num(words / secs)} слова в секунду. Это быстро, на грани. Для плана на русском берите около 2 слов в секунду (на английском 2–2,5: слова короче). И оставьте по секунде тишины у каждой склейки: в 8-секундном шоте около 6 секунд речи, то есть около 12 слов. Считаем слова в тексте для голоса, где числа уже написаны словами. Если текст не влезает, сокращаем текст. Ускорять голос плохая идея: звучит неестественно.",
                       f"Word budget. Our voice speaks about {num(words / secs)} words per second. Plan with 2–2.5 words per second (Russian: 1.8–2.2, the words are longer) and leave about a second of silence at each cut: an 8-second shot has about 6 seconds of speech, so 12–15 words. If the text does not fit, cut the text. Speeding up the voice sounds unnatural."),
                     t("Упражнение (1 мин, в чат): напишите реплику для шота 4 «курьер у двери» не длиннее 12 слов.",
                       "Exercise (1 min, chat): write the line for shot 4, “courier at the door”, in 12 words or fewer.")))
@@ -341,7 +369,7 @@ def s_script():
 
 def s_text():
     if LANG == "ru":
-        rows = [("6:42", "Шесть сорок две", "время: «шесть сорок две» или «восемнадцать сорок две»?"),
+        rows = [("6:42", "Шесть сорок две", "время, счёт матча или пропорция?"),
                 ("417", "четыреста семнадцать", "решаем заранее: число или номер по цифрам «четыре один семь»"),
                 ("12 мин", "двенадцать минут", "сокращения модель может прочитать по буквам")]
     else:
@@ -359,12 +387,12 @@ def s_text():
       </div>
       <div class="stack" style="gap:16px;">
         <div class="prompt-label">{t("Стиль задаётся отдельной инструкцией", "Style goes in a separate instruction")}</div>
-        <div class="prompt">{t("Инструкция:", "Instruction:")} <span style="color:var(--amber)">{t("Спокойный, дружелюбный диспетчер. Средний темп. Короткая пауза после каждой фразы.", "Calm, friendly dispatcher. Medium pace. Short pause after each sentence.")}</span><br>{t("Текст:", "Text:")} {R()["lines"][0]["spoken"]}</div>
-        <ul class="list">
-          <li>{t("<b>OpenAI:</b> отдельное поле <code>instructions</code>; <b>Gemini 3.8:</b> отдельное поле <code>style</code>, короткие звуки тегами: <code>&lt;sigh&gt;</code>.", "<b>OpenAI:</b> a separate <code>instructions</code> field; <b>Gemini 3.8:</b> a separate <code>style</code> field, short sounds as tags: <code>&lt;sigh&gt;</code>.")}</li>
-          <li>{t("<b>ElevenLabs v3:</b> теги в тексте, например <code>[whispers]</code>.", "<b>ElevenLabs v3:</b> tags inside the text, e.g. <code>[whispers]</code>.")}</li>
-          <li>{t("<b>Словарь произношений</b> для имён и терминов (ElevenLabs, Google, Azure).", "<b>Pronunciation dictionary</b> for names and terms (ElevenLabs, Google, Azure).")}</li>
-        </ul>
+        {shot("aistudio_style", marks=[(1, 3.8, 23.5, "cyan"), (2, 47.0, 24.0, "amber")],
+              boxes=[(2.5, 22.0, 43.2, 19.0, "cyan"), (45.8, 22.0, 53.4, 25.7, "amber")])}
+        <div class="legend">
+          <div style="--k:var(--cyan)"><i>1</i><span>{t("<b>Текст</b>: только то, что надо произнести", "<b>Text</b>: only what must be spoken")}</span></div>
+          <div style="--k:var(--amber)"><i>2</i><span>{t("<b>Стиль</b> отдельным полем (Google AI Studio). В ElevenLabs v3 — теги в тексте: <code>[whispers]</code>", "<b>Style</b> in its own field (Google AI Studio). ElevenLabs v3 uses tags in the text: <code>[whispers]</code>")}</span></div>
+        </div>
       </div>
     </div>
   </div>''',
@@ -383,17 +411,27 @@ def s_voice():
                 f'<div class="gate">{gate}</div><div class="ex">{ex}</div></div>')
     return dict(min=4, html=f'''
   {head(t("Шаг 3 • голос", "Step 3 • voice"), t("Три источника голоса: библиотека, описание, клон", "Three sources of a voice: library, description, clone"), k="cyan")}
-  <div class="body" style="margin-top:18px;">
-    <div class="vopts">
-      {opt("green", t("Готовый голос", "Library voice"), t("<b>Вход:</b> выбрать из библиотеки сервиса", "<b>Input:</b> pick from the service’s library"), t("✓ лицензия сервиса", "✓ covered by the service licence"), t("Gemini: 30 голосов; OpenAI: 13; наш пример: Kokoro <code>af_heart</code>, Piper <code>dmitri</code>", "Gemini: 30 voices; OpenAI: 13; our example: Kokoro <code>af_heart</code>, Piper <code>dmitri</code>"))}
-      {opt("amber", t("Голос по описанию", "Designed voice"), t("<b>Вход:</b> текст «молодой голос, лёгкая хрипотца, быстрый темп»", "<b>Input:</b> a text description: “young voice, slightly husky, fast pace”"), t("! проверить похожесть на известных людей", "! check it does not resemble a real person"), t("ElevenLabs Voice Design, Gemini API voice design", "ElevenLabs Voice Design, Gemini API voice design"))}
-      {opt("red", t("Клон голоса", "Cloned voice"), t("<b>Вход:</b> запись реального человека, от 3–10 с до 30+ мин", "<b>Input:</b> recordings of a real person, from 3–10 s to 30+ min"), t("✗ только с письменного согласия владельца", "✗ only with the owner’s written consent"), t("сервисы требуют запись фразы согласия или проверку голосом", "services require a recorded consent phrase or a voice check"))}
+  <div class="body" style="margin-top:12px;">
+    <div class="row" style="grid-template-columns:1.15fr 1fr;gap:32px;align-items:start;flex:none;">
+      <div class="stack" style="gap:8px;">
+        <div class="prompt-label">{t("Google AI Studio · библиотека голосов", "Google AI Studio · voice library")}</div>
+        {shot("aistudio_voices", marks=[(1, 22.8, 61.0, "green")], boxes=[(22.8, 61.0, 74.0, 36.5, "green")])}
+      </div>
+      <div class="stack" style="gap:8px;">
+        <div class="prompt-label">{t("Create new voice · два новых пути", "Create new voice · two new paths")}</div>
+        {shot("aistudio_create_voice", marks=[(2, 2.8, 24.4, "amber"), (3, 51.0, 24.4, "red")], boxes=[(2.8, 24.4, 46.2, 64.0, "amber"), (51.0, 24.4, 46.2, 64.0, "red")])}
+        <div class="legend" style="margin-top:14px;">
+          <div style="--k:var(--green)"><i>1</i><span>{t("<b>Готовый голос</b> из библиотеки: лицензия сервиса", "<b>Library voice</b>: covered by the service licence")}</span></div>
+          <div style="--k:var(--amber)"><i>2</i><span>{t("<b>Голос по описанию</b>: «молодой, с хрипотцой»; проверить, что не похож на знаменитость", "<b>Designed voice</b>: “young, slightly husky”; check it doesn’t sound like a celebrity")}</span></div>
+          <div style="--k:var(--red)"><i>3</i><span>{t("<b>Клон</b> по записи: сервис просит доказать, что голос ваш", "<b>Clone</b> from a recording: the service asks you to prove the voice is yours")}</span></div>
+        </div>
+      </div>
     </div>
-    <div class="note" style="margin-top:26px;--k:var(--red)">{t("<b>Перед выбором:</b> прогоните через голос самые сложные слова сценария (имена, числа). Голос, который их искажает, отклоняем.", "<b>Before you commit:</b> run the hardest words of the script (names, numbers) through the voice. Reject a voice that mispronounces them.")}</div>
+    <div class="note" style="margin-top:22px;--k:var(--red)">{t("<b>Перед выбором:</b> прогоните через голос самые сложные слова сценария (имена, числа). Голос, который их искажает, отклоняем.", "<b>Before you commit:</b> run the hardest words of the script (names, numbers) through the voice. Reject a voice that mispronounces them.")}</div>
   </div>''',
                 notes=notes(
-                    t("⏱ 4 мин. Три источника голоса. Готовый голос из библиотеки: лицензия уже покрыта сервисом. У Gemini 30 готовых голосов, у OpenAI 13. В нашем примере английский голос Kokoro af_heart и русский Piper dmitri.",
-                      "⏱ 4 min. Three sources of a voice. A library voice: the service’s licence already covers it. Gemini has 30 prebuilt voices, OpenAI 13. Our example uses Kokoro af_heart for English and Piper dmitri for Russian."),
+                    t("⏱ 4 мин. Три источника голоса, все три видны в Google AI Studio (скриншоты от 16.10.2026). Готовый голос из библиотеки: лицензия уже покрыта сервисом. У Gemini 30 готовых голосов в API, у OpenAI 13. В нашем примере английский голос Kokoro af_heart и русский Piper dmitri. Кнопка Create new voice открывает два других пути: Voice Design (голос по описанию; в AI Studio работает только на платном тарифе) и Voice Replication (клон по короткой записи; сервис просит подтвердить, что голос ваш). Карточка клона на скриншоте серая: в нашем аккаунте функция не активна, это нормально; её включают отдельно и только для своего голоса.",
+                      "⏱ 4 min. Three sources of a voice; all three are visible in Google AI Studio (screenshots from 16.10.2026). A library voice: the service’s licence already covers it. Gemini has 30 prebuilt API voices, OpenAI 13. Our example uses Kokoro af_heart for English and Piper dmitri for Russian. Create new voice opens the other two paths: Voice Design (a voice from a description; in AI Studio it needs the paid tier) and Voice Replication (a clone from a short recording; the service asks you to verify the voice is yours). The clone card is greyed out in the screenshot: it is not enabled on our account, which is normal; it is turned on separately and only for your own voice."),
                     t("Технически: одна реплика = один файл (line1.wav, line2.wav…). В редакторе ставим каждый файл на время старта из сценария и проверяем, что он не длиннее окна речи шота. Голос по описанию: пишете текстом, какой нужен голос, сервис генерирует новый. Есть в ElevenLabs (Voice Design) и в Gemini API. Проверьте, что результат не похож на известного человека.",
                       "Technically: one line = one file (line1.wav, line2.wav…). In the editor, place each file at the start time from the script and check it is not longer than the shot’s speech window. Designed voice: describe the voice in text and the service generates a new one. Available in ElevenLabs (Voice Design) and the Gemini API. Check that the result does not sound like a known person."),
                     t("Клон: голос реального человека по записям. ElevenLabs Instant: 1–2 минуты записи, Professional: от 30 минут. Открытые модели вроде Qwen3-TTS клонируют по 3 секундам. Поэтому крупные сервисы требуют доказательство согласия: OpenAI и Google просят записать фиксированную фразу согласия, Azure пускает к функции только по заявке, ElevenLabs для профессионального клона просит владельца прочитать проверочный текст. Подробно на слайде рисков.",
@@ -403,13 +441,13 @@ def s_voice():
 def s_music():
     prompt = REPORT.get("music_prompt", "calm lo-fi hip hop beat, soft electric piano, light rain mood, 85 bpm, no vocals")
     return dict(min=4, html=f'''
-  {head(t("Шаг 4 • шумы и музыка", "Step 4 • sound effects and music"), t("Шумы и музыка: промпт, длина и лицензия трека", "Sound effects and music: prompt, length and the track licence"), k="cyan")}
+  {head(t("Шаг 4 • шумы и музыка", "Step 4 • sound effects and music"), t("Шумы и музыка: главное — лицензия трека", "Sound effects and music: the licence matters most"), k="cyan")}
   <div class="body" style="margin-top:18px;">
     <div class="row" style="grid-template-columns:1.1fr 1fr;gap:40px;align-items:center;flex:none;">
       <div class="stack" style="gap:14px;">
         {aud("music_bed", t("Наша музыкальная подложка", "Our music bed"), "MusicGen-small · 23 " + t("с", "s"), "violet", "music")}
         <div><div class="prompt-label">{t("Промпт", "Prompt")}</div><div class="prompt">{prompt}</div></div>
-        <div class="note" style="--k:var(--red)">{t("Веса MusicGen: лицензия <b>Creative Commons «с указанием авторства, некоммерческая» (CC BY-NC 4.0)</b>. Для урока можно, для клиента нет.", "MusicGen weights: <b>Creative Commons Attribution-NonCommercial (CC BY-NC 4.0)</b> licence. Fine for a lesson, not for a client.")}</div>
+        <div class="note" style="--k:var(--red)">{t("Файлы модели MusicGen: лицензия <b>Creative Commons «с указанием авторства, некоммерческая» (CC BY-NC 4.0)</b>. Для урока можно, для клиента нет.", "MusicGen weights: <b>Creative Commons Attribution-NonCommercial (CC BY-NC 4.0)</b> licence. Fine for a lesson, not for a client.")}</div>
       </div>
       <table class="cost lic">
         <thead><tr><th>{t("Сервис", "Service")}</th><th>{t("Длина", "Length")}</th><th>{t("Коммерческое использование", "Commercial use")}</th></tr></thead>
@@ -425,7 +463,7 @@ def s_music():
                 notes=notes(
                     t("⏱ 4 мин. Включите подложку. Её сделала открытая модель MusicGen-small по промпту слева, прямо на ноутбуке, 23 секунды под длину ролика. Промпт музыки как промпт картинки: жанр, инструменты, настроение, темп, «без вокала».",
                       "⏱ 4 min. Play the bed. The open MusicGen-small model made it from the prompt on the left, on a laptop, 23 seconds to match the video. A music prompt works like an image prompt: genre, instruments, mood, tempo, “no vocals”."),
-                    t("Главное здесь не качество, а лицензия. Веса MusicGen под CC-BY-NC: для урока можно, в коммерческий ролик нельзя. У сервисов права зависят от тарифа на момент генерации: в Suno права на коммерческое использование есть только на платных тарифах, на бесплатном песни принадлежат Suno; апгрейд позже не даёт прав задним числом. Lyria 3.5 от Google есть в Gemini app и Gemini API, каждый трек получает невидимую метку SynthID. ElevenLabs Music: от 3 секунд до 5 минут, «разрешено почти для любого коммерческого использования» по их условиям. Шумы ElevenLabs: до 30 секунд за генерацию.",
+                    t("Главное здесь не качество, а лицензия. Файлы модели MusicGen под CC-BY-NC: для урока можно, в коммерческий ролик нельзя. У сервисов права зависят от тарифа на момент генерации: в Suno права на коммерческое использование есть только на платных тарифах, на бесплатном песни принадлежат Suno; апгрейд позже не даёт прав задним числом. Lyria 3.5 от Google есть в Gemini app и Gemini API, каждый трек получает невидимую метку SynthID. ElevenLabs Music: от 3 секунд до 5 минут, «разрешено почти для любого коммерческого использования» по их условиям. Шумы ElevenLabs: до 30 секунд за генерацию.",
                       "The point here is the licence, not the quality. MusicGen weights are CC-BY-NC: fine for a lesson, not for a commercial video. For services, rights depend on your plan at the moment of generation: Suno gives commercial rights only on paid plans; on the free plan Suno owns the songs, and upgrading later does not grant rights retroactively. Google’s Lyria 3.5 is in the Gemini app and the Gemini API, and every track carries an invisible SynthID mark. ElevenLabs Music: 3 seconds to 5 minutes, “cleared for nearly all commercial uses” under their terms. ElevenLabs sound effects: up to 30 seconds per generation."),
                     t("Шумы для ролика часто уже есть: это звук самой видеомодели из L05 (кафе, дождь). Его мы и используем как фон.",
                       "Often the sound effects already exist: the video model’s own audio from L05 (cafe, rain). We use it as the background.")))
@@ -449,15 +487,15 @@ def s_mix():
     <div class="row" style="grid-template-columns:1fr 1.15fr;gap:36px;flex:none;margin-top:20px;align-items:start;">
       <ul class="list">
         <li>{t("<b>Приглушение (ducking):</b> фон автоматически тише, пока звучит голос.", "<b>Ducking:</b> the background drops automatically while the voice speaks.")}</li>
-        <li>{t("<b>Громкость:</b> −14 Loudness Units relative to Full Scale (LUFS) для Spotify и других стриминговых сервисов, −23 LUFS для эфира (стандарт Европейского вещательного союза EBU R128).", "<b>Loudness:</b> −14 Loudness Units relative to Full Scale (LUFS) for Spotify-style streaming, −23 LUFS for broadcast (European Broadcasting Union standard EBU R128).")}</li>
-        <li>{t("<b>Пик:</b> истинный пик (true peak), самая высокая точка волны, включая промежутки между отсчётами; не выше −1 дБ (dBTP), иначе сжатие в MP3 или AAC даст искажения.", "<b>Peak:</b> true peak, the highest point of the wave including between samples; no higher than −1 decibel (dBTP), otherwise MP3 or AAC encoding distorts it.")}</li>
+        <li>{t("<b>Громкость −14 LUFS</b> (единица громкости «как слышит ухо»): норма Spotify и YouTube; для ТВ −23.", "<b>Loudness −14 LUFS</b> (a loudness unit that follows the ear): the Spotify and YouTube norm; TV uses −23.")}</li>
+        <li>{t("<b>Пик не выше −1 dBTP:</b> иначе после сжатия в MP3 звук хрипит.", "<b>Peak no higher than −1 dBTP:</b> otherwise MP3 encoding makes it crackle.")}</li>
       </ul>
-      <div class="stack" style="gap:8px;"><div class="nocode">{t("<b>Без кода, Audacity (бесплатно):</b> 1) импорт звука ролика, музыки и реплик; 2) фон: <i>Effect › Auto Duck</i>; 3) <i>Mix and Render</i> → <i>Loudness Normalization</i> −14 LUFS → <i>Limiter</i> −2 dB (AAC добавляет около 0,5 дБ); 4) WAV в CapCut или Clipchamp, звук клипа выключить.", "<b>No code, Audacity (free):</b> 1) import the video sound, music and lines; 2) background: <i>Effect › Auto Duck</i>; 3) <i>Mix and Render</i> → <i>Loudness Normalization</i> −14 LUFS → <i>Limiter</i> −2 dB (AAC adds about 0.5 dB); 4) WAV into CapCut or Clipchamp, mute the clip’s own sound.")}</div></div>
+      <div class="stack" style="gap:8px;"><div class="nocode">{t("<b>Без кода, Audacity (бесплатно):</b> импорт трёх дорожек → фон: <i>Effect › Auto Duck</i> → <i>Loudness Normalization</i> −14 LUFS → <i>Limiter</i> −2 dB → WAV в CapCut или Clipchamp.", "<b>No code, Audacity (free):</b> import the three tracks → background: <i>Effect › Auto Duck</i> → <i>Loudness Normalization</i> −14 LUFS → <i>Limiter</i> −2 dB → WAV into CapCut or Clipchamp.")}</div></div>
     </div>
   </div>''',
                 notes=notes(
-                    t(f"⏱ 5 мин. Это реальные дорожки нашего ролика. Голос сам по себе {num(R()['voice_only']['lufs'])} LUFS, звук Veo {num(REPORT['veo_native']['lufs'])} LUFS, ниже музыка и итог. Видно, как фон проседает там, где говорит голос: это приглушение, по-английски ducking.",
-                      f"⏱ 5 min. These are the real tracks of our video. The voice alone is {num(R()['voice_only']['lufs'])} LUFS, Veo’s audio {num(REPORT['veo_native']['lufs'])} LUFS, then music and the final mix. You can see the background drop where the voice speaks: that is ducking."),
+                    t(f"⏱ 5 мин. Это реальные дорожки нашего ролика. Голос сам по себе {num(R()['voice_only']['lufs'])} LUFS, звук Veo {num(REPORT['veo_native']['lufs'])} LUFS, ниже музыка и итог. Фон делается тише там, где говорит голос: это приглушение, по-английски ducking. На картинке это заметно слабо, лучше слушать.",
+                      f"⏱ 5 min. These are the real tracks of our video. The voice alone is {num(R()['voice_only']['lufs'])} LUFS, Veo’s audio {num(REPORT['veo_native']['lufs'])} LUFS, then music and the final mix. The background gets quieter where the voice speaks: that is ducking. It is hard to see on the picture; listen for it."),
                     t("LUFS — единица громкости, как её слышит человек. Стриминговые платформы приводят треки к своему уровню: Spotify к −14 LUFS, Apple Podcasts к −16. Стандарт эфира Европейского вещательного союза EBU R128: −23. Если ролик тише, платформа его поднимет вместе с шумом; если громче, опустит. Второе число — истинный пик, true peak: не выше −1 dBTP, иначе после сжатия в MP3 или AAC появится хрип.",
                       "LUFS is a loudness unit that follows human hearing. Streaming platforms normalise tracks to their level: Spotify to −14 LUFS, Apple Podcasts to −16. The European Broadcasting Union broadcast standard EBU R128 is −23. A quieter video gets raised together with its noise; a louder one gets turned down. The second number is true peak: no higher than −1 dBTP, otherwise MP3 or AAC encoding adds distortion."),
                     t("Наш первый проход нормализации дал пик −0,6 dBTP на русской версии, то есть не прошёл. Исправили двухпроходной нормализацией и лимитером. И ещё один урок: сжатие в AAC при сборке видео поднимает пик примерно на полдецибела, поэтому перед кодированием ограничиваем пик −3 dBTP; в готовом MP4 получилось около −2 dBTP. Без кода: Audacity, шаги справа. Нет Auto Duck — просто опустите фон на 10–15 дБ там, где звучит голос. Музыкальная подложка (bed) — тихая музыка под голосом. С кодом то же делает ffmpeg: фильтр sidechaincompress (голос управляет тем, насколько приглушить фон) и loudnorm.",
@@ -472,7 +510,8 @@ def s_check():
     heard = diff_markup(" ".join(x["display"] for x in rr["lines"]), " ".join(x["text"] for x in rr["transcript"]),
                         [c["term"] for c in crit if c["ok"]])
     if LANG == "ru":
-        diag = [("red", "«Часть 42» вместо «Шесть сорок две»", "причина в голосе: проглатывает «ш»"), ("red", "«Оно» вместо «Анна»", "причина в голосе: неверно читает имя")]
+        diag = [("red", "«Часть 42» вместо «Шесть сорок две»", "причина в голосе: проглатывает «ш»"), ("red", "«Оно» вместо «Анна»", "причина в голосе: неверно читает имя"),
+                ("amber", "Не услышано", "английская фраза Veo в начале: распознавание на русском её пропускает, начало слушаем ушами")]
     else:
         diag = [("red", "“Here’s your order.”", "the mix: Veo’s invented line leaks through"), ("amber", "“642” instead of “6:42”", "speech-to-text formatting; the voice said it correctly")]
     listened = {"en": len(crit), "ru": ok}[LANG]  # after listening: EN "642" is the transcriber's format; RU errors are real
@@ -488,7 +527,7 @@ def s_check():
       </div>
       <div class="stack" style="gap:24px;">
         <div class="tx" style="display:flex;flex-direction:column;gap:18px;"><div class="stat" style="--k:var(--amber)"><div class="n">{num(rr["wer_vs_display"] * 100, 1)}%</div><div class="d">{t("частота ошибок в словах (word error rate, WER) = (замены + пропуски + вставки) / слов в сценарии", "word error rate (WER) = (substitutions + deletions + insertions) / words in the script")}</div></div>
-        <div class="stat" style="--k:var(--red)"><div class="n">{ok} / {len(crit)} → {listened} / {len(crit)}</div><div class="d">{t("критичных слов верно: автоматически → после прослушивания (время, номер, минуты, имя)", "critical terms correct: automatic → after listening (time, order number, minutes, name)")}</div></div></div>
+        <div class="stat" style="--k:var(--red)"><div class="n">{f"{ok} {t('из', 'of')} {len(crit)}" if ok == listened else f"{ok} / {len(crit)} → {listened} / {len(crit)}"}</div><div class="d">{t("критичных слов верно (время, номер, минуты, имя)", "critical terms correct (time, order number, minutes, name)") if ok == listened else t("критичных слов верно: автоматически → после прослушивания (время, номер, минуты, имя)", "critical terms correct: automatic → after listening (time, order number, minutes, name)")}</div></div></div>
         <div class="nocode">{t("<b>Без кода:</b> ElevenLabs Speech to Text, Google AI Studio (промпт «Transcribe verbatim. Do not correct mistakes.»), Buzz (Whisper для компьютера).", "<b>No code:</b> ElevenLabs Speech to Text, Google AI Studio (prompt “Transcribe verbatim. Do not correct mistakes.”), Buzz (Whisper desktop app).")}</div>
       </div>
     </div>
@@ -508,7 +547,7 @@ def s_local():
     cl = CLONE or {"load_seconds": 0, "lines": [{"real_time_factor": 0}]}
     rtf = max(x["real_time_factor"] for x in cl["lines"])
     rows = [
-        ("Kokoro-82M", t("синтез речи", "text-to-speech"), "0,36 ГБ" if LANG == "ru" else "0.36 GB", t("процессор ноутбука", "laptop processor"), t("наш голос EN", "our EN voice")),
+        ("Kokoro-82M · Piper", t("синтез речи", "text-to-speech"), "0,36 · 0,06 ГБ" if LANG == "ru" else "0.36 · 0.06 GB", t("процессор ноутбука", "laptop processor"), t("наш голос EN · RU", "our EN · RU voice")),
         ("Whisper small", t("распознавание", "speech-to-text"), "0,5 ГБ" if LANG == "ru" else "0.5 GB", t("процессор ноутбука", "laptop processor"), t("наша проверка", "our check")),
         ("Qwen3-TTS 0.6B", t("синтез + клон", "text-to-speech + cloning"), "2,5 ГБ" if LANG == "ru" else "2.5 GB", t(f"процессор: ≈{num(rtf, 0)}× медленнее реального времени", f"processor: ≈{num(rtf, 0)}× slower than real time"), t("слайд 16", "slide 16")),
         ("Qwen3-TTS 1.7B", t("синтез + клон", "text-to-speech + cloning"), "4,5 ГБ" if LANG == "ru" else "4.5 GB", t("видеокарта от 8 ГБ памяти", "graphics card with 8 GB or more"), t("лучше качество", "better quality")),
@@ -569,15 +608,15 @@ def s_market():
   <div class="body" style="margin-top:12px;">
     <div class="mk">{cells}</div>
     <div class="row" style="grid-template-columns:1fr 1fr;gap:36px;flex:none;margin-top:18px;">
-      <div class="note" style="--k:var(--green)">{t("<b>Точность распознавания (английский):</b> лучшие коммерческие ≈ 4–5% ошибок в словах, лучшие открытые ≈ 5–6%, Whisper large-v3 ≈ 7,8%. Open ASR Leaderboard, 09.10.2026.", "<b>Speech-to-text accuracy (English):</b> best commercial ≈ 4–5% word error rate, best open ≈ 5–6%, Whisper large-v3 ≈ 7.8%. Hugging Face Open ASR Leaderboard, 9 October 2026.")}</div>
-      <div class="note" style="--k:var(--green)">{t("Зелёная рамка: открытая модель и её лицензия. <b>MIT, Apache-2.0:</b> можно в коммерции, сохраняя текст лицензии. <b>CC BY:</b> можно в коммерции с указанием автора. <b>CC BY-NC:</b> только некоммерческое. У голосов и датасетов бывают свои лицензии.", "Green border: open-weight model and its licence. <b>MIT, Apache-2.0:</b> commercial use allowed, keep the licence notice. <b>CC BY:</b> commercial use with credit. <b>CC BY-NC:</b> non-commercial only. Voices and datasets can have their own licences.")}</div>
+      <div class="note" style="--k:var(--green)">{t("<b>Точность распознавания (английский):</b> лучшие коммерческие ≈ 4–5% ошибок в словах, лучшие открытые ≈ 5%, Whisper large-v3 ≈ 7,8%. Open ASR Leaderboard, 15.10.2026.", "<b>Speech-to-text accuracy (English):</b> best commercial ≈ 4–5% word error rate, best open ≈ 5%, Whisper large-v3 ≈ 7.8%. Hugging Face Open ASR Leaderboard, 15 October 2026.")}</div>
+      <div class="note" style="--k:var(--green)">{t("Зелёная рамка: открытая модель и её лицензия. <b>MIT, Apache-2.0:</b> можно в коммерции, сохраняя текст лицензии. <b>CC BY-NC:</b> только некоммерческое. У голосов и датасетов бывают свои лицензии.", "Green border: open-weight model and its licence. <b>MIT, Apache-2.0:</b> commercial use allowed, keep the licence notice. <b>CC BY-NC:</b> non-commercial only. Voices and datasets can have their own licences.")}</div>
     </div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Карта по четырём задачам, по три коммерческих примера на строку; полный список с ценами в L06_08. Слева коммерческие модели, в зелёной рамке открытые, с лицензией. Что изменилось за год: у OpenAI новое поколение распознавания (gpt-transcribe) и голосовых моделей (gpt-realtime-2.1, gpt-live-1), у ElevenLabs v4, у Google Gemini 3.8 TTS и музыка Lyria 3.5, у Suno v6.",
                       "⏱ 4 min. A map by the four tasks, three commercial examples per row; the full list with prices is in L06_08. Commercial models on the left, open-weight ones in a green border with their licence. What changed in a year: OpenAI has a new generation of transcription (gpt-transcribe) and voice models (gpt-realtime-2.1, gpt-live-1), ElevenLabs has v4, Google has Gemini 3.8 TTS and Lyria 3.5 music, Suno has v6."),
-                    t("Точность распознавания: на открытом рейтинге Hugging Face Open ASR Leaderboard (обновлён 09.10.2026) лучшие коммерческие системы дают около 4–5% ошибок в словах на английском, лучшие открытые около 5–6%, Whisper large-v3 около 7,8%. На русском и на шумной записи цифры хуже; проверяйте на своих данных.",
-                      "Accuracy: on the Hugging Face Open ASR Leaderboard (updated 09.10.2026) the best commercial systems are around 4–5% English word error rate, the best open ones around 5–6%, Whisper large-v3 around 7.8%. Other languages and noisy recordings score worse; test on your own data."),
+                    t("Точность распознавания: на открытом рейтинге Hugging Face Open ASR Leaderboard (обновлён 15.10.2026) лучшие коммерческие системы дают около 4–5% ошибок в словах на английском (новый лидер OtterAI speech-v3.1 — 3,9%, цифру заявил сам разработчик), лучшие открытые около 5%, Whisper large-v3 около 7,8%. На русском и на шумной записи цифры хуже; проверяйте на своих данных.",
+                      "Accuracy: on the Hugging Face Open ASR Leaderboard (updated 15.10.2026) the best commercial systems are around 4–5% English word error rate (the new leader, OtterAI speech-v3.1, is at 3.9%, a vendor-reported figure), the best open ones around 5%, Whisper large-v3 around 7.8%. Other languages and noisy recordings score worse; test on your own data."),
                     t("И про срок жизни: OpenAI уже объявила отключение tts-1 и gpt-4o-mini-tts 6 января 2027 (замена: gpt-realtime-2.1-mini), whisper-1 и gpt-4o-transcribe 26 февраля 2027. Поэтому имя модели выносим в настройки. Названия моделей меняются каждые несколько месяцев; перепроверьте перед занятием.",
                       "On lifetimes: OpenAI has announced that tts-1 and gpt-4o-mini-tts shut down on 6 January 2027 (replacement: gpt-realtime-2.1-mini), and whisper-1 and gpt-4o-transcribe on 26 February 2027. So keep the model name in configuration. Model names change every few months; recheck before class.")))
 
@@ -589,7 +628,7 @@ def s_break():
     <h2 class="title">{t("5 минут на кофе и отдых для ушей", "5 minutes for coffee and resting your ears")}</h2>
     <div class="clock" id="clock">05:00</div>
     <div style="display:flex;gap:14px;"><button class="btn primary" id="timerStart">{t("СТАРТ 5 МИН", "START 5 MIN")}</button><button class="btn" id="timerReset">{t("СБРОС", "RESET")}</button></div>
-    <p>{t("Дальше: код, стоимость, приёмка, риски и домашнее задание.", "Next: code, cost, acceptance, risks and homework.")}</p>
+    <p>{t("Дальше: агент клонирует голос, стоимость, приёмка, риски и домашнее задание.", "Next: an agent clones a voice, cost, acceptance, risks and homework.")}</p>
   </div>''',
                 notes=notes(t("⏱ 5 мин. Нажмите «Старт». Только отдых, без заданий в чате.", "⏱ 5 min. Press “Start”. Rest only, no chat tasks.")))
 
@@ -654,23 +693,33 @@ def s_econ():
     ]
 
     def money(v):
+        if v >= 100:
+            return f"${v:,.0f}"
         if v >= 0.1:
             return f"${v:,.2f}"
         if v >= 0.01:
             return f"${v:.4f}".rstrip("0")
         return f"${v:.5f}".rstrip("0")
+    import math
+    colour = {t("Синтез", "Text-to-speech"): "cyan", t("Распознавание", "Speech-to-text"): "green",
+              t("Речь в речь", "Speech-to-speech"): "amber", t("Музыка", "Music"): "violet"}
+    bars_rows = sorted(rows, key=lambda r: r[3]) + [(t("Видео", "Video"), t("Veo 3.1 со звуком (L05)", "Veo 3.1 with audio (L05)"), t("$0.40 / с", "$0.40 / s"), 24.0)]
+    lo, hi = 0.1, 3000.0
+
+    def pct(v):
+        return 100 * math.log10(v / lo) / math.log10(hi / lo)
     trs = "".join(
-        f'<tr><td class="m">{m}<small>{task} · {unit}</small></td><td>{money(v / 60)}</td><td>{money(v)}</td><td class="h">{money(v * 60)}</td></tr>'
-        for task, m, unit, v in rows)
+        f'<div class="br" style="--k:var(--{colour.get(task, "red")})"><div class="bl">{m}<small>{task} · {unit}</small></div>'
+        f'<div class="bt"><div class="bf" style="width:{pct(v * 60):.1f}%"></div><div class="bv" style="left:{pct(v * 60):.1f}%{";transform:translate(-100%,-50%);color:#0b0f17;padding-right:12px" if pct(v * 60) > 75 else ""}">{money(v * 60)}</div></div></div>'
+        for task, m, unit, v in bars_rows)
+    ticks = "".join(f'<span style="left:{pct(x):.1f}%">${x:g}</span>' for x in (0.1, 1, 10, 100, 1000))
+    trs += f'<div class="axis"><div></div><div>{ticks}</div></div>'
     _, _, chars = voice_words()
     return dict(min=4, html=f'''
-  {head(t("Стоимость", "Cost"), t("Стоимость аудио: секунда, минута, час", "Audio cost: per second, per minute, per hour"), t("Пересчёт: <b>1 минута речи ≈ 1000 символов</b> (так считает ElevenLabs). Списочные цены на 12.10.2026.", "Conversion: <b>1 minute of speech ≈ 1,000 characters</b> (ElevenLabs’ own rule). List prices as of 12 October 2026."), k="amber")}
+  {head(t("Стоимость", "Cost"), t("Час звука стоит центы и доллары, час видео — больше тысячи долларов", "An hour of audio costs cents to dollars; an hour of video, over a thousand"), t("Цена <b>одного часа</b>, шкала логарифмическая (каждая метка ×10). 1 минута речи ≈ 1000 символов. Списочные цены на 16.10.2026.", "Price of <b>one hour</b>, log scale (each tick ×10). 1 minute of speech ≈ 1,000 characters. List prices as of 16 October 2026."), k="amber")}
   <div class="body" style="margin-top:10px;">
-    <div class="row" style="grid-template-columns:1.5fr 1fr;gap:36px;align-items:start;">
-      <table class="cost tight">
-        <thead><tr><th>{t("Модель · как считают", "Model · billed as")}</th><th>{t("1 с", "1 s")}</th><th>{t("1 мин", "1 min")}</th><th>{t("1 час", "1 hour")}</th></tr></thead>
-        <tbody>{trs}</tbody>
-      </table>
+    <div class="row" style="grid-template-columns:1.6fr 1fr;gap:36px;align-items:center;">
+      <div class="bars">{trs}</div>
       <div class="stack" style="gap:20px;">
         <div class="stat" style="--k:var(--green)"><div class="n">{t("≈ 1 цент", "≈ 1 cent")}</div><div class="d">{t(f"озвучка нашего ролика: {chars} символов на ElevenLabs v3; у нас $0 на открытых моделях", f"voicing our video: {chars} characters on ElevenLabs v3; $0 for us on open models")}</div></div>
         <div class="stat" style="--k:var(--amber)"><div class="n">$4.80 = 12 {t("с", "s")}</div><div class="d">{t("час голоса ElevenLabs стоит как 12 секунд видео Veo 3.1 (L05: $0.40/с)", "an hour of ElevenLabs voice costs as much as 12 seconds of Veo 3.1 video (L05: $0.40/s)")}</div></div>
@@ -678,12 +727,12 @@ def s_econ():
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 4 мин. Сначала единицы. Синтез речи считают за символы текста (Google Cloud, ElevenLabs) или за аудиотокены (Gemini). Распознавание, голосовые агенты и музыку ElevenLabs — за минуту. Чтобы сравнивать, пересчитываем всё в секунду, минуту и час, приняв 1000 символов за минуту речи; так считает сам ElevenLabs.",
-                      "⏱ 4 min. Units first. Speech synthesis is billed per character of text (Google Cloud, ElevenLabs) or per audio token (Gemini). Transcription, voice agents and ElevenLabs music are billed per minute. To compare, we convert everything to second, minute and hour, using 1,000 characters per minute of speech, ElevenLabs’ own rule."),
+                    t("⏱ 4 мин. Сначала единицы. Синтез речи считают за символы текста (Google Cloud, ElevenLabs) или за аудиотокены (Gemini). Распознавание, голосовые агенты и музыку ElevenLabs — за минуту. Чтобы сравнивать, пересчитываем всё в цену за час, приняв 1000 символов за минуту речи; так считает сам ElevenLabs. Шкала логарифмическая: каждая метка в 10 раз больше предыдущей, поэтому полоса Veo в реальности примерно в 300 раз длиннее полосы ElevenLabs.",
+                      "⏱ 4 min. Units first. Speech synthesis is billed per character of text (Google Cloud, ElevenLabs) or per audio token (Gemini). Transcription, voice agents and ElevenLabs music are billed per minute. To compare, we convert everything to price per hour, using 1,000 characters per minute of speech, ElevenLabs’ own rule. The scale is logarithmic: each tick is ×10, so in reality the Veo bar is about 300 times longer than the ElevenLabs bar."),
                     t("Главная мысль: звук на порядки дешевле видео. Час голоса на ElevenLabs стоит $4.80, на Gemini 3.8 Flash TTS меньше доллара. Час видео Veo 3.1 в L05 стоил $1 440. Распознавание часа записи стоит от 22 до 27 центов. Озвучка нашего ролика: около 150 символов, на ElevenLabs это примерно 1 цент.",
                       "Key point: audio is orders of magnitude cheaper than video. An hour of voice costs $4.80 on ElevenLabs and under a dollar on Gemini 3.8 Flash TTS. An hour of Veo 3.1 video in L05 cost $1,440. Transcribing an hour of recording costs 22 to 27 cents. Voicing our video: about 150 characters, roughly 1 cent on ElevenLabs."),
-                    t("Подписки: ElevenLabs от $6 в месяц (30 тыс. кредитов ≈ 30 минут), Suno Pro $8 в месяц при оплате за год. В таблицу не входят дубли, сведение и работа людей. Пример для ДЗ: 3 реплики ≈ 150 символов × 2 сервиса × 3 дубля ≈ 900 символов ≈ $0.07 по прайсу; на бесплатном тарифе $0. Где деньги на самом деле уходят: голосовые агенты (минуты разговора плюс языковая модель за ними) и дубли озвучки. И подписки веб-студий: в ДЗ бесплатного лимита ElevenLabs (10 тыс. кредитов ≈ 10 минут) хватит, но коммерческой лицензии на бесплатном тарифе нет. Цены меняются: у Gemini 3.8 TTS цена удваивается с 1 января 2027.",
-                      "Subscriptions: ElevenLabs from $6 a month (30K credits ≈ 30 minutes), Suno Pro $8 a month billed yearly. The table excludes retakes, mixing and people’s time. Homework example: 3 lines ≈ 150 characters × 2 services × 3 retakes ≈ 900 characters ≈ $0.07 at list price; $0 on a free tier. Where the money goes: voice agents (conversation minutes plus the language model behind them) and voice retakes. And web studio subscriptions: the ElevenLabs free allowance (10K credits ≈ 10 minutes) is enough for the homework, but the free plan has no commercial licence. Prices change: Gemini 3.8 TTS doubles on 1 January 2027.")))
+                    t("Подписки: ElevenLabs от $6 в месяц (30 тыс. кредитов ≈ 30 минут), Suno Pro $8 в месяц при оплате за год. В график не входят дубли, сведение и работа людей. Пример для ДЗ: 3 реплики ≈ 150 символов × 2 сервиса × 3 дубля ≈ 900 символов ≈ $0.07 по прайсу; на бесплатном тарифе $0. Где деньги на самом деле уходят: голосовые агенты (минуты разговора плюс языковая модель за ними) и дубли озвучки. И подписки веб-студий: в ДЗ бесплатного лимита ElevenLabs (10 тыс. кредитов ≈ 10 минут) хватит, но коммерческой лицензии на бесплатном тарифе нет. Цены меняются: у Gemini 3.8 TTS цена удваивается с 1 января 2027.",
+                      "Subscriptions: ElevenLabs from $6 a month (30K credits ≈ 30 minutes), Suno Pro $8 a month billed yearly. The chart excludes retakes, mixing and people’s time. Homework example: 3 lines ≈ 150 characters × 2 services × 3 retakes ≈ 900 characters ≈ $0.07 at list price; $0 on a free tier. Where the money goes: voice agents (conversation minutes plus the language model behind them) and voice retakes. And web studio subscriptions: the ElevenLabs free allowance (10K credits ≈ 10 minutes) is enough for the homework, but the free plan has no commercial licence. Prices change: Gemini 3.8 TTS doubles on 1 January 2027.")))
 
 
 def s_qa():
@@ -737,7 +786,7 @@ def s_risks():
       <div class="stack" style="gap:14px;">
         <div class="prompt-label">{t("Как сервисы проверяют согласие на клон", "How services check consent for a clone")}</div>
         <ul class="list">
-          <li>{t("<b>OpenAI, Google, Azure:</b> владелец голоса записывает фразу согласия; доступ по заявке.", "<b>OpenAI, Google, Azure:</b> the voice owner records a consent phrase; access on application.")}</li>
+          <li>{t("<b>OpenAI, Google:</b> владелец голоса записывает фразу согласия. <b>Azure:</b> доступ по заявке.", "<b>OpenAI, Google:</b> the voice owner records a consent phrase. <b>Azure:</b> access on application.")}</li>
           <li>{t("<b>ElevenLabs Professional:</b> владелец читает проверочный текст; Instant: только галочка.", "<b>ElevenLabs Professional:</b> the owner reads a verification text aloud; Instant: a checkbox only.")}</li>
           <li>{t("<b>Открытые модели</b> (Qwen3-TTS, Chatterbox): клон по 3–10 с, <b>без проверок</b>.", "<b>Open-weight models</b> (Qwen3-TTS, Chatterbox): clone from 3–10 s, <b>no checks at all</b>.")}</li>
         </ul>
@@ -793,7 +842,7 @@ def s_hw():
 
 def s_summary():
     rules = [
-        ("cyan", t("Сценарий с бюджетом слов", "Script with a word budget"), t("2–2,5 слова в секунду, по секунде тишины у склеек", "2–2.5 words per second, a second of silence at each cut")),
+        ("cyan", t("Сценарий с бюджетом слов", "Script with a word budget"), t("около 2 слов в секунду, по секунде тишины у склеек", "2–2.5 words per second, a second of silence at each cut")),
         ("green", t("Текст для голоса отдельно", "Spoken text kept separate"), t("числа, время, имена словами; стиль отдельной инструкцией", "numbers, times, names as words; style as a separate instruction")),
         ("amber", t("Голос с лицензией и согласием", "A voice with a licence and consent"), t("клон только с письменного согласия владельца", "a clone only with the owner’s written consent")),
         ("pink", t("Фон с известной лицензией", "Background with a known licence"), t("звук видео, шумы или музыка; MusicGen и бесплатный Suno некоммерческие", "video audio, effects or music; MusicGen and free Suno are non-commercial")),

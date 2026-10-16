@@ -1,6 +1,8 @@
 # Lesson 06: Speech and Audio AI. Voice-over, sound and music for a video
 
-## Status: deck v2 (21 slides, 90 min, facts as of October 2026), companion documents aligned 2026-10-12
+## Status: deck v2 (21 slides, 90 min), facts rechecked and audit fixes applied 2026-10-16
+
+2026-10-16 revision (day of class): volatile facts rechecked (only the Open ASR Leaderboard changed); student-mode and visual audits applied. Slides 3, 8 and 9 now use real Google AI Studio screenshots with numbered callouts instead of text cards; slide 17 is a log-scale bar chart of the price of one hour instead of a price table; jargon cut on slides 2, 5, 11; the word-budget rule on slide 7 and the 6:42 example on slide 8 fixed; slide 12 says what Whisper did not hear.
 
 Deck structure: the L05 courier video with a voice-over, where to generate (chat, web studio, API, open weights), four audio tasks, how a speech model works, audio inside video models (Veo invents lines), then a 6-step pipeline (1 script, 2 text for the voice, 3 voice, 4 sound effects and music, 5 mix, 6 check with speech-to-text), local open-weight models, market, break, a coding agent cloning a voice with Qwen3-TTS, cost per second / minute / hour, acceptance checklist, risks and voice consent, homework (voice your L05 video), summary. Lesson graph: `L06_10_Lesson_Graph.md`. PDFs built with headless Edge on 2026-10-12 (21 pages each); rebuild after any deck change with `python deck_v2/build.py` on a machine with Edge.
 
@@ -21,13 +23,13 @@ The old Drive package (`06 — Speech and Audio AI — DONE`, Sep 2026: docx/ppt
 |---|---|---|---|---|
 | 01 | 2 | 00:00–02:00 | Cover | Frame of L05 shot 2 |
 | 02 | 3 | 02:00–05:00 | The L05 courier video with voice-over, sound and music | Voiced video + 3 numbers (3 lines, 3 tracks, −14 LUFS) |
-| 03 | 4 | 05:00–09:00 | Where to generate: chat, web studio, API | Three columns + open-weight path |
+| 03 | 4 | 05:00–09:00 | Start in a web studio, automate with the API | Google AI Studio Generate speech screenshot with 4 callouts + Get code screenshot; chat and open-weight paths in one line |
 | 04 | 4 | 09:00–13:00 | Four audio AI tasks | Four input → output cards |
-| 05 | 4 | 13:00–17:00 | How a speech model turns text into sound | Token chain + real waveform of line 1 |
+| 05 | 4 | 13:00–17:00 | The model guesses how text sounds, so it trips on numbers and names | Plain-language chain + real waveform of line 1 |
 | 06 | 4 | 17:00–21:00 | Audio inside a video model | Two Veo audio players + the lines Veo invented |
 | 07 | 5 | 21:00–26:00 | Step 1: script and word budget | Script table with frames, words, length |
-| 08 | 5 | 26:00–31:00 | Step 2: text for the voice | Script → spoken text table + style instruction |
-| 09 | 4 | 31:00–35:00 | Step 3: three sources of a voice | Library / designed / clone cards with consent gates |
+| 08 | 5 | 26:00–31:00 | Step 2: text for the voice | Script → spoken text table + AI Studio Style field screenshot |
+| 09 | 4 | 31:00–35:00 | Step 3: three sources of a voice | AI Studio voice library + Create voice (Voice Design / Voice Replication) screenshots, 3-colour legend |
 | 10 | 4 | 35:00–39:00 | Step 4: sound effects and music | MusicGen bed player + licence table |
 | 11 | 5 | 39:00–44:00 | Step 5: mix | Four real waveforms, loudness, ffmpeg command |
 | 12 | 6 | 44:00–50:00 | Step 6: check with speech-to-text | Script vs Whisper transcript, word error rate, critical terms |
@@ -35,7 +37,7 @@ The old Drive package (`06 — Speech and Audio AI — DONE`, Sep 2026: docx/ppt
 | 14 | 4 | 54:00–58:00 | Market, October 2026 | Models by task, open weights with licences |
 | 15 | 5 | 58:00–63:00 | Break | Timer |
 | 16 | 4 | 63:00–67:00 | A coding agent installs Qwen3-TTS locally and clones a voice | Agent prompt (Claude Code / Antigravity / Codex) + real clone demo (synthetic reference, CPU) |
-| 17 | 4 | 67:00–71:00 | Cost: second, minute, hour | Price table + cost of our video |
+| 17 | 4 | 67:00–71:00 | An hour of audio costs cents to dollars; an hour of video, hundreds | Log-scale bars, $ per hour (6 audio models + Veo 3.1) + cost of our video |
 | 18 | 5 | 71:00–76:00 | Acceptance checklist | 6 items with our real result (= homework rubric) |
 | 19 | 4 | 76:00–80:00 | Risks and voice consent | Traffic light, vendor consent checks, EU AI Act Art. 50 |
 | 20 | 7 | 80:00–87:00 | Homework: voice your L05 video | Deliverables, repo tree |

@@ -415,3 +415,26 @@ table.cost.tight td.m { font-size: 23px; }
 .stem svg { height: 62px; }
 code { font-size: max(18px, .88em); }
 .steps.big span i { font-size: 18px; width: 30px; height: 30px; }
+
+/* real screenshots with callouts (2026-10-16) */
+.shot { position: relative; border-radius: 14px; overflow: hidden; border: 1px solid #2a3550; background: #fff; box-shadow: 0 10px 30px rgba(0,0,0,.35); }
+.shot img { display: block; width: 100%; height: auto; }
+.shot .co { position: absolute; border: 3px solid var(--k, var(--amber)); border-radius: 10px; }
+.shot .bn { position: absolute; width: 38px; height: 38px; border-radius: 50%; background: var(--k, var(--amber)); color: #0b0f17; font: 800 22px/38px var(--body); text-align: center; transform: translate(-50%, -50%); box-shadow: 0 2px 8px rgba(0,0,0,.4); }
+.shotcap { font-size: 19px; line-height: 1.4; color: var(--muted); margin-top: 10px; }
+.shotcap b { color: var(--fg); }
+.legend { display: flex; flex-direction: column; gap: 12px; }
+.legend div { display: flex; gap: 12px; align-items: baseline; font-size: 21px; line-height: 1.35; color: var(--muted); }
+.legend div b { color: var(--fg); font-weight: 600; }
+.legend i { flex: none; font-style: normal; width: 32px; height: 32px; border-radius: 50%; background: var(--k, var(--amber)); color: #0b0f17; font: 800 19px/32px var(--body); text-align: center; }
+/* log-scale cost bars */
+.bars { display: flex; flex-direction: column; gap: 12px; }
+.bars .br { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: center; }
+.bars .bl { font-size: 21px; font-weight: 600; color: var(--fg); line-height: 1.2; }
+.bars .bl small { display: block; font-size: 18px; font-weight: 400; color: var(--muted); }
+.bars .bt { position: relative; height: 40px; }
+.bars .bf { height: 100%; border-radius: 6px; background: var(--k); opacity: .9; display: flex; align-items: center; justify-content: flex-end; }
+.bars .bv { position: absolute; top: 50%; transform: translateY(-50%); font: 700 24px var(--mono); color: var(--k); padding-left: 12px; white-space: nowrap; }
+.bars .axis { display: grid; grid-template-columns: 300px 1fr; gap: 16px; font: 17px var(--mono); color: var(--dim); }
+.bars .axis div { position: relative; height: 22px; }
+.bars .axis span { position: absolute; transform: translateX(-50%); }
