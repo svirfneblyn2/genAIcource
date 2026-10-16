@@ -461,16 +461,18 @@ def s_exercise():
           (t("Бухгалтерия: «Сверь счета из папки Drive с таблицей»", "Accounting: “Match invoices in a Drive folder against a sheet”"), "cyan"),
           (t("Поддержка: «Ответь клиенту и закрой тикет»", "Support: “Reply to the customer and close the ticket”"), "cyan"),
           (t("HR: «Найди в резюме кандидатов знание Python»", "HR: “Find Python skills in candidates’ CVs”"), "cyan")]
-    rows = "".join(f'<div class="lrow" style="--k:var(--{k})"><div class="dot"></div><div><div class="h">{q}</div><div class="d">{t("какие серверы? какие права? где подтверждение?", "which servers? which permissions? where is the confirmation?")}</div></div></div>' for q, k in qs)
+    cols = t(("Задача", "Серверы", "Права", "Где человек"), ("Task", "Servers", "Permissions", "Where a human"))
+    cell = 'padding:18px 14px;border-bottom:1px solid var(--line);display:flex;align-items:center'
+    rows = "".join(f'<div style="{cell};font:600 25px/1.3 var(--body);color:var(--fg)">{q}</div>'
+                   + "".join(f'<div style="{cell};justify-content:center;font:800 34px var(--display);color:var(--dim)">?</div>' for _ in range(3)) for q, k in qs)
+    hdr = "".join(f'<div style="padding:0 14px 10px;border-bottom:3px solid var(--cyan);font:600 17px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--cyan);{"" if i == 0 else "text-align:center"}">{c}</div>' for i, c in enumerate(cols))
     return dict(min=4, html=f'''
   {head(t("Упражнение", "Exercise"), t("Упражнение: какие MCP-серверы подключить и что разрешить?", "Exercise: which MCP servers to connect, and what to allow?"), k="cyan")}
   <div class="body" style="margin-top:10px;">
-    <div class="row" style="grid-template-columns:1.35fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="light big" style="gap:12px">{rows}</div>
-      <div class="stack" style="gap:18px;">
-        <div class="note" style="--k:var(--violet)">{t("Выберите одну задачу и ответьте в чат тремя строками: серверы, права (чтение или запись), где нужен человек.", "Pick one task and answer in the chat in three lines: servers, permissions (read or write), where a human is needed.")}</div>
-        <div class="note" style="--k:var(--amber)">{t("Подсказка: «закрыть тикет» и «ответить клиенту» — действия с последствиями.", "Hint: “close the ticket” and “reply to the customer” are actions with consequences.")}</div>
-      </div>
+    <div style="display:grid;grid-template-columns:2.3fr 1fr 1fr 1fr;margin-top:6px">{hdr}{rows}</div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;align-items:start;flex:none;margin-top:30px">
+      <div class="note" style="--k:var(--violet)">{t("Выберите одну задачу и ответьте в чат тремя строками: серверы, права (чтение или запись), где нужен человек.", "Pick one task and answer in the chat in three lines: servers, permissions (read or write), where a human is needed.")}</div>
+      <div class="note" style="--k:var(--amber)">{t("Подсказка: «закрыть тикет» и «ответить клиенту» — действия с последствиями.", "Hint: “close the ticket” and “reply to the customer” are actions with consequences.")}</div>
     </div>
   </div>''',
                 notes=notes(
@@ -623,24 +625,31 @@ def s_frameworks():
           ("amber", "LangGraph", "MIT", t("агент как схема шагов с памятью и паузами на подтверждение", "an agent as a graph of steps with memory and approval pauses")),
 ]
     rows = [(n, f"{d}", k) for k, n, v, d in fw]
-    lr = "".join(f'<div class="lrow" style="--k:var(--{k})"><div class="dot"></div><div><div class="h">{n} <span style="font-weight:400;color:var(--dim);font-size:19px">{v}</span></div><div class="d">{d}</div></div></div>' for k, n, v, d in fw)
+    lr = "".join(f'<div style="display:grid;grid-template-columns:22px 1fr;gap:18px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--line)">'
+                 f'<i style="width:18px;height:18px;border-radius:50%;background:var(--muted)"></i><div><div style="font:800 29px/1.2 var(--display);color:var(--fg)">{n} '
+                 f'<span style="font:500 18px var(--mono);color:var(--dim)">{v}</span></div><div style="font-size:22px;line-height:1.35;color:var(--muted);margin-top:4px">{d}</div></div></div>' for k, n, v, d in fw)
+    layers = [("cyan", t("Ваш агент", "Your agent"), t("роль, задача, правила", "role, task, rules")),
+              ("green", t("Фреймворк", "Framework"), t("цикл · память · передача задачи · паузы на «да» · журнал", "loop · memory · handoffs · pauses for a “yes” · tracing")),
+              ("violet", t("Модель + MCP-серверы", "Model + MCP servers"), t("инструменты из первой части урока", "the tools from the first part of the lesson"))]
+    stack = "".join(f'<div style="background:color-mix(in srgb,var(--{k}) {28 if i == 1 else 14}%,transparent);border-left:6px solid var(--{k});border-radius:10px;padding:{30 if i == 1 else 20}px 24px">'
+                    f'<div style="font:800 27px var(--display);color:var(--{k})">{h}</div><div style="font-size:21px;line-height:1.35;color:var(--fg);margin-top:6px">{d}</div></div>' for i, (k, h, d) in enumerate(layers))
     return dict(min=5, html=f'''
   {head(t("Фреймворки", "Frameworks"), t("Фреймворки агентов: готовый цикл, память, подтверждения и журнал", "Agent frameworks: a ready loop, memory, approvals and logs"), k="green")}
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.4fr 1fr;gap:40px;align-items:center;flex:none;">
-      <div class="light big" style="gap:16px">{lr}</div>
-      <div class="stack" style="gap:24px;">
-        <div class="note" style="--k:var(--green)">{t("Сами библиотеки бесплатные, почти все с открытым кодом; платите за модель. Ещё: Microsoft Agent Framework, CrewAI, LlamaIndex, Pydantic AI.", "The libraries are free and almost all are open source; you pay for the model. Also: Microsoft Agent Framework, CrewAI, LlamaIndex, Pydantic AI.")}</div>
-        <div class="note" style="--k:var(--violet)">{t("Почти все умеют подключать MCP-серверы — инструменты из первой части урока переносятся.", "Almost all can connect MCP servers, so the tools from the first part carry over.")}</div>
-        
+    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:56px;align-items:center;flex:none;">
+      <div>{lr}</div>
+      <div class="stack" style="gap:12px;">
+        <div class="prompt-label">{t("Что берёт на себя фреймворк", "What a framework takes over")}</div>
+        {stack}
+        <div class="small" style="font-size:19px;margin-top:10px">{t("Библиотеки бесплатные, почти все с открытым кодом; платите за модель. Почти все подключают MCP-серверы. Ещё: Microsoft Agent Framework, CrewAI, LlamaIndex, Pydantic AI.", "The libraries are free and almost all open source; you pay for the model. Almost all connect MCP servers. Also: Microsoft Agent Framework, CrewAI, LlamaIndex, Pydantic AI.")}</div>
       </div>
     </div>
   </div>''',
                 notes=notes(
                     t("⏱ 5 мин. Фреймворк агентов — библиотека, которая берёт на себя цикл из L11 и всё вокруг него: память между шагами, передачу задачи другому агенту, паузы на подтверждение человеком, журнал (трассировку). OpenAI Agents SDK и Claude Agent SDK — от поставщиков моделей; Claude Agent SDK использует тот же движок, что Claude Code, код Python-версии открыт под MIT, но использование SDK регулируется коммерческими условиями Anthropic.",
                       "⏱ 5 min. An agent framework is a library that takes over the L11 loop and everything around it: memory between steps, handing a task to another agent, pauses for human approval, logging (tracing). The OpenAI Agents SDK and the Claude Agent SDK come from model vendors; the Claude Agent SDK uses the same engine as Claude Code; the Python SDK code is MIT, but use of the SDK is governed by Anthropic’s commercial terms."),
-                    t("Google ADK — агенты на Gemini и других моделях с удобным деплоем в Google Cloud. LangGraph описывает агента как схему шагов с памятью и паузами. Microsoft Agent Framework — прямой преемник AutoGen и Semantic Kernel; AutoGen теперь только поддерживается, а новым проектам Microsoft советует Agent Framework. CrewAI — «команда» агентов с ролями. Ещё есть LlamaIndex и Pydantic AI. Выбирать по экосистеме: на какой модели и в каком облаке вы работаете.",
-                      "Google ADK — agents on Gemini and other models with easy deployment to Google Cloud. LangGraph describes an agent as a graph of steps with memory and pauses. Microsoft Agent Framework is the direct successor to AutoGen and Semantic Kernel; AutoGen is now maintenance-only, and Microsoft points new projects to Agent Framework. CrewAI — a “crew” of agents with roles. There are also LlamaIndex and Pydantic AI. Choose by ecosystem: which model and which cloud you work with.")))
+                    t("Google ADK — агенты на Gemini и других моделях с удобным деплоем в Google Cloud. LangGraph описывает агента как схему шагов с памятью и паузами. Microsoft Agent Framework — прямой преемник AutoGen и Semantic Kernel; AutoGen теперь только поддерживается, а новым проектам Microsoft советует Agent Framework. CrewAI — «команда» агентов с ролями. Ещё есть LlamaIndex и Pydantic AI. Выбирать по экосистеме: на какой модели и в каком облаке вы работаете. Справа на слайде — что фреймворк берёт на себя: сверху ваш агент (роль и правила), в середине фреймворк (цикл, память, передача задачи, паузы на подтверждение, журнал), снизу модель и MCP-серверы из первой части урока.",
+                      "Google ADK — agents on Gemini and other models with easy deployment to Google Cloud. LangGraph describes an agent as a graph of steps with memory and pauses. Microsoft Agent Framework is the direct successor to AutoGen and Semantic Kernel; AutoGen is now maintenance-only, and Microsoft points new projects to Agent Framework. CrewAI — a “crew” of agents with roles. There are also LlamaIndex and Pydantic AI. Choose by ecosystem: which model and which cloud you work with. On the right of the slide is what a framework takes over: your agent on top (role and rules), the framework in the middle (loop, memory, handoffs, approval pauses, tracing), the model and the MCP servers from the first part at the bottom.")))
 
 
 def s_when():

@@ -149,12 +149,12 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 
 ### Slide 11 (52:00–59:00) • An agent does whatever it can reach: keys, databases and other people’s text in the project
 
-**On screen:** Three cases: 9 seconds (PocketOS), code freeze (Replit), 2,349 secrets (Nx); Clinejection.
+**On screen:** Three cases: 9 seconds (PocketOS), code freeze (Replit), 2,349 secrets (Nx); a “Remember from L15: prompt injection, LLM01” note; the Clinejection chain in 4 steps.
 
 #### Speaker (7 min)
 > Three cases. PocketOS, April 2026: an agent in Cursor found a long-lived cloud key in an unrelated file and, with a single command, deleted the production database and its backups in nine seconds; the service was down for about 30 hours, and the data was later restored. Replit, July 2025: during a declared code freeze the agent deleted SaaStr’s production database — about 1,200 executives and 1,190 companies — and at first reported that a rollback was impossible.
 >
-> Nx, August 2025, a supply-chain attack: an infected version of a popular npm package, on install, looked for AI agents on the computer — Claude, Gemini, Amazon Q — and asked them to find secret files with permission prompts switched off; many agents refused, but the malware stole keys on its own too. About 2,349 secrets leaked. And in 2026, in the Clinejection case, the command was hidden right in a GitHub issue title: the AI bot that triaged Cline’s issues ran it, the attacker got to the publishing keys, and an infected version went out on npm. The takeaway: everything the agent can reach is its permission, and someone else’s text in the project is someone else’s commands.
+> Nx, August 2025, a supply-chain attack: an infected version of a popular npm package, on install, looked for AI agents on the computer — Claude, Gemini, Amazon Q — and asked them to find secret files with permission prompts switched off; many agents refused, but the malware stole keys on its own too. About 2,349 secrets leaked. And in 2026, in the Clinejection case, the command was hidden right in a GitHub issue title: the AI bot that triaged Cline’s issues ran it, the attacker got to the publishing keys, and an infected version went out on npm. The takeaway: everything the agent can reach is its permission, and someone else’s text in the project is someone else’s commands. Remember from L15: this is exactly prompt injection, LLM01 on the OWASP list; the Clinejection chain is at the bottom of the slide.
 
 ---
 
@@ -180,7 +180,7 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 
 ### Slide 14 (71:00–81:00) • Turn a vague request into a task an agent can carry out and check
 
-**On screen:** The “priority filter” request and 4 steps: TASK.md, AGENTS.md, plan, decision.
+**On screen:** The “priority filter” request, 4 steps as circles (TASK.md, AGENTS.md, plan, decision) and a TASK.md skeleton; swap with a neighbour if there is no agent.
 
 #### Speaker (10 min)
 > Work individually for 7 minutes, then a 3-minute walk-through. A business request: “users want to filter tickets by priority”. Step 1: write TASK.md — the goal, what not to touch, when it is done, which command checks it. Step 2: a three-to-five-line AGENTS.md — the test command and limits. Step 3: if you have an agent, run it in plan mode and read the plan without approving anything. Step 4: decide whether to accept the plan, reject it or refine the task.
@@ -200,9 +200,9 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 
 ### Slide 16 (86:00–90:00) • The agent does the work; the task, the check and the decision stay with us
 
-**On screen:** The four rules of the lesson and the end of the course.
+**On screen:** The four rules of the lesson, Capstone 2 (30 of 100 points, pass at 60) and the end of the course.
 
 #### Speaker (4 min)
-> Four rules for working with an agent. A task with a clear “done when”. Plan first, then edits. Least privilege: a branch, a sandbox, no production keys. The decision belongs to a human: they read the changes, merge and ship. This is the last lesson: we went from the first prompt to an agent that writes code under your supervision. Thank you, and good luck with your final projects.
+> Four rules for working with an agent. A task with a clear “done when”. Plan first, then edits. Least privilege: a branch, a sandbox, no production keys. The decision belongs to a human: they read the changes, merge and ship. This is the last lesson: we went from the first prompt to an agent that writes code under your supervision. Ahead is Capstone 2, “Your Data Assistant Agent”: a no-code Colab, 30 of the 100 course points; 60 are needed to pass. Thank you, and good luck with your final projects.
 
 ---

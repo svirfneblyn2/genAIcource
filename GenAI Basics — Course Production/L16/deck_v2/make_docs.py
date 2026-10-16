@@ -36,14 +36,15 @@ SCREEN = {
                  'Real pytest output on the homework starter (1 failed → 3 passed) and 4 steps: a test fails → the agent fixes → all green → you read the diff; undo and git.'),
     's_metr': ('Столбики METR: ожидали +24%, казалось +20%, измерили −19%.',
                'METR bars: expected +24%, felt +20%, measured −19%.'),
-    's_incidents': ('Три случая: 9 секунд (PocketOS), «заморозка» (Replit), 2 349 секретов (Nx); Clinejection.',
-                    'Three cases: 9 seconds (PocketOS), code freeze (Replit), 2,349 secrets (Nx); Clinejection.'),
+    "s_incidents": ('Три случая: 9 секунд (PocketOS), «заморозка» (Replit), 2 349 секретов (Nx); заметка «Помните по L15: подмена инструкций, LLM01»; цепочка Clinejection в 4 шага.',
+        'Three cases: 9 seconds (PocketOS), code freeze (Replit), 2,349 secrets (Nx); a “Remember from L15: prompt injection, LLM01” note; the Clinejection chain in 4 steps.'),
     's_break': ('Таймер перерыва 5 минут.', 'A 5-minute break timer.'),
     's_safe': ('Шесть правил безопасной работы с метками инцидентов; плашка про режим без проверок.', 'Six safe-work rules tagged with incidents; a plaque on the no-checks mode.'),
-    's_exercise': ('Просьба «фильтр по приоритету» и 4 шага: TASK.md, AGENTS.md, план, решение.',
-                   'The “priority filter” request and 4 steps: TASK.md, AGENTS.md, plan, decision.'),
+    "s_exercise": ('Просьба «фильтр по приоритету», 4 шага кружками (TASK.md, AGENTS.md, план, решение) и скелет TASK.md; обмен с соседом, если нет агента.',
+        'The “priority filter” request, 4 steps as circles (TASK.md, AGENTS.md, plan, decision) and a TASK.md skeleton; swap with a neighbour if there is no agent.'),
     's_hw': ('Шесть шагов ДЗ (стартовый проект или свой репозиторий), папка genai-homeworks/L16/, путь для непрограммистов (только README).', 'Six homework steps (starter project or own repo), the genai-homeworks/L16/ folder, a path for non-coders (README only).'),
-    's_summary': ('Четыре правила урока и завершение курса.', 'The four rules of the lesson and the end of the course.'),
+    "s_summary": ('Четыре правила урока, Капстоун 2 (30 из 100 баллов, зачёт от 60) и завершение курса.',
+        'The four rules of the lesson, Capstone 2 (30 of 100 points, pass at 60) and the end of the course.'),
 }
 
 HEAD = {

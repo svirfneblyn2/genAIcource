@@ -1,6 +1,6 @@
 # Lesson 08 • Homework: a verified analysis pack
 
-**Course:** GenAI Basics • Lesson 08 “AI for Data Analysis”
+**Course:** GenAI Basics • Lesson 08 “AI for Data Analysis” • Module 3: AI assistants at work
 **File:** `demo_assets/student_starter/northstar_sales_messy.csv` (practice, fictional data — fine to upload to any service)
 **Tools:** any chat assistant that analyses files (ChatGPT, Claude, Gemini), or Copilot/ChatGPT/Claude in Excel, or Colab. You do not need to write code yourself.
 **Submit:** a `verified_analysis_pack/` folder in your homework repository (`genai-homeworks/L08/`).

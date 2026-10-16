@@ -351,7 +351,7 @@ def s_labels():
   <div class="body" style="margin-top:6px;">
     <div class="row" style="grid-template-columns:1fr 760px;gap:36px;align-items:start;flex:none;">
       <div class="stack" style="gap:22px"><div class="light big" style="gap:14px">{_lr(rows)}</div>
-      <div class="plaque" style="font-size:22px;line-height:1.45;padding:16px 22px">{t("<b>Маркировку уже требуют:</b> Китай (с 1.09.2025), Казахстан (с 18.01.2026), ЕС — ст. 50 (с 2.08.2026).<br><b>Россия</b> (пока не требует): закон 243-ФЗ, нормы о маркировке с 1.03.2027 — обязательность пока спорна.", "<b>Labelling is already required:</b> China (from 1.09.2025), Kazakhstan (from 18.01.2026), EU — Art. 50 (from 2.08.2026). <b>Russia</b>: law 243-FZ, labelling provisions from 1.03.2027 — whether mandatory is still disputed.")}</div></div>
+      <div class="plaque" style="font-size:22px;line-height:1.45;padding:16px 22px">{t("<b>Маркировку уже требуют:</b> Китай (с 1.09.2025), Казахстан (с 18.01.2026), ЕС — ст. 50 (с 2.08.2026).<br><b>Россия</b>: закон 243-ФЗ, нормы о маркировке с 1.03.2027 — обязательность пока спорна.", "<b>Labelling is already required:</b> China (from 1.09.2025), Kazakhstan (from 18.01.2026), EU — Art. 50 (from 2.08.2026). <b>Russia</b>: law 243-FZ, labelling provisions from 1.03.2027 — whether mandatory is still disputed.")}</div></div>
       <div class="stack" style="gap:8px;"><div class="prompt-label">{t("gemini.google.com · проверка картинки · снято 16.10.2026", "gemini.google.com · image check · captured 16.10.2026")}</div>
         {shot(t("gemini_ai_check", "gemini_ai_check_en"), marks=[(1, 97.0, t(56.5, 66.0), "cyan")], boxes=[(1.0, t(55.5, 65.0), 98.0, t(43.5, 34.0), "cyan")])}
         <div class="shotcap" style="font-size:20px">{t("<b>①</b> Gemini проверил свою же картинку (Verify AI) и нашёл подписи C2PA.", "<b>①</b> Gemini checked its own picture (Verify AI) and found C2PA credentials.")}</div></div>
@@ -372,18 +372,26 @@ def s_euact():
     marks = "".join(f'<div style="position:absolute;left:{6 + i * 88 / (n - 1):.1f}%;top:0;transform:translateX(-50%);text-align:center;width:270px">'
                     f'<div style="font:700 28px var(--mono);color:var(--{k})">{d}</div><div style="width:28px;height:28px;border-radius:50%;background:var(--{k});margin:14px auto"></div>'
                     f'<div style="font:500 24px/1.35 var(--body);color:var(--fg)">{lab}</div></div>' for i, (d, lab, k) in enumerate(events))
+    tiers = [("red", 58, t("Запрещено: социальный рейтинг", "Banned: social scoring")),
+             ("amber", 72, t("Высокий риск: найм, кредит, учёба", "High risk: hiring, credit, education")),
+             ("cyan", 86, t("Прозрачность: пометить чат-бота и дипфейк", "Transparency: label chatbots and deepfakes")),
+             ("green", 100, t("Минимальный риск: фильтр спама, игры", "Minimal risk: spam filters, games"))]
+    pyr = "".join(f'<div style="width:{w}%;margin:0 auto;background:var(--{k});color:#0b0f17;border-radius:6px;padding:10px 10px;text-align:center;font:700 20px/1.2 var(--body)">{lab}</div>' for k, w, lab in tiers)
     return dict(min=6, html=f'''
   {head("EU AI Act", t("Европейский закон об ИИ вступает в силу по частям — большая часть уже действует, высокий риск — с 2027", "The EU AI Act applies in stages — most of it is in force, high-risk rules from 2027"), k="violet")}
   <div class="body" style="margin-top:16px;">
-    <div style="position:relative;height:330px;margin:20px 30px 0;"><div style="position:absolute;left:3%;right:3%;top:66px;height:3px;background:#2a3550"></div>{marks}</div>
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;flex:none;margin-top:30px;font-size:23px">
+    <div style="position:relative;height:270px;margin:6px 30px 0;"><div style="position:absolute;left:3%;right:3%;top:66px;height:3px;background:#2a3550"></div>{marks}</div>
+    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:48px;flex:none;margin-top:10px;font-size:23px;align-items:center">
+      <div><div class="prompt-label">{t("Чем выше риск, тем строже правила", "The higher the risk, the stricter the rules")}</div><div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">{pyr}</div></div>
+      <div class="stack" style="gap:24px">
       <div class="note" style="--k:var(--red)">{t("<b>Штрафы:</b> до €35 млн или 7% оборота за запрещённое; до €15 млн или 3% — за остальное, включая маркировку.", "<b>Fines:</b> up to €35M or 7% of turnover for prohibited practices; up to €15M or 3% for the rest, including labelling.")}</div>
       <div class="note" style="--k:var(--cyan)">{t("Касается и компаний вне ЕС, если их ИИ используют в ЕС.", "It also applies to companies outside the EU if their AI is used in the EU.")}</div>
+      </div>
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 6 мин. EU AI Act — первый крупный закон об ИИ. Он вступает в силу частями. С февраля 2025 запрещены опасные практики, например социальный рейтинг. С августа 2025 — правила для моделей общего назначения. С 2 августа 2026 действует большая часть, включая маркировку по статье 50. Поправки 2026 года (Регламент 2026/1744) добавили с 2 декабря 2026 запрет генераторов интимных изображений без согласия и перенесли правила для высокорисковых систем — найм, кредит, образование — на декабрь 2027.",
-                      "⏱ 6 min. The EU AI Act is the first major AI law. It applies in stages. Since February 2025 dangerous practices such as social scoring are banned. Since August 2025 — rules for general-purpose models. From 2 August 2026 most of it applies, including Article 50 labelling. The 2026 amendments (Regulation 2026/1744) added, from 2 December 2026, a ban on generators of non-consensual intimate images and moved the high-risk rules — hiring, credit, education — to December 2027."),
+                    t("⏱ 6 мин. EU AI Act — первый крупный закон об ИИ. Он вступает в силу частями. С февраля 2025 запрещены опасные практики, например социальный рейтинг. С августа 2025 — правила для моделей общего назначения. С 2 августа 2026 действует большая часть, включая маркировку по статье 50. Поправки 2026 года (Регламент 2026/1744) добавили с 2 декабря 2026 запрет генераторов интимных изображений без согласия и перенесли правила для высокорисковых систем — найм, кредит, образование — на декабрь 2027. Внизу логика закона: чем выше риск системы, тем строже правила; обычный сотрудник чаще всего встречает уровень прозрачности — пометить чат-бота и дипфейк.",
+                      "⏱ 6 min. The EU AI Act is the first major AI law. It applies in stages. Since February 2025 dangerous practices such as social scoring are banned. Since August 2025 — rules for general-purpose models. From 2 August 2026 most of it applies, including Article 50 labelling. The 2026 amendments (Regulation 2026/1744) added, from 2 December 2026, a ban on generators of non-consensual intimate images and moved the high-risk rules — hiring, credit, education — to December 2027. Below is the law’s logic: the higher a system’s risk, the stricter the rules; an ordinary employee most often meets the transparency level — label the chatbot and the deepfake."),
                     t("Штрафы: до 35 миллионов евро или 7% мирового оборота за запрещённые практики, до 15 миллионов или 3% — за большинство остальных нарушений. Закон касается и компаний вне ЕС, если их ИИ-системы используются в Евросоюзе.",
                       "Fines: up to 35 million euros or 7% of worldwide turnover for prohibited practices, up to 15 million or 3% for most other violations. The law also covers companies outside the EU if their AI systems are used in the EU.")))
 
@@ -428,12 +436,23 @@ def s_rules():
              ("red", t("Светофор данных", "Data traffic light"), t("что в любой ИИ, что только в рабочий, что только с разрешения", "what goes anywhere, what only into work AI, what only with permission")),
              ("amber", t("Человек проверяет", "A human checks"), t("цифры, ссылки, решения о людях — до отправки", "numbers, links, decisions about people — before sending")),
              ("cyan", t("Пометка и инциденты", "Labels and incidents"), t("помечать ИИ-контент; куда сообщить, если что-то утекло", "label AI content; where to report a leak"))]
-    li = "".join(f'<div class="task" style="--k:var(--{k});padding:42px 40px;min-height:225px"><div><div class="h" style="font-size:38px">{h}</div><div class="d" style="font-size:26px;margin-top:10px">{d}</div></div></div>' for k, h, d in rules)
+    dot = lambda k: f'<span style="color:var(--{k})">●</span>'
+    ex = [t("ChatGPT Business и Copilot Chat — только рабочие аккаунты", "ChatGPT Business and Copilot Chat — business accounts only"),
+          f'{dot("green")} {t("публичное → любой ИИ", "public → any AI")}   {dot("amber")} {t("внутреннее → рабочий ИИ", "internal → work AI")}\n  {dot("red")} {t("клиенты, договоры → только с разрешения", "clients, contracts → only with permission")}',
+          t("цифры, ссылки, решения о людях — до отправки", "numbers, links, decisions about people — before sending"),
+          t("пост с ИИ-картинкой → «создано с ИИ»\n  утечка → security@company", "a post with an AI image → “made with AI”\n  a leak → security@company")]
+    md = (f'<span class="cm"># {t("Правила ИИ · команда поддержки", "AI rules · support team")}</span>\n'
+          + "\n".join(f'<span style="color:var(--{k});font-weight:700">## {i}. {h}</span>\n  {e}' for i, ((k, h, d), e) in enumerate(zip(rules, ex), 1)))
     return dict(min=6, html=f'''
   {head(t("Правила команды", "Team rules"), t("Правила ИИ для команды умещаются на одну страницу: четыре пункта", "AI rules for a team fit on one page: four points"), k="green")}
   <div class="body" style="margin-top:12px;">
-    <div class="tasks">{li}</div>
-    <div class="note" style="margin-top:36px;font-size:24px;--k:var(--cyan)">{t("Это же — шаблон домашнего задания.", "This is also the homework template.")}</div>
+    <div class="row" style="grid-template-columns:2.3fr 1fr;gap:40px;flex:none;align-items:center">
+      <div><div class="prompt-label">ai_rules.md · {t("пример на одну страницу", "a one-page example")}</div><pre class="code" style="font-size:24px;line-height:1.7;margin:0;padding:26px 32px;white-space:pre-wrap">{md}</pre></div>
+      <div class="stack" style="gap:26px">
+        <div class="note" style="--k:var(--green)">{t("Четыре заголовка — одни и те же для любой команды; меняются только примеры.", "The four headings are the same for any team; only the examples change.")}</div>
+        <div class="note" style="--k:var(--cyan)">{t("Это же — <b>шаблон домашнего задания</b>.", "This is also the <b>homework template</b>.")}</div>
+      </div>
+    </div>
   </div>''',
                 notes=notes(
                     t("⏱ 6 мин. Всё, что мы обсудили, сводится к четырём пунктам, которые помещаются на одну страницу для команды. Первый: список одобренных инструментов и рабочих аккаунтов. Второй: светофор данных. Третий: человек проверяет цифры, ссылки и любые решения о людях до отправки. Четвёртый: как помечать ИИ-контент и куда сообщать, если что-то пошло не так.",
@@ -473,17 +492,24 @@ def s_hw():
              t("Светофор данных на примерах вашей работы", "A data traffic light with examples from your work"),
              t("Что проверяет человек и как помечать ИИ-контент", "What a human checks and how to label AI content"),
              t("Что делать при утечке или дипфейк-звонке", "What to do on a leak or a deepfake call")]
-    ol = "".join(f'<li style="font-size:32px;color:var(--fg);grid-template-columns:52px 1fr"><span>{s}</span></li>' for s in steps)
+    ol = "".join(f'<li style="font-size:30px;color:var(--fg);grid-template-columns:52px 1fr"><span>{s}</span></li>' for s in steps)
+    pts = [(2, "green", t("реальные задачи", "real tasks")), (3, "red", t("светофор с примерами", "traffic light with examples")),
+           (2, "amber", t("проверка человеком", "human checks")), (2, "cyan", t("пометка и инциденты", "labels and incidents")),
+           (1, "violet", t("одна страница", "one page"))]
+    grade = "".join(f'<div style="flex:{n};display:flex;flex-direction:column;gap:8px"><div style="height:46px;border-radius:8px;background:var(--{k});color:#0b0f17;font:800 24px/46px var(--display);text-align:center">{n}</div>'
+                    f'<div style="font-size:20px;color:var(--muted);text-align:center;line-height:1.25">{d}</div></div>' for n, k, d in pts)
     return dict(min=6, html=f'''
   {head(t("Домашнее задание", "Homework"), t("ДЗ: правила ИИ для своей команды на одну страницу", "Homework: one-page AI rules for your team"), k="green")}
   <div class="body" style="margin-top:10px;">
     <div class="row" style="grid-template-columns:1.55fr 1fr;gap:40px;align-items:center;flex:none;">
-      <ol class="checklist" style="gap:40px;font-size:32px">{ol}</ol>
+      <ol class="checklist" style="gap:30px;font-size:30px">{ol}</ol>
       <div class="stack" style="gap:18px;">
         <pre class="code" style="font-size:32px;line-height:1.6;padding:30px 34px">genai-homeworks/\n└─ L15/\n   ├─ ai_rules.md\n   └─ README.md</pre>
         <div class="note" style="font-size:24px;--k:var(--amber)">{t("Можно попросить ИИ сделать черновик — но проверьте и дополните сами.", "You may ask AI for a draft — but check and complete it yourself.")}</div>
       </div>
     </div>
+    <div class="prompt-label" style="margin-top:40px">{t("Оценка: 10 баллов", "Grading: 10 points")}</div>
+    <div style="display:flex;gap:8px;margin-top:8px">{grade}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 6 мин. ДЗ: одна страница правил ИИ для вашей команды по четырём пунктам урока, на примерах ваших реальных задач. Черновик можно попросить у ИИ, но проверить и дополнить — ваша работа. Без названий клиентов и внутренних данных. Подробности в L15_05_Homework.",
@@ -495,12 +521,14 @@ def s_summary():
              ("red", t("Светофор данных", "Data traffic light"), t("внутреннее — в рабочий ИИ; конфиденциальное — только в одобренный рабочий ИИ и с разрешения", "internal into work AI; confidential only into approved work AI with permission")),
              ("violet", t("Человек решает", "A human decides"), t("о людях, деньгах, удалении", "about people, money, deletion")),
              ("cyan", t("Помечайте ИИ", "Label AI"), t("дипфейки и ИИ-контент — там, где требует закон или площадка", "deepfakes and AI content — where the law or platform requires"))]
-    li = "".join(f'<div class="task" style="--k:var(--{k});padding:42px 40px;min-height:225px"><div><div class="h" style="font-size:38px">{h}</div><div class="d" style="font-size:26px;margin-top:10px">{d}</div></div></div>' for k, h, d in rules)
+    li = "".join(f'<div style="display:grid;grid-template-columns:70px 1fr;gap:18px;align-items:baseline"><div style="font:800 56px/1 var(--display);color:var(--{k})">{i}</div>'
+                 f'<div><div style="font:800 40px/1.2 var(--display);color:var(--fg)">{h}</div><div style="font-size:27px;line-height:1.35;color:var(--muted);margin-top:8px">{d}</div></div></div>'
+                 for i, (k, h, d) in enumerate(rules, 1))
     return dict(min=5, html=f'''
   {head(t("Итоги", "Summary"), t("Четыре правила: проверяй, сортируй данные, решает человек, помечай", "Four rules: check, sort data, a human decides, label"), k="green")}
   <div class="body" style="margin-top:10px;">
-    <div class="tasks">{li}</div>
-    <div class="note" style="margin-top:36px;font-size:24px;--k:var(--violet)">{t("<b>Дальше, L16:</b> агентная разработка — как агенты пишут код и как ими управлять безопасно.", "<b>Next, L16:</b> agentic software development — how agents write code and how to steer them safely.")}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:70px 70px;margin-top:30px">{li}</div>
+    <div class="note" style="margin-top:70px;font-size:24px;--k:var(--violet)">{t("<b>Дальше, L16:</b> агентная разработка — как агенты пишут код и как ими управлять безопасно.", "<b>Next, L16:</b> agentic software development — how agents write code and how to steer them safely.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 5 мин. Четыре правила. Проверяйте цифры, ссылки и цитаты по первоисточнику. Светофор данных: внутреннее — только в рабочий ИИ, конфиденциальное — только в одобренный рабочий ИИ и с разрешения, в личный — никогда. Решения о людях, деньгах и удалении принимает человек. Помечайте дипфейки и ИИ-контент там, где этого требует закон или площадка. Последний урок — агентная разработка.",

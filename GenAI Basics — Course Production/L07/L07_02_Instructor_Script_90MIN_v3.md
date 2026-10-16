@@ -1,6 +1,6 @@
 # Сценарий преподавателя • Урок 07 (v3): Экосистема Microsoft Copilot — обзор (90 минут)
 
-**Курс:** GenAI Basics • Урок 07 из 16
+**Курс:** GenAI Basics • Урок 07 из 16 • Модуль 3: ИИ-ассистенты в работе
 **Преподаватель:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Аудитория:** студенты IT Park University, новички в GenAI из разных ролей. Простой язык, без формул и без кода.
 **Формат:** 24 слайда (`presentation_L07_Copilot_Ecosystem_v3.html` / PDF) • занятие в **Microsoft Teams** • таймер перерыва на слайде 15

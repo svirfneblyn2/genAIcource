@@ -7,6 +7,7 @@ Primary sources checked on 2026-10-16 for the v2 rebuild of Lesson 10. Replaces 
 | File | What | Source |
 |---|---|---|
 | `assets/v2/img/hf_granite_header.png`, `hf_granite_files.png` | Hugging Face page and file list of `ibm-granite/granite-4.2-8b-GGUF` | own capture 2026-10-16, https://huggingface.co/ibm-granite/granite-4.2-8b-GGUF/tree/main |
+| `assets/v2/img/hf_granite_header_tight.png`, `hf_granite_files_tight.png`, `lmstudio_app_tight.png`, `runpod_pricing_tight.png` | tighter crops of the captures above, used on slides 3, 9 and 17 so UI text is ≥ 17px (files list: blank middle column removed; LM Studio: left chat, middle cut with a grey seam; Runpod: 24 GB rows, VRAM chip and price columns) | derived 2026-10-16 |
 | `assets/v2/img/lmstudio_app.png` | LM Studio app with two chats (GLM-4.7-Flash) | official image, credit "LM Studio / Element Labs", https://lmstudio.ai/assets/marketing/blog/0.4.0/app-screen.png (0.4.0 release blog, Jan 2026) |
 | `assets/v2/img/runpod_pricing_community.png` | Runpod pricing page, Pods, Community Cloud (RTX 4090 $0.34/hr row highlighted on the slide), page "Updated October 8, 2026" | own capture 2026-10-16, https://www.runpod.io/pricing |
 

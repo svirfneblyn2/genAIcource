@@ -70,7 +70,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 03 (06:00–11:00) • An open model is a file you can download, plus its licence
 
-**On screen:** Hugging Face screenshots: the granite-4.2-8b-GGUF page (publisher, Apache-2.0 licence) and the file list from Q4_K_M to Q8_0, callouts 1–3.
+**On screen:** Large Hugging Face crops: the granite-4.2-8b-GGUF header (publisher, Apache-2.0 licence) and the file list from Q4_K_M to Q8_0, callouts 1–3.
 
 #### Speaker (5 min)
 > Show the page live if there is time: huggingface.co, search “granite-4.2-8b-GGUF”. An open model is first of all weight files: trained numbers you can download and run yourself. You cannot download ChatGPT like that; it is a closed model.
@@ -83,7 +83,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 04 (11:00–15:00) • Your own model: data stays home, but quality trails the leaders
 
-**On screen:** Left: pros, cons and good tasks; right: Artificial Analysis index bars: 58 / 46 / 34.
+**On screen:** Pros and cons on the left; Artificial Analysis index bars on the right: 58 / 46 / 34; below, a task strip: ✓ emails and tickets, drafts, document search; ✗ hard reasoning and large codebases.
 
 #### Speaker (4 min)
 > The honest picture. Pros of your own model: data never leaves the computer, it works on a plane or in a closed network, there is no bill per request, and the model will not change tomorrow without you knowing (cloud model versions do change).
@@ -120,12 +120,12 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 07 (24:00–29:00) • The model file plus room for the conversation must fit the GPU memory
 
-**On screen:** Q4 bars of seven models with a hatched +25%, memory lines at 6 / 16 / 24 GB; bar colour = the smallest GPU it fits; on the right “+25%”.
+**On screen:** Q4 bars for seven models with +25% hatching and memory lines at 6 / 8 / 16 / 24 GB; bar colour = the smallest GPU it fits (8B and 9B are green: they fit 8 GB); “+25%” on the right.
 
 #### Speaker (5 min)
-> The beginner’s main question: which model fits my computer. The solid bar is the real 4-bit file size; the hatching is a 25% margin for the context, meaning the conversation history and attached documents. The vertical lines are GPU memory (called VRAM): 6 GB on a laptop gaming GPU (like the RTX 3060 Laptop), 16 GB on a mid-range card, 24 GB on an RTX 4090.
+> The beginner’s main question: which model fits my computer. The solid bar is the real 4-bit file size; the hatching is a 25% margin for the context, meaning the conversation history and attached documents. The vertical lines are GPU memory (called VRAM): 6 GB on a laptop gaming GPU (like the RTX 3060 Laptop), 8 GB on many newer laptops, 16 GB on a mid-range card, 24 GB on an RTX 4090.
 >
-> Read it like this: if the bar plus hatching is left of a line, the model fits that GPU entirely; the bar colour is the smallest of the three GPUs it fits. 6 GB — models up to 4B. 8 GB (common in laptops, no line on the chart) — up to 9B: Granite 8B and Qwen3.5 9B take about 7 GB with the margin. 16 GB — up to 12B, with gpt-oss-20b just squeezing in. 24 GB — up to 27B. If the model does not fit the GPU entirely, LM Studio puts part of it in system RAM, but speed drops several times.
+> Read it like this: if the bar plus hatching is left of a line, the model fits that GPU entirely; the bar colour is the smallest of the four GPUs it fits. 6 GB — models up to 4B. 8 GB (common in laptops) — up to 9B: Granite 8B and Qwen3.5 9B take about 7 GB with the margin. 16 GB — up to 12B, with gpt-oss-20b just squeezing in. 24 GB — up to 27B. If the model does not fit the GPU entirely, LM Studio puts part of it in system RAM, but speed drops several times.
 >
 > A laptop without a GPU: the model sits in system RAM, and 16 GB is enough even for 8B, but the CPU computes slowly (slide 8). So without a GPU take 3–4B, Granite 3B or Qwen 4B. Start with the smallest model that does the job; “the biggest that fits” is not the goal. LM Studio recommends 16 GB of memory or more and, on Windows, 4 GB of VRAM or more; a CPU with AVX2 is required on Windows.
 
@@ -133,12 +133,12 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 08 (29:00–33:00) • A GPU answers 2–25× faster than a CPU
 
-**On screen:** Speed bars in tokens per second: laptop CPU, Apple M5, RTX 4050 Laptop, M5 Max, RTX 4090, H100; on the right “≥ 20 t/s”.
+**On screen:** Speed bars in tokens per second (laptop CPU, Apple M5, RTX 4050 Laptop, M5 Max, RTX 4090, H100) with a dashed 20 t/s line; “≥ 20 t/s” on the right; below, the wait for a half-page answer: 30 s / 9 s / 7 s / 1.6 s.
 
 #### Speaker (4 min)
 > Speed is measured in tokens per second; a token is a piece of a word, as in L02. The data are open llama.cpp measurements for a 7-billion-parameter model at 4 bits; for 8B multiply by about 0.7. A laptop CPU without a GPU gives roughly 5–15 tokens per second, our estimate: slow, but bearable for short answers.
 >
-> A gaming laptop with an RTX 4050 gives about 44, a base M5 Mac 32, a top M5 Max 120 (on a Mac the GPU is built into the chip and shares its memory). An RTX 4090 gives 186, a server H100 268; both can be rented, which is the second half of the lesson. People read about 4–7 tokens per second, so from 20 upwards chat feels live. For batch work, such as 10,000 emails overnight, speed matters more, and that is where renting a GPU helps.
+> A gaming laptop with an RTX 4050 gives about 44, a base M5 Mac 32, a top M5 Max 120 (on a Mac the GPU is built into the chip and shares its memory). An RTX 4090 gives 186, a server H100 268; both can be rented, which is the second half of the lesson. People read about 4–7 tokens per second, so from 20 upwards (the dashed line) chat feels live. The bottom row shows it in seconds: a half-page answer of about 300 tokens takes a CPU half a minute and an RTX 4090 under two seconds. For batch work, such as 10,000 emails overnight, speed matters more, and that is where renting a GPU helps.
 >
 > Why the GPU is faster: a model is a huge number of multiplications, and a GPU does thousands of them at once and has very fast memory.
 
@@ -146,10 +146,10 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 09 (33:00–38:00) • LM Studio: a chat like ChatGPT, but the model runs on your machine
 
-**On screen:** Official LM Studio screenshot (two chats) with callouts; legend Chat / Discover / model picker / Developer.
+**On screen:** A detail of the official LM Studio screenshot (left chat, middle cut out) with callouts; legend Chat / Discover / model picker / Developer.
 
 #### Speaker (5 min)
-> LM Studio is a free app for running open models on your own computer. It looks like ChatGPT: a narrow section bar on the left, the conversation in the middle, the model picker under the input box. The difference: the model is downloaded to your disk and computed by your CPU or GPU. The screenshot shows two chats with GLM-4.7-Flash side by side.
+> LM Studio is a free app for running open models on your own computer. It looks like ChatGPT: a narrow section bar on the left, the conversation in the middle, the model picker under the input box. The difference: the model is downloaded to your disk and computed by your CPU or GPU. The slide shows a detail of the official screenshot: one of two chats with GLM-4.7-Flash.
 >
 > Main sections. Chat — the conversation. Discover — model search straight from Hugging Face; LM Studio tells you which files fit your memory. My Models — what is already downloaded. Developer — the local server, two slides from now. Since July 2025 LM Studio is free for work use too. The current version is 0.4.26 (October 2026).
 >
@@ -244,7 +244,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 17 (68:00–73:00) • Runpod: a GPU rented with per-second billing, two modes
 
-**On screen:** Runpod Community pricing (RTX 4090 $0.34/h highlighted) and a day timeline: Pod vs Serverless; the Stop trap.
+**On screen:** A large crop of Runpod Community pricing, the 24 GB rows (RTX 4090 $0.34/h highlighted), and a day timeline: Pod vs Serverless; the Stop trap.
 
 #### Speaker (5 min)
 > Runpod is a GPU cloud billed per second. On the left is the pricing page (updated 8 October, captured 16 October) in Community Cloud mode, partners’ machines: an RTX 4090 with 24 GB costs $0.34 per hour, an RTX 3090 $0.22. Secure Cloud, in certified data centres, costs more: for example an L40S is $1.09 versus $0.79. On the right, one working day of a support bot in both modes.
@@ -257,14 +257,14 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 18 (73:00–78:00) • Renting a GPU only pays off if it is busy all the time
 
-**On screen:** Hourly price bars for five GPUs (A100 and H100 are SXM); on the right ≈ $0.73 → $7.30 per 1M tokens at 100% vs 10% load versus $0.40–4.50 for cloud models.
+**On screen:** Hourly price of five GPUs on the left (A100 and H100 are SXM); on the right the price of 1M tokens on an RTX 4090 at 100 / 50 / 25 / 10% busy: $0.73 / $1.45 / $2.91 / $7.27 against a violet cloud band of $0.40–4.50.
 
 #### Speaker (5 min)
 > Hourly prices in Runpod Community Cloud: RTX 4090 $0.34, RTX 5090 $0.69, L40S $0.79, A100 SXM $1.39, H100 SXM $2.69 (SXM is the server-board version; the PCIe variant is cheaper). Secure Cloud is roughly 1.3–2.6× more. Serverless costs more per hour (RTX 4090 about $1.10), but you pay only for seconds of work.
 >
 > Compare with a cloud API. An RTX 4090 with an 8B model gives about 130 tokens per second, about 470 thousand tokens per hour. At $0.34 per hour that is about $0.73 per million tokens, but only if the card is busy non-stop. Cheap cloud models cost $0.40–4.50 per million output tokens and charge nothing for idle time.
 >
-> If the card is busy only 10% of the time, the same million tokens costs $7.30, more than the cloud. Takeaway: money-wise your own model wins only with a large, steady stream of work. More often it is chosen for privacy, version control and offline work. That is the honest answer to “isn’t it cheaper?”. Caveat: $0.73 is the single-user worst case. A server with batching (for example vLLM) handles many requests at once, so total throughput, and with it the price per million tokens, gets several times better.
+> If the card is busy only 10% of the time, the same million tokens costs about $7.27, more than the cloud. Takeaway: money-wise your own model wins only with a large, steady stream of work. More often it is chosen for privacy, version control and offline work. That is the honest answer to “isn’t it cheaper?”. Caveat: $0.73 is the single-user worst case. A server with batching (for example vLLM) handles many requests at once, so total throughput, and with it the price per million tokens, gets several times better.
 
 ---
 

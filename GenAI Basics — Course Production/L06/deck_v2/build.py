@@ -219,10 +219,11 @@ def s_layers():
              t("всё как параметры запроса; пакетная обработка, живой звук", "everything as request parameters; batch jobs, live audio"),
              t("за символ, токен или минуту", "per character, token or minute"), t("пайплайны, продукты, агенты", "pipelines, products, agents"), "Gemini API")
     del c1, c2, c3  # the old three text cards; the slide now shows a real AI Studio screenshot
-    # aistudio_tts_crop.png: prompt block + model card + player cut from the full AI Studio capture (original in git history), so the UI text is readable
-    tts = shot("aistudio_tts_crop",
-               marks=[(1, 2.5, 12.5, "cyan"), (2, 44.1, 17.6, "amber"), (3, 98.0, 7.0, "violet"), (4, 63.7, 82.4, "green")],
-               boxes=[(2.5, 12.5, 60.5, 46.9, "cyan"), (24.1, 17.6, 20.0, 15.6, "amber"), (66.4, 7.0, 31.6, 57.8, "violet"), (1.8, 71.1, 61.9, 22.7, "green")])
+    # aistudio_tts_tight.png: aistudio_tts_crop.png (prompt block + model card + player from the full AI Studio capture) without its margins,
+    # shown full width so the model-card text is >= 17px
+    tts = shot("aistudio_tts_tight",
+               marks=[(1, 1.6, 7.5, "cyan"), (2, 44.0, 12.2, "amber"), (3, 98.2, 6.0, "violet"), (4, 64.4, 86.5, "green")],
+               boxes=[(0.5, 6.3, 63.2, 54.1, "cyan"), (23.1, 12.2, 20.9, 18.0, "amber"), (67.2, 0.4, 32.4, 66.3, "violet"), (0.3, 73.9, 64.6, 25.8, "green")])
     legend = "".join(f'<div style="--k:var(--{k})"><i>{n}</i><span>{s}</span></div>' for n, k, s in [
         (1, "cyan", t("<b>Текст</b> реплики", "<b>Text</b> of the line")),
         (2, "amber", t("<b>Стиль</b> отдельно: «спокойный диспетчер»", "<b>Style</b> separately: “calm dispatcher”")),
@@ -232,16 +233,14 @@ def s_layers():
   {head(t("Где генерировать", "Where to generate"), t("Начинаем в веб-студии, автоматизируем через API", "Start in a web studio, automate with the API"), k="cyan")}
   <div class="body" style="margin-top:4px;">
     <div class="prompt-label">{t("Веб-студия · Google AI Studio → Generate speech · бесплатно", "Web studio · Google AI Studio → Generate speech · free")}</div>
-    <div class="row" style="grid-template-columns:1140px 1fr;gap:30px;align-items:center;flex:none;margin-top:8px;">
-      {tts}
-      <div class="legend">{legend}</div>
-    </div>
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:34px;align-items:stretch;flex:none;margin-top:40px;">
+    <div style="margin-top:8px">{tts}</div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;align-items:start;flex:none;margin-top:26px;">
+      <div class="legend" style="display:grid;grid-template-columns:1fr 1fr;gap:14px 26px">{legend}</div>
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">{t("API · кнопка Get code → готовый Python, главная строка:", "API · the Get code button → ready Python, the key line:")}</div>
         <div class="codeline">client.models.generate_content(<span class="s">model="gemini-3.8-flash-tts"</span>, contents=...)</div>
+        <div class="small" style="font-size:19px;margin-top:6px">{t("Ещё два пути: чат (попробовать) и открытые модели на своём компьютере (Kokoro, Piper: так сделан наш пример).", "Two more paths: a chat app (to try things) and open-weight models on your machine (Kokoro, Piper: how our example was made).")}</div>
       </div>
-      <div class="note" style="--k:var(--green);margin:0;align-self:end">{t("Ещё два пути: <b>чат</b> (ChatGPT, Gemini app: попробовать, голос почти не настроить) и <b>открытые модели на своём компьютере</b> (Kokoro, Piper, Whisper, MusicGen: $0, но железо и лицензии на вас; так сделан наш пример).", "Two more paths: a <b>chat app</b> (ChatGPT, Gemini app: good for trying, little control over the voice) and <b>open-weight models on your own machine</b> (Kokoro, Piper, Whisper, MusicGen: $0, but hardware and licences are yours; our example was made this way).")}</div>
     </div>
   </div>''',
                 notes=notes(
@@ -419,10 +418,10 @@ def s_voice():
     return dict(min=4, cls="x-voice", html=f'''
   {head(t("Шаг 3 • голос", "Step 3 • voice"), t("Три источника голоса: библиотека, описание, клон", "Three sources of a voice: library, description, clone"), k="cyan")}
   <div class="body" style="margin-top:12px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;align-items:start;flex:none;">
+    <div class="row" style="grid-template-columns:560px 1fr;gap:44px;align-items:start;flex:none;">
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">{t("Google AI Studio · библиотека голосов", "Google AI Studio · voice library")}</div>
-        {shot("aistudio_voices_row", marks=[(1, 2.5, 6.0, "green")], boxes=[(0.6, 1.5, 98.8, 97.0, "green")])}
+        {shot("aistudio_voices_tight", marks=[(1, 3.8, 6.0, "green")], boxes=[(0.9, 1.5, 98.0, 97.0, "green")])}
         <div class="legend" style="margin-top:22px;">
           <div style="--k:var(--green)"><i>1</i><span>{t("<b>Готовый голос</b> из библиотеки: лицензия сервиса", "<b>Library voice</b>: covered by the service licence")}</span></div>
           <div style="--k:var(--amber)"><i>2</i><span>{t("<b>Голос по описанию</b>: «молодой, с хрипотцой»; проверить, что не похож на знаменитость", "<b>Designed voice</b>: “young, slightly husky”; check it doesn’t sound like a celebrity")}</span></div>
@@ -431,10 +430,11 @@ def s_voice():
       </div>
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">{t("Create new voice · два новых пути", "Create new voice · two new paths")}</div>
-        {shot("aistudio_create_voice", marks=[(2, 2.8, 24.4, "amber"), (3, 51.0, 24.4, "red")], boxes=[(2.8, 24.4, 46.2, 64.0, "amber"), (51.0, 24.4, 46.2, 64.0, "red")])}
+        {shot("aistudio_create_voice_tight", marks=[(2, 2.6, 7.5, "amber"), (3, 51.6, 7.5, "red")], boxes=[(0.7, 3.7, 48.2, 94.0, "amber"), (51.0, 3.7, 48.2, 94.0, "red")], style="max-height:none")}
+        <div class="small" style="font-size:19px;margin-top:6px">{t("Голос по описанию: опишите словами возраст, тембр, акцент и темп. Клон: загрузите запись и подтвердите, что голос ваш.", "Voice Design: describe age, timbre, accent and pace in words. Replication: upload a recording and verify the voice is yours.")}</div>
+        <div class="note" style="margin-top:40px;font-size:23px;--k:var(--red)">{t("<b>Перед выбором:</b> прогоните через голос самые сложные слова сценария (имена, числа). Голос, который их искажает, отклоняем.", "<b>Before you commit:</b> run the hardest words of the script (names, numbers) through the voice. Reject a voice that mispronounces them.")}</div>
       </div>
     </div>
-    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--red)">{t("<b>Перед выбором:</b> прогоните через голос самые сложные слова сценария (имена, числа). Голос, который их искажает, отклоняем.", "<b>Before you commit:</b> run the hardest words of the script (names, numbers) through the voice. Reject a voice that mispronounces them.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Три источника голоса, все три видны в Google AI Studio (скриншоты от 16.10.2026). Готовый голос из библиотеки: лицензия уже покрыта сервисом. У Gemini 30 готовых голосов в API, у OpenAI 13. В нашем примере английский голос Kokoro af_heart и русский Piper dmitri. Кнопка Create new voice открывает два других пути: Voice Design (голос по описанию; в AI Studio работает только на платном тарифе) и Voice Replication (клон по короткой записи; сервис просит подтвердить, что голос ваш). Карточка клона на скриншоте серая: в нашем аккаунте функция не активна, это нормально; её включают отдельно и только для своего голоса.",
@@ -867,6 +867,7 @@ def s_summary():
       <div class="rules" style="gap:16px">{rr}</div>
       <div class="stack" style="gap:16px;">
         <img src="{IMG}poster_final.jpg" alt="" style="width:100%;border-radius:12px;border:1px solid var(--line)">
+        <div class="note" style="--k:var(--amber)"><b>{t("Капстоун 1 «Голос → картинка»", "Capstone 1 “Voice Brief → Image”")}</b> {t("стартует после этого урока: Colab без кода, 30 из 100 баллов курса.", "starts after this lesson: a no-code Colab, 30 of the 100 course points.")}</div>
         <div class="note" style="--k:var(--violet)"><b>{t("Урок 07: экосистема Microsoft Copilot.", "Lesson 07: the Microsoft Copilot ecosystem.")}</b> {t("Из генерации контента переходим к ИИ в рабочих инструментах.", "From generating content to AI inside everyday work tools.")}</div>
       </div>
     </div>
@@ -874,8 +875,8 @@ def s_summary():
                 notes=notes(
                     t("⏱ 3 мин. Шесть правил, по одному на шаг: сценарий с бюджетом слов; текст для голоса отдельно, числа и имена словами; голос с лицензией и согласием; фон с известной лицензией; сведение к −14 LUFS; проверка распознаванием и на слух.",
                       "⏱ 3 min. Six rules, one per step: a script with a word budget; spoken text kept separate, numbers and names as words; a voice with a licence and consent; a background with a known licence; mix to −14 LUFS; check with speech-to-text and by ear."),
-                    t("Этим уроком закрываем модуль мультимодальности: картинка, видео, звук. Следующий урок, L07: экосистема Microsoft Copilot — для себя, для работы, для кода, для компании. После этого урока стартует Капстоун 1 (голос → картинка): Colab без кода, 100 баллов. Вопросы.",
-                      "This closes the multimodality module: image, video, sound. Next lesson, L07: the Microsoft Copilot ecosystem — for you, for work, for code, for your company. Capstone 1 (voice → image) starts after this lesson: a no-code Colab, 100 points. Questions.")))
+                    t("Этим уроком закрываем модуль мультимодальности: картинка, видео, звук. Следующий урок, L07: экосистема Microsoft Copilot — для себя, для работы, для кода, для компании. После этого урока стартует Капстоун 1 (голос → картинка): Colab без кода, 30 из 100 баллов курса; для зачёта курса нужно 60. Вопросы.",
+                      "This closes the multimodality module: image, video, sound. Next lesson, L07: the Microsoft Copilot ecosystem — for you, for work, for code, for your company. Capstone 1 (voice → image) starts after this lesson: a no-code Colab, 30 of the 100 course points; 60 are needed to pass the course. Questions.")))
 
 
 SLIDES = [s_cover, s_hook, s_layers, s_tasks, s_how, s_video_audio, s_script, s_text, s_voice, s_music,

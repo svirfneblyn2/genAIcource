@@ -281,12 +281,22 @@ def s_three():
     cards = [("violet", "session_state", t("память одного посетителя: история чата, выбранные настройки", "one visitor’s memory: chat history, chosen settings")),
              ("green", "cache_data", t("общий кэш для всех: файл faq.md читается один раз, а не при каждом клике", "a shared cache for everyone: faq.md is read once, not on every click")),
              ("red", "secrets", t("ключи API в файле .streamlit/secrets.toml, никогда в коде", "API keys in .streamlit/secrets.toml, never in code"))]
-    cc = "".join(f'<div class="task" style="--k:var(--{k});padding:40px 32px;min-height:300px;align-items:flex-start"><div><div class="h" style="font-size:34px;font-family:var(--mono)">{h}</div><div class="d" style="font-size:26px;line-height:1.4;margin-top:16px">{d}</div></div></div>' for k, h, d in cards)
+    cc = "".join(f'<div style="--k:var(--{k});border-top:5px solid var(--k);padding-top:22px"><div style="font:700 34px var(--mono);color:var(--k)">{h}</div><div style="font-size:25px;line-height:1.4;color:var(--muted);margin-top:12px">{d}</div></div>' for k, h, d in cards)
+    key = t("вставьте-ключ-сюда", "paste-your-key-here")
+    sec = (t('<span class="cm"># .streamlit/secrets.toml — лежит только у вас</span>', '<span class="cm"># .streamlit/secrets.toml — stays on your machine</span>')
+           + f'\nGEMINI_API_KEY = <span class="str">"{key}"</span>\n\n'
+           + t('<span class="cm"># app.py — в коде только имя ключа</span>', '<span class="cm"># app.py — the code only names the key</span>')
+           + '\nkey = st.secrets[<span class="str">"GEMINI_API_KEY"</span>]')
+    ign = t('<span class="cm"># .gitignore — не отправлять на GitHub</span>', '<span class="cm"># .gitignore — never push to GitHub</span>') + '\n.streamlit/secrets.toml\n.venv/'
     return dict(min=5, html=f'''
   {head(t("Три слова", "Three words"), t("Память, кэш и секреты — три вещи, которые нельзя путать", "Memory, cache and secrets — three things not to mix up"), k="violet")}
   <div class="body" style="margin-top:16px;">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:26px;">{cc}</div>
-    <div class="note" style="margin-top:44px;font-size:25px;--k:var(--red)">{t("Ключ в коде = ключ на GitHub (сайт, где хранят код) = ключ у всех. Добавьте secrets.toml в <b>.gitignore</b> — список файлов, которые не уходят на GitHub.", "A key in code = a key on GitHub (the site where code is stored) = a key for everyone. Add secrets.toml to <b>.gitignore</b> — the list of files that never go to GitHub.")}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:44px;">{cc}</div>
+    <div class="row" style="grid-template-columns:1.45fr 1fr;gap:28px;flex:none;margin-top:40px;align-items:stretch">
+      <pre class="code" style="font-size:22px;line-height:1.6;margin:0">{sec}</pre>
+      <pre class="code" style="font-size:22px;line-height:1.6;margin:0;border-color:var(--red)">{ign}</pre>
+    </div>
+    <div class="note" style="margin-top:30px;font-size:24px;--k:var(--red)">{t("Ключ в коде = ключ на GitHub (сайт, где хранят код) = ключ у всех. Добавьте secrets.toml в <b>.gitignore</b> — список файлов, которые не уходят на GitHub.", "A key in code = a key on GitHub (the site where code is stored) = a key for everyone. Add secrets.toml to <b>.gitignore</b> — the list of files that never go to GitHub.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 5 мин. Три понятия, которые новички путают. session_state — память одного посетителя. cache_data (команда st.cache_data) — общий кэш для всех посетителей: например, файл faq.md читается один раз, а не при каждом клике. Поэтому в кэш никогда не кладут личные данные и ключи: их увидят все.",
@@ -335,14 +345,27 @@ def s_run():
              ("violet", t("Запустить", "Run"), "streamlit run app.py", t("откроется localhost:8501", "opens localhost:8501")),
              ("green", t("Править", "Edit"), t("сохранили файл → Rerun", "save the file → Rerun"), t("или Always rerun — дальше само", "or Always rerun — then automatic")),
              ("amber", t("Показать", "Show"), t("Community Cloud или экран", "Community Cloud or screen share"), t("слайд 9", "slide 9"))]
-    flow = '<div class="arr">→</div>'.join(f'<div class="box" style="--k:var(--{k});flex:1;padding:30px 22px;border:2px solid var(--{k})"><b style="color:var(--{k});font-size:32px">{h}</b><div style="font-family:var(--mono);font-size:21px;margin-top:14px">{c}</div><small style="font-size:20px;margin-top:10px">{d}</small></div>' for k, h, c, d in steps)
+    flow = "".join(
+        f'<div style="position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">'
+        + (f'<div style="position:absolute;top:31px;left:calc(-50% + 40px);right:calc(50% + 40px);border-top:3px solid var(--muted)"></div>' if i else "")
+        + f'<div style="width:64px;height:64px;border-radius:50%;background:var(--{k});color:#0b0f17;font:800 30px/64px var(--display)">{i + 1}</div>'
+        f'<b style="color:var(--{k});font-size:30px;margin-top:4px">{h}</b><div style="font-family:var(--mono);font-size:21px;color:var(--fg)">{c}</div>'
+        f'<div style="font-size:20px;color:var(--muted)">{d}</div></div>' for i, (k, h, c, d) in enumerate(steps))
+    term = ('<span class="cm">$</span> streamlit run app.py\n\n'
+            '  You can now view your Streamlit app in your browser.\n\n'
+            '  <span style="color:var(--cyan)">Local URL: http://localhost:8501</span>\n'
+            '  <span style="color:var(--amber)">Network URL: http://192.168.1.23:8501</span>')
     return dict(min=5, html=f'''
   {head(t("Запуск", "Running it"), t("Четыре шага: поставить, запустить, править, показать", "Four steps: install, run, edit, show"), k="green")}
   <div class="body">
-    <div class="flow" style="gap:14px;align-items:stretch">{flow}</div>
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;flex:none;margin-top:56px;font-size:24px">
-      <div class="note" style="--k:var(--cyan)">{t("<b>localhost:8501</b> — приложение работает на вашем компьютере. В интернете его нет; в офисной сети коллега может открыть его по адресу Network URL из терминала.", "<b>localhost:8501</b> — the app runs on your computer. It is not on the internet; on an office network a colleague may open it via the Network URL shown in the terminal.")}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">{flow}</div>
+    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:40px;flex:none;margin-top:44px;align-items:center">
+      <div><div class="prompt-label">{t("Терминал после шага 2", "The terminal after step 2")}</div><pre class="code" style="font-size:22px;line-height:1.6;margin:0">{term}</pre></div>
+      <div class="stack" style="gap:26px">
+      <div class="note" style="--k:var(--cyan)">{t("<b style='color:var(--cyan)'>Local URL</b> — приложение работает на вашем компьютере, в интернете его нет.", "<b style='color:var(--cyan)'>Local URL</b> — the app runs on your computer; it is not on the internet.")}</div>
+      <div class="note" style="--k:var(--amber)">{t("<b style='color:var(--amber)'>Network URL</b> — адрес для коллеги в той же офисной сети.", "<b style='color:var(--amber)'>Network URL</b> — the address for a colleague on the same office network.")}</div>
       <div class="note" style="--k:var(--green)">{t("Изменили текст или код — сохранили — нажали Rerun (кнопка появится справа вверху). Удобно править вместе с заказчиком.", "Changed text or code — saved — clicked Rerun (the button appears top right). Handy to edit together with a client.")}</div>
+      </div>
     </div>
   </div>''',
                 notes=notes(
@@ -374,18 +397,18 @@ def s_deploy():
 
 
 def s_alternatives():
-    sh = shot("aistudio_build_crop", marks=[(1, 98.0, 53.0, "cyan")], boxes=[(1.5, 40.0, 97.0, 36.0, "cyan")])
+    # aistudio_build_tight.png: aistudio_build_crop.png without the top banner, shown wider so its UI text is >= 17px
+    sh = shot("aistudio_build_tight", boxes=[(1.5, 32.0, 97.0, 44.0, "cyan")])
     rows = [("cyan", "Google AI Studio Build", t("опишите приложение здесь — получите работающее; приватно по умолчанию", "describe the app here — get a working one; private by default")),
             ("violet", "Claude Artifacts", t("маленькое приложение прямо в чате (L09)", "a small app right in the chat (L09)")),
             ("amber", "Lovable · Bolt · v0", t("сайт целиком по описанию; бесплатно — небольшой дневной лимит", "a whole site from a description; free — a small daily allowance"))]
-    lr = "".join(f'<div class="lrow" style="--k:var(--{k})"><div class="dot"></div><div><div class="h">{h}</div><div class="d">{d}</div></div></div>' for k, h, d in rows)
+    lr = "".join(f'<div style="--k:var(--{k});border-top:5px solid var(--k);padding-top:14px"><div style="font:800 27px var(--display);color:var(--k)">{h}</div><div style="font-size:22px;line-height:1.35;color:var(--muted);margin-top:6px">{d}</div></div>' for k, h, d in rows)
     return dict(min=6, html=f'''
   {head(t("Без кода", "No code"), t("Иногда хватает конструктора: приложение по описанию, без единой строки кода", "Sometimes a builder is enough: an app from a description, no code at all"), k="cyan")}
   <div class="body" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1.55fr 1fr;gap:36px;align-items:center;flex:none;">
-      <div class="stack" style="gap:8px;"><div class="prompt-label">{t("aistudio.google.com → Build · снято 16.10.2026", "aistudio.google.com → Build · captured 16.10.2026")}</div>{sh}</div>
-      <div class="light" style="gap:12px">{lr}</div>
-    </div>
+    <div class="prompt-label">{t("aistudio.google.com → Build · снято 16.10.2026", "aistudio.google.com → Build · captured 16.10.2026")}</div>
+    <div style="width:1120px;margin:0 auto">{sh}</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:30px">{lr}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 6 мин. Не всегда нужен Streamlit. Google AI Studio, раздел Build: пишете «приложение, которое...» — и получаете работающее веб-приложение с предпросмотром; его можно выгрузить в GitHub или развернуть в облаке Google. Приложения приватные по умолчанию, ключ Gemini остаётся на сервере. Если вы им поделитесь, запросы других людей пойдут в ваши лимиты.",
@@ -477,14 +500,24 @@ def s_product():
     trs = "".join(f'<div style="display:grid;grid-template-columns:1fr 60px 1fr;gap:10px;align-items:center;{"font-weight:700;color:var(--fg);font-size:32px" if i == 0 else "font-size:27px;color:var(--muted)"}">'
                   f'<div style="padding:18px 22px;border-left:5px solid var(--cyan)">{a}</div><div style="text-align:center;color:var(--dim);font-size:30px">→</div>'
                   f'<div style="padding:18px 22px;border-left:5px solid var(--green)">{b}</div></div>' for i, (a, b) in enumerate(rows))
+    stages = [("cyan", t("Прототип", "Prototype"), t("вы, этот урок", "you, this lesson")), ("violet", t("Ревью инженеров", "Engineering review"), t("код, тесты, доступы", "code, tests, access")),
+              ("red", t("Проверка безопасности", "Security review"), t("данные и риски, L15", "data and risks, L15")), ("green", t("Продукт", "Product"), t("агенты разработки, L16", "coding agents, L16"))]
+    path = "".join(
+        f'<div style="position:relative;display:flex;align-items:center;gap:14px">'
+        + (f'<div style="position:absolute;left:-30px;top:50%;transform:translateY(-55%);font-size:26px;color:var(--muted)">→</div>' if i else "")
+        + f'<div style="flex:none;width:22px;height:22px;border-radius:50%;background:var(--{k})"></div>'
+        f'<div><div style="font:800 25px/1.2 var(--display);color:var(--{k})">{h}</div><div style="font-size:20px;color:var(--muted)">{d}</div></div></div>'
+        for i, (k, h, d) in enumerate(stages))
     return dict(min=5, html=f'''
   {head(t("Дальше", "Next"), t("Что меняется, когда прототип становится продуктом", "What changes when a prototype becomes a product"), k="green")}
   <div class="body" style="margin-top:16px;">
     <div style="display:flex;flex-direction:column;gap:16px">{trs}</div>
+    <div class="prompt-label" style="margin-top:40px">{t("Путь прототипа", "The prototype’s path")}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:40px;margin-top:10px">{path}</div>
   </div>''',
                 notes=notes(
-                    t("⏱ 5 мин. Прототип сделал своё дело: показал идею и собрал отзывы. Дальше его передают инженерам, и меняется многое. Код живёт в репозитории с ревью и тестами. Данные реальные, поэтому нужны права доступа и журнал. Ключ — не ваш личный, а служебный, с лимитами и мониторингом. И приложение должно работать у всех и круглосуточно. Об агентной разработке продуктов — урок 16.",
-                      "⏱ 5 min. The prototype has done its job: it showed the idea and gathered feedback. Then it goes to engineers, and much changes. The code lives in a repo with reviews and tests. The data is real, so access rights and logs are needed. The key is not your personal one but a service key with limits and monitoring. And the app must work for everyone, around the clock. Agentic product development — lesson 16.")))
+                    t("⏱ 5 мин. Прототип сделал своё дело: показал идею и собрал отзывы. Дальше его передают инженерам, и меняется многое. Код живёт в репозитории с ревью и тестами. Данные реальные, поэтому нужны права доступа и журнал. Ключ — не ваш личный, а служебный, с лимитами и мониторингом. И приложение должно работать у всех и круглосуточно. Внизу путь прототипа: прототип → ревью инженеров → проверка безопасности (L15) → продукт с агентами разработки (L16).",
+                      "⏱ 5 min. The prototype has done its job: it showed the idea and gathered feedback. Then it goes to engineers, and much changes. The code lives in a repo with reviews and tests. The data is real, so access rights and logs are needed. The key is not your personal one but a service key with limits and monitoring. And the app must work for everyone, around the clock. At the bottom is the prototype’s path: prototype → engineering review → security review (L15) → product built with coding agents (L16).")))
 
 
 def s_hw():
@@ -497,6 +530,10 @@ def s_hw():
              t("Покажите 3 коллегам, запишите их отзывы", "Show it to 3 colleagues and record their feedback"),
              t("Что бы вы поменяли — 3 пункта", "What you would change — 3 points")]
     ol = "".join(f"<li><span>{s}</span></li>" for s in steps)
+    pts = [(1, "cyan", t("идея", "idea")), (3, "green", t("прототип", "prototype")), (3, "violet", t("отзывы 3 людей", "3 people’s feedback")),
+           (2, "amber", t("изменения и вывод", "changes, conclusion")), (1, "red", t("безопасность", "security"))]
+    grade = "".join(f'<div style="flex:{n};display:flex;flex-direction:column;gap:8px"><div style="height:60px;border-radius:8px;background:var(--{k});color:#0b0f17;font:800 28px/60px var(--display);text-align:center">{n}</div>'
+                    f'<div style="font-size:22px;color:var(--muted);text-align:center;line-height:1.25">{d}</div></div>' for n, k, d in pts)
     return dict(min=6, html=f'''
   {head(t("Домашнее задание", "Homework"), t("ДЗ: прототип и отзывы трёх настоящих людей", "Homework: a prototype and feedback from three real people"), k="green")}
   <div class="body" style="margin-top:10px;">
@@ -504,10 +541,12 @@ def s_hw():
       <ol class="checklist">{ol}</ol>
       <pre class="code" style="font-size:24px;line-height:1.7;padding:30px 30px">{tree}</pre>
     </div>
+    <div class="prompt-label" style="margin-top:44px">{t("Оценка: 10 баллов", "Grading: 10 points")}</div>
+    <div style="display:flex;gap:8px;margin-top:8px">{grade}</div>
   </div>''',
                 notes=notes(
-                    t("⏱ 6 мин. ДЗ: прототип для своей работы и, главное, отзывы трёх коллег. Собрать любым способом — Streamlit с агентом или AI Studio Build. Только синтетические данные. Показать трём людям и записать, что они сказали, и три изменения, которые вы бы внесли. Оценивается не красота, а то, насколько прототип помог понять задачу. Подробности в L14_05_Homework.",
-                      "⏱ 6 min. Homework: a prototype for your work and, above all, feedback from three colleagues. Build it any way — Streamlit with an agent or AI Studio Build. Synthetic data only. Show it to three people, record what they said and three changes you would make. Grading looks not at polish but at how much the prototype helped you understand the task. Details in L14_05_Homework.")))
+                    t("⏱ 6 мин. ДЗ: прототип для своей работы и, главное, отзывы трёх коллег. Собрать любым способом — Streamlit с агентом или AI Studio Build. Только синтетические данные. Показать трём людям и записать, что они сказали, и три изменения, которые вы бы внесли. Оценивается не красота, а то, насколько прототип помог понять задачу: внизу 10 баллов — идея 1, прототип 3, отзывы 3, изменения и вывод 2, безопасность 1. Подробности в L14_05_Homework.",
+                      "⏱ 6 min. Homework: a prototype for your work and, above all, feedback from three colleagues. Build it any way — Streamlit with an agent or AI Studio Build. Synthetic data only. Show it to three people, record what they said and three changes you would make. Grading looks not at polish but at how much the prototype helped you understand the task: the bar shows 10 points — idea 1, prototype 3, feedback 3, changes and conclusion 2, security 1. Details in L14_05_Homework.")))
 
 
 def s_summary():

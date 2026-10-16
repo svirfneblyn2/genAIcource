@@ -103,7 +103,7 @@ def s_cover():
   <div class="bg"><img src="{IMG}ms_copilot_hero.jpg" alt=""></div>
   <div class="shade"></div>
   <div class="txt">
-    <div class="kicker">{t("GenAI Basics • Урок 07 • Экосистема Microsoft", "GenAI Basics • Lesson 07 • The Microsoft ecosystem")}</div>
+    <div class="kicker">{t("GenAI Basics • Урок 07 • Модуль 3: ИИ-ассистенты в работе", "Lesson 07 • Module 3: AI assistants at work")}</div>
     <h1>{t("Copilot — это не кнопка, а семья", "Copilot is not a button, it is a family")}</h1>
     <h2>{t("Какие ИИ-помощники есть у Microsoft, где они живут, что из этого бесплатно и как проверять их ответы", "Which AI assistants Microsoft has, where they live, what is free, and how to check their answers")}</h2>
     <p>{t("Карта семьи • для себя • для работы • агенты • для компании • 2 живых демо • ДЗ без лицензии. Все данные курьерского кейса придуманные. Факты на 13.10.2026.",
@@ -419,7 +419,7 @@ def s_teams():
   {head(t("Для работы • Teams", "For work • Teams"), t("Teams: встреча превращается в итоги и задачи", "Teams: a meeting becomes a recap and tasks"), k="cyan")}
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1.25fr 1fr;gap:26px;flex:none;align-items:start;">
-      {shot("ms_teams_facilitator.jpg", t("<b>Facilitator</b> в встрече: повестка, таймер, живые заметки, ответы в чате", "<b>Facilitator</b> in a meeting: agenda, timer, live notes, chat answers"), "ms_support", pos="50% 0%", h=380)}
+      {shot("ms_teams_facilitator.jpg", t("<b>Facilitator</b> во встрече: повестка, таймер, живые заметки, ответы в чате", "<b>Facilitator</b> in a meeting: agenda, timer, live notes, chat answers"), "ms_support", pos="50% 0%", h=380)}
       <div class="stack" style="gap:12px;">
         {shot("ms_teams_recap_copilot.jpg", t("<b>Recap</b> после встречи: итоги, задачи, вопросы к Copilot", "<b>Recap</b> after the meeting: notes, tasks, questions to Copilot"), "ms_support", pos="100% 0%", h=190)}
         <ul class="pts sm">

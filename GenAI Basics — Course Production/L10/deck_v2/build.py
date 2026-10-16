@@ -63,7 +63,7 @@ def legend(items):
         f'<div style="--k:var(--{k})"><i>{n}</i><span>{s}</span></div>' for n, k, s in items) + "</div>"
 
 
-def bars(rows, lo, hi, fmt, log=False, ticks=(), label_w=300, ref=None):
+def bars(rows, lo, hi, fmt, log=False, ticks=(), label_w=300, ref=None, band=None):
     """Horizontal bar chart. rows: (label, sub, value, colour). ref: (value, label) vertical line."""
     def pct(v):
         if log:
@@ -82,7 +82,13 @@ def bars(rows, lo, hi, fmt, log=False, ticks=(), label_w=300, ref=None):
         rv, rl = ref
         refl = f'<div class="ref" style="left:calc({label_w}px + 16px + (100% - {label_w}px - 16px) * {pct(rv) / 100:.4f})"><span>{rl}</span></div>'
     axis = f'<div class="axis" style="grid-template-columns:{label_w}px 1fr"><div></div><div>{tk}</div></div>' if ticks else ""
-    return f'<div class="bars" style="position:relative">{out}{axis}{refl}</div>'
+    if band:
+        b0, b1, bl = band
+        x0 = f"{label_w}px + 16px + (100% - {label_w}px - 16px) * {pct(b0) / 100:.4f}"
+        refl += (f'<div class="band" style="left:calc({x0});width:calc((100% - {label_w}px - 16px) * {(pct(b1) - pct(b0)) / 100:.4f})">'
+                 f'<span>{bl}</span></div>')
+    pad = ";padding-top:34px" if (ref or band) else ""
+    return f'<div class="bars" style="position:relative{pad}">{out}{axis}{refl}</div>'
 
 
 def gb(v):
@@ -211,11 +217,11 @@ def s_open():
     return dict(min=5, html=f'''
   {head(t("Открытая модель", "Open model"), t("Открытая модель — это файл, который можно скачать, и лицензия к нему", "An open model is a file you can download, plus its licence"), k="green")}
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.35fr 1fr;gap:36px;align-items:start;flex:none;">
+    <div class="row" style="grid-template-columns:790px 1fr;gap:36px;align-items:start;flex:none;">
       <div class="stack" style="gap:10px;">
         <div class="prompt-label">{t("Hugging Face · ibm-granite/granite-4.2-8b-GGUF · снято 16.10.2026", "Hugging Face · ibm-granite/granite-4.2-8b-GGUF · captured 16.10.2026")}</div>
-        {shot("hf_granite_header", marks=[(1, 48.5, 4.5, "cyan"), (2, 72.0, 31.0, "green")], boxes=[(1.5, 4.0, 46.0, 17.0, "cyan"), (52.5, 23.0, 18.0, 16.0, "green")])}
-        {shot("hf_granite_files", marks=[(3, 96.0, 6.5, "amber")], boxes=[(1.0, 0.5, 98.0, 12.0, "amber"), (1.0, 87.5, 98.0, 12.0, "amber")])}
+        {shot("hf_granite_header_tight", marks=[(1, 68.0, 11.0, "cyan"), (2, 97.0, 52.0, "green")], boxes=[(1.6, 6.0, 65.0, 42.0, "cyan"), (73.6, 53.0, 25.6, 41.0, "green")])}
+        {shot("hf_granite_files_tight", marks=[(3, 96.0, 6.5, "amber")], boxes=[(1.0, 0.5, 98.0, 12.0, "amber"), (1.0, 87.5, 98.0, 12.0, "amber")])}
       </div>
       <div class="stack" style="gap:20px;">
         {legend([(1, "cyan", t("<b>Кто сделал</b>: IBM, Granite 4.2 8B. <b>8B</b> = 8 млрд параметров, то есть чисел внутри модели", "<b>Who made it</b>: IBM, Granite 4.2 8B. <b>8B</b> = 8 billion parameters, the numbers inside the model")),
@@ -240,21 +246,26 @@ def s_why():
             (t("Лучшая открытая", "Best open"), "MiMo-V2.6-Pro", 46, "green"),
             (t("Для 1 видеокарты", "Fits 1 GPU"), t("открытая Qwen3.8 27B", "open Qwen3.8 27B"), 34, "cyan")]
     ch = bars(rows, 0, 65, lambda v: f"{v:.0f}", ticks=[(0, "0"), (20, "20"), (40, "40"), (60, "60")], label_w=280)
+    fit = "".join(f'<span style="--k:var(--{k})"><b>{m}</b> {s}</span>' for k, m, s in [
+        ("green", "✓", t("разбор писем и тикетов", "sorting emails and tickets")), ("green", "✓", t("черновики", "drafts")),
+        ("green", "✓", t("поиск по своим документам", "search over your own documents")),
+        ("red", "✗", t("сложные рассуждения, большой код", "hard reasoning, large codebases"))])
     return dict(min=4, html=f'''
   {head(t("Зачем", "Why"), t("Своя модель: данные не уходят, но качество ниже лидеров", "Your own model: data stays home, but quality trails the leaders"), k="amber")}
   <div class="body big">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:56px;align-items:start;flex:none;margin-top:50px">
-      <div class="stack" style="gap:34px;">
+    <div class="row" style="grid-template-columns:1fr 1.1fr;gap:56px;align-items:start;flex:none;margin-top:30px">
+      <div class="stack" style="gap:40px;padding-top:40px">
         <div class="note" style="--k:var(--green)">{t("<b>Плюсы:</b> данные не покидают компьютер · работает без интернета · нет счёта за токены · модель не поменяют без вас", "<b>Pros:</b> data never leaves the machine · works offline · no per-token bill · nobody changes the model behind your back")}</div>
         <div class="note" style="--k:var(--red)">{t("<b>Минусы:</b> слабее лучших облачных · нужна память и видеокарта · установка и обновления на вас", "<b>Cons:</b> weaker than the best cloud models · needs memory and a GPU · setup and updates are your job")}</div>
-        <div class="note" style="--k:var(--cyan)">{t("<b>Хорошо подходит:</b> разбор писем и тикетов, черновики, поиск по своим документам. <b>Плохо:</b> сложные рассуждения, большой код.", "<b>Good for:</b> sorting emails and tickets, drafts, search over your own documents. <b>Poor at:</b> hard reasoning, large codebases.")}</div>
       </div>
-      <div class="stack" style="gap:22px;">
+      <div class="stack tall" style="gap:22px;">
         <div class="prompt-label">{t("Индекс «интеллекта» Artificial Analysis, октябрь 2026", "Artificial Analysis Intelligence Index, October 2026")}</div>
         {ch}
         <div class="small" style="font-size:20px">{t("Чем выше, тем лучше. Разрыв между лучшей закрытой и лучшей открытой ≈ 12 пунктов.", "Higher is better. The gap between the best closed and best open model is ≈ 12 points.")}</div>
       </div>
     </div>
+    <div class="prompt-label" style="margin-top:44px">{t("Локальная модель на рабочих задачах", "A local model on work tasks")}</div>
+    <div class="fit" style="margin-top:14px">{fit}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Честная картина. Плюсы своей модели: данные не уходят из компьютера, работает в самолёте и в закрытой сети, нет счёта за каждый запрос, и модель не изменится завтра без вашего ведома (у облачных моделей версии меняются).",
@@ -322,7 +333,7 @@ def s_fit():
               ("Gemma 4 12B", "Google", 7.38),
               ("gpt-oss-20b", "OpenAI", 12.11),
               ("Qwen3.8 27B", "Alibaba", 16.81)]
-    mem = [(6, "green"), (16, "amber"), (24, "violet")]
+    mem = [(6, "green"), (8, "green"), (16, "amber"), (24, "violet")]
     hi, lw = 26.0, 250
     rows = ""
     for lab, sub, v in models:
@@ -333,12 +344,12 @@ def s_fit():
                  f'<div style="position:absolute;left:{p1:.1f}%;width:{p2 - p1:.1f}%;top:0;height:100%;border-radius:0 6px 6px 0;'
                  f'background:repeating-linear-gradient(135deg,var(--k) 0 4px,transparent 4px 9px);opacity:.75"></div>'
                  f'<div class="bv" style="left:{p2:.1f}%;z-index:3;background:var(--surface-card);border:1px solid var(--line);border-radius:6px;padding:1px 8px;margin-left:8px">{gb(v)}</div></div></div>')
-    ticks = "".join(f'<span style="left:{100 * x / hi:.1f}%">{x}</span>' for x in (0, 6, 12, 16, 24))
+    ticks = "".join(f'<span style="left:{100 * x / hi:.1f}%">{x}</span>' for x in (0, 6, 8, 12, 16, 24))
     rows += f'<div class="axis" style="grid-template-columns:{lw}px 1fr"><div></div><div>{ticks}</div></div>'
     vram = t(" ГБ VRAM", " GB VRAM")
     lines = "".join(
         f'<div class="vline" style="left:calc({lw + 16}px + (100% - {lw + 16}px) * {v / hi:.4f});--k:var(--{k})">'
-        f'<span style="{"left:auto;right:6px" if v == 24 else ""}">{v}{vram if v == 24 else t(" ГБ", " GB")}</span></div>'
+        f'<span style="{"left:auto;right:6px" if v in (6, 24) else ""}">{v}{vram if v == 24 else t(" ГБ", " GB")}</span></div>'
         for v, k in mem)
     return dict(min=5, html=f'''
   {head(t("Влезет ли", "Will it fit"), t("Файл модели плюс запас на разговор должен влезть в память видеокарты", "The model file plus room for the conversation must fit the GPU memory"), k="cyan")}
@@ -350,16 +361,16 @@ def s_fit():
       </div>
       <div class="stack" style="gap:22px;">
         <div class="stat" style="--k:var(--amber)"><div class="n">+25%</div><div class="d">{t("к файлу: память на контекст, то есть историю разговора (обычно 20–30%)", "on top of the file: memory for the context, the conversation history (usually 20–30%)")}</div></div>
-        <div class="note" style="--k:var(--green)">{t("Память видеокарты (VRAM): <b style='color:var(--green)'>6&nbsp;ГБ</b> → до 4B · <b>8&nbsp;ГБ</b> → до 9B · <b style='color:var(--amber)'>16&nbsp;ГБ</b> → до 12B (20B впритык) · <b style='color:var(--violet)'>24&nbsp;ГБ</b> → до 27B.", "GPU memory (VRAM): <b style='color:var(--green)'>6&nbsp;GB</b> → up to 4B · <b>8&nbsp;GB</b> → up to 9B · <b style='color:var(--amber)'>16&nbsp;GB</b> → up to 12B (20B just fits) · <b style='color:var(--violet)'>24&nbsp;GB</b> → up to 27B.")}</div>
+        <div class="note" style="--k:var(--green)">{t("Память видеокарты (VRAM): <b style='color:var(--green)'>6&nbsp;ГБ</b> → до 4B · <b style='color:var(--green)'>8&nbsp;ГБ</b> → до 9B · <b style='color:var(--amber)'>16&nbsp;ГБ</b> → до 12B (20B впритык) · <b style='color:var(--violet)'>24&nbsp;ГБ</b> → до 27B.", "GPU memory (VRAM): <b style='color:var(--green)'>6&nbsp;GB</b> → up to 4B · <b style='color:var(--green)'>8&nbsp;GB</b> → up to 9B · <b style='color:var(--amber)'>16&nbsp;GB</b> → up to 12B (20B just fits) · <b style='color:var(--violet)'>24&nbsp;GB</b> → up to 27B.")}</div>
         <div class="note" style="--k:var(--red)">{t("Без видеокарты модель живёт в обычной памяти: влезет, но будет медленно. Берите 3–4B.", "Without a GPU the model lives in system RAM: it fits, but runs slowly. Take 3–4B.")}</div>
       </div>
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 5 мин. Главный вопрос новичка: какая модель влезет в мой компьютер. Сплошная полоска — реальный размер файла в 4 битах, штриховка — запас 25% на контекст, то есть на историю разговора и вложенные документы. Вертикальные линии — память видеокарты (её называют VRAM): 6 ГБ у игровой видеокарты ноутбука (как RTX 3060 Laptop), 16 ГБ у видеокарты среднего класса, 24 ГБ у RTX 4090.",
-                      "⏱ 5 min. The beginner’s main question: which model fits my computer. The solid bar is the real 4-bit file size; the hatching is a 25% margin for the context, meaning the conversation history and attached documents. The vertical lines are GPU memory (called VRAM): 6 GB on a laptop gaming GPU (like the RTX 3060 Laptop), 16 GB on a mid-range card, 24 GB on an RTX 4090."),
-                    t("Читаем так: если полоска вместе со штриховкой левее линии, модель целиком влезает в эту видеокарту; цвет полоски — самая маленькая из трёх видеокарт, куда она влезает. 6 ГБ — модели до 4B. 8 ГБ (частый вариант в ноутбуках, линии на графике нет) — до 9B: Granite 8B и Qwen3.5 9B с запасом занимают около 7 ГБ. 16 ГБ — до 12B, а gpt-oss-20b впритык. 24 ГБ — до 27B. Если модель не влезает в видеокарту целиком, LM Studio положит часть в обычную память, но скорость упадёт в разы.",
-                      "Read it like this: if the bar plus hatching is left of a line, the model fits that GPU entirely; the bar colour is the smallest of the three GPUs it fits. 6 GB — models up to 4B. 8 GB (common in laptops, no line on the chart) — up to 9B: Granite 8B and Qwen3.5 9B take about 7 GB with the margin. 16 GB — up to 12B, with gpt-oss-20b just squeezing in. 24 GB — up to 27B. If the model does not fit the GPU entirely, LM Studio puts part of it in system RAM, but speed drops several times."),
+                    t("⏱ 5 мин. Главный вопрос новичка: какая модель влезет в мой компьютер. Сплошная полоска — реальный размер файла в 4 битах, штриховка — запас 25% на контекст, то есть на историю разговора и вложенные документы. Вертикальные линии — память видеокарты (её называют VRAM): 6 ГБ у игровой видеокарты ноутбука (как RTX 3060 Laptop), 8 ГБ у многих ноутбуков посвежее, 16 ГБ у видеокарты среднего класса, 24 ГБ у RTX 4090.",
+                      "⏱ 5 min. The beginner’s main question: which model fits my computer. The solid bar is the real 4-bit file size; the hatching is a 25% margin for the context, meaning the conversation history and attached documents. The vertical lines are GPU memory (called VRAM): 6 GB on a laptop gaming GPU (like the RTX 3060 Laptop), 8 GB on many newer laptops, 16 GB on a mid-range card, 24 GB on an RTX 4090."),
+                    t("Читаем так: если полоска вместе со штриховкой левее линии, модель целиком влезает в эту видеокарту; цвет полоски — самая маленькая из четырёх видеокарт, куда она влезает. 6 ГБ — модели до 4B. 8 ГБ (частый вариант в ноутбуках) — до 9B: Granite 8B и Qwen3.5 9B с запасом занимают около 7 ГБ. 16 ГБ — до 12B, а gpt-oss-20b впритык. 24 ГБ — до 27B. Если модель не влезает в видеокарту целиком, LM Studio положит часть в обычную память, но скорость упадёт в разы.",
+                      "Read it like this: if the bar plus hatching is left of a line, the model fits that GPU entirely; the bar colour is the smallest of the four GPUs it fits. 6 GB — models up to 4B. 8 GB (common in laptops) — up to 9B: Granite 8B and Qwen3.5 9B take about 7 GB with the margin. 16 GB — up to 12B, with gpt-oss-20b just squeezing in. 24 GB — up to 27B. If the model does not fit the GPU entirely, LM Studio puts part of it in system RAM, but speed drops several times."),
                     t("Ноутбук без видеокарты: модель хранится в обычной памяти, и 16 ГБ хватит даже для 8B, но процессор считает медленно (слайд 8). Поэтому без видеокарты берите 3–4B, Granite 3B или Qwen 4B. Начинайте с самой маленькой модели, которая решает задачу; «самая большая, что влезет» — не цель. LM Studio рекомендует от 16 ГБ памяти, а на Windows — от 4 ГБ видеопамяти; процессор с AVX2 на Windows обязателен.",
                       "A laptop without a GPU: the model sits in system RAM, and 16 GB is enough even for 8B, but the CPU computes slowly (slide 8). So without a GPU take 3–4B, Granite 3B or Qwen 4B. Start with the smallest model that does the job; “the biggest that fits” is not the goal. LM Studio recommends 16 GB of memory or more and, on Windows, 4 GB of VRAM or more; a CPU with AVX2 is required on Windows.")))
 
@@ -371,37 +382,44 @@ def s_speed():
             ("Apple M5 Max", t("топовый Mac", "top Mac"), 120, "green"),
             ("RTX 4090", t("игровая видеокарта · 24 ГБ", "gaming GPU · 24 GB"), 186, "green"),
             ("H100", t("серверная · 80 ГБ", "data centre · 80 GB"), 268, "violet")]
-    ch = bars(rows, 0, 290, lambda v: f"{v:.0f}", ticks=[(0, "0"), (100, "100"), (200, "200")], label_w=300)
+    ch = bars(rows, 0, 290, lambda v: f"{v:.0f}", ticks=[(0, "0"), (100, "100"), (200, "200")], label_w=300,
+              ref=(20, t("20 т/с", "20 t/s")))
+    waits = [("red", t("Процессор", "CPU"), t("30 с", "30 s")), ("amber", "Apple M5", t("9 с", "9 s")),
+             ("amber", "RTX 4050 Laptop", t("7 с", "7 s")), ("green", "RTX 4090", t("1,6 с", "1.6 s"))]
+    wait = "".join(f'<div class="stat" style="--k:var(--{k})"><div class="n">{n}</div><div class="d">{h}</div></div>' for k, h, n in waits)
     return dict(min=4, html=f'''
   {head(t("Скорость", "Speed"), t("Видеокарта отвечает в 2–25 раз быстрее процессора", "A GPU answers 2–25× faster than a CPU"), t("Токенов в секунду (токен ≈ часть слова), модель 7B в 4 битах, llama.cpp. Человек читает ≈ 4–7 токенов в секунду.", "Tokens per second (a token ≈ part of a word), 7B model at 4 bits, llama.cpp. People read ≈ 4–7 tokens per second."), k="amber")}
   <div class="body big" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1.6fr 1fr;gap:44px;align-items:center;flex:none;margin-top:20px">
+    <div class="row" style="grid-template-columns:1.6fr 1fr;gap:44px;align-items:center;flex:none;margin-top:10px">
       {ch}
       <div class="stack" style="gap:22px;">
         <div class="stat" style="--k:var(--green)"><div class="n">{t("≥ 20 т/с", "≥ 20 t/s")}</div><div class="d">{t("комфортно: длинный ответ без ожидания; 10 т/с терпимо только для коротких", "comfortable: long answers without waiting; 10 t/s is bearable only for short ones")}</div></div>
         <div class="note" style="--k:var(--amber)">{t("Числа ориентировочные: зависят от модели, длины разговора и настроек. Свою скорость LM Studio показывает под каждым ответом.", "Numbers are approximate: they depend on the model, conversation length and settings. LM Studio shows your own speed under each answer.")}</div>
       </div>
     </div>
+    <div class="prompt-label" style="margin-top:34px">{t("Сколько ждать ответ на полстраницы (≈ 300 токенов)", "How long you wait for a half-page answer (≈ 300 tokens)")}</div>
+    <div class="row" style="grid-template-columns:repeat(4,1fr);gap:40px;flex:none;margin-top:8px">{wait}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Скорость меряют в токенах в секунду; токен — кусочек слова, как в L02. Данные из открытых замеров llama.cpp для модели на 7 миллиардов параметров в 4 битах; для 8B умножайте примерно на 0,7. Процессор ноутбука без видеокарты — порядка 5–15 токенов в секунду, это наша оценка: медленно, но для коротких ответов терпимо.",
                       "⏱ 4 min. Speed is measured in tokens per second; a token is a piece of a word, as in L02. The data are open llama.cpp measurements for a 7-billion-parameter model at 4 bits; for 8B multiply by about 0.7. A laptop CPU without a GPU gives roughly 5–15 tokens per second, our estimate: slow, but bearable for short answers."),
-                    t("Игровой ноутбук с RTX 4050 — около 44, базовый Mac M5 — 32, топовый M5 Max — 120 (у Mac видеокарта встроена в процессор и делит с ним память). Видеокарта RTX 4090 — 186, серверная H100 — 268; обе можно арендовать, это вторая часть урока. Человек читает примерно 4–7 токенов в секунду, поэтому от 20 и выше чат ощущается живым. Для пакетной обработки, например 10 000 писем за ночь, скорость важнее: там и пригодится аренда видеокарты.",
-                      "A gaming laptop with an RTX 4050 gives about 44, a base M5 Mac 32, a top M5 Max 120 (on a Mac the GPU is built into the chip and shares its memory). An RTX 4090 gives 186, a server H100 268; both can be rented, which is the second half of the lesson. People read about 4–7 tokens per second, so from 20 upwards chat feels live. For batch work, such as 10,000 emails overnight, speed matters more, and that is where renting a GPU helps."),
+                    t("Игровой ноутбук с RTX 4050 — около 44, базовый Mac M5 — 32, топовый M5 Max — 120 (у Mac видеокарта встроена в процессор и делит с ним память). Видеокарта RTX 4090 — 186, серверная H100 — 268; обе можно арендовать, это вторая часть урока. Человек читает примерно 4–7 токенов в секунду, поэтому от 20 и выше (пунктир на графике) чат ощущается живым. Внизу то же в секундах: ответ на полстраницы, около 300 токенов, процессор пишет полминуты, RTX 4090 — меньше двух секунд. Для пакетной обработки, например 10 000 писем за ночь, скорость важнее: там и пригодится аренда видеокарты.",
+                      "A gaming laptop with an RTX 4050 gives about 44, a base M5 Mac 32, a top M5 Max 120 (on a Mac the GPU is built into the chip and shares its memory). An RTX 4090 gives 186, a server H100 268; both can be rented, which is the second half of the lesson. People read about 4–7 tokens per second, so from 20 upwards (the dashed line) chat feels live. The bottom row shows it in seconds: a half-page answer of about 300 tokens takes a CPU half a minute and an RTX 4090 under two seconds. For batch work, such as 10,000 emails overnight, speed matters more, and that is where renting a GPU helps."),
                     t("Почему видеокарта быстрее: модель — это огромное число умножений, а видеокарта делает тысячи умножений одновременно и у неё очень быстрая память.",
                       "Why the GPU is faster: a model is a huge number of multiplications, and a GPU does thousands of them at once and has very fast memory.")))
 
 
 def s_lmstudio():
-    app = shot("lmstudio_app", marks=[(1, 6.0, 6.0, "cyan"), (4, 10.8, 12.0, "violet"), (2, 6.0, 21.0, "green"), (3, 23.5, 94.0, "amber")],
-               boxes=[(0.4, 5.2, 2.8, 4.4, "cyan"), (0.4, 9.4, 2.8, 4.4, "violet"), (0.4, 17.8, 2.8, 4.4, "green"), (4.5, 91.0, 17.5, 6.5, "amber")])
+    # lmstudio_app_tight.png: left chat pane of lmstudio_app.png, top part + input bar (middle cut, grey seam) so the UI text is readable
+    app = shot("lmstudio_app_tight", marks=[(1, 11.0, 10.2, "cyan"), (4, 15.5, 18.6, "violet"), (2, 11.0, 31.8, "green"), (3, 49.2, 90.1, "amber")],
+               boxes=[(0.9, 8.6, 5.8, 7.2, "cyan"), (0.9, 15.5, 5.8, 7.2, "violet"), (0.9, 29.3, 5.8, 7.2, "green"), (9.4, 85.1, 36.6, 10.8, "amber")])
     return dict(min=5, html=f'''
   {head("LM Studio", t("LM Studio: чат как ChatGPT, но модель работает у вас", "LM Studio: a chat like ChatGPT, but the model runs on your machine"), k="cyan")}
   <div class="body" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1.6fr 1fr;gap:36px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:680px 1fr;gap:56px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
         {app}
-        <div class="small" style="font-size:17px">{t("Изображение: LM Studio / Element Labs, блог версии 0.4.0", "Image: LM Studio / Element Labs, 0.4.0 release blog")}</div>
+        <div class="small" style="font-size:17px">{t("Изображение: LM Studio / Element Labs, блог версии 0.4.0 (фрагмент: левый чат)", "Image: LM Studio / Element Labs, 0.4.0 release blog (detail: the left chat)")}</div>
       </div>
       <div class="stack" style="gap:20px;">
         {legend([(1, "cyan", t("<b>Chat</b> — разговор с моделью", "<b>Chat</b> — talk to the model")),
@@ -413,8 +431,8 @@ def s_lmstudio():
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 5 мин. LM Studio — бесплатное приложение для запуска открытых моделей на своём компьютере. Выглядит как ChatGPT: слева узкая панель разделов, в центре чат, под полем ввода выбор модели. Отличие: модель скачана на ваш диск и считает ваш процессор или видеокарта. На скриншоте сразу два разговора с моделью GLM-4.7-Flash.",
-                      "⏱ 5 min. LM Studio is a free app for running open models on your own computer. It looks like ChatGPT: a narrow section bar on the left, the conversation in the middle, the model picker under the input box. The difference: the model is downloaded to your disk and computed by your CPU or GPU. The screenshot shows two chats with GLM-4.7-Flash side by side."),
+                    t("⏱ 5 мин. LM Studio — бесплатное приложение для запуска открытых моделей на своём компьютере. Выглядит как ChatGPT: слева узкая панель разделов, в центре чат, под полем ввода выбор модели. Отличие: модель скачана на ваш диск и считает ваш процессор или видеокарта. На слайде фрагмент официального скриншота: один из двух разговоров с моделью GLM-4.7-Flash.",
+                      "⏱ 5 min. LM Studio is a free app for running open models on your own computer. It looks like ChatGPT: a narrow section bar on the left, the conversation in the middle, the model picker under the input box. The difference: the model is downloaded to your disk and computed by your CPU or GPU. The slide shows a detail of the official screenshot: one of two chats with GLM-4.7-Flash."),
                     t("Главные разделы. Chat — разговор. Discover — поиск моделей прямо из Hugging Face; LM Studio сам подсказывает, какие файлы влезут в вашу память. My Models — что уже скачано. Developer — локальный сервер, о нём через слайд. С июля 2025 LM Studio бесплатна и для работы в компании. Текущая версия 0.4.26 (октябрь 2026).",
                       "Main sections. Chat — the conversation. Discover — model search straight from Hugging Face; LM Studio tells you which files fit your memory. My Models — what is already downloaded. Developer — the local server, two slides from now. Since July 2025 LM Studio is free for work use too. The current version is 0.4.26 (October 2026)."),
                     t("Не путайте: на странице загрузки lmstudio.ai сейчас первым предлагается LM Studio Bionic — это отдельный агент (вышел в июле 2026). Для урока нужна обычная LM Studio, ссылка ниже на странице загрузки. Альтернатива — Ollama, бесплатная, лицензия MIT; ей удобно управлять командами.",
@@ -621,10 +639,10 @@ def s_runpod():
     return dict(min=5, html=f'''
   {head("Runpod", t("Runpod: видеокарта в аренду с посекундной оплатой, два режима", "Runpod: a GPU rented with per-second billing, two modes"), k="violet")}
   <div class="body" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1fr 1.1fr;gap:40px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:680px 1fr;gap:48px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
-        <div class="prompt-label">{t("runpod.io/pricing · Community Cloud · снято 16.10.2026", "runpod.io/pricing · Community Cloud · captured 16.10.2026")}</div>
-        {shot("runpod_pricing_community", boxes=[(1.0, 75.0, 98.0, 12.0, "green")])}
+        <div class="prompt-label">{t("runpod.io/pricing · Community Cloud · 24 ГБ · снято 16.10.2026", "runpod.io/pricing · Community Cloud · 24 GB · captured 16.10.2026")}</div>
+        {shot("runpod_pricing_tight", boxes=[(1.0, 52.5, 98.0, 20.5, "green")])}
         <div class="small" style="font-size:18px">{t("Зелёным: RTX 4090, 24 ГБ — $0.34 в час", "Green: RTX 4090, 24 GB — $0.34 per hour")}</div>
       </div>
       <div class="stack" style="gap:22px;">
@@ -650,25 +668,30 @@ def s_cost():
             ("A100 SXM · 80 ГБ" if LANG == "ru" else "A100 SXM · 80 GB", "Community", 1.39, "amber"),
             ("H100 SXM · 80 ГБ" if LANG == "ru" else "H100 SXM · 80 GB", "Community", 2.69, "violet")]
     ch = bars(rows, 0, 3.0, lambda v: f"${v:.2f}", ticks=[(0, "$0"), (1, "$1"), (2, "$2"), (3, "$3")], label_w=300)
+    # $0.34/h / (130 t/s * 3600 s = 468k tokens/h) = $0.7265 per 1M tokens at 100% busy; divide by the busy share
+    busy = [(t("Занята 100%", "Busy 100%"), t("без перерыва", "non-stop"), 0.73, "amber"),
+            (t("Занята 50%", "Busy 50%"), t("полдня", "half the day"), 1.45, "amber"),
+            (t("Занята 25%", "Busy 25%"), t("рабочие часы", "office hours"), 2.91, "amber"),
+            (t("Занята 10%", "Busy 10%"), t("редкие запросы", "rare requests"), 7.27, "red")]
+    ch2 = bars(busy, 0, 8.0, lambda v: f"${v:.2f}", ticks=[(0, "$0"), (2, "$2"), (4, "$4"), (6, "$6"), (8, "$8")], label_w=230,
+               band=(0.40, 4.50, t("облачные модели: $0.40–4.50", "cloud models: $0.40–4.50")))
     return dict(min=5, html=f'''
-  {head(t("Цена", "Price"), t("Аренда видеокарты выгодна, только если она всё время занята", "Renting a GPU only pays off if it is busy all the time"), t("Runpod Pods, цена за час, 16.10.2026", "Runpod Pods, price per hour, 16.10.2026"), k="amber")}
+  {head(t("Цена", "Price"), t("Аренда выгодна только при постоянной загрузке", "Renting a GPU only pays off if it is busy all the time"), t("Runpod Pods, цена за час, 16.10.2026", "Runpod Pods, price per hour, 16.10.2026"), k="amber")}
   <div class="body" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1.4fr 1fr;gap:44px;align-items:center;flex:none;">
-      {ch}
-      <div class="stack" style="gap:20px;">
-        <div class="stat" style="--k:var(--green)"><div class="n">$0.73 → <span style="color:var(--red)">$7.30</span></div><div class="d">{t("за 1 млн токенов на RTX 4090 (модель 8B, ≈130 токенов/с): занята <b>100%</b> времени → занята <b>10%</b>", "per 1M tokens on an RTX 4090 (8B model, ≈130 tokens/s): busy <b>100%</b> of the time → busy <b>10%</b>")}</div></div>
-        <div class="stat" style="--k:var(--violet)"><div class="n">$0.40–4.50</div><div class="d">{t("за 1 млн токенов ответа у дешёвых облачных моделей (Gemini Flash-Lite, GPT mini)", "per 1M output tokens for cheap cloud models (Gemini Flash-Lite, GPT mini)")}</div></div>
-      </div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:56px;align-items:start;flex:none;margin-top:10px">
+      <div class="stack tall" style="gap:12px;"><div class="prompt-label">{t("Цена за час", "Price per hour")}</div>{ch}</div>
+      <div class="stack tall" style="gap:12px;"><div class="prompt-label">{t("RTX 4090, модель 8B: цена 1 млн токенов", "RTX 4090, 8B model: price of 1M tokens")}</div>{ch2}
+        <div class="small" style="font-size:19px">{t("Полоса: дешёвые облачные модели (Gemini Flash-Lite от $0.40, GPT mini до $4.50) за 1 млн токенов ответа, без платы за простой. Даже полностью занятая карта дороже самых дешёвых.", "Band: cheap cloud models (Gemini Flash-Lite from $0.40, GPT mini up to $4.50) per 1M output tokens, nothing for idle time. Even a fully busy card costs more than the cheapest ones.")}</div></div>
     </div>
-    <div class="note" style="margin-top:18px;--k:var(--amber)">{t("Простаивающая видеокарта стоит столько же, сколько работающая. Причина брать свою модель — чаще приватность и контроль, а не экономия.", "An idle GPU costs as much as a busy one. The reason for your own model is usually privacy and control, not savings.")}</div>
+    <div class="note" style="margin-top:20px;--k:var(--amber)">{t("Простаивающая видеокарта стоит столько же, сколько работающая. Причина брать свою модель — чаще приватность и контроль, а не экономия.", "An idle GPU costs as much as a busy one. The reason for your own model is usually privacy and control, not savings.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 5 мин. Цены за час в Community Cloud Runpod: RTX 4090 $0.34, RTX 5090 $0.69, L40S $0.79, A100 SXM $1.39, H100 SXM $2.69 (SXM — серверная версия карты; вариант PCIe дешевле). В Secure Cloud дороже примерно в 1,3–2,6 раза. Serverless дороже за час (RTX 4090 около $1.10), зато платите только за секунды работы.",
                       "⏱ 5 min. Hourly prices in Runpod Community Cloud: RTX 4090 $0.34, RTX 5090 $0.69, L40S $0.79, A100 SXM $1.39, H100 SXM $2.69 (SXM is the server-board version; the PCIe variant is cheaper). Secure Cloud is roughly 1.3–2.6× more. Serverless costs more per hour (RTX 4090 about $1.10), but you pay only for seconds of work."),
                     t("Сравним с облачным API. RTX 4090 с моделью 8B даёт примерно 130 токенов в секунду, это около 470 тысяч токенов в час. При $0.34 в час выходит около $0.73 за миллион токенов, но только если карта занята без перерыва. Дешёвые облачные модели стоят $0.40–4.50 за миллион токенов ответа и не берут денег за простой.",
                       "Compare with a cloud API. An RTX 4090 with an 8B model gives about 130 tokens per second, about 470 thousand tokens per hour. At $0.34 per hour that is about $0.73 per million tokens, but only if the card is busy non-stop. Cheap cloud models cost $0.40–4.50 per million output tokens and charge nothing for idle time."),
-                    t("Если карта занята только 10% времени, тот же миллион токенов обходится уже в $7.30 — дороже облака. Вывод: по деньгам своя модель выигрывает только при большом и ровном потоке задач. Чаще её выбирают из-за приватности, контроля над версией и работы без интернета. Это честный ответ на вопрос «а не дешевле ли?». Оговорка: $0.73 — худший случай, когда карту использует один человек. Сервер с пакетной обработкой (например, vLLM) обслуживает много запросов одновременно, и общая скорость, а с ней и цена за миллион токенов, становится в разы лучше.",
-                      "If the card is busy only 10% of the time, the same million tokens costs $7.30, more than the cloud. Takeaway: money-wise your own model wins only with a large, steady stream of work. More often it is chosen for privacy, version control and offline work. That is the honest answer to “isn’t it cheaper?”. Caveat: $0.73 is the single-user worst case. A server with batching (for example vLLM) handles many requests at once, so total throughput, and with it the price per million tokens, gets several times better.")))
+                    t("Если карта занята только 10% времени, тот же миллион токенов обходится уже примерно в $7.27 — дороже облака. Вывод: по деньгам своя модель выигрывает только при большом и ровном потоке задач. Чаще её выбирают из-за приватности, контроля над версией и работы без интернета. Это честный ответ на вопрос «а не дешевле ли?». Оговорка: $0.73 — худший случай, когда карту использует один человек. Сервер с пакетной обработкой (например, vLLM) обслуживает много запросов одновременно, и общая скорость, а с ней и цена за миллион токенов, становится в разы лучше.",
+                      "If the card is busy only 10% of the time, the same million tokens costs about $7.27, more than the cloud. Takeaway: money-wise your own model wins only with a large, steady stream of work. More often it is chosen for privacy, version control and offline work. That is the honest answer to “isn’t it cheaper?”. Caveat: $0.73 is the single-user worst case. A server with batching (for example vLLM) handles many requests at once, so total throughput, and with it the price per million tokens, gets several times better.")))
 
 
 def s_decide():
@@ -753,7 +776,10 @@ SLIDES = [s_cover, s_hook, s_open, s_why, s_layers, s_quant, s_fit, s_speed, s_l
 # ---------------------------------------------------------------- page
 EXTRA_CSS = """
 .bars .ref, .vline { position: absolute; top: 0; bottom: 26px; border-left: 2px dashed var(--k, var(--amber)); }
-.vline span { position: absolute; top: 2px; left: 6px; white-space: nowrap; font: 700 18px var(--body); color: var(--k); }
+.vline span, .bars .ref span { position: absolute; top: 2px; left: 6px; white-space: nowrap; font: 700 18px var(--body); color: var(--k); }
+.bars .ref span { color: var(--amber); }
+.bars .band { position: absolute; top: 0; bottom: 26px; background: rgba(192,132,252,.14); border-left: 2px dashed var(--violet); border-right: 2px dashed var(--violet); }
+.bars .band span { position: absolute; top: 2px; left: 8px; white-space: nowrap; font: 700 18px var(--body); color: var(--violet); }
 .slide:not(.cover) .body { justify-content: flex-start; padding-top: 22px; }
 .big .note { font-size: 23px; }
 .big .legend div { font-size: 23px; }
@@ -761,6 +787,13 @@ EXTRA_CSS = """
 .big .bars .br { margin-bottom: 4px; }
 .big .bars .bl { font-size: 23px; }
 .big .bars .bl small { font-size: 19px; }
+.tall .bars .bt { height: 58px; }
+.tall .bars .br { margin-bottom: 8px; }
+.tall .bars .bl { font-size: 23px; }
+.tall .bars .bl small { font-size: 19px; }
+.fit { display: flex; flex-wrap: wrap; gap: 14px 16px; }
+.fit span { font: 600 23px/1.2 var(--body); color: var(--fg); padding: 14px 22px; border-radius: 999px; background: color-mix(in srgb, var(--k) 16%, transparent); }
+.fit b { color: var(--k); margin-right: 6px; }
 .big .stat .d { font-size: 22px; }
 .big .lrow .h { font-size: 29px; }
 .big .lrow .dot { width: 30px; height: 30px; }

@@ -1,6 +1,6 @@
 # Instructor Script • Lesson 07 (v3): The Microsoft Copilot Ecosystem, an Overview (90 Minutes)
 
-**Course:** GenAI Basics • Lesson 07 of 16
+**Course:** GenAI Basics • Lesson 07 of 16 • Module 3: AI assistants at work
 **Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Audience:** IT Park University students, GenAI beginners from many roles. Plain language, no formulas, no code.
 **Format:** 24 slides (`presentation_L07_Copilot_Ecosystem_EN_v3.html` / PDF) • class runs in **Microsoft Teams** • break timer on slide 15

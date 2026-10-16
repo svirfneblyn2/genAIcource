@@ -35,7 +35,7 @@
 | **15** | 5-minute break. No tools | 59:00–64:00 | 5 |
 | **16** | Tools give the model hands. The main risk is someone else’s text giving it orders | 64:00–69:00 | 5 |
 | **17** | Even the best agents fail: on hard tasks, almost every second time | 69:00–73:00 | 4 |
-| **18** | Four rules make an agent safe | 73:00–77:00 | 4 |
+| **18** | Four rules make an agent safer | 73:00–77:00 | 4 |
 | **19** | A good agent knows which tool to call and what to hand to a human | 77:00–82:00 | 5 |
 | **20** | Homework: design an agent’s tools and test them in AI Studio | 82:00–87:00 | 5 |
 | **21** | The model proposes, the program decides, a human confirms | 87:00–90:00 | 3 |
@@ -68,7 +68,7 @@ Part 1 (slides 01–14, 00:00–59:00): the problem, tools in chat apps, describ
 
 ### Slide 03 (06:00–10:00) • Chat assistants already call tools: search and reading pages
 
-**On screen:** Claude screenshot: “Searched the web” → “Not conclusive” → “Read 3 pages” → answer, callouts 1–3 and ✓.
+**On screen:** A large Claude screenshot: “Searched the web” → “Not conclusive” → “Read 3 pages” → answer, callouts 1–3 and ✓; legend below the shot.
 
 #### Speaker (4 min)
 > Good news: you have already used tools. We asked Claude for the latest Ollama version. The model cannot know: it came out two days ago. So it called web search itself (the grey “Searched the web” line), looked at the results, judged them not conclusive and called a second tool: it read the GitHub releases pages. Only then did it answer.
@@ -79,7 +79,7 @@ Part 1 (slides 01–14, 00:00–59:00): the problem, tools in chat apps, describ
 
 ### Slide 04 (10:00–15:00) • A function declaration: a name, a description, parameters. That is all the model sees
 
-**On screen:** AI Studio “Function declarations” screenshot: name, description, order_id parameter with callouts.
+**On screen:** A large AI Studio “Function declarations” screenshot: name, description and the order_id parameter with callouts.
 
 #### Speaker (5 min)
 > For the model to ask for an action, you have to tell it which actions exist. That is the function declaration. In Google AI Studio you do it without code: Run settings, the Tools section, the Function calling switch, the Edit button.
@@ -197,7 +197,7 @@ Part 1 (slides 01–14, 00:00–59:00): the problem, tools in chat apps, describ
 
 ### Slide 14 (55:00–59:00) • Where agents live now: in chat apps, in developer kits, on your machine
 
-**On screen:** A “quicker to start ↔ more control” strip and three columns: agents in chat apps, developer kits, your own models.
+**On screen:** A “quicker to start ↔ more control” scale and three borderless columns: agents in chat apps, developer kits, your own models.
 
 #### Speaker (4 min)
 > Three places where you meet agents today. In chat apps: ChatGPT Work (launched in July 2026, replacing ChatGPT agent), Claude with search, code and connectors, Gemini with Tasks (needs Pro or Ultra, not yet available in the EEA (including the EU), UK, Switzerland or Nigeria).
@@ -237,14 +237,14 @@ Part 1 (slides 01–14, 00:00–59:00): the problem, tools in chat apps, describ
 
 ---
 
-### Slide 18 (73:00–77:00) • Four rules make an agent safe
+### Slide 18 (73:00–77:00) • Four rules make an agent safer
 
-**On screen:** Four rules (narrow tools, checks in code, a human confirms, limits and a log); also the homework grading checklist.
+**On screen:** A call’s path in four steps: the model proposes → the program checks → a human confirms → the log records; a sample log; this is also the homework checklist.
 
 #### Speaker (4 min)
-> The lesson in four rules. Narrow tools with clear descriptions. All checks in code: the model proposes, the program verifies. A human confirms actions with consequences. Step and money limits plus a call log.
+> The lesson in four rules — the path of every call, left to right. Narrow tools with clear descriptions. All checks in code: the model proposes, the program verifies. A human confirms actions with consequences. Step and money limits plus a call log.
 >
-> The same four points are the homework grading criteria: the reviewer looks at the function descriptions, where the confirmation is and at the limit.
+> Below is a sample log: the first call went through on its own, the second (a refund) waits for a human to confirm. The same four points are the homework grading criteria: the reviewer looks at the function descriptions, where the confirmation is and at the limit.
 
 ---
 
@@ -272,7 +272,7 @@ Part 1 (slides 01–14, 00:00–59:00): the problem, tools in chat apps, describ
 
 ### Slide 21 (87:00–90:00) • The model proposes, the program decides, a human confirms
 
-**On screen:** Four takeaways and the L12 (MCP) preview.
+**On screen:** Four takeaways as a numbered list and the L12 (MCP) preview.
 
 #### Speaker (3 min)
 > Four ideas. The model does not know live data and guesses without a tool. The model only proposes a call; the program runs and checks it. An agent is a model, tools and a loop with a limit. For risky actions a human stays in the loop.

@@ -94,6 +94,17 @@ def gb(v):
 def _lr(rows):
     return "".join(f'<div class="lrow" style="--k:var(--{k})"><div class="dot"></div><div><div class="h">{h}</div><div class="d">{d}</div></div></div>' for k, h, d in rows)
 
+def dots(steps, fs=28, ds=21):
+    """Borderless chain of numbered circles joined by a line: steps = [(colour, title, desc)]."""
+    cells = "".join(
+        f'<div style="position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px">'
+        + (f'<div style="position:absolute;top:29px;left:calc(-50% + 38px);right:calc(50% + 38px);border-top:3px solid var(--muted)"></div>' if i else "")
+        + f'<div style="width:60px;height:60px;border-radius:50%;background:var(--{k});color:#0b0f17;font:800 28px/60px var(--display)">{i + 1}</div>'
+        f'<div style="font:800 {fs}px/1.2 var(--display);color:var(--{k});margin-top:4px">{h}</div>'
+        f'<div style="font:400 {ds}px/1.35 var(--body);color:var(--muted)">{d}</div></div>' for i, (k, h, d) in enumerate(steps))
+    return f'<div style="display:grid;grid-template-columns:repeat({len(steps)},1fr);gap:24px">{cells}</div>'
+
+
 def flow(steps, h=150, fs=25, ds=19):
     """Horizontal chain of numbered boxes with arrows: steps = [(colour, title, desc)]."""
     out = []
@@ -422,22 +433,26 @@ def s_metr():
 def s_incidents():
     tiles = [("red", t("9 секунд", "9 seconds"), t("PocketOS, 2026: агент нашёл в постороннем файле ключ доступа и удалил базу вместе с бэкапами; по словам основателя, данные потом восстановили", "PocketOS, 2026: the agent found an access key in an unrelated file and deleted the database with its backups; per the founder, data was later restored")),
              ("amber", t("«Заморозка»", "Code freeze"), t("Replit, 2025: агент удалил рабочую базу SaaStr, хотя изменения были запрещены", "Replit, 2025: the agent deleted SaaStr’s live database although changes were frozen")),
-             ("violet", t("2 349", "2,349"), t("секретов утекло: заражённая библиотека Nx (готовый модуль, который скачивают программисты) крала ключи и заставляла установленных ИИ-агентов искать файлы с секретами, 2025", "secrets leaked: an infected Nx library (a ready-made module developers download) stole keys and made installed AI agents search for secret files, 2025"))]
-    tt = "".join(f'<div class="stat" style="--k:var(--{k});flex:1;gap:12px"><div class="n" style="font-size:74px">{n}</div><div class="d" style="font-size:23px">{d}</div></div>' for k, n, d in tiles)
+             ("violet", t("2 349", "2,349"), t("секретов утекло: заражённая библиотека Nx (готовый модуль для программистов) заставляла ИИ-агентов искать ключи, 2025", "secrets leaked: an infected Nx library (a ready-made module for developers) made AI agents hunt for keys, 2025"))]
+    tt = "".join(f'<div class="stat" style="--k:var(--{k});flex:1;gap:12px"><div class="n" style="font-size:64px">{n}</div><div class="d" style="font-size:21px">{d}</div></div>' for k, n, d in tiles)
     return dict(min=7, html=f'''
   {head(t("Инциденты", "Incidents"), t("Агент делает то, до чего дотягивается: ключи, базы и чужой текст в проекте", "An agent does whatever it can reach: keys, databases and other people’s text in the project"), k="red")}
   <div class="body" style="margin-top:8px;">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;">{tt}</div>
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:36px;margin-top:80px;flex:none;align-items:start;">
-      <div class="plaque">{t("<b>Ключ в зоне досягаемости агента = выданное агенту право.</b>", "<b>A key within the agent’s reach = a permission given to the agent.</b>")}</div>
-      <div class="note" style="--k:var(--violet)">{t("<b>Clinejection, 2026:</b> команда в заголовке задачи на GitHub → ИИ-бот проекта выполнил её → украдены ключи публикации → вышла заражённая версия Cline.", "<b>Clinejection, 2026:</b> a command in a GitHub issue title → the project’s AI bot ran it → publishing keys were stolen → an infected Cline version went out.")}</div>
+    <div class="row" style="grid-template-columns:1fr;gap:36px;margin-top:30px;flex:none;align-items:center;">
+      <div class="note" style="--k:var(--cyan)">{t("<b>Помните по L15:</b> чужой текст может командовать моделью — это подмена инструкций (prompt injection), риск LLM01 в списке OWASP.", "<b>Remember from L15:</b> someone else’s text can command the model — prompt injection, risk LLM01 on the OWASP list.")}</div>
     </div>
+    <div class="prompt-label" style="margin-top:24px">{t("Clinejection, 2026: чужой текст стал командой", "Clinejection, 2026: someone else’s text became a command")}</div>
+    <div style="margin-top:12px">{dots([("violet", t("Заголовок задачи", "An issue title"), t("на GitHub спрятана команда", "a command hidden on GitHub")),
+                                         ("amber", t("ИИ-бот выполнил", "The AI bot ran it"), t("бот разбирал задачи проекта", "the bot triaged the project’s issues")),
+                                         ("red", t("Ключи украдены", "Keys stolen"), t("ключи публикации в npm", "the npm publishing keys")),
+                                         ("red", t("Заражённая версия", "An infected release"), t("Cline вышла в npm", "Cline went out on npm"))], fs=24, ds=19)}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 7 мин. Три случая. PocketOS, апрель 2026: агент в Cursor нашёл в постороннем файле долгоживущий ключ к облаку и одной командой за девять секунд удалил рабочую базу вместе с резервными копиями; сервис лежал около 30 часов, потом данные восстановили. Replit, июль 2025: во время объявленной «заморозки» агент удалил рабочую базу SaaStr — около 1200 руководителей и 1190 компаний — и сначала сообщил, что откат невозможен.",
                       "⏱ 7 min. Three cases. PocketOS, April 2026: an agent in Cursor found a long-lived cloud key in an unrelated file and, with a single command, deleted the production database and its backups in nine seconds; the service was down for about 30 hours, and the data was later restored. Replit, July 2025: during a declared code freeze the agent deleted SaaStr’s production database — about 1,200 executives and 1,190 companies — and at first reported that a rollback was impossible."),
-                    t("Nx, август 2025 — атака через цепочку поставок: заражённая версия популярного npm-пакета при установке искала на компьютере ИИ-агентов — Claude, Gemini, Amazon Q — и просила их найти файлы с секретами, отключив вопросы о разрешениях; многие агенты отказались, но ключи вирус крал и сам. Утекло около 2349 секретов. А в 2026 году в случае Clinejection команда была спрятана прямо в заголовке задачи на GitHub: ИИ-бот, который разбирал задачи проекта Cline, выполнил её, злоумышленник добрался до ключей публикации, и в npm вышла заражённая версия. Вывод: всё, до чего агент дотягивается, — это его права, а чужой текст в проекте — это чужие команды.",
-                      "Nx, August 2025, a supply-chain attack: an infected version of a popular npm package, on install, looked for AI agents on the computer — Claude, Gemini, Amazon Q — and asked them to find secret files with permission prompts switched off; many agents refused, but the malware stole keys on its own too. About 2,349 secrets leaked. And in 2026, in the Clinejection case, the command was hidden right in a GitHub issue title: the AI bot that triaged Cline’s issues ran it, the attacker got to the publishing keys, and an infected version went out on npm. The takeaway: everything the agent can reach is its permission, and someone else’s text in the project is someone else’s commands.")))
+                    t("Nx, август 2025 — атака через цепочку поставок: заражённая версия популярного npm-пакета при установке искала на компьютере ИИ-агентов — Claude, Gemini, Amazon Q — и просила их найти файлы с секретами, отключив вопросы о разрешениях; многие агенты отказались, но ключи вирус крал и сам. Утекло около 2349 секретов. А в 2026 году в случае Clinejection команда была спрятана прямо в заголовке задачи на GitHub: ИИ-бот, который разбирал задачи проекта Cline, выполнил её, злоумышленник добрался до ключей публикации, и в npm вышла заражённая версия. Вывод: всё, до чего агент дотягивается, — это его права, а чужой текст в проекте — это чужие команды. Помните по L15: это та самая подмена инструкций, LLM01 в списке OWASP; цепочка Clinejection внизу слайда.",
+                      "Nx, August 2025, a supply-chain attack: an infected version of a popular npm package, on install, looked for AI agents on the computer — Claude, Gemini, Amazon Q — and asked them to find secret files with permission prompts switched off; many agents refused, but the malware stole keys on its own too. About 2,349 secrets leaked. And in 2026, in the Clinejection case, the command was hidden right in a GitHub issue title: the AI bot that triaged Cline’s issues ran it, the attacker got to the publishing keys, and an infected version went out on npm. The takeaway: everything the agent can reach is its permission, and someone else’s text in the project is someone else’s commands. Remember from L15: this is exactly prompt injection, LLM01 on the OWASP list; the Clinejection chain is at the bottom of the slide.")))
 
 
 def s_break():
@@ -480,15 +495,20 @@ def s_safe():
 
 
 def s_exercise():
+    heads = t(("Цель", "Не трогать", "Готово, когда", "Проверка", "Ревью"), ("Goal", "Do not touch", "Done when", "Check", "Review"))
+    skel = "\n".join(f'<span style="color:var(--cyan);font-weight:700">## {h}:</span> ' + ({3: "pytest -q", 4: t("человек читает diff", "a human reads the diff")}.get(i, "…")) for i, h in enumerate(heads))
     return dict(min=10, html=f'''
   {head(t("Практика", "Practice"), t("Превратите расплывчатую просьбу в задачу, которую агент выполнит и проверит", "Turn a vague request into a task an agent can carry out and check"), k="cyan")}
   <div class="body" style="margin-top:8px;">
     <div class="plaque" style="font-size:28px;margin:10px 0 40px;padding:20px 26px">{t("«Пользователи хотят фильтровать тикеты по приоритету. Добавьте, пожалуйста.»", "“Users want to filter tickets by priority. Please add it.”")}</div>
-    {flow([("cyan", "TASK.md", t("цель, не трогать, готово когда, проверка", "goal, do not touch, done when, check")),
+    {dots([("cyan", "TASK.md", t("цель, не трогать, готово когда, проверка", "goal, do not touch, done when, check")),
            ("violet", "AGENTS.md", t("команда тестов и запреты", "the test command and limits")),
            ("amber", t("План от агента", "The agent’s plan"), t("plan mode; прочитайте, что он предлагает", "plan mode; read what it proposes")),
-           ("green", t("Решение", "Decision"), t("принять, отклонить или уточнить задачу", "accept, reject or refine the task"))], h=270, fs=31, ds=24)}
-    <div class="note" style="margin-top:40px;--k:var(--muted)">{t("Нет агента под рукой — сделайте шаги 1–2, потом обменяйтесь TASK.md с соседом и проверьте его строку «готово, когда». Бесплатно попробовать: Codex в ChatGPT, Copilot Free, Antigravity.", "No agent at hand — do steps 1–2, then swap TASK.md with a neighbour and check their “done when” line. Free to try: Codex in ChatGPT, Copilot Free, Antigravity.")}</div>
+           ("green", t("Решение", "Decision"), t("принять, отклонить или уточнить задачу", "accept, reject or refine the task"))], fs=30, ds=22)}
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;flex:none;margin-top:36px;align-items:center">
+      <div><div class="prompt-label">{t("Скелет TASK.md: заполните сами", "A TASK.md skeleton: fill it in yourself")}</div><pre class="code" style="font-size:22px;line-height:1.5;margin:0">{skel}</pre></div>
+      <div class="note" style="--k:var(--muted)">{t("Нет агента под рукой — сделайте шаги 1–2, потом обменяйтесь TASK.md с соседом и проверьте его строку «готово, когда». Бесплатно попробовать: Codex в ChatGPT, Copilot Free, Antigravity.", "No agent at hand — do steps 1–2, then swap TASK.md with a neighbour and check their “done when” line. Free to try: Codex in ChatGPT, Copilot Free, Antigravity.")}</div>
+    </div>
   </div>''',
                 notes=notes(
                     t("⏱ 10 мин. Работаем индивидуально, 7 минут, потом 3 минуты разбор. Просьба от бизнеса: «пользователи хотят фильтровать тикеты по приоритету». Шаг 1: напишите TASK.md — цель, что не трогать, когда готово, какой командой проверить. Шаг 2: AGENTS.md на три-пять строк — команда тестов и запреты. Шаг 3: если у вас есть агент, запустите его в режиме плана и прочитайте план, ничего не одобряя. Шаг 4: решите, принять план, отклонить или уточнить задачу.",
@@ -526,16 +546,19 @@ def s_summary():
              ("cyan", t("Сначала план", "Plan first"), t("агент читает и предлагает, вы одобряете", "the agent reads and proposes, you approve")),
              ("red", t("Минимум прав", "Least privilege"), t("ветка, песочница, никаких рабочих ключей", "branch, sandbox, no production keys")),
              ("green", t("Решает человек", "A human decides"), t("читает diff, сливает и выпускает", "reads the diff, merges and ships"))]
-    li = "".join(f'<div class="task" style="--k:var(--{k});padding:44px 40px;min-height:230px;grid-template-columns:1fr"><div><div class="h" style="font-size:40px">{h}</div><div class="d" style="font-size:27px;margin-top:12px">{d}</div></div></div>' for k, h, d in rules)
+    li = "".join(f'<div class="task" style="--k:var(--{k});padding:32px 40px;min-height:170px;grid-template-columns:1fr"><div><div class="h" style="font-size:40px">{h}</div><div class="d" style="font-size:27px;margin-top:12px">{d}</div></div></div>' for k, h, d in rules)
     return dict(min=4, html=f'''
   {head(t("Итоги урока и курса", "Lesson and course summary"), t("Агент делает работу — задачу, проверку и решение оставляем себе", "The agent does the work; the task, the check and the decision stay with us"), k="green")}
   <div class="body" style="margin-top:8px;">
     <div class="tasks">{li}</div>
-    <div class="note" style="margin-top:44px;font-size:25px;--k:var(--violet)">{t("<b>Курс пройден:</b> от первого промпта в чате (L02) до агента, который пишет код под вашим присмотром (L16). Спасибо!", "<b>Course complete:</b> from your first chat prompt (L02) to an agent that writes code under your supervision (L16). Thank you!")}</div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;flex:none;margin-top:40px">
+      <div class="note" style="font-size:24px;--k:var(--amber)">{t("<b>Финал — Капстоун 2 «Ваш ассистент по данным»:</b> после этого урока, 30 из 100 баллов; зачёт курса — от 60 баллов.", "<b>The finale — Capstone 2 “Your Data Assistant Agent”:</b> after this lesson, 30 of the 100 points; 60 points pass the course.")}</div>
+      <div class="note" style="font-size:24px;--k:var(--violet)">{t("<b>Курс пройден:</b> от первого промпта в чате (L02) до агента, который пишет код под вашим присмотром (L16). Спасибо!", "<b>Course complete:</b> from your first chat prompt (L02) to an agent that writes code under your supervision (L16). Thank you!")}</div>
+    </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 4 мин. Четыре правила работы с агентом. Задача с понятным «готово, когда». Сначала план, потом правки. Минимум прав: ветка, песочница, никаких рабочих ключей. Решение — за человеком: он читает изменения, сливает и выпускает. Это последний урок: мы прошли путь от первого промпта до агента, который пишет код под вашим присмотром. Спасибо и удачи с итоговыми проектами.",
-                      "⏱ 4 min. Four rules for working with an agent. A task with a clear “done when”. Plan first, then edits. Least privilege: a branch, a sandbox, no production keys. The decision belongs to a human: they read the changes, merge and ship. This is the last lesson: we went from the first prompt to an agent that writes code under your supervision. Thank you, and good luck with your final projects.")))
+                    t("⏱ 4 мин. Четыре правила работы с агентом. Задача с понятным «готово, когда». Сначала план, потом правки. Минимум прав: ветка, песочница, никаких рабочих ключей. Решение — за человеком: он читает изменения, сливает и выпускает. Это последний урок: мы прошли путь от первого промпта до агента, который пишет код под вашим присмотром. Впереди Капстоун 2 «Ваш ассистент по данным»: Colab без кода, 30 из 100 баллов курса; для зачёта нужно 60. Спасибо и удачи с итоговыми проектами.",
+                      "⏱ 4 min. Four rules for working with an agent. A task with a clear “done when”. Plan first, then edits. Least privilege: a branch, a sandbox, no production keys. The decision belongs to a human: they read the changes, merge and ship. This is the last lesson: we went from the first prompt to an agent that writes code under your supervision. Ahead is Capstone 2, “Your Data Assistant Agent”: a no-code Colab, 30 of the 100 course points; 60 are needed to pass. Thank you, and good luck with your final projects.")))
 
 
 SLIDES = [s_cover, s_hook, s_anatomy, s_landscape, s_loop, s_task, s_rules_file, s_permissions, s_verify, s_metr,

@@ -29,8 +29,8 @@ Times follow `MINUTES` in `deck_v3/build.py`.
 |---|---|---|---|---|
 | 01 | 2 | 00:00–02:00 | Copilot is not a button, it is a family | `ms_copilot_hero.jpg`: hero of the new Copilot (Microsoft blog, 25 Sep 2026) |
 | 02 | 5 | 02:00–07:00 | The Microsoft AI family: who lives where (+ Teams poll) | ecosystem map with app tiles: for you / Microsoft 365 apps + agents / for developers / for the company + core models (simplified tiles, not official logos; no photo) |
-| 03 | 2 | 07:00–09:00 | Model → chat → assistant → agent | `own_dia_agent_stages_en.png` (our diagram, 13 Oct 2026) |
-| 04 | 2 | 09:00–11:00 | Assistant or agent: who drives the work | `own_dia_assistant_vs_agent_en.png` (our diagram, 13 Oct 2026) |
+| 03 | 2 | 07:00–09:00 | Model → chat → assistant → agent | `own_dia_agent_stages_en.png` / `_ru.png` (our diagram, 13 Oct 2026; RU version 16 Oct) |
+| 04 | 2 | 09:00–11:00 | Assistant or agent: who drives the work | `own_dia_assistant_vs_agent_en.png` / `_ru.png` (our diagram, 13 Oct 2026; RU version 16 Oct) |
 | 05 | 3 | 11:00–14:00 | Inside are the same models you called in L03 | `own_work_model_picker.jpg`: model menu of the IT Park work Copilot (our capture) + three-level ladder |
 | 06 | 4 | 14:00–18:00 | One Microsoft Copilot app, two doors | `own_account_switcher.jpg` (our capture); `ms_app_home.jpg` Home · Code · Autopilot (Microsoft blog, 25 Sep 2026); name dictionary |
 | 07 | 3 | 18:00–21:00 | What is free and what is paid | price ladder as of 13 Oct 2026 (no photo) |
@@ -43,7 +43,7 @@ Times follow `MINUTES` in `deck_v3/build.py`.
 | 14 | 4 | 48:00–52:00 | PowerPoint and Outlook: the same button, a different document | `ms_ppt_visualize.jpg`, `ms_outlook_summary.jpg` (Microsoft Support, 2026) |
 | 15 | 5 | 52:00–57:00 | Break: 5 minutes | timer |
 | 16 | 4 | 57:00–61:00 | Agents: Copilot does the work, not just answers | `yt_researcher_report.jpg` (Mike Tholfsen, YouTube, 13 Apr 2026); `yt_cowork_workspace.jpg` (Kevin Stratvert, YouTube, 16 Jul 2026); `own_work_agent_store.jpg` (our capture) |
-| 17 | 2 | 61:00–63:00 | Anatomy of an agent: model + harness + five parts | `own_dia_agent_anatomy_en.png` (our diagram, 13 Oct 2026) |
+| 17 | 2 | 61:00–63:00 | Anatomy of an agent: model + harness + five parts | `own_dia_agent_anatomy_en.png` / `_ru.png` (our diagram, 13 Oct 2026; RU version 16 Oct) |
 | 18 | 3 | 63:00–66:00 | Agent Builder: an agent is Copilot with your instructions and your knowledge | `own_ab_01_start_crop.jpg` Agent Builder start screen in the IT Park school account (our capture) + four parts of an agent, six agent ideas |
 | 19 | 5 | 66:00–71:00 | We built a support agent in 5 minutes: a real run | `own_ab_03_configure_instructions_crop.jpg`, `own_ab_04_knowledge_prompts_crop.jpg`, `own_ab_05_preview_test_crop.jpg`, `own_ab_07_created_crop.jpg` (our captures) + our prompt |
 | 20 | 4 | 71:00–75:00 | GitHub Copilot: Copilot for code (more in L16) | `gh_code_review.jpg` (GitHub blog, 2 Jun 2026) + our real 2-line diff from `artifacts.json` |

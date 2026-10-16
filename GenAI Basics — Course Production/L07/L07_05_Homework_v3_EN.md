@@ -1,6 +1,6 @@
 # Lesson 07 (v3) • Homework: The Courier Team's Week with Copilot
 
-**Course:** GenAI Basics  
+**Course:** GenAI Basics • Lesson 07 • Module 3: AI assistants at work  
 **Submission:** folder `genai-homeworks/L07/` in your personal GitHub repository: one document with screenshots (see “Submission Checklist”)  
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Code:** none. You need to check a Copilot answer against its source.  

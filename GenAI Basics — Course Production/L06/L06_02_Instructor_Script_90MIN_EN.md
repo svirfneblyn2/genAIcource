@@ -75,7 +75,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 
 ### Slide 03 (05:00–09:00) • Start in a web studio, automate with the API
 
-**On screen:** Large Google AI Studio → Generate speech crop with markers 1–4 (text, style, model, result) and a legend. Below: the key code line from the Get code button and two more paths (chat, open-weight models).
+**On screen:** A full-width Google AI Studio → Generate speech frame with callouts 1–4 (text, style, model, result); below it the legend, the key code line from Get code and two more paths (chat, open models).
 
 #### Speaker (4 min)
 > The same choice as in L04 and L05: chat, web studio, API. Chat apps: ChatGPT voice mode, the Gemini app with Gemini Live; since September 2026 the Gemini app also makes music with Lyria 3.5. Good for trying things, but you barely control the voice, pace and length.
@@ -155,7 +155,7 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 
 ### Slide 09 (31:00–35:00) • Three sources of a voice: library, description, clone
 
-**On screen:** Left: a row of library voices in Google AI Studio (1); right: the Create voice window with a designed voice (2) and a clone (3); a legend with each one’s condition. Below: test the hard words before choosing a voice.
+**On screen:** Left: two library voices from Google AI Studio (1) and the legend; right: the Create voice cards, Voice Design (2) and Replication (3), a caption and the tip to test the hardest words before choosing a voice.
 
 #### Speaker (4 min)
 > Three sources of a voice; all three are visible in Google AI Studio (screenshots from 16.10.2026). A library voice: the service’s licence already covers it. Gemini has 30 prebuilt API voices, OpenAI 13. Our example uses Kokoro af_heart for English and Piper dmitri for Russian. Create new voice opens the other two paths: Voice Design (a voice from a description; in AI Studio it needs the paid tier) and Voice Replication (a clone from a short recording; the service asks you to verify the voice is yours). The clone card is greyed out in the screenshot: it is not enabled on our account, which is normal; it is turned on separately and only for your own voice.
@@ -315,11 +315,11 @@ Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. B
 
 ### Slide 21 (87:00–90:00) • Lesson summary
 
-**On screen:** Five lesson rules and a frame from the video; L07 preview.
+**On screen:** Six lesson rules and a frame from the video; Capstone 1 (30 of 100 points) and the L07 preview.
 
 #### Speaker (3 min)
 > Six rules, one per step: a script with a word budget; spoken text kept separate, numbers and names as words; a voice with a licence and consent; a background with a known licence; mix to −14 LUFS; check with speech-to-text and by ear.
 >
-> This closes the multimodality module: image, video, sound. Next lesson, L07: the Microsoft Copilot ecosystem — for you, for work, for code, for your company. Capstone 1 (voice → image) starts after this lesson: a no-code Colab, 100 points. Questions.
+> This closes the multimodality module: image, video, sound. Next lesson, L07: the Microsoft Copilot ecosystem — for you, for work, for code, for your company. Capstone 1 (voice → image) starts after this lesson: a no-code Colab, 30 of the 100 course points; 60 are needed to pass the course. Questions.
 
 ---

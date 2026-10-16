@@ -209,12 +209,12 @@ Part 1 (slides 01–14, 00:00–60:00): the problem, MCP, roles, connectors, per
 
 ### Slide 16 (65:00–70:00) • Agent frameworks: a ready loop, memory, approvals and logs
 
-**On screen:** Agent frameworks with licences and purpose.
+**On screen:** Agent frameworks with licences and purpose; on the right three layers: your agent / framework / model + MCP servers.
 
 #### Speaker (5 min)
 > An agent framework is a library that takes over the L11 loop and everything around it: memory between steps, handing a task to another agent, pauses for human approval, logging (tracing). The OpenAI Agents SDK and the Claude Agent SDK come from model vendors; the Claude Agent SDK uses the same engine as Claude Code; the Python SDK code is MIT, but use of the SDK is governed by Anthropic’s commercial terms.
 >
-> Google ADK — agents on Gemini and other models with easy deployment to Google Cloud. LangGraph describes an agent as a graph of steps with memory and pauses. Microsoft Agent Framework is the direct successor to AutoGen and Semantic Kernel; AutoGen is now maintenance-only, and Microsoft points new projects to Agent Framework. CrewAI — a “crew” of agents with roles. There are also LlamaIndex and Pydantic AI. Choose by ecosystem: which model and which cloud you work with.
+> Google ADK — agents on Gemini and other models with easy deployment to Google Cloud. LangGraph describes an agent as a graph of steps with memory and pauses. Microsoft Agent Framework is the direct successor to AutoGen and Semantic Kernel; AutoGen is now maintenance-only, and Microsoft points new projects to Agent Framework. CrewAI — a “crew” of agents with roles. There are also LlamaIndex and Pydantic AI. Choose by ecosystem: which model and which cloud you work with. On the right of the slide is what a framework takes over: your agent on top (role and rules), the framework in the middle (loop, memory, handoffs, approval pauses, tracing), the model and the MCP servers from the first part at the bottom.
 
 ---
 
@@ -240,7 +240,7 @@ Part 1 (slides 01–14, 00:00–60:00): the problem, MCP, roles, connectors, per
 
 ### Slide 19 (78:00–82:00) • Exercise: which MCP servers to connect, and what to allow?
 
-**On screen:** Four work tasks: which servers, permissions, confirmations.
+**On screen:** A worksheet: four tasks × servers, permissions, where a human; answers in the chat.
 
 #### Speaker (4 min)
 > Chat exercise, 3 minutes. Everyone picks one task and writes which servers are needed, what permissions (read only or write) and where a human must confirm.

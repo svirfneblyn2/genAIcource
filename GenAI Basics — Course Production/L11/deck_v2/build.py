@@ -228,24 +228,23 @@ def s_hook():
 
 
 def s_seen():
-    sh = shot("claude_websearch", marks=[(1, 47.5, 21.5, "cyan"), (2, 47.5, 29.5, "amber"), (3, 47.5, 38.5, "green"), ("✓", 96.0, 48.0, "violet")],
-              boxes=[(3.0, 17.5, 43.0, 6.0, "cyan"), (3.0, 25.5, 43.0, 6.0, "amber"), (3.0, 34.0, 16.0, 6.0, "green"), (3.0, 42.5, 94.0, 11.0, "violet")])
+    # claude_websearch_tight.png: top 262 px of claude_websearch.png (question, tool steps, answer), shown larger so the text is >= 17px
+    sh = shot("claude_websearch_tight", marks=[(1, 47.5, 39.8, "cyan"), (2, 47.5, 54.6, "amber"), (3, 47.5, 71.3, "green"), ("✓", 96.0, 88.9, "violet")],
+              boxes=[(3.0, 32.4, 43.0, 11.1, "cyan"), (3.0, 47.2, 43.0, 11.1, "amber"), (3.0, 62.9, 16.0, 11.1, "green"), (3.0, 78.7, 94.0, 20.4, "violet")])
     return dict(min=4, html=f'''
   {head(t("Вы это уже видели", "You have seen this"), t("Чат-боты уже вызывают инструменты: поиск и чтение страниц", "Chat assistants already call tools: search and reading pages"), k="cyan")}
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.3fr 1fr;gap:40px;align-items:center;flex:none;">
-      <div class="stack" style="gap:8px;">
-        <div class="prompt-label">{t("Claude · «последняя версия Ollama?» · 16.10.2026", "Claude · “latest Ollama version?” · 16.10.2026")}</div>
-        {sh}
-      </div>
-      <div class="stack" style="gap:20px;">
+    <div class="prompt-label">{t("Claude · «последняя версия Ollama?» · 16.10.2026", "Claude · “latest Ollama version?” · 16.10.2026")}</div>
+    <div style="width:1160px;margin:0 auto">{sh}</div>
+    <div class="row" style="grid-template-columns:1.6fr 1fr;gap:40px;align-items:center;flex:none;margin-top:26px">
+      <div class="legend2">
         {legend([(1, "cyan", t("<b>Инструмент «веб-поиск»</b>: модель сама решила искать", "<b>Web search tool</b>: the model decided to search")),
                  (2, "amber", t("<b>Оценила результат</b>: «неубедительно, открою страницу релизов»", "<b>Judged the result</b>: “not conclusive, open the releases page”")),
                  (3, "green", t("<b>Второй инструмент</b>: прочитала 3 страницы", "<b>A second tool</b>: read 3 pages")),
                  ("✓", "violet", t("<b>Ответ</b> по найденным данным: v0.40.5 от 14 октября", "<b>Answer</b> from what it found: v0.40.5 of 14 October"))])}
-        <div class="note" style="--k:var(--cyan)">{t("Несколько шагов подряд до готового ответа — это и есть <b>агент</b>.", "Several steps in a row until the answer is ready: that is an <b>agent</b>.")}</div>
       </div>
-    </div>
+      <div class="note" style="--k:var(--cyan)">{t("Несколько шагов подряд до готового ответа — это и есть <b>агент</b>.", "Several steps in a row until the answer is ready: that is an <b>agent</b>.")}</div>
+      </div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Хорошая новость: вы уже пользовались инструментами. Мы спросили Claude, какая последняя версия Ollama. Модель этого не знает: версия вышла позавчера. Поэтому она сама вызвала веб-поиск (серая строка «Searched the web»), посмотрела результаты, решила, что они неубедительные, и вызвала второй инструмент: прочитала страницы релизов на GitHub. Только после этого ответила.",
@@ -255,12 +254,13 @@ def s_seen():
 
 
 def s_define():
-    sh = shot("aistudio_fn_declare", marks=[(1, 44.5, 50.2, "cyan"), (2, 93.5, 41.0, "amber"), (3, 79.0, 66.8, "green")],
-              boxes=[(2.1, 46.2, 44.3, 8.0, "cyan"), (47.9, 46.2, 44.3, 8.0, "amber"), (4.7, 62.8, 75.7, 8.0, "green")])
+    # aistudio_fn_declare_tight.png: aistudio_fn_declare.png without its empty top and bottom, shown larger so the text is >= 17px
+    sh = shot("aistudio_fn_declare_tight", marks=[(1, 44.5, 48.9, "cyan"), (2, 93.5, 39.0, "amber"), (3, 79.0, 66.6, "green")],
+              boxes=[(2.1, 44.6, 44.3, 8.6, "cyan"), (47.9, 44.6, 44.3, 8.6, "amber"), (4.7, 62.3, 75.7, 8.6, "green")])
     return dict(min=5, html=f'''
   {head(t("Инструмент", "A tool"), t("Описание функции (function declaration): имя, описание, параметры. Модель видит только их", "A function declaration: a name, a description, parameters. That is all the model sees"), k="violet")}
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.55fr 1fr;gap:40px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:1000px 1fr;gap:40px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">{t("AI Studio → Run settings → Tools → Function calling → Edit", "AI Studio → Run settings → Tools → Function calling → Edit")}</div>
         {sh}
@@ -523,8 +523,10 @@ def s_market():
     html_cols = ""
     for (k, h, ms), g in zip(cols, gl):
         names = " · ".join(n for n, _ in ms)
-        html_cols += (f'<div class="task" style="--k:var(--{k});padding:32px 30px;align-items:flex-start;min-height:380px"><div><div class="h" style="font-size:29px">{h}</div>'
-                      f'<div class="d" style="font-size:23px;margin-top:12px">{g}</div><div class="d" style="font-size:24px;margin-top:20px;color:var(--fg)">{names}</div></div></div>')
+        items = "".join(f'<div style="display:flex;gap:14px;align-items:baseline;margin-top:20px"><i style="flex:none;width:13px;height:13px;border-radius:50%;background:var(--{k});transform:translateY(-3px)"></i>'
+                        f'<div><div style="font:700 27px/1.2 var(--body);color:var(--fg)">{n}</div><div style="font:500 19px var(--mono);color:var(--muted);margin-top:4px">{sub}</div></div></div>' for n, sub in ms)
+        html_cols += (f'<div><div style="font:800 29px/1.2 var(--display);color:var(--{k});padding-bottom:12px;border-bottom:4px solid var(--{k})">{h}</div>'
+                      f'<div style="font-size:22px;line-height:1.35;color:var(--muted);margin-top:14px">{g}</div>{items}</div>')
     dots = "".join(f'<div style="position:absolute;left:{x}%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--{k});border:4px solid var(--bg)"></div>'
                    for x, k in ((16.2, "cyan"), (50, "violet"), (83.8, "green")))
     strip = (f'<div style="position:relative;height:30px;margin:0 0 14px">'
@@ -535,7 +537,7 @@ def s_market():
   {head(t("Рынок • октябрь 2026", "Market • October 2026"), t("Где сейчас живут агенты: в чатах, в наборах для разработчиков, у вас", "Where agents live now: in chat apps, in developer kits, on your machine"), k="amber")}
   <div class="body" style="margin-top:12px;">
     {strip}
-    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:30px;flex:none;align-items:stretch;">{html_cols}</div>
+    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:50px;flex:none;align-items:start;">{html_cols}</div>
     <div class="note" style="margin-top:34px;font-size:22px;--k:var(--amber)">{t("Названия меняются быстро: ChatGPT agent заменён на ChatGPT Work, OpenAI Agent Builder закрывается 30.11.2026. Учим механизм, а не кнопки.", "Names change fast: ChatGPT agent was replaced by ChatGPT Work; OpenAI Agent Builder shuts down on 30.11.2026. Learn the mechanism, not the buttons.")}</div>
   </div>''',
                 notes=notes(
@@ -610,22 +612,36 @@ def s_reliability():
 
 
 def s_rules():
-    rules = [("cyan", t("Узкие инструменты", "Narrow tools"), t("одна функция — одна задача, понятное описание", "one function, one job, a clear description")),
-             ("green", t("Проверка в коде", "Checks in code"), t("аргументы и права проверяет программа, не модель", "the program checks arguments and rights, not the model")),
-             ("amber", t("Человек подтверждает", "A human confirms"), t("деньги, письма, удаление — только после «да»", "money, emails, deletion only after a “yes”")),
-             ("violet", t("Лимиты и журнал", "Limits and a log"), t("шаги, бюджет, запись каждого вызова", "steps, budget, a record of every call"))]
-    li = "".join(f'<div class="task" style="--k:var(--{k});padding:38px 34px;min-height:225px"><div><div class="h" style="font-size:34px">{h}</div><div class="d" style="font-size:25px;margin-top:12px">{d}</div></div></div>' for k, h, d in rules)
+    rules = [("violet", t("Узкие инструменты", "Narrow tools"), t("одна функция — одна задача, понятное описание", "one function, one job, a clear description")),
+             ("cyan", t("Проверка в коде", "Checks in code"), t("аргументы и права проверяет программа, не модель", "the program checks arguments and rights, not the model")),
+             ("amber", t("Подтверждение риска", "Confirmation for risk"), t("деньги, письма, удаление — только после «да»", "money, emails, deletion only after a “yes”")),
+             ("green", t("Лимиты и журнал", "Limits and a log"), t("шаги, бюджет, запись каждого вызова", "steps, budget, a record of every call"))]
+    who = [t("Модель предлагает", "The model proposes"), t("Программа проверяет", "The program checks"), t("Человек подтверждает", "A human confirms"), t("Журнал записывает", "The log records")]
+    strip = "".join(
+        f'<div style="position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px">'
+        + (f'<div style="position:absolute;top:44px;left:calc(-50% + 56px);right:calc(50% + 56px);border-top:4px solid var(--line)"></div>'
+           f'<div style="position:absolute;top:24px;left:calc(50% - 82px);font-size:34px;line-height:1;color:var(--muted)">▶</div>' if i else "")
+        + f'<div style="width:88px;height:88px;border-radius:50%;background:var(--{k});color:#0b0f17;font:800 40px/88px var(--display)">{i + 1}</div>'
+        f'<div style="font:600 21px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:6px">{w}</div>'
+        f'<div style="font:800 31px/1.2 var(--display);color:var(--{k})">{h}</div><div style="font-size:23px;line-height:1.35;color:var(--muted)">{d}</div></div>'
+        for i, ((k, h, d), w) in enumerate(zip(rules, who)))
+    log = ('12:04:31  <span class="fn">get_order_status</span>(order_id=<span class="str">"523"</span>)  → ok           '
+           + t("шаг 2/5 · 0,002 $", "step 2/5 · $0.002") + '\n'
+           + '12:04:33  <span class="fn">create_return</span>(order_id=<span class="str">"523"</span>)     → '
+           + t('<span style="color:var(--amber)">ждёт «да» оператора</span>', '<span style="color:var(--amber)">waiting for an operator’s “yes”</span>'))
     return dict(min=4, html=f'''
-  {head(t("Правила", "Rules"), t("Четыре правила делают агента безопасным", "Four rules make an agent safe"), k="green")}
+  {head(t("Правила", "Rules"), t("Четыре правила делают агента безопаснее", "Four rules make an agent safer"), k="green")}
   <div class="body" style="margin-top:12px;">
-    <div class="tasks" style="gap:30px 32px">{li}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:36px;margin-top:20px">{strip}</div>
+    <div class="prompt-label" style="margin-top:44px">{t("Так выглядит журнал (пример)", "What the log looks like (example)")}</div>
+    <pre class="code" style="font-size:21px;line-height:1.7;margin:0">{log}</pre>
     <div class="note" style="margin-top:34px;font-size:23px;--k:var(--cyan)">{t("Это же чек-лист оценки домашнего задания.", "This is also the homework grading checklist.")}</div>
   </div>''',
                 notes=notes(
-                    t("⏱ 4 мин. Сводим урок в четыре правила. Узкие инструменты с понятными описаниями. Все проверки в коде: модель предлагает, программа проверяет. Человек подтверждает действия с последствиями. Лимиты шагов и денег плюс журнал вызовов.",
-                      "⏱ 4 min. The lesson in four rules. Narrow tools with clear descriptions. All checks in code: the model proposes, the program verifies. A human confirms actions with consequences. Step and money limits plus a call log."),
-                    t("Эти же четыре пункта — критерии оценки домашнего задания: проверяющий будет смотреть на описания функций, на то, где стоит подтверждение, и на лимит.",
-                      "The same four points are the homework grading criteria: the reviewer looks at the function descriptions, where the confirmation is and at the limit.")))
+                    t("⏱ 4 мин. Сводим урок в четыре правила — это путь каждого вызова слева направо. Узкие инструменты с понятными описаниями. Все проверки в коде: модель предлагает, программа проверяет. Человек подтверждает действия с последствиями. Лимиты шагов и денег плюс журнал вызовов.",
+                      "⏱ 4 min. The lesson in four rules — the path of every call, left to right. Narrow tools with clear descriptions. All checks in code: the model proposes, the program verifies. A human confirms actions with consequences. Step and money limits plus a call log."),
+                    t("Внизу пример журнала: первый вызов прошёл сам, второй (возврат денег) ждёт подтверждения человека. Эти же четыре пункта — критерии оценки домашнего задания: проверяющий будет смотреть на описания функций, на то, где стоит подтверждение, и на лимит.",
+                      "Below is a sample log: the first call went through on its own, the second (a refund) waits for a human to confirm. The same four points are the homework grading criteria: the reviewer looks at the function descriptions, where the confirmation is and at the limit.")))
 
 
 def s_exercise():
@@ -686,12 +702,14 @@ def s_summary():
              ("violet", t("Модель предлагает, программа выполняет", "The model proposes, the program runs it"), t("граница доверия в вашем коде", "the trust boundary lives in your code")),
              ("green", t("Агент = модель + инструменты + цикл", "Agent = model + tools + loop"), t("с лимитом шагов", "with a step limit")),
              ("amber", t("Человек в цикле для рисков", "A human in the loop for risks"), t("деньги, письма, удаление", "money, emails, deletion"))]
-    li = "".join(f'<div class="task" style="--k:var(--{k});padding:38px 34px;min-height:215px"><div><div class="h" style="font-size:31px">{h}</div><div class="d" style="font-size:25px;margin-top:12px">{d}</div></div></div>' for k, h, d in rules)
+    li = "".join(f'<div style="display:grid;grid-template-columns:70px 1fr;gap:18px;align-items:baseline"><div style="font:800 56px/1 var(--display);color:var(--{k})">{i}</div>'
+                 f'<div><div style="font:800 36px/1.2 var(--display);color:var(--fg)">{h}</div><div style="font-size:26px;line-height:1.35;color:var(--muted);margin-top:8px">{d}</div></div></div>'
+                 for i, (k, h, d) in enumerate(rules, 1))
     return dict(min=3, html=f'''
   {head(t("Итоги", "Summary"), t("Модель предлагает, программа решает, человек подтверждает", "The model proposes, the program decides, a human confirms"), k="green")}
   <div class="body" style="margin-top:10px;">
-    <div class="tasks" style="gap:30px 32px">{li}</div>
-    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--violet)">{t("<b>Дальше, L12:</b> MCP — единый способ подключать инструменты к любым моделям, и фреймворки агентов.", "<b>Next, L12:</b> MCP — one standard way to plug tools into any model, plus agent frameworks.")}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:84px 70px;margin-top:40px">{li}</div>
+    <div class="note" style="margin-top:84px;font-size:23px;--k:var(--violet)">{t("<b>Дальше, L12:</b> MCP — единый способ подключать инструменты к любым моделям, и фреймворки агентов.", "<b>Next, L12:</b> MCP — one standard way to plug tools into any model, plus agent frameworks.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 3 мин. Четыре мысли. Модель не знает текущих данных и без инструмента угадывает. Модель только предлагает вызов, выполняет и проверяет программа. Агент — это модель, инструменты и цикл с лимитом. Для рискованных действий человек остаётся в цикле.",
@@ -715,6 +733,7 @@ EXTRA_CSS = """
 .tall .bars .bl { font-size: 27px; }
 .tall .bars .bl small { font-size: 20px; margin-top: 6px; }
 .tall .bars .bv { font-size: 34px; }
+.legend2 .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 30px; }
 .big .checklist { gap: 34px; }
 .big .checklist li { font-size: 27px; grid-template-columns: 48px 1fr; color: var(--fg); }
 .big .checklist li::before { width: 34px; height: 34px; font-size: 19px; }

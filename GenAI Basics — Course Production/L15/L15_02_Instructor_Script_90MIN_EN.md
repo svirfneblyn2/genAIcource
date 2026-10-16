@@ -150,10 +150,10 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 11 (50:00–56:00) • The EU AI Act applies in stages — most of it is in force, high-risk rules from 2027
 
-**On screen:** EU AI Act timeline and fines.
+**On screen:** The EU AI Act timeline, a risk pyramid (banned / high risk / transparency / minimal) and the fines.
 
 #### Speaker (6 min)
-> The EU AI Act is the first major AI law. It applies in stages. Since February 2025 dangerous practices such as social scoring are banned. Since August 2025 — rules for general-purpose models. From 2 August 2026 most of it applies, including Article 50 labelling. The 2026 amendments (Regulation 2026/1744) added, from 2 December 2026, a ban on generators of non-consensual intimate images and moved the high-risk rules — hiring, credit, education — to December 2027.
+> The EU AI Act is the first major AI law. It applies in stages. Since February 2025 dangerous practices such as social scoring are banned. Since August 2025 — rules for general-purpose models. From 2 August 2026 most of it applies, including Article 50 labelling. The 2026 amendments (Regulation 2026/1744) added, from 2 December 2026, a ban on generators of non-consensual intimate images and moved the high-risk rules — hiring, credit, education — to December 2027. Below is the law’s logic: the higher a system’s risk, the stricter the rules; an ordinary employee most often meets the transparency level — label the chatbot and the deepfake.
 >
 > Fines: up to 35 million euros or 7% of worldwide turnover for prohibited practices, up to 15 million or 3% for most other violations. The law also covers companies outside the EU if their AI systems are used in the EU.
 
@@ -181,7 +181,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 14 (67:00–73:00) • AI rules for a team fit on one page: four points
 
-**On screen:** Four points of team AI rules.
+**On screen:** A one-page ai_rules.md example: four sections with examples from a support team.
 
 #### Speaker (6 min)
 > Everything we discussed boils down to four points that fit on one page for a team. One: a list of approved tools and business accounts. Two: the data traffic light. Three: a human checks numbers, links and any decisions about people before sending. Four: how to label AI content and where to report if something goes wrong.
@@ -203,7 +203,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 16 (79:00–85:00) • Homework: one-page AI rules for your team
 
-**On screen:** Five homework steps: team AI rules.
+**On screen:** Five homework steps, the folder and the 10-point grading bar.
 
 #### Speaker (6 min)
 > Homework: a one-page set of AI rules for your team covering the four points of the lesson, with examples from your real tasks. You may ask AI for a draft, but checking and completing it is your job. No client names or internal data. Details in L15_05_Homework.
@@ -212,7 +212,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 17 (85:00–90:00) • Four rules: check, sort data, a human decides, label
 
-**On screen:** Four rules and the L16 preview.
+**On screen:** Four rules as a numbered list (same colours as slides 14 and 16) and the L16 preview.
 
 #### Speaker (5 min)
 > Four rules. Check numbers, links and quotes against the source. The data traffic light: internal data only into work AI, confidential only into approved work AI with permission, never a personal one. Decisions about people, money and deletion are made by a human. Label deepfakes and AI content where the law or the platform requires it. The last lesson: agentic software development.

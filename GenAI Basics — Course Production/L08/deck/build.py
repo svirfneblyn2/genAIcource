@@ -235,7 +235,7 @@ def s_cover():
   <div class="bg"><img class="full" src="{IMG}l08_cover_hero.png" alt=""></div>
   <div class="shade soft"></div>
   <div class="txt">
-    <div class="kicker">{t("GenAI Basics • Урок 08", "GenAI Basics • Lesson 08")}</div>
+    <div class="kicker">{t("GenAI Basics • Урок 08 • Модуль 3: ИИ-ассистенты в работе", "GenAI Basics • Lesson 08 • Module 3: AI assistants at work")}</div>
     <h1>{t("ИИ для анализа данных", "AI for Data Analysis")}</h1>
     <h2>{t("Чат с таблицей: модель пишет код, песочница считает, вы проверяете", "Chat with a spreadsheet: the model writes code, a sandbox calculates, you check")}</h2>
     <p>{t("Как ChatGPT, Claude, Gemini и Copilot анализируют файлы, где они ошибаются и как получить ответ, которому можно верить. Учебный кейс — продажи интернет-магазина Northstar за январь–июнь 2026.",
@@ -615,7 +615,7 @@ def s_causal():
     rs = sorted(ROAS, key=ROAS.get, reverse=True)
     hb = "".join(
         f'<div class="hb" style="--k:var(--{"amber" if c == rs[0] else "cyan"})"><div class="lab">{c}<small>{t("$ выручки на $1 рекламы", "$ revenue per $1 of ads")}</small></div>'
-        f'<div class="tr" style="height:56px"><div class="b" style="width:{ROAS[c] / 6 * 75:.1f}%"></div><div class="v" style="left:calc({ROAS[c] / 6 * 75:.1f}% + 14px)">{ROAS[c]:.2f}'.replace(".", "," if LANG == "ru" else ".")
+        f'<div class="tr" style="height:56px"><div class="b" style="width:{ROAS[c] / 6 * 75:.1f}%"></div><div class="v" style="left:calc({ROAS[c] / 6 * 75:.1f}% + 14px)">{dec(ROAS[c], 2)}'
         + '</div></div></div>' for c in rs)
     grey, mut, fg, red, amber = "#5f6e84", "#a3b1c4", "#f1f5f9", "#f87171", "#fbbf24"
     fac = [t("сезон", "season"), t("кому показывали", "who was targeted"), t("известность бренда", "brand demand"), t("правила атрибуции", "attribution rules")]

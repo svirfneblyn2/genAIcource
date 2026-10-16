@@ -10,6 +10,7 @@ Primary sources checked on 2026-10-16 for the v2 rebuild of Lesson 11. Replaces 
 | `assets/v2/img/aistudio_fn_call.png`, `aistudio_fn_done.png` | Gemini 3.8 Flash proposes `get_order_status(order_id="417")`; synthetic function response; final answer | own capture, Google AI Studio, 2026-10-16 (free tier, synthetic data); re-cropped with Pillow for larger on-slide text (empty UI bands removed, answer cropped on the right) |
 | `assets/v2/img/aistudio_fn_call_full.png`, `aistudio_fn_done_full.png` | the uncropped originals of the two captures above (not shown in the deck) | own capture, 2026-10-16 |
 | `assets/v2/img/aistudio_tools_panel.png` | Run settings → Tools panel | own capture, 2026-10-16 |
+| `assets/v2/img/claude_websearch_tight.png`, `aistudio_fn_declare_tight.png` | tighter crops of the two captures, used on slides 3 and 4 so UI text is ≥ 17px | derived 2026-10-16 |
 | `assets/v2/img/claude_websearch.png` | claude.ai answering "latest Ollama version" with web search and page reads | own capture, 2026-10-16 (sidebar cropped out) |
 | — | cover, slide 5 (trust boundary) and slide 10 (agent loop) schematics | drawn in HTML/SVG in `deck_v2/build.py` (`app_steps()`, `boundary_diagram()`, `loop_diagram()`), RU/EN labels; replaced the English-only genai-assets images on 2026-10-16 |
 

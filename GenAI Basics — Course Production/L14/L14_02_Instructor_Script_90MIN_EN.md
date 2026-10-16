@@ -95,7 +95,7 @@ Part 1 (slides 01–11, 00:00–54:00): why a prototype, Streamlit, code, reruns
 
 ### Slide 06 (23:00–28:00) • Memory, cache and secrets — three things not to mix up
 
-**On screen:** Three cards: session_state, cache_data, secrets.
+**On screen:** Three columns (session_state, cache_data, secrets), a secrets.toml + app.py snippet and .gitignore.
 
 #### Speaker (5 min)
 > Three ideas beginners confuse. session_state — one visitor’s memory. cache_data (the st.cache_data command) — a shared cache for every visitor: for example, faq.md is read once, not on every click. That is why you never put personal data or keys in the cache: everyone would see them.
@@ -117,7 +117,7 @@ Part 1 (slides 01–11, 00:00–54:00): why a prototype, Streamlit, code, reruns
 
 ### Slide 08 (33:00–38:00) • Four steps: install, run, edit, show
 
-**On screen:** Four steps: install, run, edit, show.
+**On screen:** Four steps as circles (install, run, edit, show) and the terminal after launch: Local URL and Network URL.
 
 #### Speaker (5 min)
 > Four steps. Install: pip install streamlit, Python 3.11 or newer. Run: streamlit run app.py — a browser opens at localhost:8501; localhost, as in L10, means “this computer”. Edit: save the file, Streamlit offers Rerun, the page refreshes. Show: via screen share or by publishing to Community Cloud.
@@ -137,7 +137,7 @@ Part 1 (slides 01–11, 00:00–54:00): why a prototype, Streamlit, code, reruns
 
 ### Slide 10 (43:00–49:00) • Sometimes a builder is enough: an app from a description, no code at all
 
-**On screen:** Google AI Studio Build screenshot and three no-code builders.
+**On screen:** A large Google AI Studio Build screenshot and three no-code builders in three columns.
 
 #### Speaker (6 min)
 > You do not always need Streamlit. Google AI Studio, the Build section: you write “an app that...” and get a working web app with a preview; you can push it to GitHub or deploy it to Google’s cloud. Apps are private by default, and the Gemini key stays on the server. If you share it, other people’s requests count against your limits.
@@ -184,19 +184,19 @@ Part 1 (slides 01–11, 00:00–54:00): why a prototype, Streamlit, code, reruns
 
 ### Slide 15 (74:00–79:00) • What changes when a prototype becomes a product
 
-**On screen:** “Prototype → product” comparison on four points.
+**On screen:** A “prototype → product” comparison on four points and the prototype’s path: engineering review → security (L15) → product (L16).
 
 #### Speaker (5 min)
-> The prototype has done its job: it showed the idea and gathered feedback. Then it goes to engineers, and much changes. The code lives in a repo with reviews and tests. The data is real, so access rights and logs are needed. The key is not your personal one but a service key with limits and monitoring. And the app must work for everyone, around the clock. Agentic product development — lesson 16.
+> The prototype has done its job: it showed the idea and gathered feedback. Then it goes to engineers, and much changes. The code lives in a repo with reviews and tests. The data is real, so access rights and logs are needed. The key is not your personal one but a service key with limits and monitoring. And the app must work for everyone, around the clock. At the bottom is the prototype’s path: prototype → engineering review → security review (L15) → product built with coding agents (L16).
 
 ---
 
 ### Slide 16 (79:00–85:00) • Homework: a prototype and feedback from three real people
 
-**On screen:** Five homework steps and the folder layout.
+**On screen:** Five homework steps, the folder layout and the 10-point grading bar.
 
 #### Speaker (6 min)
-> Homework: a prototype for your work and, above all, feedback from three colleagues. Build it any way — Streamlit with an agent or AI Studio Build. Synthetic data only. Show it to three people, record what they said and three changes you would make. Grading looks not at polish but at how much the prototype helped you understand the task. Details in L14_05_Homework.
+> Homework: a prototype for your work and, above all, feedback from three colleagues. Build it any way — Streamlit with an agent or AI Studio Build. Synthetic data only. Show it to three people, record what they said and three changes you would make. Grading looks not at polish but at how much the prototype helped you understand the task: the bar shows 10 points — idea 1, prototype 3, feedback 3, changes and conclusion 2, security 1. Details in L14_05_Homework.
 
 ---
 

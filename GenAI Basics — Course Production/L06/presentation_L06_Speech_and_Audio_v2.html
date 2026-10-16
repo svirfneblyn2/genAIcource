@@ -536,16 +536,14 @@ code { font-size: max(18px, .88em); }
   <h2 class="title">Начинаем в веб-студии, автоматизируем через API</h2>
   <div class="body" style="margin-top:4px;">
     <div class="prompt-label">Веб-студия · Google AI Studio → Generate speech · бесплатно</div>
-    <div class="row" style="grid-template-columns:1140px 1fr;gap:30px;align-items:center;flex:none;margin-top:8px;">
-      <div class="shot" style=""><img src="assets/v2/img/aistudio_tts_crop.png" alt=""><div class="co" style="left:2.5%;top:12.5%;width:60.5%;height:46.9%;--k:var(--cyan)"></div><div class="co" style="left:24.1%;top:17.6%;width:20.0%;height:15.6%;--k:var(--amber)"></div><div class="co" style="left:66.4%;top:7.0%;width:31.6%;height:57.8%;--k:var(--violet)"></div><div class="co" style="left:1.8%;top:71.1%;width:61.9%;height:22.7%;--k:var(--green)"></div><div class="bn" style="left:2.5%;top:12.5%;--k:var(--cyan)">1</div><div class="bn" style="left:44.1%;top:17.6%;--k:var(--amber)">2</div><div class="bn" style="left:98.0%;top:7.0%;--k:var(--violet)">3</div><div class="bn" style="left:63.7%;top:82.4%;--k:var(--green)">4</div></div>
-      <div class="legend"><div style="--k:var(--cyan)"><i>1</i><span><b>Текст</b> реплики</span></div><div style="--k:var(--amber)"><i>2</i><span><b>Стиль</b> отдельно: «спокойный диспетчер»</span></div><div style="--k:var(--violet)"><i>3</i><span><b>Модель</b> Gemini 3.8 Flash TTS</span></div><div style="--k:var(--green)"><i>4</i><span><b>Готовый звук</b>: 5 с, скачать WAV</span></div></div>
-    </div>
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:34px;align-items:stretch;flex:none;margin-top:40px;">
+    <div style="margin-top:8px"><div class="shot" style=""><img src="assets/v2/img/aistudio_tts_tight.png" alt=""><div class="co" style="left:0.5%;top:6.3%;width:63.2%;height:54.1%;--k:var(--cyan)"></div><div class="co" style="left:23.1%;top:12.2%;width:20.9%;height:18.0%;--k:var(--amber)"></div><div class="co" style="left:67.2%;top:0.4%;width:32.4%;height:66.3%;--k:var(--violet)"></div><div class="co" style="left:0.3%;top:73.9%;width:64.6%;height:25.8%;--k:var(--green)"></div><div class="bn" style="left:1.6%;top:7.5%;--k:var(--cyan)">1</div><div class="bn" style="left:44.0%;top:12.2%;--k:var(--amber)">2</div><div class="bn" style="left:98.2%;top:6.0%;--k:var(--violet)">3</div><div class="bn" style="left:64.4%;top:86.5%;--k:var(--green)">4</div></div></div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;align-items:start;flex:none;margin-top:26px;">
+      <div class="legend" style="display:grid;grid-template-columns:1fr 1fr;gap:14px 26px"><div style="--k:var(--cyan)"><i>1</i><span><b>Текст</b> реплики</span></div><div style="--k:var(--amber)"><i>2</i><span><b>Стиль</b> отдельно: «спокойный диспетчер»</span></div><div style="--k:var(--violet)"><i>3</i><span><b>Модель</b> Gemini 3.8 Flash TTS</span></div><div style="--k:var(--green)"><i>4</i><span><b>Готовый звук</b>: 5 с, скачать WAV</span></div></div>
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">API · кнопка Get code → готовый Python, главная строка:</div>
         <div class="codeline">client.models.generate_content(<span class="s">model="gemini-3.8-flash-tts"</span>, contents=...)</div>
+        <div class="small" style="font-size:19px;margin-top:6px">Ещё два пути: чат (попробовать) и открытые модели на своём компьютере (Kokoro, Piper: так сделан наш пример).</div>
       </div>
-      <div class="note" style="--k:var(--green);margin:0;align-self:end">Ещё два пути: <b>чат</b> (ChatGPT, Gemini app: попробовать, голос почти не настроить) и <b>открытые модели на своём компьютере</b> (Kokoro, Piper, Whisper, MusicGen: $0, но железо и лицензии на вас; так сделан наш пример).</div>
     </div>
   </div>
   <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио</span><span>03 / 21</span></div>
@@ -658,10 +656,10 @@ code { font-size: max(18px, .88em); }
   <div class="steps"><span class=""><i>1</i>Сценарий</span><span class=""><i>2</i>Текст для голоса</span><span class="on"><i>3</i>Голос</span><span class=""><i>4</i>Шумы и музыка</span><span class=""><i>5</i>Сведение</span><span class=""><i>6</i>Проверка</span></div>
   <h2 class="title">Три источника голоса: библиотека, описание, клон</h2>
   <div class="body" style="margin-top:12px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;align-items:start;flex:none;">
+    <div class="row" style="grid-template-columns:560px 1fr;gap:44px;align-items:start;flex:none;">
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">Google AI Studio · библиотека голосов</div>
-        <div class="shot" style=""><img src="assets/v2/img/aistudio_voices_row.png" alt=""><div class="co" style="left:0.6%;top:1.5%;width:98.8%;height:97.0%;--k:var(--green)"></div><div class="bn" style="left:2.5%;top:6.0%;--k:var(--green)">1</div></div>
+        <div class="shot" style=""><img src="assets/v2/img/aistudio_voices_tight.png" alt=""><div class="co" style="left:0.9%;top:1.5%;width:98.0%;height:97.0%;--k:var(--green)"></div><div class="bn" style="left:3.8%;top:6.0%;--k:var(--green)">1</div></div>
         <div class="legend" style="margin-top:22px;">
           <div style="--k:var(--green)"><i>1</i><span><b>Готовый голос</b> из библиотеки: лицензия сервиса</span></div>
           <div style="--k:var(--amber)"><i>2</i><span><b>Голос по описанию</b>: «молодой, с хрипотцой»; проверить, что не похож на знаменитость</span></div>
@@ -670,10 +668,11 @@ code { font-size: max(18px, .88em); }
       </div>
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">Create new voice · два новых пути</div>
-        <div class="shot" style=""><img src="assets/v2/img/aistudio_create_voice.png" alt=""><div class="co" style="left:2.8%;top:24.4%;width:46.2%;height:64.0%;--k:var(--amber)"></div><div class="co" style="left:51.0%;top:24.4%;width:46.2%;height:64.0%;--k:var(--red)"></div><div class="bn" style="left:2.8%;top:24.4%;--k:var(--amber)">2</div><div class="bn" style="left:51.0%;top:24.4%;--k:var(--red)">3</div></div>
+        <div class="shot" style="max-height:none"><img src="assets/v2/img/aistudio_create_voice_tight.png" alt=""><div class="co" style="left:0.7%;top:3.7%;width:48.2%;height:94.0%;--k:var(--amber)"></div><div class="co" style="left:51.0%;top:3.7%;width:48.2%;height:94.0%;--k:var(--red)"></div><div class="bn" style="left:2.6%;top:7.5%;--k:var(--amber)">2</div><div class="bn" style="left:51.6%;top:7.5%;--k:var(--red)">3</div></div>
+        <div class="small" style="font-size:19px;margin-top:6px">Голос по описанию: опишите словами возраст, тембр, акцент и темп. Клон: загрузите запись и подтвердите, что голос ваш.</div>
+        <div class="note" style="margin-top:40px;font-size:23px;--k:var(--red)"><b>Перед выбором:</b> прогоните через голос самые сложные слова сценария (имена, числа). Голос, который их искажает, отклоняем.</div>
       </div>
     </div>
-    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--red)"><b>Перед выбором:</b> прогоните через голос самые сложные слова сценария (имена, числа). Голос, который их искажает, отклоняем.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио</span><span>09 / 21</span></div>
   <template class="notes"><p>⏱ 4 мин. Три источника голоса, все три видны в Google AI Studio (скриншоты от 16.10.2026). Готовый голос из библиотеки: лицензия уже покрыта сервисом. У Gemini 30 готовых голосов в API, у OpenAI 13. В нашем примере английский голос Kokoro af_heart и русский Piper dmitri. Кнопка Create new voice открывает два других пути: Voice Design (голос по описанию; в AI Studio работает только на платном тарифе) и Voice Replication (клон по короткой записи; сервис просит подтвердить, что голос ваш). Карточка клона на скриншоте серая: в нашем аккаунте функция не активна, это нормально; её включают отдельно и только для своего голоса.</p><p>Технически: одна реплика = один файл (line1.wav, line2.wav…). В редакторе ставим каждый файл на время старта из сценария и проверяем, что он не длиннее окна речи шота. Голос по описанию: пишете текстом, какой нужен голос, сервис генерирует новый. Есть в ElevenLabs (Voice Design) и в Gemini API. Проверьте, что результат не похож на известного человека.</p><p>Клон: голос реального человека по записям. ElevenLabs Instant: 1–2 минуты записи, Professional: от 30 минут. Открытые модели вроде Qwen3-TTS клонируют по 3 секундам. Поэтому крупные сервисы требуют доказательство согласия: OpenAI и Google просят записать фиксированную фразу согласия, Azure пускает к функции только по заявке, ElevenLabs для профессионального клона просит владельца прочитать проверочный текст. Подробно на слайде рисков.</p></template>
@@ -915,12 +914,13 @@ code { font-size: max(18px, .88em); }
       <div class="rules" style="gap:16px"><div class="rule" style="--k:var(--cyan)"><div class="n">1</div><div class="t">Сценарий с бюджетом слов<small>около 2 слов в секунду, по секунде тишины у склеек</small></div></div><div class="rule" style="--k:var(--cyan)"><div class="n">2</div><div class="t">Текст для голоса отдельно<small>числа, время, имена словами; стиль отдельной инструкцией</small></div></div><div class="rule" style="--k:var(--red)"><div class="n">3</div><div class="t">Голос с лицензией и согласием<small>клон только с письменного согласия владельца</small></div></div><div class="rule" style="--k:var(--violet)"><div class="n">4</div><div class="t">Фон с известной лицензией<small>звук видео, шумы или музыка; MusicGen и бесплатный Suno некоммерческие</small></div></div><div class="rule" style="--k:var(--amber)"><div class="n">5</div><div class="t">Сведение к −14 LUFS<small>голос сверху, фон приглушён, истинный пик ≤ −1 дБ (dBTP)</small></div></div><div class="rule" style="--k:var(--green)"><div class="n">6</div><div class="t">Проверка распознаванием и на слух<small>частота ошибок + критичные слова</small></div></div></div>
       <div class="stack" style="gap:16px;">
         <img src="assets/v2/img/poster_final.jpg" alt="" style="width:100%;border-radius:12px;border:1px solid var(--line)">
+        <div class="note" style="--k:var(--amber)"><b>Капстоун 1 «Голос → картинка»</b> стартует после этого урока: Colab без кода, 30 из 100 баллов курса.</div>
         <div class="note" style="--k:var(--violet)"><b>Урок 07: экосистема Microsoft Copilot.</b> Из генерации контента переходим к ИИ в рабочих инструментах.</div>
       </div>
     </div>
   </div>
   <div class="foot"><span>GenAI Basics • Урок 06 • Речь и аудио</span><span>21 / 21</span></div>
-  <template class="notes"><p>⏱ 3 мин. Шесть правил, по одному на шаг: сценарий с бюджетом слов; текст для голоса отдельно, числа и имена словами; голос с лицензией и согласием; фон с известной лицензией; сведение к −14 LUFS; проверка распознаванием и на слух.</p><p>Этим уроком закрываем модуль мультимодальности: картинка, видео, звук. Следующий урок, L07: экосистема Microsoft Copilot — для себя, для работы, для кода, для компании. После этого урока стартует Капстоун 1 (голос → картинка): Colab без кода, 100 баллов. Вопросы.</p></template>
+  <template class="notes"><p>⏱ 3 мин. Шесть правил, по одному на шаг: сценарий с бюджетом слов; текст для голоса отдельно, числа и имена словами; голос с лицензией и согласием; фон с известной лицензией; сведение к −14 LUFS; проверка распознаванием и на слух.</p><p>Этим уроком закрываем модуль мультимодальности: картинка, видео, звук. Следующий урок, L07: экосистема Microsoft Copilot — для себя, для работы, для кода, для компании. После этого урока стартует Капстоун 1 (голос → картинка): Colab без кода, 30 из 100 баллов курса; для зачёта курса нужно 60. Вопросы.</p></template>
 </section>
 
 </main>

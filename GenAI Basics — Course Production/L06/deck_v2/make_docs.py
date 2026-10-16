@@ -20,8 +20,8 @@ SCREEN = {
                 "Background: a frame from L05 shot 2 (the courier in the rain). Title, subtitle, lesson scope, key hints."),
     "s_hook": ("Слева озвученный ролик курьера (23 с, со звуком, запуск кликом). Справа три числа: 3 реплики, 3 дорожки, итоговая громкость в LUFS.",
                "Left: the voiced courier video (23 s, with sound, click to play). Right: three numbers: 3 lines, 3 tracks, final loudness in LUFS."),
-    "s_layers": ("Крупный кадр Google AI Studio → Generate speech с метками 1–4 (текст, стиль, модель, готовый звук) и легенда. Внизу: главная строка кода из кнопки Get code и ещё два пути (чат, открытые модели).",
-                 "Large Google AI Studio → Generate speech crop with markers 1–4 (text, style, model, result) and a legend. Below: the key code line from the Get code button and two more paths (chat, open-weight models)."),
+    "s_layers": ('Кадр Google AI Studio → Generate speech во всю ширину с метками 1–4 (текст, стиль, модель, готовый звук); под ним легенда, главная строка кода из Get code и ещё два пути (чат, открытые модели).',
+        'A full-width Google AI Studio → Generate speech frame with callouts 1–4 (text, style, model, result); below it the legend, the key code line from Get code and two more paths (chat, open models).'),
     "s_tasks": ("Четыре карточки «вход → выход»: синтез речи, распознавание речи, речь в речь, музыка и шумы; под каждой строка «в нашем примере» (Kokoro/Piper, Whisper, —, MusicGen).",
                 "Four input → output cards: text-to-speech, speech-to-text, speech-to-speech, music and sound effects; under each, an “in our example” line (Kokoro/Piper, Whisper, —, MusicGen)."),
     "s_how": ("Цепочка «текст → модель → аудиотокены → декодер → звук»; реальная форма волны реплики 1; две заметки: объём данных и почему ошибаются числа и имена.",
@@ -32,8 +32,8 @@ SCREEN = {
                  "Script table: frame, time, line, words / length, sound effects. Below: measured speech rate and the word budget rule."),
     "s_text": ("Таблица «сценарий → текст для голоса → почему» для 6:42, 417, 12 мин. Справа пример инструкции стиля и три способа управлять голосом.",
                "Table script → spoken text → why for 6:42, 417, 12 min. Right: a style instruction example and three ways to control the voice."),
-    "s_voice": ("Слева ряд готовых голосов из библиотеки Google AI Studio (1), справа окно Create voice: голос по описанию (2) и клон (3); легенда с условием для каждого. Внизу: проверить сложные слова до выбора голоса.",
-                "Left: a row of library voices in Google AI Studio (1); right: the Create voice window with a designed voice (2) and a clone (3); a legend with each one’s condition. Below: test the hard words before choosing a voice."),
+    "s_voice": ('Слева два готовых голоса из библиотеки Google AI Studio (1) и легенда; справа карточки Create voice: голос по описанию (2) и клон (3), подпись и совет проверить сложные слова до выбора голоса.',
+        'Left: two library voices from Google AI Studio (1) and the legend; right: the Create voice cards, Voice Design (2) and Replication (3), a caption and the tip to test the hardest words before choosing a voice.'),
     "s_music": ("Плеер музыкальной подложки MusicGen, её промпт и лицензия. Справа таблица: Suno v6, Lyria 3.5, ElevenLabs Music и SFX (длина, коммерческое использование).",
                 "Player with the MusicGen bed, its prompt and licence. Right: table of Suno v6, Lyria 3.5, ElevenLabs Music and SFX (length, commercial use)."),
     "s_mix": ("Четыре реальные дорожки (голос, звук Veo, музыка, итог) с громкостью; три правила (приглушение, громкость, пик) и команда ffmpeg.",
@@ -59,7 +59,8 @@ SCREEN = {
                 "Voice traffic light; how services check consent for a clone; EU AI Act Art. 50, OpenAI, SynthID plaque."),
     "s_hw": ("Карточка «ваш ролик из L05», структура папки genai-homeworks/L06, пять шагов задания, ревьюер и правило согласия.",
              "“Your L05 video” card, the genai-homeworks/L06 folder tree, five homework steps, reviewer and the consent rule."),
-    "s_summary": ("Пять правил урока и кадр из ролика; анонс L07.", "Five lesson rules and a frame from the video; L07 preview."),
+    "s_summary": ('Шесть правил урока и кадр из ролика; Капстоун 1 (30 из 100 баллов) и анонс L07.',
+        'Six lesson rules and a frame from the video; Capstone 1 (30 of 100 points) and the L07 preview.'),
 }
 
 HEAD = {

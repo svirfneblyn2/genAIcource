@@ -7,6 +7,7 @@ Primary sources checked on 2026-10-16 for the v2 rebuild. Replaces the September
 | File | What |
 |---|---|
 | `assets/v2/img/streamlit_chatbot_crop.png` (slide 3) | excerpt of `streamlit_chatbot.png` (kept as the source capture): official Streamlit demo app llm-examples.streamlit.app, Chatbot page (source github.com/streamlit/llm-examples/Chatbot.py). The crop joins the API-key field and the chat column and shortens the empty middle of the input bar, so the text can be shown larger |
+| `assets/v2/img/aistudio_build_tight.png` (slide 10) | `aistudio_build_crop.png` without the top banner, shown wider so UI text is ≥ 17px | derived 2026-10-16 |
 | `assets/v2/img/aistudio_build_crop.png` (slide 10) | crop of `aistudio_build.png` (kept as the source capture): aistudio.google.com/apps — Build |
 
 The cover chat window (slide 1), the idea → prototype → feedback → product path (slide 2) and the rerun loop (slide 5) are drawn in HTML/SVG in `deck_v2/build.py` with RU/EN labels; the earlier English-only generated images (`cover_right.png`, `prototype_path*.png`, `rerun_loop.png`) were removed on 2026-10-16.

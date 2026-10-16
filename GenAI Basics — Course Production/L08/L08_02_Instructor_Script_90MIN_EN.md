@@ -1,6 +1,6 @@
 # Instructor Script • Lesson 08: AI for Data Analysis (90 minutes)
 
-**Course:** GenAI Basics • Lesson 08 of 16
+**Course:** GenAI Basics • Lesson 08 of 16 • Module 3: AI assistants at work
 **Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Audience:** GenAI beginners — people in different roles, not data analysts. We explain in plain words; code is one short example for reference.
 **Format:** 18 slides (`presentation_L08_AI_for_Data_Analysis_EN.html` / PDF) • session in **Microsoft Teams** • break timer on slide 9
