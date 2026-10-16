@@ -16,16 +16,16 @@ L11 = build.L11
 OUT = {"ru": L11 / "L11_02_Instructor_Script_90MIN.md", "en": L11 / "L11_02_Instructor_Script_90MIN_EN.md"}
 
 SCREEN = {
-    "s_cover": ("Название урока; справа фрагмент схемы «модель предлагает, приложение выполняет».",
-                "Lesson title; on the right part of the “model proposes, app executes” schematic."),
-    "s_hook": ("Слева выдуманный ответ модели без инструментов; справа скриншот AI Studio: вызов get_order_status и ответ по данным.",
-               "Left: the model’s invented answer without tools; right: an AI Studio screenshot with the get_order_status call and the data-based answer."),
+    "s_cover": ("Название урока; справа четыре шага вашей программы: проверить аргументы, спросить человека, выполнить, записать в журнал.",
+                "Lesson title; on the right the four steps of your program: check the arguments, ask a human, run, log."),
+    "s_hook": ("Слева выдуманный ответ модели без инструментов; справа скриншот AI Studio: вызов get_order_status (фиолетовая рамка), ответ функции (жёлтая) и ответ модели по данным (зелёная).",
+               "Left: the model’s invented answer without tools; right: an AI Studio screenshot with the get_order_status call (violet), the function response (amber) and the data-based answer (green)."),
     "s_seen": ("Скриншот Claude: «Searched the web» → «Not conclusive» → «Read 3 pages» → ответ, выноски 1–3 и ✓.",
                "Claude screenshot: “Searched the web” → “Not conclusive” → “Read 3 pages” → answer, callouts 1–3 and ✓."),
     "s_define": ("Скриншот AI Studio «Function declarations»: имя, описание, параметр order_id с выносками.",
                  "AI Studio “Function declarations” screenshot: name, description, order_id parameter with callouts."),
-    "s_boundary": ("Схема: модель предлагает вызов, граница доверия, приложение проверяет, спрашивает человека, выполняет, логирует.",
-                   "Schematic: the model proposes a call, trust boundary, the app checks, asks a human, runs, logs."),
+    "s_boundary": ("Схема: модель предлагает вызов, граница доверия, ваша программа проверяет, спрашивает человека, выполняет, записывает в журнал; результат возвращается модели.",
+                   "Schematic: the model proposes a call, the trust boundary, your program checks, asks a human, runs, logs; the result goes back to the model."),
     "s_demo_call": ("Скриншот AI Studio: вопрос про заказ 417, блок вызова функции, поле ответа функции.",
                     "AI Studio screenshot: the order 417 question, the function call block, the function response field."),
     "s_demo_done": ("Тот же чат после ответа функции: JSON с данными и ответ модели клиенту.",
@@ -34,32 +34,33 @@ SCREEN = {
                   "The AI Studio Tools panel with callouts and three kinds of built-in tools."),
     "s_describe": ("Две карточки: плохое описание get_data и хорошее get_order_status.",
                    "Two cards: a weak get_data description and a good get_order_status one."),
-    "s_loop": ("Схема цикла агента: думает → выбирает инструмент → приложение выполняет → результат обратно; выход к финальному ответу; лимит 5 шагов.",
-               "Agent loop schematic: thinks → picks a tool → the app runs it → result back; exit to the final answer; a 5-step limit."),
+    "s_loop": ("Схема цикла агента: модель думает → выбирает инструмент → программа выполняет → результат обратно; выход «инструмент не нужен» к финальному ответу; лимит 5 шагов.",
+               "Agent loop schematic: the model thinks → picks a tool → the program runs it → result back; the “no tool needed” exit to the final answer; a 5-step limit."),
     "s_code": ("Справочный код на Python (google-genai): функция с docstring передаётся в tools.",
                "Reference Python code (google-genai): a function with a docstring passed in tools."),
     "s_local": ("Модели с поддержкой инструментов в Ollama/LM Studio и предупреждение про маленькие модели.",
                 "Tool-capable models in Ollama/LM Studio and a warning about small models."),
     "s_agentbuild": ("Промпт для агента разработки: агент поддержки с двумя функциями, подтверждением, лимитом и журналом.",
                      "Coding-agent prompt: a support agent with two functions, a confirmation, a limit and a log."),
-    "s_market": ("Три колонки: агенты в чатах, наборы для разработчиков, свои модели.",
-                 "Three columns: agents in chat apps, developer kits, your own models."),
+    "s_market": ("Шкала «быстрее начать ↔ больше контроля» и три колонки: агенты в чатах, наборы для разработчиков, свои модели.",
+                 "A “quicker to start ↔ more control” strip and three columns: agents in chat apps, developer kits, your own models."),
     "s_break": ("Таймер перерыва 5 минут.", "5-minute break timer."),
-    "s_risks": ("Четыре риска (prompt injection, действие без спроса, цикл, лишний доступ) и плашка с защитой.",
-                "Four risks (prompt injection, action without asking, loop, too much access) and a defences panel."),
-    "s_reliability": ("Столбцы τ²-bench 87,9% и τ³-bench (банк) 55,2%; «≈ 1 из 2».",
-                      "Bars: τ²-bench 87.9% and τ³-bench (banking) 55.2%; “≈ 1 in 2”."),
-    "s_rules": ("Четыре правила первого агента.", "Four rules for the first agent."),
-    "s_exercise": ("Четыре вопроса клиента и правильный инструмент для каждого.",
-                   "Four customer questions and the right tool for each."),
-    "s_hw": ("Пять шагов ДЗ и структура папки сдачи.", "Five homework steps and the submission folder layout."),
+    "s_risks": ("Четыре риска (prompt injection, действие без спроса, бесконечный цикл, лишний доступ) и список «Защита — в коде» из пяти пунктов.",
+                "Four risks (prompt injection, action without asking, endless loop, too much access) and a five-point “Defences live in code” list."),
+    "s_reliability": ("Столбцы «решено с 1 попытки (Pass^1)»: τ²-bench 87,9% и τ³-bench (банк) 55,2%; «≈ 1 из 2».",
+                      "Bars “solved in one try (Pass^1)”: τ²-bench 87.9% and τ³-bench (banking) 55.2%; “≈ 1 in 2”."),
+    "s_rules": ("Четыре правила (узкие инструменты, проверка в коде, человек подтверждает, лимиты и журнал); это же чек-лист оценки ДЗ.",
+                "Four rules (narrow tools, checks in code, a human confirms, limits and a log); also the homework grading checklist."),
+    "s_exercise": ("Четыре вопроса клиента со знаком «→ ?»; ответы в заметках спикера.",
+                   "Four customer questions marked “→ ?”; the answers are in the speaker notes."),
+    "s_hw": ("Пять шагов ДЗ и структура папки сдачи genai-homeworks/L11/.", "Five homework steps and the genai-homeworks/L11/ submission folder layout."),
     "s_summary": ("Четыре вывода урока и анонс L12 (MCP).", "Four takeaways and the L12 (MCP) preview."),
 }
 
 HEAD = {
     "ru": """# Сценарий преподавателя • Урок 11: Вызов функций и первый агент (90 минут)
 
-**Курс:** GenAI Basics • Модуль 3 (свои модели и агенты) • Урок 11 из 16
+**Курс:** GenAI Basics • Модуль 5 (агенты, инструменты и MCP) • Урок 11 из 16
 **Преподаватель:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Аудитория:** новички в GenAI из разных ролей. Простой язык; код только как один справочный пример (слайд 11).
 **Формат:** 21 слайд (`presentation_L11_Function_Calling_First_Agent_v2.html` / PDF) • занятие в **Microsoft Teams** • таймер перерыва на слайде 15
@@ -73,7 +74,7 @@ HEAD = {
 """,
     "en": """# Instructor Script • Lesson 11: Function Calling and Your First Agent (90 Minutes)
 
-**Course:** GenAI Basics • Module 3 (Own Models and Agents) • Lesson 11 of 16
+**Course:** GenAI Basics • Module 5 (Agents, Tools and MCP) • Lesson 11 of 16
 **Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Audience:** GenAI beginners from many roles. Plain language; code only as one short reference example (slide 11).
 **Format:** 21 slides (`presentation_L11_Function_Calling_First_Agent_EN_v2.html` / PDF) • class runs in **Microsoft Teams** • break timer on slide 15
@@ -118,8 +119,15 @@ def main():
             start += m
         table = (f"## {t('Тайминг (21 слайд • 90 минут, включая 5 минут перерыва)', 'Timing (21 slides • 90 minutes incl. a 5-minute break)')}\n\n"
                  f"| {t('Слайд', 'Slide')} | {t('Заголовок', 'Title')} | {t('Время', 'Time')} | {t('Мин', 'Min')} |\n|---|---|---|---|\n" + "\n".join(rows) + "\n")
-        parts = t("Часть 1 (слайды 01–14, 00:00–60:00): проблема, инструменты в чатах, описание функции, граница доверия, демо в AI Studio, встроенные инструменты, цикл агента, код, локальные модели, рынок. Перерыв (слайд 15, 60:00–65:00). Часть 2 (слайды 16–21, 65:00–90:00): риски, надёжность, правила, упражнение, ДЗ, итоги.",
-                  "Part 1 (slides 01–14, 00:00–60:00): the problem, tools in chat apps, describing a function, the trust boundary, the AI Studio demo, built-in tools, the agent loop, code, local models, market. Break (slide 15, 60:00–65:00). Part 2 (slides 16–21, 65:00–90:00): risks, reliability, rules, exercise, homework, summary.")
+        # Part/break times are computed from the slide minutes, so they cannot drift from the table.
+        mins = [fn()["min"] for fn in build.SLIDES]
+        b = next(i for i, fn in enumerate(build.SLIDES) if fn.__name__ == "s_break")
+        p1, brk_end, total = sum(mins[:b]), sum(mins[:b + 1]), sum(mins)
+        n = len(mins)
+        parts = t(f"Часть 1 (слайды 01–{b:02d}, {mmss(0)}–{mmss(p1)}): проблема, инструменты в чатах, описание функции, граница доверия, демо в AI Studio, встроенные инструменты, цикл агента, код, локальные модели, рынок. "
+                  f"Перерыв (слайд {b + 1:02d}, {mmss(p1)}–{mmss(brk_end)}). Часть 2 (слайды {b + 2:02d}–{n:02d}, {mmss(brk_end)}–{mmss(total)}): риски, надёжность, правила, упражнение, ДЗ, итоги.",
+                  f"Part 1 (slides 01–{b:02d}, {mmss(0)}–{mmss(p1)}): the problem, tools in chat apps, describing a function, the trust boundary, the AI Studio demo, built-in tools, the agent loop, code, local models, market. "
+                  f"Break (slide {b + 1:02d}, {mmss(p1)}–{mmss(brk_end)}). Part 2 (slides {b + 2:02d}–{n:02d}, {mmss(brk_end)}–{mmss(total)}): risks, reliability, rules, exercise, homework, summary.")
         OUT[lang].write_text(HEAD[lang] + "\n---\n\n" + table + "\n" + parts + "\n\n---\n\n" + "\n".join(body), encoding="utf-8")
         print(OUT[lang].name, start, "min")
 

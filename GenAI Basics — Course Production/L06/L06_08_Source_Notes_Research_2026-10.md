@@ -436,6 +436,7 @@ Reference points from the CSV "avg" column:
 
 - **NOT VERIFIED: the exact on-screen ranking.** The UI recomputes the average and adds private sets, so the two methods above disagree.
 - Safe statement for slides: "As of Oct 2026, top commercial ASR scores ~4–5% average English WER on the HF Open ASR Leaderboard. The best open models score ~5–6%. Whisper large-v3 scores ~7.8%."
+- **2026-10-16 recheck:** the leaderboard Space did not render for a text fetch, and the "OtterAI speech-v3.1 3.9% / updated 15.10.2026" figures could not be confirmed. Deck, notes and cheatsheets now say only "best systems ≈4–5%, Whisper large-v3 ≈7–8%" with no date or leader name; the instructor checks the current leader before class. Also confirmed on 2026-10-16: Lyria 3.5 API $0.08 per song (ai.google.dev pricing); `gpt-live-1` $0.05/min with backend model and tools billed separately (OpenAI pricing page).
 - Deepgram and Google Chirp 3 entries were not found in this CSV.
 
 ---

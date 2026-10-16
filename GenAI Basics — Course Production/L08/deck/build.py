@@ -245,8 +245,8 @@ def s_cover():
                 notes=notes(
                     t("⏱ 2 мин. Приветствие. Сегодня — анализ данных с помощью ИИ: загружаем таблицу в чат и задаём вопросы обычным языком.",
                       "⏱ 2 min. Welcome. Today: data analysis with AI — we upload a spreadsheet to a chat and ask questions in plain language."),
-                    t("Главная мысль урока на одной строке: модель пишет код и объясняет, считает песочница (изолированный Python), а проверяете — вы. Весь урок на одном учебном файле: продажи магазина Northstar (тот же вымышленный проект Northstar, что и в L07).",
-                      "The lesson in one line: the model writes code and explains, a sandbox (isolated Python) calculates, and you check. The whole lesson uses one practice file: Northstar shop sales (the same fictional Northstar project as in L07).")))
+                    t("Главная мысль урока на одной строке: модель пишет код и объясняет, считает песочница (изолированный Python), а проверяете — вы. Весь урок на одном учебном файле: продажи магазина Northstar.",
+                      "The lesson in one line: the model writes code and explains, a sandbox (isolated Python) calculates, and you check. The whole lesson uses one practice file: Northstar shop sales.")))
 
 
 def s_hook():

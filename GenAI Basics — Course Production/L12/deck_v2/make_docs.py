@@ -16,10 +16,10 @@ L12 = build.L12
 OUT = {"ru": L12 / "L12_02_Instructor_Script_90MIN.md", "en": L12 / "L12_02_Instructor_Script_90MIN_EN.md"}
 
 SCREEN = {
-    's_cover': ('Название урока; справа фрагмент схемы «MCP — один разъём».',
-                'Lesson title; on the right part of the “MCP — one plug” schematic.'),
-    's_hook': ('Схема «без MCP 3 × 3 = 9 связок, с MCP 3 + 3 = 6».',
-                'Schematic “without MCP 3 × 3 = 9 links, with MCP 3 + 3 = 6”.'),
+    's_cover': ('Название урока; справа схема «MCP → серверы» (HTML).',
+                'Lesson title; on the right an “MCP → servers” diagram (HTML).'),
+    's_hook': ('Схема «без MCP 3 × 3 = 9 связок, с MCP 3 + 3 = 6» и вывод 10 × 10 = 100 против 10 + 10 = 20.',
+                'Diagram “without MCP 3 × 3 = 9 links, with MCP 3 + 3 = 6” and the takeaway 10 × 10 = 100 vs 10 + 10 = 20.'),
     's_hub': ('Схема-хаб: приложения слева, MCP в центре, серверы справа; определение MCP.',
                 'Hub schematic: apps on the left, MCP in the centre, servers on the right; the MCP definition.'),
     's_roles': ('Три карточки хост → клиент → сервер и три вида того, что даёт сервер.',
@@ -28,47 +28,47 @@ SCREEN = {
                 'Screenshot of Claude’s connectors menu with callouts 1–3.'),
     's_permission': ('Скриншот запроса разрешения Claude для инструмента Figma с выносками 1–3.',
                 'Screenshot of Claude’s permission prompt for the Figma tool with callouts 1–3.'),
-    's_hosts': ('Где подключать серверы: Claude, ChatGPT, агенты разработки, LM Studio.',
-                'Where to connect servers: Claude, ChatGPT, coding agents, LM Studio.'),
-    's_registry': ('Скриншот официального реестра MCP и число ≈ 44 000.',
-                'Screenshot of the official MCP registry and the ≈ 44,000 count.'),
+    's_hosts': ('Скриншот «Плагинов» ChatGPT с выносками 1–3, крупный фрагмент пункта 2, предупреждение о платном плане, другие хосты.',
+                'Screenshot of ChatGPT Plugins with callouts 1–3, a zoomed item 2, the paid-plan warning, other hosts.'),
+    's_registry': ('Крупный фрагмент официального реестра MCP (заголовок и две карточки) и число ≈ 44 000.',
+                'Zoomed crop of the official MCP registry (header and two cards) and the ≈ 44,000 count.'),
     's_code': ('Справочный код мини-сервера MCP на Python (MCPServer, @mcp.tool()).',
                 'Reference Python code for a mini MCP server (MCPServer, @mcp.tool()).'),
     's_connect': ('Файл настроек mcpServers и три понятия: локальный, удалённый сервер, MCP Inspector.',
                 'The mcpServers settings file and three ideas: local server, remote server, MCP Inspector.'),
     's_agentbuild': ('Промпт для агента разработки: MCP-сервер курьерской службы.',
                 'Coding-agent prompt: a courier-service MCP server.'),
-    's_security': ('Четыре риска MCP и плашка с правилами.',
-                'Four MCP risks and a rules panel.'),
-    's_layers': ('Три слоя: вызов функций, MCP, фреймворк агентов.',
-                'Three layers: function calling, MCP, agent framework.'),
-    's_adoption': ('Три числа: загрузки SDK, число серверов, передача в Linux Foundation.',
-                'Three numbers: SDK downloads, server count, the Linux Foundation donation.'),
+    's_security': ('Четыре риска MCP и нумерованный список правил.',
+                'Four MCP risks and a numbered list of rules.'),
+    's_layers': ('Вложенные слои: фреймворк агентов ⊃ MCP ⊃ вызов функций.',
+                'Nested layers: agent framework ⊃ MCP ⊃ function calling.'),
+    's_adoption': ('Три числа (загрузки SDK, число серверов, передача в Linux Foundation) и шкала времени 2024–2026.',
+                'Three numbers (SDK downloads, server count, the Linux Foundation donation) and a 2024–2026 timeline.'),
     's_break': ('Таймер перерыва 5 минут.',
                 '5-minute break timer.'),
-    's_frameworks': ('Список фреймворков агентов с версиями, лицензиями и назначением.',
-                'Agent frameworks with versions, licences and purpose.'),
+    's_frameworks': ('Список фреймворков агентов с лицензиями и назначением.',
+                'Agent frameworks with licences and purpose.'),
     's_when': ('Лестница сложности: функции → MCP → фреймворк → A2A.',
                 'Complexity ladder: functions → MCP → framework → A2A.'),
-    's_a2a': ('Сравнение MCP и A2A.',
-                'MCP vs A2A.'),
+    's_a2a': ('Схема: ваш агент ↔ инструменты (MCP) и ↔ агент отеля (A2A).',
+                'Diagram: your agent ↔ tools (MCP) and ↔ a hotel agent (A2A).'),
     's_exercise': ('Четыре рабочие задачи: какие серверы, права, подтверждения.',
                 'Four work tasks: which servers, permissions, confirmations.'),
-    's_hw': ('Пять шагов ДЗ и структура папки сдачи.',
-                'Five homework steps and the submission folder layout.'),
+    's_hw': ('Пять шагов ДЗ, вариант для бесплатного плана и структура папки genai-homeworks/L12/.',
+                'Five homework steps, the free-plan option and the genai-homeworks/L12/ folder layout.'),
     's_summary': ('Четыре вывода и анонс L13.',
                 'Four takeaways and the L13 preview.'),
 }
 
 HEAD = {
-    "ru": '# Сценарий преподавателя • Урок 12: MCP и фреймворки агентов (90 минут)\n\n**Курс:** GenAI Basics • Модуль 3 (свои модели и агенты) • Урок 12 из 16\n**Преподаватель:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems\n**Аудитория:** новички в GenAI из разных ролей. Простой язык; код только как справочный пример (слайды 9–10).\n**Формат:** 21 слайд (`presentation_L12_MCP_and_Agent_Frameworks_v2.html` / PDF) • занятие в **Microsoft Teams** • таймер перерыва на слайде 15\n**Управление:** `←/→` листать, `N` заметки спикера, `G` все слайды, `F` полный экран.\n**Источник правды:** `deck_v2/build.py`. Этот сценарий сгенерирован из него (`deck_v2/make_docs.py`); если что-то расходится, прав `build.py`.\n**Факты:** на 16.10.2026, источники в `L12_08_Source_Notes_Research_2026-10.md`.\n\n> **Перед уроком:** откройте claude.ai и проверьте меню коннекторов и запрос разрешения (подписи кнопок могли измениться). Код со слайда 9 справочный: перед показом поставьте `pip install mcp` (Python 3.11+) и проверьте сервер в MCP Inspector.\n\n**Цель урока:** студенты понимают, зачем нужен стандарт MCP, знают роли хоста, клиента и сервера и что сервер даёт (инструменты, ресурсы, промпты), умеют подключить коннектор и читать запрос разрешения, знают риски сторонних серверов и правила доступа, отличают вызов функций, MCP и фреймворк агентов и понимают, когда нужен фреймворк.\n',
-    "en": '# Instructor Script • Lesson 12: MCP and Agent Frameworks (90 Minutes)\n\n**Course:** GenAI Basics • Module 3 (Own Models and Agents) • Lesson 12 of 16\n**Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems\n**Audience:** GenAI beginners from many roles. Plain language; code only as reference (slides 9–10).\n**Format:** 21 slides (`presentation_L12_MCP_and_Agent_Frameworks_EN_v2.html` / PDF) • class runs in **Microsoft Teams** • break timer on slide 15\n**Deck controls:** `←/→` navigate, `N` speaker notes, `G` all slides, `F` fullscreen.\n**Source of truth:** `deck_v2/build.py`. This script is generated from it (`deck_v2/make_docs.py`); if anything differs, `build.py` wins.\n**Facts:** as of 16.10.2026, sources in `L12_08_Source_Notes_Research_2026-10.md`.\n\n> **Before class:** open claude.ai and check the connectors menu and the permission prompt (button labels may have changed). The slide 9 code is a reference: before showing it, `pip install mcp` (Python 3.11+) and test the server in MCP Inspector.\n\n**Lesson objective:** students understand why the MCP standard exists, know the host, client and server roles and what a server offers (tools, resources, prompts), can connect a connector and read a permission prompt, know the risks of third-party servers and the access rules, tell function calling, MCP and an agent framework apart, and know when a framework is needed.\n',
+    "ru": '# Сценарий преподавателя • Урок 12: MCP и фреймворки агентов (90 минут)\n\n**Курс:** GenAI Basics • Модуль 5 (агенты, инструменты и MCP) • Урок 12 из 16\n**Преподаватель:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems\n**Аудитория:** новички в GenAI из разных ролей. Простой язык; код только как справочный пример (слайды 9–10).\n**Формат:** 21 слайд (`presentation_L12_MCP_and_Agent_Frameworks_v2.html` / PDF) • занятие в **Microsoft Teams** • таймер перерыва на слайде 15\n**Управление:** `←/→` листать, `N` заметки спикера, `G` все слайды, `F` полный экран.\n**Источник правды:** `deck_v2/build.py`. Этот сценарий сгенерирован из него (`deck_v2/make_docs.py`); если что-то расходится, прав `build.py`.\n**Факты:** на 16.10.2026, источники в `L12_08_Source_Notes_Research_2026-10.md`.\n\n> **Перед уроком:** откройте claude.ai и проверьте меню коннекторов и запрос разрешения (подписи кнопок могли измениться). Код со слайда 9 проверен с mcp 2.3.0, 16.10.2026; перед показом поставьте `pip install mcp` (Python 3.11+) и проверьте сервер в MCP Inspector.\n\n**Цель урока:** студенты понимают, зачем нужен стандарт MCP, знают роли хоста, клиента и сервера и что сервер даёт (инструменты, ресурсы, промпты), умеют подключить коннектор и читать запрос разрешения, знают риски сторонних серверов и правила доступа, отличают вызов функций, MCP и фреймворк агентов и понимают, когда нужен фреймворк.\n',
+    "en": '# Instructor Script • Lesson 12: MCP and Agent Frameworks (90 Minutes)\n\n**Course:** GenAI Basics • Module 5 (Agents, Tools and MCP) • Lesson 12 of 16\n**Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems\n**Audience:** GenAI beginners from many roles. Plain language; code only as reference (slides 9–10).\n**Format:** 21 slides (`presentation_L12_MCP_and_Agent_Frameworks_EN_v2.html` / PDF) • class runs in **Microsoft Teams** • break timer on slide 15\n**Deck controls:** `←/→` navigate, `N` speaker notes, `G` all slides, `F` fullscreen.\n**Source of truth:** `deck_v2/build.py`. This script is generated from it (`deck_v2/make_docs.py`); if anything differs, `build.py` wins.\n**Facts:** as of 16.10.2026, sources in `L12_08_Source_Notes_Research_2026-10.md`.\n\n> **Before class:** open claude.ai and check the connectors menu and the permission prompt (button labels may have changed). The slide 9 code was tested with mcp 2.3.0 on 16.10.2026; before showing it, `pip install mcp` (Python 3.11+) and test the server in MCP Inspector.\n\n**Lesson objective:** students understand why the MCP standard exists, know the host, client and server roles and what a server offers (tools, resources, prompts), can connect a connector and read a permission prompt, know the risks of third-party servers and the access rules, tell function calling, MCP and an agent framework apart, and know when a framework is needed.\n',
 }
 
 
 def plain(s):
     s = re.sub(r"<[^>]+>", "", s)
-    return html.unescape(s).strip()
+    return html.unescape(s).replace("‑", "-").strip()
 
 
 def mmss(m):
@@ -96,8 +96,12 @@ def main():
             start += m
         table = (f"## {t('Тайминг (21 слайд • 90 минут, включая 5 минут перерыва)', 'Timing (21 slides • 90 minutes incl. a 5-minute break)')}\n\n"
                  f"| {t('Слайд', 'Slide')} | {t('Заголовок', 'Title')} | {t('Время', 'Time')} | {t('Мин', 'Min')} |\n|---|---|---|---|\n" + "\n".join(rows) + "\n")
-        parts = t('Часть 1 (слайды 01–14, 00:00–60:00): проблема, MCP, роли, коннекторы, разрешения, хосты, реестр, свой сервер, подключение, безопасность, слои, масштаб. Перерыв (слайд 15, 60:00–65:00). Часть 2 (слайды 16–21, 65:00–90:00): фреймворки, когда что, A2A, упражнение, ДЗ, итоги.',
-                  'Part 1 (slides 01–14, 00:00–60:00): the problem, MCP, roles, connectors, permissions, hosts, registry, your own server, connecting, security, layers, scale. Break (slide 15, 60:00–65:00). Part 2 (slides 16–21, 65:00–90:00): frameworks, when to use what, A2A, exercise, homework, summary.')
+        mins = [fn()["min"] for fn in build.SLIDES]
+        bi = build.SLIDES.index(build.s_break)  # 0-based index of the break slide
+        p1, br = sum(mins[:bi]), mins[bi]
+        n = len(build.SLIDES)
+        parts = t(f'Часть 1 (слайды 01–{bi:02d}, 00:00–{mmss(p1)}): проблема, MCP, роли, коннекторы, разрешения, хосты, реестр, свой сервер, подключение, безопасность, слои, масштаб. Перерыв (слайд {bi + 1:02d}, {mmss(p1)}–{mmss(p1 + br)}). Часть 2 (слайды {bi + 2:02d}–{n:02d}, {mmss(p1 + br)}–{mmss(sum(mins))}): фреймворки, когда что, A2A, упражнение, ДЗ, итоги.',
+                  f'Part 1 (slides 01–{bi:02d}, 00:00–{mmss(p1)}): the problem, MCP, roles, connectors, permissions, hosts, registry, your own server, connecting, security, layers, scale. Break (slide {bi + 1:02d}, {mmss(p1)}–{mmss(p1 + br)}). Part 2 (slides {bi + 2:02d}–{n:02d}, {mmss(p1 + br)}–{mmss(sum(mins))}): frameworks, when to use what, A2A, exercise, homework, summary.')
         OUT[lang].write_text(HEAD[lang] + "\n---\n\n" + table + "\n" + parts + "\n\n---\n\n" + "\n".join(body), encoding="utf-8")
         print(OUT[lang].name, start, "min")
 

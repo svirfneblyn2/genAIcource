@@ -5,7 +5,7 @@
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Estimated time:** 3–4 hours  
 **Code:** not needed. Every step has a no-code tool below. Code and open-weight models are optional (slides 13 and 16, `deck_v2/make_audio.py`, `deck_v2/make_clone.py`).  
-**Matches:** slide 20 (homework) of `presentation_L06_Speech_and_Audio_EN_v2.html`, plus slides 7–12 (the 6 pipeline steps), slide 17 (cost), slide 18 (acceptance checklist = rubric), slide 19 (consent). Service facts as of 2026-10-12.
+**Matches:** slide 20 (homework) of `presentation_L06_Speech_and_Audio_EN_v2.html`, plus slides 7–12 (the 6 pipeline steps), slide 17 (cost), slide 18 (acceptance checklist = rubric), slide 19 (consent). Service facts as of 2026-10-16.
 
 ---
 

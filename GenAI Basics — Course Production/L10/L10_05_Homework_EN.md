@@ -1,6 +1,6 @@
 # Lesson 10 • Homework: run an open model yourself and compare it honestly with the cloud
 
-**Course:** GenAI Basics • Module 3 (Own Models and Agents)  
+**Course:** GenAI Basics • Module 4 (Open Models)  
 **Submit:** the `genai-homeworks/L10/` folder in your personal GitHub repository  
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Time:** 2–3 hours (20–40 minutes of that is downloading)  
@@ -14,7 +14,7 @@
 1. Choose a model for your own computer and justify it: file size, memory, licence.
 2. Run the model locally and measure its speed.
 3. Compare the local model with a cloud model on three of your own tasks.
-4. Decide where to run a model for your task: cloud API, laptop, RunPod Pod or Serverless.
+4. Decide where to run a model for your task: cloud API, laptop, Runpod Pod or Serverless.
 
 Grading looks at an honest comparison and the reasoning, not at which model “won”.
 
@@ -24,10 +24,10 @@ Grading looks at an honest comparison and the reasoning, not at which model “w
 
 ### 1. Choose a model (15 min)
 - Find your memory: *Task Manager → Performance* (RAM and “Dedicated GPU memory”). On a Mac: *About This Mac*.
-- Using slide 7, pick a model whose Q4 file + 20–30% fits the GPU memory (or RAM if there is no GPU).
+- Using slide 7, pick a model whose Q4 file + 25% fits the GPU memory (or RAM if there is no GPU).
 - Hints:
   - no GPU, 16 GB RAM → `granite-4.2-3b` (2.2 GB) or Qwen3.5 4B (2.7 GB);
-  - 6–8 GB GPU → Granite 4.2 8B or Qwen3.5 9B (5.3–5.6 GB);
+  - 6 GB GPU → Granite 4.2 3B or Qwen3.5 4B; 8 GB → Granite 4.2 8B or Qwen3.5 9B (5.4–5.6 GB, ≈ 7 GB with the margin);
   - 16 GB GPU or more → Gemma 4 12B (7.4 GB) or gpt-oss-20b (12.1 GB).
 - Open the model card on Hugging Face and write down the licence.
 
@@ -46,11 +46,11 @@ Make up three tasks from your job on **synthetic** data (no real customer emails
 Give each task to the local model and to ChatGPT (or Gemini, Claude) with the same prompt. Score each answer 1–5: correctness, format, language.
 
 ### 4. Decision card (15 min)
-For one real task of your team, answer the two questions from slide 19: may the data go to the model vendor, and how much work is there (requests per day)? Choose: cloud API, laptop, RunPod Serverless or RunPod Pod, and explain in 3–5 sentences.
+For one real task of your team, answer the two questions from slide 19: may the data go to the model vendor, and how much work is there (requests per day)? Choose: cloud API, laptop, Runpod Serverless or Runpod Pod, and explain in 3–5 sentences.
 
 ### 5. Optional
 - Turn on the LM Studio local server (Developer → Start server) and call the model with the slide 11 code. Server on `localhost` only.
-- RunPod: only if you are ready to pay. Set a spending limit, and when done use **Terminate**, not Stop.
+- Runpod: only if you are ready to pay. Set a spending limit, and when done use **Terminate**, not Stop.
 
 ---
 
@@ -70,10 +70,10 @@ genai-homeworks/L10/
 
 | Criterion | Points |
 |---|---|
-| Model chosen for the memory, “file + 20–30%” shown, licence recorded | 2 |
+| Model chosen for the memory, “file + 25%” shown, licence recorded | 2 |
 | Model runs; screenshot with speed and memory used | 2 |
 | Three tasks, identical prompts, 1–5 scores with reasons | 3 |
 | Decision card with arguments about data and volume | 2 |
 | Security: synthetic data, server on localhost only, model from a known publisher | 1 |
 
-**Common mistakes:** downloading Q8 or BF16 “for quality” so the model does not fit; not recording the licence; comparing different prompts; leaving a RunPod Pod in the Stop state.
+**Common mistakes:** downloading Q8 or BF16 “for quality” so the model does not fit; not recording the licence; comparing different prompts; leaving a Runpod Pod in the Stop state.

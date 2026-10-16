@@ -1,11 +1,11 @@
 # Lesson 13 • Homework: your own assistant for a repetitive work task
 
-**Course:** GenAI Basics • Module 3 (Own Models and Agents)  
+**Course:** GenAI Basics • Module 5 (Agents, Tools and MCP)  
 **Submit:** the `genai-homeworks/L13/` folder in your personal GitHub repository  
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Time:** 2–3 hours  
 **Code:** not required. The same assistant via the Responses API is optional (slide 10).  
-**Matches:** slide 16 of `presentation_L13_Custom_Assistants_and_Agents_SDK_EN_v2.html`, plus slides 4–6 (Claude, ChatGPT), 5 (instructions), 8 (tests), 15 (security). Facts as of 16.10.2026.
+**Matches:** slide 16 of `presentation_L13_Custom_Assistants_and_Agents_SDK_EN_v2.html`, plus slides 4 and 6 (Claude, ChatGPT), 5 (instructions), 8 (tests), 15 (security). Facts as of 16.10.2026.
 
 > GPTs in ChatGPT retire on 11 December 2026. Do not create a new GPT: use a Claude project or a ChatGPT plugin.
 
@@ -18,7 +18,7 @@ Pick a task you do every week (answering typical emails, sorting requests, prepa
 
 ### 2. The assistant (40 min)
 - **Claude:** Projects → New project → Instructions + Context (files).
-- **or ChatGPT:** Plugins → Add → Create plugin → describe the task to Plugin Creator.
+- **or ChatGPT:** Plugins → Add → Create plugin → describe the task to Plugin Creator (checked on Business; on Free/Plus fall back to Claude). Per OpenAI’s help, own skills are so far available on Business/Enterprise/Healthcare/Edu, and Plugin Creator must first be installed from the plugin directory.
 
 Instructions — up to 10 lines: role, answer format, limits, where the data comes from. Knowledge — 1–3 **synthetic** files (make up the data yourself).
 

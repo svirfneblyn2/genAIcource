@@ -1,6 +1,6 @@
 # Instructor Script • Lesson 16: Agentic Software Development — Coding Agents, IDEs and CLIs (90 Minutes)
 
-**Course:** GenAI Basics • Module 4 (Idea to Product) • Lesson 16 of 16 (the last)
+**Course:** GenAI Basics • Module 6 (Idea to Product) • Lesson 16 of 16 (the last)
 **Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Audience:** GenAI beginners from many roles; some students are not programmers. Explain terms (diff, branch, test) as you go.
 **Format:** 16 slides (`presentation_L16_Agentic_Software_Development_EN_v2.html` / PDF) • **Microsoft Teams** • break on slide 12
@@ -99,7 +99,7 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 #### Speaker (6 min)
 > The most common beginner mistake is a vague request. The agent will carry out “add a filter”, but it will decide where it goes, what else to change on the way and when to stop. On the right is the same request as a task: the goal, what not to touch, when it counts as done, which command checks it and who makes the decision.
 >
-> The “Done when” line is the most important one. If the agent can run the check itself, it will keep fixing errors until the check passes. Advice from the docs: small tasks, specific files, /clear between tasks; after two failed corrections it is better to start over with a clearer task.
+> The “Done when” line is the most important one. If the agent can run the check itself, it will keep fixing errors until the check passes. Advice from the docs: small tasks, specific files, /clear between tasks; after two failed corrections it is better to start over with a clearer task. pytest -q is the command that runs all tests; a test is a small program that checks the code does what it should.
 
 ---
 
@@ -119,7 +119,7 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 **On screen:** Claude Code screenshot: auto mode is the default; 93% and ~17%; a scale of five modes.
 
 #### Speaker (6 min)
-> On the left is a real Claude Code message from October 2026: auto mode became the default in the terminal and VS Code. In it, reading and editing files in the project folder just happens, while commands and network access are first checked by a separate model: safe ones run, risky ones are blocked. Below is the scale of modes. Plan: read and plan only. Manual: the agent asks before every edit and command. AcceptEdits: it edits files itself and asks before commands. Auto: a checker model decides. Bypass: no checks at all, only in a throwaway container or virtual machine.
+> On the left is a real Claude Code message from October 2026: auto mode became the default in the terminal and VS Code. In it, reading and editing files in the project folder just happens, while commands and network access are first checked by a separate model: safe ones run, risky ones are blocked. Below is the scale of modes. Plan: the agent reads files and runs commands only to explore the project, writes a plan and edits nothing. Manual: the agent asks before every edit and command. AcceptEdits: it edits files and runs simple file commands in the project folder itself — make a folder, move, copy or delete a file (mkdir, mv, cp, rm); it asks before other commands. Auto: a checker model decides. Bypass: no checks at all, only in a throwaway container or virtual machine. A throwaway container is a temporary isolated “computer inside your computer” that you delete afterwards.
 >
 > Why auto? Anthropic counted that people approve 93% of prompts — after the tenth question nobody reads. But the auto check is not perfect either: it misses about 17% of overeager risky actions. So the mode does not replace review. Codex has the same idea under other names: read-only, workspace-write and danger-full-access sandboxes. Deny rules, for example on rm -rf or git push, apply in every mode.
 
@@ -127,10 +127,10 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 
 ### Slide 09 (40:00–45:00) • “If you can’t verify it, don’t ship it”: give the agent a check it can run itself
 
-**On screen:** Chain: a test fails → the agent fixes → all green → you read the diff; undo and git.
+**On screen:** Real pytest output on the homework starter (1 failed → 3 passed) and 4 steps: a test fails → the agent fixes → all green → you read the diff; undo and git.
 
 #### Speaker (5 min)
-> A line from the Claude Code docs: if you can’t verify it, don’t ship it. The most reliable approach is a failing test first, then the fix. The agent runs the test itself and edits the code until everything is green. If there are no tests, the check can be a build, a linter or a screenshot of the page. But a test does not see everything, so the last step is you reading the diff.
+> A line from the Claude Code docs: if you can’t verify it, don’t ship it. The most reliable approach is a failing test first, then the fix. On the left is a real run on the homework starter project: the new priority-filter test fails, the two old ones pass; the agent edits app.py and all three tests are green. The agent runs the test itself and edits the code until everything is green. If there are no tests, the check can be a build, a linter or a screenshot of the page. But a test does not see everything, so the last step is you reading the diff.
 >
 > On undo. Agents have their own back buttons; in Claude Code it is Esc Esc or /rewind. They revert file edits, but not what the agent did with terminal commands: a deleted database does not come back that way. The real safety net is git: every task on its own branch or in a separate working copy (worktree), so parallel agents do not get in each other’s way.
 
@@ -143,7 +143,7 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 #### Speaker (7 min)
 > The most honest study on this topic. In 2025 the METR organisation took 16 experienced open-source developers and 246 real tasks from their own projects. Each task was randomly assigned: AI allowed or not allowed. Before starting, participants expected a 24% speedup; afterwards they were sure they had been 20% faster. The measurement showed they were 19% slower with AI.
 >
-> In February 2026 METR repeated the study with newer tools: estimates moved towards a speedup, but nothing is statistically proven — developers were already refusing to work without AI, and the data became unreliable. In the Stack Overflow 2025 survey, 66% of developers said their top frustration is code that is “almost right, but not quite”. The takeaway for you: don’t trust the feeling; time yourself on your own tasks. The same goes for agent benchmarks such as SWE-bench: numbers from announcements age fast and depend on the agent app around the model, so test on your own task.
+> In February 2026 METR repeated the study with newer tools: estimates moved towards a speedup, but nothing is statistically proven — developers were already refusing to work without AI, and the data became unreliable. One more figure, from a different survey — Stack Overflow 2025: 66% of developers said their top frustration is code that is “almost right, but not quite”. The takeaway for you: don’t trust the feeling; time yourself on your own tasks. The same goes for agent benchmarks such as SWE-bench: numbers from announcements age fast and depend on the agent app around the model, so test on your own task.
 
 ---
 
@@ -174,7 +174,7 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 #### Speaker (7 min)
 > Six rules. One: each task on its own branch or worktree, so any result can be thrown away. Two: no production keys or passwords near the agent — not in the project, not in .env. That closes PocketOS. Three: a sandbox and least privilege, plus explicit denials of dangerous commands. Four: READMEs, issues, foreign AGENTS.md files, third-party skills and MCP servers are someone else’s text that can command the agent; install them only from trusted sources.
 >
-> Five: a human reads every change, ideally with fresh eyes — a second session or a reviewer agent. Six: only a human merges and ships. That is how Copilot’s cloud agent works: it opens only a draft pull request, cannot approve it, and the person who asked cannot approve their own agent’s PR. The no-checks mode belongs only in a throwaway container.
+> Five: a human reads every change, ideally with fresh eyes — a second session or a reviewer agent. Six: only a human merges and ships. That is how Copilot’s cloud agent works: it opens only a draft pull request, cannot approve it, and the person who asked cannot approve their own agent’s PR. The no-checks mode belongs only in a throwaway container. A throwaway container is a temporary isolated “computer inside your computer” that you delete afterwards. --yolo is a start-up flag of some command-line agents that switches off all permission prompts; bypass in Claude Code and danger-full-access in Codex are the same thing.
 
 ---
 
@@ -191,10 +191,10 @@ Part 1 (slides 01–11, 00:00–59:00): chat vs agent, agent anatomy, prices, th
 
 ### Slide 15 (81:00–86:00) • Homework: one small task done by an agent and checked by you
 
-**On screen:** Six homework steps and the L16_homework folder layout.
+**On screen:** Six homework steps (starter project or own repo), the genai-homeworks/L16/ folder, a path for non-coders (README only).
 
 #### Speaker (5 min)
-> Homework: the same loop on a real but small repository: fix a bug, add input validation, tests or docs — something that fits in one pull request. You need AGENTS.md, TASK.md, the agent’s plan, edits on a separate branch, your own run of the check, and an AGENT_EVIDENCE.md file with your decision: accept, reject or retry. A rejected patch with a good explanation is also an excellent result. Details in L16_05_Homework.
+> Homework: the same loop on a real but small project. The easiest is the starter project in L16_05_Homework: app.py with a filter_tickets function and tests, run with pytest -q; the task is the same priority filter. Your own small repository works too. If you don’t code: a docs-only change to the README, and the check is a screenshot of the page. You need AGENTS.md, TASK.md, edits on a separate branch, your own run of the check, and an AGENT_EVIDENCE.md file with the agent’s plan and your decision: accept, reject or retry. A rejected patch with a good explanation is also an excellent result. Details in L16_05_Homework.
 
 ---
 

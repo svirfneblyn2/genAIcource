@@ -1,6 +1,6 @@
 # Lesson 14 • Homework: a prototype and feedback from three real people
 
-**Course:** GenAI Basics • Module 4 (Idea to Product)  
+**Course:** GenAI Basics • Module 6 (Idea to Product)  
 **Submit:** the `genai-homeworks/L14/` folder in your personal GitHub repository  
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Time:** 3–4 hours  

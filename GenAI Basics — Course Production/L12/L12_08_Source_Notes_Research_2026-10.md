@@ -6,14 +6,18 @@ Primary sources checked on 2026-10-16 for the v2 rebuild of Lesson 12. Replaces 
 
 | File | What | Source |
 |---|---|---|
-| `assets/v2/img/claude_connectors.png` | claude.ai + → Connectors menu | own capture for L09 (2026-10-13), reused |
-| `assets/v2/img/claude_permission.png` | claude.ai permission prompt for the Figma "Generate Diagram" tool | own capture for L09 (2026-10-13), reused |
-| `assets/v2/img/mcp_registry.png` | registry.modelcontextprotocol.io home | own capture 2026-10-16 |
-| `assets/v2/img/mcp_hub.png`, `n_times_m.png`, `cover_right.png` | schematics | generated with genai-assets (client `genaicource`) |
+| `assets/v2/img/claude_connectors.png` | claude.ai + → Connectors menu (slide 5) | own capture for L09 (2026-10-13), reused |
+| `assets/v2/img/claude_permission.png` | claude.ai permission prompt for the Figma "Generate Diagram" tool (slide 6) | own capture for L09 (2026-10-13), reused |
+| `assets/v2/img/claude_permission_zoom.png` | 2× Pillow crop of the prompt's header line (slide 6 inset) | derived from `claude_permission.png` |
+| `assets/v2/img/chatgpt_plugins.png` | chatgpt.com Plugins page with the Add menu, Russian UI (slide 7) | own capture 2026-10-16 |
+| `assets/v2/img/chatgpt_add_mcp_zoom.png` | 2× Pillow crop of "Добавить пользовательский сервер MCP" (slide 7 inset) | derived from `chatgpt_plugins.png` |
+| `assets/v2/img/mcp_registry_crop.png` | registry.modelcontextprotocol.io: header + first two "Recently Updated" cards (slide 8) | Pillow crop of own capture 2026-10-16 (full capture removed; it is in git history) |
+
+The schematics on slides 1–3, 13, 14 and 18 (n × m links, the MCP hub, nested layers, timeline, MCP vs A2A) are drawn in HTML/SVG in `deck_v2/build.py` with RU/EN labels; the earlier English-only PNGs (`n_times_m.png`, `mcp_hub.png`, `cover_right.png`) were removed on 2026-10-16.
 
 Not used on slides but observed 2026-10-16: modelcontextprotocol.io intro page (spec version 2026-07-28; official "USB-C port for AI applications" analogy and the apps ↔ MCP ↔ data/tools diagram).
 
-The slide 9 server code was not executed (the `mcp` package is not installed on the build machine); it follows the mcp v2 Python SDK (`MCPServer`).
+The slide 9 server code was run successfully with `mcp` 2.3.0 on 16.10.2026 (final course audit); it follows the mcp v2 Python SDK (`MCPServer`).
 
 ---
 
@@ -65,7 +69,7 @@ The old package (Sept 2026) is mostly still current. The deltas that matter for 
 | **Claude.ai (web/desktop), remote servers** | **Customize > Connectors**, then "+ Add" > "Add custom connector". Enter a name and the remote MCP URL, then Continue, set auth, then Add. Available on **Free (limited to 1 custom connector)**, Pro and Max. On Team/Enterprise an Owner adds it under Organization settings > Connectors and members click "Connect". There is also a Connectors Directory of vetted connectors. | https://support.claude.com/en/articles/11175166-getting-started-with-custom-connectors-using-remote-mcp ; https://support.claude.com/en/articles/11176164 |
 | **Claude Desktop, local servers** | (a) **Desktop extensions (.mcpb)**: Settings > Extensions > "Browse extensions" > Install. One click, no JSON. (b) Manual: the Claude menu > Settings... > **Developer** > **Edit Config**. This opens `claude_desktop_config.json` (Windows `%APPDATA%\Claude\claude_desktop_config.json`, macOS `~/Library/Application Support/Claude/`). Add an `mcpServers` block, then **fully quit and restart** Claude. Check it via the "+" button > Connectors > Manage connectors. Logs are in `%APPDATA%\Claude\logs\mcp*.log`. | https://support.claude.com/en/articles/10949351-getting-started-with-local-mcp-servers-on-claude-desktop ; https://modelcontextprotocol.io/docs/develop/connect-local-servers |
 | Claude permissions | Support doc: "Only choose **'Allow always'** for tools you trust to run unsupervised". Tools can be disabled in the "Search and tools" menu. Team/Enterprise Owners can set each tool to **Always allow / Needs approval / Blocked** org-wide. The exact wording of the per-call dialog buttons ("Allow once" vs "Allow always") is **UNVERIFIED**; take a screenshot before teaching it. | same two support articles |
-| **ChatGPT** | Custom MCP servers are now added as **plugins**: open the ChatGPT **Plugins** page, click "+" > "**Add custom MCP server**", then enter a name and a Server URL (or a Secure MCP Tunnel), choose auth (OAuth / No authentication), accept the risk warning, and "Create as a plugin" > install. ChatGPT is **remote only** (SSE or streaming HTTP); local stdio servers need a tunnel. Which plans can do this, and whether "developer mode" is still required, is **UNVERIFIED**: help.openai.com returned 403 today. The help article "Developer mode and full MCP connectors in ChatGPT" (12584461) exists. A search snippet says Business/Enterprise/Edu on web, with full MCP write actions in beta. DevDay 2026 (recap page also 403) was plugin-centric and added support for a *proposed* MCP Events spec. | https://developers.openai.com/api/docs/guides/custom-mcp-server ; https://developers.openai.com/apps-sdk/deploy/connect-chatgpt ; https://openai.com/index/devday-2026-recap/ (not readable) |
+| **ChatGPT** | Custom MCP servers are now added as **plugins**: open the ChatGPT **Plugins** page, click "+" > "**Add custom MCP server**", then enter a name and a Server URL (or a Secure MCP Tunnel), choose auth (OAuth / No authentication), accept the risk warning, and "Create as a plugin" > install. ChatGPT is **remote only** (SSE or streaming HTTP); local stdio servers need a tunnel. Plans: **PARTLY VERIFIED (16.10.2026, final audit)**: OpenAI's ChatGPT developer-mode guide (developers.openai.com/api/docs/guides/developer-mode, seen via search result; direct fetch returned 404/403) lists Pro, Plus, Business, Enterprise and Edu accounts on the web, turned on under Settings → Apps → Advanced settings → Developer mode. The **Free plan is not listed**. One third-party guide (Boomi) says Plus/Pro get read-only custom connectors; not confirmed by OpenAI. The deck therefore says "your own server in ChatGPT needs a paid plan (developer mode); check yours". Earlier note: help.openai.com returned 403. The help article "Developer mode and full MCP connectors in ChatGPT" (12584461) exists. A search snippet says Business/Enterprise/Edu on web, with full MCP write actions in beta. DevDay 2026 (recap page also 403) was plugin-centric and added support for a *proposed* MCP Events spec. | https://developers.openai.com/api/docs/guides/custom-mcp-server ; https://developers.openai.com/apps-sdk/deploy/connect-chatgpt ; https://openai.com/index/devday-2026-recap/ (not readable) |
 | **Gemini app (consumer)** | gemini.google.com > Settings > **Connected Apps** > Custom apps > "Add a custom app", then enter the MCP server URL. **Web only** for setup. Requirements: personal account, **18+ and in the US**, English only, Keep Activity on. "Gemini requires manual confirmation for any write actions." This is not available to most non-US students. | https://support.google.com/gemini/answer/17209137 |
 | **Gemini CLI** | `gemini mcp add <name> <command-or-url>` or `mcpServers` in settings.json. The `trust` flag skips confirmations. **However**, from **18 Jun 2026** Gemini CLI stopped serving Google AI Pro/Ultra and free Code Assist individual users; they were moved to **Antigravity CLI**. Gemini CLI still works with paid API keys and enterprise licences. **Do not use Gemini CLI as the beginner demo.** | https://geminicli.com/docs/tools/mcp-server/ ; https://developers.googleblog.com/an-important-update-transitioning-gemini-cli-to-antigravity-cli/ (19 May 2026) |
 | **Microsoft Copilot Studio** | Agent > **Tools** > Add a tool > New tool > **Model Context Protocol** (onboarding wizard). Enter server name, description and URL, then auth: None / API key / OAuth 2.0. Supports **Streamable HTTP only**; SSE has not been supported since Aug 2025. Supports tools and resources (not prompts). Requires generative orchestration. | https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-add-existing-server-to-agent (updated 2026-10-15) |
@@ -186,7 +190,7 @@ Use the 28 Jul 2026 blog number for slides ("~0.5 billion SDK downloads per mont
 4. The spec version 2026-07-28 is still current. **Sampling, Roots and Logging are now Deprecated.** Do not present them as core client features for beginners; show Tools/Resources/Prompts plus Elicitation.
 5. The `@modelcontextprotocol/server-github` npm package is deprecated. Use GitHub's own server (`api.githubcopilot.com/mcp/`).
 6. Gemini CLI is no longer a viable free beginner host (since 18 Jun 2026 → Antigravity CLI). The Gemini consumer app MCP is US-only, 18+, English.
-7. ChatGPT now adds custom MCP servers as **"plugins"** (Plugins page > Add custom MCP server). Plan eligibility is UNVERIFIED.
+7. ChatGPT now adds custom MCP servers as **"plugins"** (Plugins page > Add custom MCP server). Developer mode on paid plans (Plus/Pro/Business/Enterprise/Edu); Free not listed (see section 3).
 8. Claude.ai menu path is now **Customize > Connectors** (not Settings > Connectors). Free plan: 1 custom connector.
 9. AutoGen is in maintenance mode; Microsoft Agent Framework 1.x is the successor (MIT).
 10. A2A is now v1.0 and under AAIF, the same foundation as MCP.
@@ -195,7 +199,8 @@ Use the 28 Jul 2026 blog number for slides ("~0.5 billion SDK downloads per mont
 ## Still UNVERIFIED
 
 - The exact Claude per-call permission dialog button labels ("Allow once" / "Always allow"). Take a fresh screenshot.
-- ChatGPT plan availability for custom MCP plugins and whether "developer mode" is still the switch (help.openai.com and the DevDay recap returned 403).
+- ChatGPT: whether Plus/Pro custom servers are read-only (one third-party claim); the plan list itself is from OpenAI's developer-mode guide via search (direct fetch failed).
+- Whether Claude's ready-made Google Drive connector is available on the Free plan. The homework therefore uses the custom connector (Free: 1, VERIFIED above) as the main free path, LM Studio only for those who code.
 - The LM Studio tool-call confirmation dialog.
 - MCP support pages for CrewAI, LlamaIndex and Pydantic AI (believed yes; not checked today).
 - AAIF member count (>250).

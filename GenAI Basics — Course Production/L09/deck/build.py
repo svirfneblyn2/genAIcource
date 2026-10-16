@@ -98,8 +98,8 @@ def s_cover():
   <div class="keys">{t("← → листать • N заметки спикера • G все слайды • F полный экран", "← → navigate • N speaker notes • G all slides • F fullscreen")}</div>
   <div class="keys" style="left:auto;right:30px">Image: Anthropic (claude.com)</div>''',
                 notes=notes(
-                    t("⏱ 2 мин. Приветствие. В L07 мы смотрели экосистему Microsoft Copilot. Сегодня — второй большой ассистент, Claude от Anthropic, и его главная фишка: артефакты.",
-                      "⏱ 2 min. Welcome. In L07 we looked at the Microsoft Copilot ecosystem. Today it is the second big assistant, Claude by Anthropic, and its signature feature: artifacts."),
+                    t("⏱ 2 мин. Приветствие. В L07 была экосистема Microsoft, в L08 — анализ данных. Сегодня вторая экосистема — Claude от Anthropic, и его главная фишка: артефакты.",
+                      "⏱ 2 min. Welcome. L07 covered Microsoft's ecosystem and L08 data analysis. Today, the second ecosystem: Claude by Anthropic, and its signature feature: artifacts."),
                     t("План: где живёт Claude → что такое артефакт → как его заказать и проверить (живое демо) → перерыв → артефакт как приложение, проекты, коннекторы, скиллы → безопасность → домашка.",
                       "Plan: where Claude lives → what an artifact is → how to order and check one (live demo) → break → the artifact as an app, projects, connectors, skills → safety → homework.")))
 

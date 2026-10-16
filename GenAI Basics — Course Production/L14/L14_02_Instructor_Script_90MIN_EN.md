@@ -1,6 +1,6 @@
 # Instructor Script • Lesson 14: Rapid AI App Prototype — Streamlit and No-Code Builders (90 Minutes)
 
-**Course:** GenAI Basics • Module 4 (Idea to Product) • Lesson 14 of 16
+**Course:** GenAI Basics • Module 6 (Idea to Product) • Lesson 14 of 16
 **Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Audience:** GenAI beginners from many roles. A coding agent writes the code; students learn to understand and check it (slide 4 is a reference).
 **Format:** 17 slides (`presentation_L14_Streamlit_Rapid_Prototyping_EN_v2.html` / PDF) • **Microsoft Teams** • break on slide 12 • 10-minute hands-on on slide 13
@@ -21,7 +21,7 @@
 | **01** | Rapid AI app prototype | 00:00–02:00 | 2 |
 | **02** | A prototype answers “what will it look like?” in a day, not a quarter | 02:00–07:00 | 5 |
 | **03** | Streamlit is a web page in Python: no HTML, no JavaScript | 07:00–12:00 | 5 |
-| **04** | The whole chat is 12 lines: show history, take the question, ask the model, show the answer | 12:00–18:00 | 6 |
+| **04** | The whole chat is 14 lines: show history, take the question, ask the model, show the answer | 12:00–18:00 | 6 |
 | **05** | On every click Streamlit reruns the whole file — that is why memory is needed | 18:00–23:00 | 5 |
 | **06** | Memory, cache and secrets — three things not to mix up | 23:00–28:00 | 5 |
 | **07** | A coding agent writes the code; you set the task and check the result | 28:00–33:00 | 5 |
@@ -34,15 +34,15 @@
 | **14** | Four prototype rules: keys, data, money, sign-in | 69:00–74:00 | 5 |
 | **15** | What changes when a prototype becomes a product | 74:00–79:00 | 5 |
 | **16** | Homework: a prototype and feedback from three real people | 79:00–85:00 | 6 |
-| **17** | Lesson summary | 85:00–90:00 | 5 |
+| **17** | A prototype in a day, memory in session_state, keys in secrets, you check the code | 85:00–90:00 | 5 |
 
-Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns, memory/cache/secrets, the agent, running, publishing, builders, choosing. Break (slide 12, 57:00–62:00). Part 2 (slides 13–17, 62:00–90:00): hands-on, security, the path to a product, homework, summary.
+Part 1 (slides 01–11, 00:00–54:00): why a prototype, Streamlit, code, reruns, memory/cache/secrets, the agent, running, publishing, builders, choosing. Break (slide 12, 54:00–59:00). Part 2 (slides 13–17, 59:00–90:00): hands-on, security, the path to a product, homework, summary.
 
 ---
 
 ### Slide 01 (00:00–02:00) • Rapid AI app prototype
 
-**On screen:** Lesson title; a prototype icon on the right.
+**On screen:** Lesson title; a chat-window sketch on the right.
 
 #### Speaker (2 min)
 > Welcome. So far we have used other people’s windows: ChatGPT, Claude, AI Studio. Today we build our own AI web app that we can show colleagues and clients. The tool is Streamlit: a web page in plain Python, no HTML. A coding agent writes the code; we learn to understand and check it.
@@ -51,18 +51,18 @@ Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns
 
 ### Slide 02 (02:00–07:00) • A prototype answers “what will it look like?” in a day, not a quarter
 
-**On screen:** Schematic: idea → prototype → feedback → product; a “this lesson” bracket.
+**On screen:** Schematic: idea → prototype (1 day) → feedback (3 people) → product; a “this lesson” bracket.
 
 #### Speaker (5 min)
 > A typical story: the idea “a bot that answers staff from our policy” is discussed for months. A one-day prototype changes the conversation: people open a link, ask their own questions, see the mistakes and say what they really need. That feedback is worth more than another model comparison.
 >
-> Four stages: the idea in one sentence, a prototype in a day, feedback from five real users, and only then a product that engineers take on: security, scale, support. Today we cover the first three.
+> Four stages: the idea in one sentence, a prototype in a day, feedback from three real people, and only then a product that engineers take on: security, scale, support. Today we cover the first three.
 
 ---
 
 ### Slide 03 (07:00–12:00) • Streamlit is a web page in Python: no HTML, no JavaScript
 
-**On screen:** Screenshot of the official llm-examples.streamlit.app chat with callouts: sidebar, messages, input box.
+**On screen:** Excerpt of the official llm-examples.streamlit.app chat screenshot with callouts: key field, messages, input box.
 
 #### Speaker (5 min)
 > This is the official example from the Streamlit team at llm-examples.streamlit.app. On the left a sidebar with a field for the API key, in the middle the chat messages, at the bottom the input box. This whole interface is about twenty-five lines of Python, no HTML or JavaScript. Streamlit is free and open source; the current version is 1.66 from 14 October 2026, and it needs Python 3.11 or newer.
@@ -71,14 +71,14 @@ Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns
 
 ---
 
-### Slide 04 (12:00–18:00) • The whole chat is 12 lines: show history, take the question, ask the model, show the answer
+### Slide 04 (12:00–18:00) • The whole chat is 14 lines: show history, take the question, ask the model, show the answer
 
-**On screen:** Reference 15-line chat code with session_state, chat_input and ask_llm highlighted.
+**On screen:** Reference 14-line chat code (with an ask_llm stub, runs as is) with session_state, chat_input and ask_llm highlighted.
 
 #### Speaker (6 min)
 > The code behind the chat on the previous slide, simplified. You do not need to be able to write it — an agent will. But you should understand four parts. One: session_state — memory. Without it the chat history would be wiped after every message (why — next slide).
 >
-> Two: the loop that shows the whole history with st.chat_message. Three: st.chat_input — the input box; when someone sends a question we add it to the history and show it. Four: ask_llm — your model call, the same as in L03: Gemini, OpenAI or the local model from L10. The answer goes into the history and is shown too. To run: streamlit run app.py — a page opens in the browser.
+> Two: the loop that shows the whole history with st.chat_message. Three: st.chat_input — the input box; when someone sends a question we add it to the history and show it. Four: ask_llm — your model call. At the top of the file it is a stub that just echoes the question, so the code runs at once; later it is replaced with the L03 API call: Gemini, OpenAI or the local model from L10. The answer goes into the history and is shown too. To run: streamlit run app.py — a page opens in the browser.
 
 ---
 
@@ -95,10 +95,10 @@ Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns
 
 ### Slide 06 (23:00–28:00) • Memory, cache and secrets — three things not to mix up
 
-**On screen:** Three cards: session_state, cache, secrets.
+**On screen:** Three cards: session_state, cache_data, secrets.
 
 #### Speaker (5 min)
-> Three ideas beginners confuse. session_state — one visitor’s memory. cache — a shared cache for every visitor: for example, a loaded policy table so it is not reread on every click. That is why you never put personal data or keys in the cache: everyone would see them.
+> Three ideas beginners confuse. session_state — one visitor’s memory. cache_data (the st.cache_data command) — a shared cache for every visitor: for example, faq.md is read once, not on every click. That is why you never put personal data or keys in the cache: everyone would see them.
 >
 > secrets — API keys. They live in .streamlit/secrets.toml and are read through st.secrets. The file goes into .gitignore, otherwise the key ends up on GitHub. GitHub blocks pushing detected keys to public repos by default, but do not rely on that.
 
@@ -109,7 +109,7 @@ Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns
 **On screen:** Coding-agent prompt: a Streamlit chat over faq.md with a demo mode and secrets.
 
 #### Speaker (5 min)
-> How it is done in practice. You do not write the code by hand — you give a coding agent (Claude Code, Codex, Antigravity) a good task. It says what to build, with what, where the key is, what to do without a key, where to keep the history, how not to leak the key and, most importantly, asks to explain the code.
+> How it is done in practice. You do not write the code by hand — you give a coding agent (Codex, Antigravity, Claude Code) a good task. It says what to build, with what, where the key is, what to do without a key, where to keep the history, how not to leak the key and, most importantly, asks to explain the code. What a coding agent is and how to choose one: L16.
 >
 > New since spring 2026: Streamlit has an official streamlit skills command. It plugs skills into the agent — instructions from the Streamlit authors on building apps properly. Claude Code, Codex and Cursor understand them. A demo mode without a key is a good habit: you can show the prototype at a meeting even before you have a key.
 
@@ -129,9 +129,9 @@ Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns
 **On screen:** Three places to publish and the warning “a public link = public data”.
 
 #### Speaker (5 min)
-> Three places. Your own computer: free, only you see it; you show it by sharing your screen in Teams. Streamlit Community Cloud: free, the app is published from a GitHub repo. It is public by default; you may have only one private app. It sleeps after 12 hours without visitors, and the first visitor wakes it. The key goes into the app settings, the Secrets section.
+> Three places. Your own computer: free; you see it, and so can colleagues on the office network via the Network URL; everyone else sees it when you share your screen in Teams. Streamlit Community Cloud: free, the app is published from a GitHub repo. An app from a public repo is public; you may have only one private app. It sleeps after 12 hours without visitors, and the first visitor wakes it. The key goes into the app settings, the Secrets section.
 >
-> Inside a company — Snowflake or your own cloud with role-based access; engineers decide. Hugging Face Spaces, once a popular free option for Streamlit, are no longer free for such apps. The main rule: a public link means public data and your API bill.
+> Inside a company — Snowflake (the company that owns Streamlit) or your own cloud with role-based access; engineers decide. Hugging Face Spaces, once a popular free option for Streamlit, are no longer free for such apps. The main rule: a public link means public data and your API bill.
 
 ---
 
@@ -166,7 +166,7 @@ Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns
 
 ### Slide 13 (59:00–69:00) • 10-minute hands-on: a helper prototype for your FAQ
 
-**On screen:** Five hands-on steps: an FAQ helper prototype.
+**On screen:** Five hands-on steps: an FAQ helper prototype; two paths and a 7 + 3 minute timing.
 
 #### Speaker (10 min)
 > Hands-on. Everyone builds a helper prototype for their own FAQ: 10 questions and answers, made up or anonymised. Without code — via AI Studio Build. With code — the slide 7 prompt to a coding agent. After 7 minutes 2–3 people share their screen: what they asked and what the prototype answered.
@@ -178,7 +178,7 @@ Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns
 **On screen:** Four rules: keys, data, money, sign-in.
 
 #### Speaker (5 min)
-> Four rules. Keys: only in secrets; do not paste a key into the chat with a coding agent — it may end up in logs. Data: a public prototype gets synthetic data only. Money: set a spending limit in the API console and add a demo mode with no key. Sign-in: if the prototype is not for everyone, Streamlit can add sign-in with st.login.
+> Four rules. Keys: only in secrets; do not paste a key into the chat with a coding agent — it may end up in logs. Data: a public prototype gets synthetic data only. Money: set a spending limit in the API console and add a demo mode with no key. Sign-in: if the prototype is not for everyone, make it private in Community Cloud and invite people by email. For engineers: Streamlit also has built-in sign-in with st.login.
 
 ---
 
@@ -200,9 +200,9 @@ Part 1 (slides 01–11, 00:00–57:00): why a prototype, Streamlit, code, reruns
 
 ---
 
-### Slide 17 (85:00–90:00) • Lesson summary
+### Slide 17 (85:00–90:00) • A prototype in a day, memory in session_state, keys in secrets, you check the code
 
-**On screen:** Four takeaways and the L15 preview.
+**On screen:** Four takeaways and the L15 preview; the title is the lesson’s main point.
 
 #### Speaker (5 min)
 > Four ideas. A prototype in a day is more useful than a month of meetings. Streamlit is Python plus a rerun on every click, so memory lives in session_state. Keys only in secrets; a public link means public data. The agent writes the code, and you check it and ask for explanations. Next lesson — responsible AI, security and law.

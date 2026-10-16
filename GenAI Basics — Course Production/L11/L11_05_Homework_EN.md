@@ -1,6 +1,6 @@
 # Lesson 11 • Homework: design an agent’s tools and test them in AI Studio
 
-**Course:** GenAI Basics • Module 3 (Own Models and Agents)  
+**Course:** GenAI Basics • Module 5 (Agents, Tools and MCP)  
 **Submit:** the `genai-homeworks/L11/` folder in your personal GitHub repository  
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Time:** 2–3 hours  
@@ -29,7 +29,7 @@ For each of the 2–3 functions fill in:
 | Field | Example |
 |---|---|
 | Name | `get_order_status` |
-| Description: what, what for, when to call | “Current status, courier and ETA of ONE order by its number. Call when the customer asks where an order is.” |
+| Description: what, what for, when to call | “Current status, courier and arrival time of ONE order by its number. Call when the customer asks where an order is.” |
 | Parameters | `order_id` (string, required) |
 | Risk | reads data / changes data / spends money |
 
@@ -72,7 +72,7 @@ Add a table of the 5 questions to `README.md`: which call the model proposed and
 | Criterion | Points |
 |---|---|
 | Narrow tools: one function, one job; the description answers “what, what for, when” | 3 |
-| Testing: 5 questions, each marked right or wrong | 3 |
+| Checks: the program checks arguments and rights (risks.md) + the 5-question table | 3 |
 | A human confirms actions with consequences | 2 |
 | Step limit and log described | 1 |
 | Synthetic data only | 1 |

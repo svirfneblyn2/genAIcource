@@ -452,6 +452,16 @@ code { font-size: max(18px, .88em); }
 
 .bars .ref, .vline { position: absolute; top: 0; bottom: 26px; border-left: 2px dashed var(--k, var(--amber)); }
 .vline span { position: absolute; top: -32px; left: 6px; white-space: nowrap; font: 600 17px var(--body); color: var(--k); }
+.slide:not(.cover) .body { justify-content: flex-start; padding-top: 22px; }
+.code, pre.code { font-variant-ligatures: none; }
+.tall .bars { gap: 70px; }
+.tall .bars .bt { height: 100px; }
+.tall .bars .bl { font-size: 27px; }
+.tall .bars .bl small { font-size: 20px; margin-top: 6px; }
+.tall .bars .bv { font-size: 34px; }
+.big .checklist { gap: 34px; }
+.big .checklist li { font-size: 27px; grid-template-columns: 48px 1fr; color: var(--fg); }
+.big .checklist li::before { width: 34px; height: 34px; font-size: 19px; }
 </style>
 </head>
 <body>
@@ -459,10 +469,13 @@ code { font-size: max(18px, .88em); }
 
 <!-- SLIDE 01 · s_cover · 2 min -->
 <section class="slide cover" data-n="1">
-  <div class="bg"><img src="assets/v2/img/cover_right.png" alt="" style="object-fit:contain;object-position:right center;background:#0b0f17;padding:60px 40px 60px 0"></div>
   <div class="shade"></div>
+  <div style="position:absolute;right:86px;top:150px;width:500px;display:flex;flex-direction:column;align-items:center;gap:10px">
+    <svg width="64" height="64" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan);flex:none"><rect x="3" y="5" width="26" height="22" rx="3"/><path d="M3 11h26"/><circle cx="7.5" cy="8" r="1" fill="currentColor"/><circle cx="11" cy="8" r="1" fill="currentColor"/></svg><div style="font:800 34px var(--display);color:var(--fg);margin-bottom:14px">Your program</div>
+    <div style="display:flex;align-items:center;gap:16px;width:500px;height:84px;padding:0 20px;border:2px solid var(--cyan);border-radius:14px;background:var(--surface-card);font:600 25px/1.2 var(--body);color:var(--fg)"><svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan);flex:none"><circle cx="13" cy="13" r="8"/><path d="M19 19l8 8"/></svg><span>check the arguments</span></div><div style="width:500px;height:22px;display:flex;justify-content:center;color:#64748b;font:700 22px/22px var(--body)">↓</div><div style="display:flex;align-items:center;gap:16px;width:500px;height:84px;padding:0 20px;border:2px solid var(--amber);border-radius:14px;background:var(--surface-card);font:600 25px/1.2 var(--body);color:var(--fg)"><svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--amber);flex:none"><path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z"/><path d="M11 16l4 4 7-8"/></svg><span>ask a human for risky actions</span></div><div style="width:500px;height:22px;display:flex;justify-content:center;color:#64748b;font:700 22px/22px var(--body)">↓</div><div style="display:flex;align-items:center;gap:16px;width:500px;height:84px;padding:0 20px;border:2px solid var(--cyan);border-radius:14px;background:var(--surface-card);font:600 25px/1.2 var(--body);color:var(--fg)"><svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan);flex:none"><circle cx="16" cy="16" r="12"/><path d="M13 10.5l9 5.5-9 5.5z"/></svg><span>run the function</span></div><div style="width:500px;height:22px;display:flex;justify-content:center;color:#64748b;font:700 22px/22px var(--body)">↓</div><div style="display:flex;align-items:center;gap:16px;width:500px;height:84px;padding:0 20px;border:2px solid var(--cyan);border-radius:14px;background:var(--surface-card);font:600 25px/1.2 var(--body);color:var(--fg)"><svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan);flex:none"><path d="M8 3h12l6 6v20H8z"/><path d="M20 3v6h6M12 15h10M12 20h10M12 25h6"/></svg><span>log it</span></div>
+  </div>
   <div class="txt">
-    <div class="kicker">GenAI Basics • Lesson 11 • Module 3: models & agents</div>
+    <div class="kicker">GenAI Basics • Lesson 11 • Module 5: agents, tools and MCP</div>
     <h1>Function calling and your first agent</h1>
     <h2>How a model stops guessing and starts asking your system</h2>
     <p>Tools, function calling, the agent loop, risks. Google AI Studio, Claude, ChatGPT, local models. Data as of October 2026.</p>
@@ -475,7 +488,7 @@ code { font-size: max(18px, .88em); }
   <div class="kicker" style="--k:var(--red)">The problem</div>
   <h2 class="title">The model does not know where your order is, but it will answer confidently</h2>
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1fr 1.35fr;gap:40px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:440px 1fr;gap:40px;align-items:center;flex:none;">
       <div class="stack" style="gap:16px;">
         <div class="prompt-label">Without tools</div>
         <div class="tx" style="font-size:26px;line-height:1.45;border-left:4px solid var(--red)"><small>Question</small>Where is order 417 right now?<small style="margin-top:14px">Model answer</small><span style="color:var(--red)">“Your order 417 is on its way and will arrive tomorrow morning.”</span></div>
@@ -483,8 +496,8 @@ code { font-size: max(18px, .88em); }
       </div>
       <div class="stack" style="gap:10px;">
         <div class="prompt-label">With a tool · Google AI Studio, captured 16.10.2026</div>
-        <div class="shot" style=""><img src="assets/v2/img/aistudio_fn_done.png" alt=""><div class="co" style="left:2.0%;top:28.0%;width:96.0%;height:46.6%;--k:var(--cyan)"></div><div class="co" style="left:1.5%;top:84.5%;width:68.0%;height:8.5%;--k:var(--green)"></div></div>
-        <div class="note" style="--k:var(--green)">A <b>tool</b> is a function of your system the model can ask to call. The model asked for the order data and answered from it.</div>
+        <div class="shot" style=""><img src="assets/v2/img/aistudio_fn_done.png" alt=""><div class="co" style="left:1.2%;top:13.2%;width:94.0%;height:42.0%;--k:var(--violet)"></div><div class="co" style="left:1.2%;top:59.2%;width:94.0%;height:22.0%;--k:var(--amber)"></div><div class="co" style="left:0.3%;top:87.5%;width:93.6%;height:10.0%;--k:var(--green)"></div></div>
+        <div class="note" style="--k:var(--green)">A <b>tool</b> is a function of your system the model can ask to call. The model asked for the order data (violet), got it (amber) and answered from it (green).</div>
       </div>
     </div>
   </div>
@@ -515,9 +528,9 @@ code { font-size: max(18px, .88em); }
   <div class="kicker" style="--k:var(--violet)">A tool</div>
   <h2 class="title">A function declaration: a name, a description, parameters. That is all the model sees</h2>
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.35fr 1fr;gap:40px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:1.55fr 1fr;gap:40px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
-        <div class="prompt-label">Google AI Studio → Tools → Function calling → Edit</div>
+        <div class="prompt-label">AI Studio → Run settings → Tools → Function calling → Edit</div>
         <div class="shot" style=""><img src="assets/v2/img/aistudio_fn_declare.png" alt=""><div class="co" style="left:2.1%;top:46.2%;width:44.3%;height:8.0%;--k:var(--cyan)"></div><div class="co" style="left:47.9%;top:46.2%;width:44.3%;height:8.0%;--k:var(--amber)"></div><div class="co" style="left:4.7%;top:62.8%;width:75.7%;height:8.0%;--k:var(--green)"></div><div class="bn" style="left:44.5%;top:50.2%;--k:var(--cyan)">1</div><div class="bn" style="left:93.5%;top:41.0%;--k:var(--amber)">2</div><div class="bn" style="left:79.0%;top:66.8%;--k:var(--green)">3</div></div>
       </div>
       <div class="stack" style="gap:20px;">
@@ -527,15 +540,15 @@ code { font-size: max(18px, .88em); }
     </div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>04 / 21</span></div>
-  <template class="notes"><p>⏱ 5 min. For the model to ask for an action, you have to tell it which actions exist. That is the function declaration. In Google AI Studio you do it without code: Run settings, the Tools section, the Function calling switch, the Edit button.</p><p>Three fields. Name: get_order_status, no spaces, clear. Description: one sentence on when to call it; the model picks a tool by its description. Parameters: what the function expects, here the order number as a string. Important: the model does not see the function’s code, the database or passwords. It sees only this card and can only ask for it to be called.</p></template>
+  <template class="notes"><p>⏱ 5 min. For the model to ask for an action, you have to tell it which actions exist. That is the function declaration. In Google AI Studio you do it without code: Run settings, the Tools section, the Function calling switch, the Edit button.</p><p>Three fields. Name: get_order_status, no spaces, clear. Description: one sentence on when to call it; the model picks a tool by its description. Parameters: what the function expects, here the order number as a string. Important: the model does not see the function’s code, the database or passwords. It sees only this card and can only ask for it to be called.</p><p>The description in this screenshot is shorter than on slide 9: that is what the live demo used. Slide 9 shows the improved version to use in real work.</p></template>
 </section>
 <!-- SLIDE 05 · s_boundary · 5 min -->
 <section class="slide" data-n="5">
   <div class="kicker" style="--k:var(--violet)">Who does what</div>
   <h2 class="title">The model only proposes a call. Your program runs it</h2>
   <div class="body" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1.9fr 1fr;gap:36px;align-items:center;flex:none;">
-      <img src="assets/v2/img/model_proposes.png" alt="" style="width:100%;border-radius:14px;">
+    <div class="row" style="grid-template-columns:960px 1fr;gap:36px;align-items:center;flex:none;">
+      <div style="position:relative;width:960px;height:540px"><svg width="960" height="540" style="position:absolute;left:0;top:0"><defs><marker id="bv" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#c084fc"/></marker><marker id="ba" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#fbbf24"/></marker></defs><path d="M 372 158 H 516" stroke="#c084fc" stroke-width="4" fill="none" marker-end="url(#bv)"/><path d="M 740 494 V 522 H 120 V 240" stroke="#fbbf24" stroke-width="4" fill="none" marker-end="url(#ba)"/></svg><div style="position:absolute;left:455px;top:44px;height:496px;border-left:3px dashed #38bdf8"></div><div style="position:absolute;left:355px;top:0;width:200px;text-align:center;font:600 20px var(--body);color:var(--cyan)">trust boundary</div><div style="position:absolute;left:0;top:0;width:380px;display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="54" height="54" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--violet);flex:none"><path d="M5 6h22a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H13l-6 5v-5H5a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3z"/><circle cx="10" cy="15" r="1.4" fill="currentColor"/><circle cx="16" cy="15" r="1.4" fill="currentColor"/><circle cx="22" cy="15" r="1.4" fill="currentColor"/></svg><div style="font:800 30px var(--display);color:var(--fg)">Model</div></div><div style="position:absolute;left:10px;top:122px;width:360px;padding:16px 20px;border:2px solid var(--violet);border-radius:14px;background:var(--surface-card)"><div style="font:600 20px var(--body);color:var(--violet)">proposes a call:</div><div style="font:500 22px/1.35 var(--mono);color:var(--fg);margin-top:6px">get_order_status<br>(order_id="417")</div></div><div style="position:absolute;left:520px;top:0;width:440px;display:flex;flex-direction:column;align-items:center;gap:6px"><svg width="54" height="54" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan);flex:none"><rect x="3" y="5" width="26" height="22" rx="3"/><path d="M3 11h26"/><circle cx="7.5" cy="8" r="1" fill="currentColor"/><circle cx="11" cy="8" r="1" fill="currentColor"/></svg><div style="font:800 30px var(--display);color:var(--fg)">Your program</div></div><div style="position:absolute;left:520px;top:122px"><div style="display:flex;align-items:center;gap:16px;width:440px;height:72px;padding:0 20px;border:2px solid var(--cyan);border-radius:14px;background:var(--surface-card);font:600 21px/1.2 var(--body);color:var(--fg)"><svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan);flex:none"><circle cx="13" cy="13" r="8"/><path d="M19 19l8 8"/></svg><span>check the arguments</span></div><div style="width:440px;height:20px;display:flex;justify-content:center;color:#64748b;font:700 20px/20px var(--body)">↓</div><div style="display:flex;align-items:center;gap:16px;width:440px;height:72px;padding:0 20px;border:2px solid var(--amber);border-radius:14px;background:var(--surface-card);font:600 21px/1.2 var(--body);color:var(--fg)"><svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--amber);flex:none"><path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z"/><path d="M11 16l4 4 7-8"/></svg><span>ask a human for risky actions</span></div><div style="width:440px;height:20px;display:flex;justify-content:center;color:#64748b;font:700 20px/20px var(--body)">↓</div><div style="display:flex;align-items:center;gap:16px;width:440px;height:72px;padding:0 20px;border:2px solid var(--cyan);border-radius:14px;background:var(--surface-card);font:600 21px/1.2 var(--body);color:var(--fg)"><svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan);flex:none"><circle cx="16" cy="16" r="12"/><path d="M13 10.5l9 5.5-9 5.5z"/></svg><span>run the function</span></div><div style="width:440px;height:20px;display:flex;justify-content:center;color:#64748b;font:700 20px/20px var(--body)">↓</div><div style="display:flex;align-items:center;gap:16px;width:440px;height:72px;padding:0 20px;border:2px solid var(--cyan);border-radius:14px;background:var(--surface-card);font:600 21px/1.2 var(--body);color:var(--fg)"><svg width="36" height="36" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan);flex:none"><path d="M8 3h12l6 6v20H8z"/><path d="M20 3v6h6M12 15h10M12 20h10M12 25h6"/></svg><span>log it</span></div></div><div style="position:absolute;left:150px;top:478px;font:700 21px var(--body);color:var(--amber);background:var(--bg);padding:0 8px">the result goes back to the model</div></div>
       <div class="stack" style="gap:20px;">
         <div class="note" style="--k:var(--cyan)"><b>Trust boundary</b>: on the left a model that can be wrong; on the right your program, which decides whether to run it.</div>
         <div class="note" style="--k:var(--amber)"><b>Risky actions</b> (refund money, send an email) — only after a human confirms.</div>
@@ -550,10 +563,10 @@ code { font-size: max(18px, .88em); }
   <div class="kicker" style="--k:var(--green)">Demo • step 1</div>
   <h2 class="title">Demo: the model does not answer right away, it asks for a function call</h2>
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.8fr 1fr;gap:36px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:36px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
-        <div class="prompt-label">Google AI Studio · Gemini 3.8 Flash · free · captured 16.10.2026</div>
-        <div class="shot" style=""><img src="assets/v2/img/aistudio_fn_call.png" alt=""><div class="co" style="left:2.0%;top:3.0%;width:38.0%;height:10.0%;--k:var(--cyan)"></div><div class="co" style="left:2.1%;top:37.8%;width:96.0%;height:30.5%;--k:var(--violet)"></div><div class="co" style="left:3.3%;top:77.0%;width:93.4%;height:10.0%;--k:var(--amber)"></div><div class="bn" style="left:41.0%;top:8.0%;--k:var(--cyan)">1</div><div class="bn" style="left:97.0%;top:52.0%;--k:var(--violet)">2</div><div class="bn" style="left:97.0%;top:82.0%;--k:var(--amber)">3</div></div>
+        <div class="prompt-label">AI Studio · Gemini 3.8 Flash · free · 16.10.2026</div>
+        <div class="shot" style=""><img src="assets/v2/img/aistudio_fn_call.png" alt=""><div class="co" style="left:0.8%;top:0.8%;width:66.0%;height:15.0%;--k:var(--cyan)"></div><div class="co" style="left:2.4%;top:37.0%;width:95.5%;height:29.0%;--k:var(--violet)"></div><div class="co" style="left:4.0%;top:77.5%;width:92.5%;height:10.5%;--k:var(--amber)"></div><div class="bn" style="left:69.5%;top:8.0%;--k:var(--cyan)">1</div><div class="bn" style="left:97.0%;top:52.0%;--k:var(--violet)">2</div><div class="bn" style="left:40.5%;top:74.0%;--k:var(--amber)">3</div></div>
       </div>
       <div class="stack" style="gap:20px;">
         <div class="legend"><div style="--k:var(--cyan)"><i>1</i><span><b>The user’s question</b></span></div><div style="--k:var(--violet)"><i>2</i><span><b>Function call</b>: name and argument <code>order_id: "417"</code></span></div><div style="--k:var(--amber)"><i>3</i><span><b>Function response field</b>: here you play the program</span></div></div>
@@ -569,10 +582,10 @@ code { font-size: max(18px, .88em); }
   <div class="kicker" style="--k:var(--green)">Demo • step 2</div>
   <h2 class="title">Return the result, and the model puts it into plain words</h2>
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.8fr 1fr;gap:36px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:1000px 1fr;gap:36px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">The same chat after the function response</div>
-        <div class="shot" style=""><img src="assets/v2/img/aistudio_fn_done.png" alt=""><div class="co" style="left:2.0%;top:63.5%;width:96.0%;height:9.0%;--k:var(--amber)"></div><div class="co" style="left:1.5%;top:84.5%;width:68.0%;height:8.5%;--k:var(--green)"></div><div class="bn" style="left:97.0%;top:68.0%;--k:var(--amber)">1</div><div class="bn" style="left:71.5%;top:89.0%;--k:var(--green)">2</div></div>
+        <div class="shot" style=""><img src="assets/v2/img/aistudio_fn_done.png" alt=""><div class="co" style="left:1.2%;top:59.2%;width:94.0%;height:22.0%;--k:var(--amber)"></div><div class="co" style="left:0.3%;top:87.5%;width:93.6%;height:10.0%;--k:var(--green)"></div><div class="bn" style="left:97.5%;top:70.0%;--k:var(--amber)">1</div><div class="bn" style="left:97.5%;top:92.0%;--k:var(--green)">2</div></div>
       </div>
       <div class="stack" style="gap:18px;">
         <div class="legend"><div style="--k:var(--amber)"><i>1</i><span><b>Function response</b> (synthetic data)</span></div></div>
@@ -590,11 +603,11 @@ code { font-size: max(18px, .88em); }
   <div class="kicker" style="--k:var(--cyan)">Built-in tools</div>
   <h2 class="title">Some tools come built in: code, search, reading pages</h2>
   <div class="body" style="margin-top:10px;">
-    <div class="row" style="grid-template-columns:420px 1fr;gap:48px;align-items:center;flex:none;">
-      <div class="stack" style="gap:8px;"><div class="prompt-label">AI Studio · Tools</div><div class="shot" style="max-width:420px"><img src="assets/v2/img/aistudio_tools_panel.png" alt=""><div class="co" style="left:2.0%;top:29.0%;width:96.0%;height:14.0%;--k:var(--cyan)"></div><div class="co" style="left:2.0%;top:58.0%;width:96.0%;height:14.0%;--k:var(--green)"></div><div class="co" style="left:2.0%;top:86.0%;width:96.0%;height:13.0%;--k:var(--amber)"></div><div class="co" style="left:2.0%;top:44.0%;width:96.0%;height:13.0%;--k:var(--violet)"></div><div class="bn" style="left:92.0%;top:36.0%;--k:var(--cyan)">1</div><div class="bn" style="left:92.0%;top:65.0%;--k:var(--green)">2</div><div class="bn" style="left:92.0%;top:93.6%;--k:var(--amber)">3</div><div class="bn" style="left:92.0%;top:50.6%;--k:var(--violet)">★</div></div></div>
+    <div class="row" style="grid-template-columns:500px 1fr;gap:56px;align-items:center;flex:none;">
+      <div class="stack" style="gap:8px;"><div class="prompt-label">AI Studio · Tools</div><div class="shot" style="max-width:500px"><img src="assets/v2/img/aistudio_tools_panel.png" alt=""><div class="co" style="left:2.0%;top:29.0%;width:96.0%;height:14.0%;--k:var(--cyan)"></div><div class="co" style="left:2.0%;top:58.0%;width:96.0%;height:14.0%;--k:var(--green)"></div><div class="co" style="left:2.0%;top:86.0%;width:96.0%;height:13.0%;--k:var(--amber)"></div><div class="co" style="left:2.0%;top:44.0%;width:96.0%;height:13.0%;--k:var(--violet)"></div><div class="bn" style="left:92.0%;top:36.0%;--k:var(--cyan)">1</div><div class="bn" style="left:92.0%;top:65.0%;--k:var(--green)">2</div><div class="bn" style="left:92.0%;top:93.6%;--k:var(--amber)">3</div><div class="bn" style="left:92.0%;top:50.6%;--k:var(--violet)">★</div></div></div>
       <div class="stack" style="gap:18px;">
-        <div class="legend"><div style="--k:var(--cyan)"><i>1</i><span><b>Code execution</b>: compute, draw a chart<br><span style='font-size:18px'>Gemini · ChatGPT · Claude</span></span></div><div style="--k:var(--green)"><i>2</i><span><b>Web search</b>: fresh facts with links<br><span style='font-size:18px'>Gemini · ChatGPT · Claude</span></span></div><div style="--k:var(--amber)"><i>3</i><span><b>Reading pages and files</b>: answer from a document<br><span style='font-size:18px'>Google: URL context · OpenAI: file search · Anthropic: web fetch</span></span></div></div>
-        <div class="note" style="--k:var(--violet)"><b>1–3 built-in</b>: the vendor runs them. <b>★ Function calling</b>: your own function (orders, CRM, stock) is run by your program.</div>
+        <div class="legend" style="gap:22px;font-size:23px"><div style="--k:var(--cyan)"><i>1</i><span><b>Code execution</b>: compute, draw a chart<br><span style='font-size:19px'>Gemini · ChatGPT · Claude</span></span></div><div style="--k:var(--green)"><i>2</i><span><b>Web search</b>: fresh facts with links<br><span style='font-size:19px'>Gemini · ChatGPT · Claude</span></span></div><div style="--k:var(--amber)"><i>3</i><span><b>Reading pages and files</b>: answer from a document<br><span style='font-size:19px'>Google: URL context · OpenAI: file search · Anthropic: web fetch</span></span></div></div>
+        <div class="note" style="--k:var(--violet);font-size:23px"><b>1–3 built-in</b>: the vendor runs them. <b>★ Function calling</b>: your own function (orders, CRM, stock) is run by your program.</div>
       </div>
     </div>
   </div>
@@ -607,12 +620,12 @@ code { font-size: max(18px, .88em); }
   <h2 class="title">The model picks a tool by its description. Write it like a task for an intern</h2>
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:1fr 1fr;gap:32px;flex:none;align-items:stretch;">
-      <div class="vopt" style="--k:var(--red)"><div class="h" style="font-size:24px">✗ Weak</div><pre class="code" style="font-size:20px;margin:10px 0;white-space:pre-wrap">get_data
-"Gets data."</pre><div class="ex" style="font-size:20px">Which data? When to call it? The model has to guess.</div></div>
-      <div class="vopt" style="--k:var(--green)"><div class="h" style="font-size:24px">✓ Good</div><pre class="code" style="font-size:20px;margin:10px 0;white-space:pre-wrap">get_order_status
-"Current status, courier and ETA of ONE delivery order by its number. Use when the customer asks where an order is."</pre><div class="ex" style="font-size:20px">What it does, what for and when to call it. One tool, one job.</div></div>
+      <div class="vopt" style="--k:var(--red);padding:30px 30px"><div class="h" style="font-size:30px">✗ Weak</div><pre class="code" style="font-size:23px;line-height:1.55;margin:16px 0;white-space:pre-wrap">get_data
+"Gets data."</pre><div class="ex" style="font-size:23px">Which data? When to call it? The model has to guess.</div></div>
+      <div class="vopt" style="--k:var(--green);padding:30px 30px"><div class="h" style="font-size:30px">✓ Good</div><pre class="code" style="font-size:23px;line-height:1.55;margin:16px 0;white-space:pre-wrap">get_order_status
+"Current status, courier and arrival time of ONE delivery order by its number. Use when the customer asks where an order is."</pre><div class="ex" style="font-size:23px">What it does, what for and when to call it. One tool, one job.</div></div>
     </div>
-    <div class="note" style="margin-top:26px;--k:var(--amber)">If two tools sound alike (<code>get_order</code> and <code>find_order</code>), the model will mix them up. Rename or merge them.</div>
+    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--amber)">If two tools sound alike (<code>get_order</code> and <code>find_order</code>), the model will mix them up. Rename or merge them.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>09 / 21</span></div>
   <template class="notes"><p>⏱ 4 min. The most common reason an agent “acts dumb”: poor tool descriptions. The model does not read your code; it sees only the name and description. get_data “Gets data” — unclear which data and when. A good description answers three questions: what it does, what for, when to call it.</p><p>The rule “one tool, one job”. Three narrow functions (find an order, get the status, create a return) beat one do_everything. It is also safer: the refund can be gated separately behind a human confirmation.</p></template>
@@ -622,8 +635,8 @@ code { font-size: max(18px, .88em); }
   <div class="kicker" style="--k:var(--violet)">Agent</div>
   <h2 class="title">An agent = a model + tools + a loop until the task is done</h2>
   <div class="body" style="margin-top:4px;">
-    <div class="row" style="grid-template-columns:1.75fr 1fr;gap:32px;align-items:center;flex:none;">
-      <img src="assets/v2/img/agent_loop_crop.png" alt="" style="width:100%;border-radius:14px;">
+    <div class="row" style="grid-template-columns:880px 1fr;gap:40px;align-items:center;flex:none;">
+      <div style="position:relative;width:880px;height:560px"><svg width="880" height="560" style="position:absolute;left:0;top:0"><defs><marker id="la" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#64748b"/></marker><marker id="lg" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#34d399"/></marker></defs><path d="M 380 130 Q 450 160 465 182" fill="none" stroke="#64748b" stroke-width="4" marker-end="url(#la)"/><path d="M 455 372 Q 420 430 382 445" fill="none" stroke="#64748b" stroke-width="4" marker-end="url(#la)"/><path d="M 198 445 Q 150 420 125 373" fill="none" stroke="#64748b" stroke-width="4" marker-end="url(#la)"/><path d="M 115 185 Q 160 120 196 112" fill="none" stroke="#64748b" stroke-width="4" marker-end="url(#la)"/><path d="M 388 100 H 600" stroke="#34d399" stroke-width="4" fill="none" marker-end="url(#lg)"/></svg><div style="position:absolute;left:196px;top:6px;width:188px;height:188px;border-radius:50%;border:4px solid var(--violet);background:var(--surface-card);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 14px"><div style="width:36px;height:36px;border-radius:50%;background:var(--violet);color:#0b0f17;font:800 20px/36px var(--body)">1</div><div style="font:700 22px/1.15 var(--body);color:var(--fg);margin-top:6px">Model thinks</div></div><div style="position:absolute;left:386px;top:186px;width:188px;height:188px;border-radius:50%;border:4px solid var(--violet);background:var(--surface-card);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 14px"><div style="width:36px;height:36px;border-radius:50%;background:var(--violet);color:#0b0f17;font:800 20px/36px var(--body)">2</div><div style="font:700 22px/1.15 var(--body);color:var(--fg);margin-top:6px">Picks a tool</div></div><div style="position:absolute;left:196px;top:366px;width:188px;height:188px;border-radius:50%;border:4px solid var(--cyan);background:var(--surface-card);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 14px"><div style="width:36px;height:36px;border-radius:50%;background:var(--cyan);color:#0b0f17;font:800 20px/36px var(--body)">3</div><div style="font:700 22px/1.15 var(--body);color:var(--fg);margin-top:6px">The program runs it</div></div><div style="position:absolute;left:6px;top:186px;width:188px;height:188px;border-radius:50%;border:4px solid var(--amber);background:var(--surface-card);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 14px"><div style="width:36px;height:36px;border-radius:50%;background:var(--amber);color:#0b0f17;font:800 20px/36px var(--body)">4</div><div style="font:700 22px/1.15 var(--body);color:var(--fg);margin-top:6px">Result goes back</div></div><div style="position:absolute;left:375px;top:380px;width:210px;text-align:center;font:500 18px var(--mono);color:var(--violet);border:2px solid var(--violet);border-radius:8px;padding:3px 0;background:var(--bg)">get_order_status</div><div style="position:absolute;left:400px;top:58px;width:200px;text-align:center;font:600 18px/1.2 var(--body);color:var(--green)">no tool needed</div><div style="position:absolute;left:612px;top:62px;width:260px;height:76px;border:3px solid var(--green);border-radius:14px;display:flex;align-items:center;justify-content:center;font:800 25px var(--display);color:var(--green);background:var(--surface-card)">Final answer</div><div style="position:absolute;left:52px;top:62px;width:132px;padding:8px 6px;border:3px solid var(--red);border-radius:12px;text-align:center;font:700 19px/1.2 var(--body);color:var(--red);background:var(--bg)">limit:<br>5 steps</div><div style="position:absolute;left:195px;top:230px;width:190px;text-align:center;font:800 24px/1.2 var(--display);color:var(--fg)">Goal:<div style="font:500 20px/1.25 var(--body);color:var(--muted);margin-top:4px">answer the customer</div></div></div>
       <div class="stack" style="gap:18px;">
         <div class="note" style="--k:var(--violet)">Steps 1→4 repeat: the model may call several tools in a row, as Claude did on slide 3.</div>
         <div class="note" style="--k:var(--green)">The loop ends when the model needs no more tools: it writes the <b>final answer</b>.</div>
@@ -632,7 +645,7 @@ code { font-size: max(18px, .88em); }
     </div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>10 / 21</span></div>
-  <template class="notes"><p>⏱ 5 min. Now we can define an agent without magic. An agent is a model with tools plus a program that runs a loop: the model thinks, picks a tool, the program runs it, the result goes back to the model, and round again until the model needs no more tools. Then it writes the final answer.</p><p>This is how the vendors describe it too: OpenAI and Anthropic describe an agent as a system in which the model plans its own steps and calls tools to complete a task. The mandatory safety catch is a step limit. In the Gemini Python library, for example, automatic function calling stops after 10 calls by default. Add limits on money and time too.</p></template>
+  <template class="notes"><p>⏱ 5 min. Now we can define an agent without magic. An agent is a model with tools plus a program that runs a loop: the model thinks, picks a tool, the program runs it, the result goes back to the model, and round again until the model needs no more tools. Then it writes the final answer.</p><p>This is how the vendors describe it too: OpenAI and Anthropic describe an agent as a system in which the model plans its own steps and calls tools to complete a task. The mandatory safety catch is a step limit. In the Gemini Python library, for example, automatic function calling stops after 10 calls by default. Add limits on money and time too.</p><p>The diagram's limit of 5 is yours to set; 10 is just the default.</p></template>
 </section>
 <!-- SLIDE 11 · s_code · 5 min -->
 <section class="slide" data-n="11">
@@ -644,7 +657,7 @@ code { font-size: max(18px, .88em); }
 from google.genai import types
 
 def get_order_status(order_id: str) -> dict:
-    """<span style='color:var(--amber)'>Current status and ETA of one delivery order.</span>"""
+    """<span style='color:var(--amber)'>Current status and arrival time of one delivery order.</span>"""
     return {"status": "on the way", "courier": "Anna", "eta_minutes": 12}
 
 client = genai.Client()          # key from GEMINI_API_KEY
@@ -661,7 +674,7 @@ print(r.text)</pre></div>
     </div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>11 / 21</span></div>
-  <template class="notes"><p>⏱ 5 min. For those who code. In the google-genai library you write a plain Python function with type hints and a docstring: the docstring becomes the tool description, the type becomes the parameter. Pass the function in tools and the library runs the loop: it receives the call from the model, runs the function, sends the result back and returns the final text. This is automatic function calling; by default at most 10 calls.</p><p>For reference: OpenAI takes tools in the Responses API (the tools field; GPT-6 Astra and GPT-6.1 Sol call tools only through the Responses API); Anthropic uses tool_use and tool_result blocks in the Messages API. Google now recommends the Interactions API for new projects, but generate_content from the example is fully supported. The example was not run for this lesson: it needs a Gemini API key; test it with your own key before showing it.</p></template>
+  <template class="notes"><p>⏱ 5 min. For those who code. In the google-genai library you write a plain Python function with type hints and a docstring: the docstring becomes the tool description, the type becomes the parameter. Pass the function in tools and the library runs the loop: it receives the call from the model, runs the function, sends the result back and returns the final text. This is automatic function calling; by default at most 10 calls.</p><p>For reference: OpenAI takes tools in the Responses API (the tools field); Anthropic uses tool_use and tool_result blocks in the Messages API. Google now recommends the Interactions API for new projects, but generate_content from the example is fully supported. The example was not run for this lesson: it needs a Gemini API key; test it with your own key before showing it.</p></template>
 </section>
 <!-- SLIDE 12 · s_local · 4 min -->
 <section class="slide" data-n="12">
@@ -669,10 +682,10 @@ print(r.text)</pre></div>
   <h2 class="title">Local models can call functions too, but they make more mistakes</h2>
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:1fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="stack" style="gap:12px;"><div class="prompt-label">Tool-capable in Ollama and LM Studio, October 2026</div><div class="light" style="gap:12px"><div class="lrow" style="--k:var(--green)"><div class="dot"></div><div><div class="h">Qwen3.5</div><div class="d">0.8 to 122 billion parameters · small sizes fit a laptop</div></div></div><div class="lrow" style="--k:var(--green)"><div class="dot"></div><div><div class="h">Granite 4.2</div><div class="d">3, 8 and 30 billion parameters · small sizes fit a laptop</div></div></div><div class="lrow" style="--k:var(--amber)"><div class="dot"></div><div><div class="h">gpt-oss-20b</div><div class="d">≈ 16 GB memory · needs a GPU</div></div></div></div></div>
-      <div class="stack" style="gap:18px;">
-        <div class="note" style="--k:var(--violet)">The same idea locally: <code>localhost:1234</code> (LM Studio) and <code>localhost:11434</code> (Ollama) accept OpenAI-format tools. Use the <code>openai</code> library, as in L10, not google-genai.</div>
-        <div class="note" style="--k:var(--amber)">A small model more often picks the wrong tool or argument format. Start with 1–2 simple functions and test.</div>
+      <div class="stack" style="gap:12px;"><div class="prompt-label">Tool-capable in Ollama and LM Studio, October 2026</div><div class="light" style="gap:18px"><div class="lrow" style="--k:var(--green);padding:26px 24px"><div class="dot" style="margin-top:6px"></div><div><div class="h" style="font-size:30px">Qwen3.5</div><div class="d" style="font-size:22px;margin-top:6px">0.8 to 122 billion parameters</div><div class="d" style="font-size:22px;color:var(--fg)">small sizes fit a laptop</div></div></div><div class="lrow" style="--k:var(--green);padding:26px 24px"><div class="dot" style="margin-top:6px"></div><div><div class="h" style="font-size:30px">Granite 4.2</div><div class="d" style="font-size:22px;margin-top:6px">3, 8 and 30 billion parameters</div><div class="d" style="font-size:22px;color:var(--fg)">small sizes fit a laptop</div></div></div><div class="lrow" style="--k:var(--amber);padding:26px 24px"><div class="dot" style="margin-top:6px"></div><div><div class="h" style="font-size:30px">gpt-oss-20b</div><div class="d" style="font-size:22px;margin-top:6px">≈ 16 GB memory</div><div class="d" style="font-size:22px;color:var(--fg)">needs a strong laptop or PC</div></div></div></div></div>
+      <div class="stack" style="gap:28px;">
+        <div class="note" style="--k:var(--violet);font-size:23px">The same idea locally: <code>localhost:1234</code> (LM Studio) and <code>localhost:11434</code> (Ollama) accept OpenAI-format tools. Use the <code>openai</code> library, as in L10, not google-genai.</div>
+        <div class="note" style="--k:var(--amber);font-size:23px">A small model more often picks the wrong tool or argument format. Start with 1–2 simple functions and test.</div>
       </div>
     </div>
   </div>
@@ -685,28 +698,29 @@ print(r.text)</pre></div>
   <h2 class="title">A coding agent can build your first agent from one prompt</h2>
   <div class="body" style="margin-top:8px;">
     <div class="row" style="grid-template-columns:1.5fr 1fr;gap:36px;align-items:center;flex:none;">
-      <div><div class="prompt-label">Prompt for Claude Code, Codex or Antigravity</div><pre class="code" style="font-size:19px;line-height:1.55;white-space:pre-wrap">Build a small Python support agent for a courier service. Synthetic data only.
+      <div><div class="prompt-label">Prompt for a coding agent: Codex in ChatGPT or Antigravity (free, with limits), Claude Code (paid)</div><pre class="code" style="font-size:23px;line-height:1.7;white-space:pre-wrap;padding:30px 30px">Build a small Python support agent for a courier service. Synthetic data only.
 1. Two functions: get_order_status(order_id) and create_return(order_id, reason), data from orders.json (5 orders).
 2. Run create_return only after I confirm in the console (y/n).
 3. Model: Gemini 3.8 Flash via google-genai, at most 5 calls per question.
 4. Log every call: time, function, arguments, result.
 5. Show 3 example dialogues and what is in the log.</pre></div>
-      <div class="stack" style="gap:18px;">
-        <div class="note" style="--k:var(--green)">The prompt already has every rule of the lesson: <b>narrow functions</b>, <b>confirmation</b> for the risky action, a <b>step limit</b>, a <b>log</b>.</div>
-        <div class="note" style="--k:var(--amber)">You need your own Gemini API key (free tier in AI Studio → Get API key).</div>
+      <div class="stack" style="gap:28px;">
+        <div class="note" style="--k:var(--green);font-size:23px">The prompt already has every rule of the lesson: <b>narrow functions</b>, <b>confirmation</b> for the risky action, a <b>step limit</b>, a <b>log</b>.</div>
+        <div class="note" style="--k:var(--amber);font-size:23px">You need your own Gemini API key (free tier with a daily limit: AI Studio → Get API key; enough for 3–4 test dialogues).</div>
       </div>
     </div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>13 / 21</span></div>
-  <template class="notes"><p>⏱ 4 min. A link to the coding-agent lessons. You do not have to hand-write your first agent. This prompt describes a small support agent: two functions, data in a file, a confirmation before a return, a 5-call limit and a log. A coding agent (Claude Code, Codex, Antigravity) writes the code, runs it and shows examples.</p><p>Note that we put every safety rule into the task up front rather than hoping the agent guesses. A Gemini API key is free from Google AI Studio (Get API key); keep it in an environment variable, not in code. This is an optional homework path.</p></template>
+  <template class="notes"><p>⏱ 4 min. A link to the coding-agent lessons. You do not have to hand-write your first agent. This prompt describes a small support agent: two functions, data in a file, a confirmation before a return, a 5-call limit and a log. A coding agent (Codex, Antigravity, Claude Code) writes the code, runs it and shows examples. What a coding agent is and how to choose one: L16.</p><p>Note that we put every safety rule into the task up front rather than hoping the agent guesses. A Gemini API key is free from Google AI Studio (Get API key); keep it in an environment variable, not in code. This is an optional homework path.</p></template>
 </section>
 <!-- SLIDE 14 · s_market · 4 min -->
 <section class="slide" data-n="14">
   <div class="kicker" style="--k:var(--amber)">Market • October 2026</div>
   <h2 class="title">Where agents live now: in chat apps, in developer kits, on your machine</h2>
   <div class="body" style="margin-top:12px;">
-    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:30px;flex:none;align-items:start;"><div class="task" style="--k:var(--cyan);padding:24px 26px;align-items:flex-start"><div><div class="h" style="font-size:26px">Ready-made agents in chat apps</div><div class="d" style="font-size:21px;margin-top:8px">the agent is inside the app: buttons and plans</div><div class="d" style="font-size:20px;margin-top:12px;color:var(--fg)">ChatGPT Work · Claude · Gemini Tasks</div></div></div><div class="task" style="--k:var(--violet);padding:24px 26px;align-items:flex-start"><div><div class="h" style="font-size:26px">Builders for developers</div><div class="d" style="font-size:21px;margin-top:8px">kits to build your own agent in code</div><div class="d" style="font-size:20px;margin-top:12px;color:var(--fg)">OpenAI Agents SDK · Claude Agent SDK · Gemini API</div></div></div><div class="task" style="--k:var(--green);padding:24px 26px;align-items:flex-start"><div><div class="h" style="font-size:26px">Your own models</div><div class="d" style="font-size:21px;margin-top:8px">the agent runs entirely on your machine, as in L10</div><div class="d" style="font-size:20px;margin-top:12px;color:var(--fg)">LM Studio · Ollama · Qwen3.5 · Granite 4.2 · gpt-oss-20b</div></div></div></div>
-    <div class="note" style="margin-top:30px;--k:var(--amber)">Names change fast: ChatGPT agent was replaced by ChatGPT Work; OpenAI Agent Builder shuts down on 30.11.2026. Learn the mechanism, not the buttons.</div>
+    <div style="position:relative;height:30px;margin:0 0 14px"><div style="position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--green))"></div><div style="position:absolute;left:16.2%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--cyan);border:4px solid var(--bg)"></div><div style="position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--violet);border:4px solid var(--bg)"></div><div style="position:absolute;left:83.8%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--green);border:4px solid var(--bg)"></div></div><div style="display:flex;justify-content:space-between;font:600 22px var(--body);color:var(--muted);margin-bottom:22px"><span>← quicker to start, less control</span><span>more control, more work →</span></div>
+    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:30px;flex:none;align-items:stretch;"><div class="task" style="--k:var(--cyan);padding:32px 30px;align-items:flex-start;min-height:380px"><div><div class="h" style="font-size:29px">Ready-made agents in chat apps</div><div class="d" style="font-size:23px;margin-top:12px">the agent is inside the app: buttons and plans</div><div class="d" style="font-size:24px;margin-top:20px;color:var(--fg)">ChatGPT Work · Claude · Gemini Tasks</div></div></div><div class="task" style="--k:var(--violet);padding:32px 30px;align-items:flex-start;min-height:380px"><div><div class="h" style="font-size:29px">Builders for developers</div><div class="d" style="font-size:23px;margin-top:12px">kits to build your own agent in code</div><div class="d" style="font-size:24px;margin-top:20px;color:var(--fg)">OpenAI Agents SDK · Claude Agent SDK · Gemini API</div></div></div><div class="task" style="--k:var(--green);padding:32px 30px;align-items:flex-start;min-height:380px"><div><div class="h" style="font-size:29px">Your own models</div><div class="d" style="font-size:23px;margin-top:12px">the agent runs entirely on your machine, as in L10</div><div class="d" style="font-size:24px;margin-top:20px;color:var(--fg)">LM Studio · Ollama · Qwen3.5 · Granite 4.2 · gpt-oss-20b</div></div></div></div>
+    <div class="note" style="margin-top:34px;font-size:22px;--k:var(--amber)">Names change fast: ChatGPT agent was replaced by ChatGPT Work; OpenAI Agent Builder shuts down on 30.11.2026. Learn the mechanism, not the buttons.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>14 / 21</span></div>
   <template class="notes"><p>⏱ 4 min. Three places where you meet agents today. In chat apps: ChatGPT Work (launched in July 2026, replacing ChatGPT agent), Claude with search, code and connectors, Gemini with Tasks (needs Pro or Ultra, not yet available in the EEA (including the EU), UK, Switzerland or Nigeria).</p><p>For developers: the OpenAI Agents SDK (the openai-agents package) and the new Agents API, the Claude Agent SDK, the Gemini API with automatic function calling in the google-genai library. The visual OpenAI Agent Builder shuts down on 30 November 2026; we do not use it in class projects. And your own models from L10. Names change every few months; the mechanism does not.</p></template>
@@ -729,8 +743,11 @@ print(r.text)</pre></div>
   <h2 class="title">Tools give the model hands. The main risk is someone else’s text giving it orders</h2>
   <div class="body" style="margin-top:10px;">
     <div class="row" style="grid-template-columns:1.25fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="light" style="gap:14px"><div class="lrow" style="--k:var(--red)"><div class="dot"></div><div><div class="h">Prompt injection</div><div class="d">a fetched page or email says “transfer the money” — the model may obey</div></div></div><div class="lrow" style="--k:var(--amber)"><div class="dot"></div><div><div class="h">Action without asking</div><div class="d">the agent sent an email or created a refund on its own</div></div></div><div class="lrow" style="--k:var(--amber)"><div class="dot"></div><div><div class="h">Endless loop</div><div class="d">the agent goes round in circles burning money</div></div></div><div class="lrow" style="--k:var(--violet)"><div class="dot"></div><div><div class="h">Too much access</div><div class="d">the support bot can delete orders</div></div></div></div>
-      <div class="plaque" style="font-size:22px;line-height:1.5"><b>Defences:</b> least privilege for every tool · human confirmation for actions with consequences · step and money limits · a log of every call · tool results are data, not commands.</div>
+      <div class="light" style="gap:18px"><div class="lrow" style="--k:var(--red);padding:26px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:27px">Prompt injection</div><div class="d" style="font-size:22px;margin-top:4px">a fetched page or email says “transfer the money” — the model may obey</div></div></div><div class="lrow" style="--k:var(--amber);padding:26px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:27px">Action without asking</div><div class="d" style="font-size:22px;margin-top:4px">the agent sent an email or created a refund on its own</div></div></div><div class="lrow" style="--k:var(--amber);padding:26px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:27px">Endless loop</div><div class="d" style="font-size:22px;margin-top:4px">the agent goes round in circles burning money</div></div></div><div class="lrow" style="--k:var(--violet);padding:26px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:27px">Too much access</div><div class="d" style="font-size:22px;margin-top:4px">the support bot can delete orders</div></div></div></div>
+      <div class="stack" style="gap:22px;">
+        <div style="font:800 32px var(--display);color:var(--green)">Defences live in code</div>
+        <div style="display:flex;gap:14px;align-items:baseline;font:500 25px/1.35 var(--body);color:var(--fg)"><span style="color:var(--green);font-weight:800">✓</span><span>least privilege for every tool</span></div><div style="display:flex;gap:14px;align-items:baseline;font:500 25px/1.35 var(--body);color:var(--fg)"><span style="color:var(--green);font-weight:800">✓</span><span>a human confirms actions with consequences</span></div><div style="display:flex;gap:14px;align-items:baseline;font:500 25px/1.35 var(--body);color:var(--fg)"><span style="color:var(--green);font-weight:800">✓</span><span>step and money limits</span></div><div style="display:flex;gap:14px;align-items:baseline;font:500 25px/1.35 var(--body);color:var(--fg)"><span style="color:var(--green);font-weight:800">✓</span><span>a log of every call</span></div><div style="display:flex;gap:14px;align-items:baseline;font:500 25px/1.35 var(--body);color:var(--fg)"><span style="color:var(--green);font-weight:800">✓</span><span>tool results are data, not commands</span></div>
+      </div>
     </div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>16 / 21</span></div>
@@ -740,12 +757,12 @@ print(r.text)</pre></div>
 <section class="slide" data-n="17">
   <div class="kicker" style="--k:var(--amber)">Reliability</div>
   <h2 class="title">Even the best agents fail: on hard tasks, almost every second time</h2>
-  <div class="body">
+  <div class="body" style="margin-top:30px;">
     <div class="row" style="grid-template-columns:1.5fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="stack" style="gap:10px;"><div class="prompt-label">Share of tasks fully solved, best models, 2026</div><div class="bars" style="position:relative"><div class="br" style="--k:var(--green);grid-template-columns:300px 1fr"><div class="bl">Support: retail, airline, telecom<small>τ²-bench test, best score</small></div><div class="bt"><div class="bf" style="width:87.9%"></div><div class="bv" style="left:87.9%;transform:translate(-100%,-50%);color:#0b0f17;padding-right:12px">87.9%</div></div></div><div class="br" style="--k:var(--amber);grid-template-columns:300px 1fr"><div class="bl">Banking<small>a different test, τ³-bench, best</small></div><div class="bt"><div class="bf" style="width:55.2%"></div><div class="bv" style="left:55.2%">55.2%</div></div></div><div class="axis" style="grid-template-columns:300px 1fr"><div></div><div><span style="left:0.0%">0</span><span style="left:50.0%">50</span><span style="left:100.0%">100%</span></div></div></div></div>
+      <div class="stack tall" style="gap:34px;"><div class="prompt-label">Solved in one try (Pass^1), best result on each leaderboard as of 16.10.2026</div><div class="bars" style="position:relative"><div class="br" style="--k:var(--green);grid-template-columns:320px 1fr"><div class="bl">Support: retail, airline, telecom<small>τ²-bench test, best score</small></div><div class="bt"><div class="bf" style="width:87.9%"></div><div class="bv" style="left:87.9%;transform:translate(-100%,-50%);color:#0b0f17;padding-right:12px">87.9%</div></div></div><div class="br" style="--k:var(--amber);grid-template-columns:320px 1fr"><div class="bl">Banking<small>a different test, τ³-bench, best</small></div><div class="bt"><div class="bf" style="width:55.2%"></div><div class="bv" style="left:55.2%">55.2%</div></div></div><div class="axis" style="grid-template-columns:320px 1fr"><div></div><div><span style="left:0.0%">0</span><span style="left:50.0%">50</span><span style="left:100.0%">100%</span></div></div></div></div>
       <div class="stack" style="gap:20px;">
-        <div class="stat" style="--k:var(--amber)"><div class="n">≈ 1 in 2</div><div class="d">complex multi-step tasks the agent does not finish correctly</div></div>
-        <div class="note" style="--k:var(--green)">That is why a human stays in the loop wherever a mistake costs money.</div>
+        <div class="stat" style="--k:var(--amber)"><div class="n" style="font-size:72px">≈ 1 in 2</div><div class="d" style="font-size:24px">complex multi-step tasks the agent does not finish correctly</div></div>
+        <div class="note" style="--k:var(--green);font-size:23px">That is why a human stays in the loop wherever a mistake costs money.</div>
       </div>
     </div>
   </div>
@@ -755,10 +772,10 @@ print(r.text)</pre></div>
 <!-- SLIDE 18 · s_rules · 4 min -->
 <section class="slide" data-n="18">
   <div class="kicker" style="--k:var(--green)">Rules</div>
-  <h2 class="title">Four rules for your first agent</h2>
+  <h2 class="title">Four rules make an agent safe</h2>
   <div class="body" style="margin-top:12px;">
-    <div class="tasks"><div class="task" style="--k:var(--cyan);padding:22px 26px"><div><div class="h" style="font-size:28px">Narrow tools</div><div class="d" style="font-size:22px">one function, one job, a clear description</div></div></div><div class="task" style="--k:var(--green);padding:22px 26px"><div><div class="h" style="font-size:28px">Checks in code</div><div class="d" style="font-size:22px">the program checks arguments and rights, not the model</div></div></div><div class="task" style="--k:var(--amber);padding:22px 26px"><div><div class="h" style="font-size:28px">A human confirms</div><div class="d" style="font-size:22px">money, emails, deletion only after a “yes”</div></div></div><div class="task" style="--k:var(--violet);padding:22px 26px"><div><div class="h" style="font-size:28px">Limits and a log</div><div class="d" style="font-size:22px">steps, budget, a record of every call</div></div></div></div>
-    <div class="note" style="margin-top:26px;--k:var(--cyan)">This is also the homework grading checklist.</div>
+    <div class="tasks" style="gap:30px 32px"><div class="task" style="--k:var(--cyan);padding:38px 34px;min-height:225px"><div><div class="h" style="font-size:34px">Narrow tools</div><div class="d" style="font-size:25px;margin-top:12px">one function, one job, a clear description</div></div></div><div class="task" style="--k:var(--green);padding:38px 34px;min-height:225px"><div><div class="h" style="font-size:34px">Checks in code</div><div class="d" style="font-size:25px;margin-top:12px">the program checks arguments and rights, not the model</div></div></div><div class="task" style="--k:var(--amber);padding:38px 34px;min-height:225px"><div><div class="h" style="font-size:34px">A human confirms</div><div class="d" style="font-size:25px;margin-top:12px">money, emails, deletion only after a “yes”</div></div></div><div class="task" style="--k:var(--violet);padding:38px 34px;min-height:225px"><div><div class="h" style="font-size:34px">Limits and a log</div><div class="d" style="font-size:25px;margin-top:12px">steps, budget, a record of every call</div></div></div></div>
+    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--cyan)">This is also the homework grading checklist.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>18 / 21</span></div>
   <template class="notes"><p>⏱ 4 min. The lesson in four rules. Narrow tools with clear descriptions. All checks in code: the model proposes, the program verifies. A human confirms actions with consequences. Step and money limits plus a call log.</p><p>The same four points are the homework grading criteria: the reviewer looks at the function descriptions, where the confirmation is and at the limit.</p></template>
@@ -766,13 +783,13 @@ print(r.text)</pre></div>
 <!-- SLIDE 19 · s_exercise · 5 min -->
 <section class="slide" data-n="19">
   <div class="kicker" style="--k:var(--cyan)">Exercise</div>
-  <h2 class="title">Exercise: which tool will the support agent call?</h2>
+  <h2 class="title">A good agent knows which tool to call and what to hand to a human</h2>
   <div class="body" style="margin-top:10px;">
     <div class="row" style="grid-template-columns:1.3fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="light" style="gap:14px"><div class="lrow" style="--k:var(--cyan)"><div class="dot"></div><div><div class="h">“Where is my order 523?”</div><div class="d">→ ?</div></div></div><div class="lrow" style="--k:var(--cyan)"><div class="dot"></div><div><div class="h">“Refund me, the pizza was cold”</div><div class="d">→ ?</div></div></div><div class="lrow" style="--k:var(--cyan)"><div class="dot"></div><div><div class="h">“What are your opening hours?”</div><div class="d">→ ?</div></div></div><div class="lrow" style="--k:var(--cyan)"><div class="dot"></div><div><div class="h">“Delete my account and all orders”</div><div class="d">→ ?</div></div></div></div>
-      <div class="stack" style="gap:18px;">
-        <div class="note" style="--k:var(--violet)">The agent has two tools: <code>get_order_status</code> and <code>create_return</code>. Answers in the chat first, then we go through them together.</div>
-        <div class="note" style="--k:var(--red)">Hint: one question needs no tool, and one the agent must not carry out at all. Answers are in the speaker notes.</div>
+      <div class="light" style="gap:18px"><div class="lrow" style="--k:var(--cyan);padding:22px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:28px">“Where is my order 523?”</div><div class="d" style="font-size:22px">→ ?</div></div></div><div class="lrow" style="--k:var(--cyan);padding:22px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:28px">“Refund me, the pizza was cold”</div><div class="d" style="font-size:22px">→ ?</div></div></div><div class="lrow" style="--k:var(--cyan);padding:22px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:28px">“What are your opening hours?”</div><div class="d" style="font-size:22px">→ ?</div></div></div><div class="lrow" style="--k:var(--cyan);padding:22px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:28px">“Delete my account and all orders”</div><div class="d" style="font-size:22px">→ ?</div></div></div></div>
+      <div class="stack" style="gap:28px;">
+        <div class="note" style="--k:var(--violet);font-size:23px">The agent has two tools: <code>get_order_status</code> and <code>create_return</code>. Answers in the chat first, then we go through them together.</div>
+        <div class="note" style="--k:var(--red);font-size:23px">Hint: one question needs no tool, and one the agent must not carry out at all. Answers are in the speaker notes.</div>
       </div>
     </div>
   </div>
@@ -784,16 +801,16 @@ print(r.text)</pre></div>
   <div class="kicker" style="--k:var(--green)">Homework</div>
   <h2 class="title">Homework: design an agent’s tools and test them in AI Studio</h2>
   <div class="body" style="margin-top:10px;">
-    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:40px;align-items:center;flex:none;">
-      <ol class="checklist"><li><span>Pick a work task for an agent (support, warehouse, HR…)</span></li><li><span>Describe 2–3 functions: name, description, parameters</span></li><li><span>Repeat the AI Studio demo with your functions and synthetic data</span></li><li><span>Test 5 questions: which call the model proposed, and was it right</span></li><li><span>Describe the risks: where the confirmation goes, what limit, what is logged</span></li></ol>
-      <div class="stack" style="gap:18px;">
-        <pre class="code" style="font-size:19px;line-height:1.5">L11_homework/
+    <div class="row" style="grid-template-columns:1.3fr 1fr;gap:44px;align-items:center;flex:none;margin-top:20px">
+      <div class="big"><ol class="checklist"><li><span>Pick a work task for an agent (support, warehouse, HR…)</span></li><li><span>Describe 2–3 functions: name, description, parameters</span></li><li><span>Repeat the AI Studio demo with your functions and synthetic data</span></li><li><span>Test 5 questions: which call the model proposed, and was it right</span></li><li><span>Describe the risks: where the confirmation goes, what limit, what is logged</span></li></ol></div>
+      <div class="stack" style="gap:24px;">
+        <pre class="code" style="font-size:23px;line-height:1.7;padding:28px 30px">genai-homeworks/L11/
 ├─ README.md   # task, conclusion
 ├─ tools.md    # 2–3 functions
 ├─ demo.png    # call and answer
 └─ risks.md    # confirmation, limit</pre>
-        <div class="note" style="--k:var(--amber)">Code optional: the slide 13 prompt.</div>
-        <div class="small" style="font-size:18px">Synthetic data only. Free: Gemini 3.8 Flash in AI Studio.</div>
+        <div class="note" style="--k:var(--amber);font-size:23px">Code optional: the slide 13 prompt.</div>
+        <div class="small" style="font-size:20px">Synthetic data only. Free: Gemini 3.8 Flash in AI Studio.</div>
       </div>
     </div>
   </div>
@@ -803,10 +820,10 @@ print(r.text)</pre></div>
 <!-- SLIDE 21 · s_summary · 3 min -->
 <section class="slide" data-n="21">
   <div class="kicker" style="--k:var(--green)">Summary</div>
-  <h2 class="title">Lesson summary</h2>
+  <h2 class="title">The model proposes, the program decides, a human confirms</h2>
   <div class="body" style="margin-top:10px;">
-    <div class="tasks"><div class="task" style="--k:var(--cyan);padding:20px 24px"><div><div class="h" style="font-size:26px">The model does not know live data</div><div class="d" style="font-size:21px">without a tool it guesses</div></div></div><div class="task" style="--k:var(--violet);padding:20px 24px"><div><div class="h" style="font-size:26px">The model proposes, the program runs it</div><div class="d" style="font-size:21px">the trust boundary lives in your code</div></div></div><div class="task" style="--k:var(--green);padding:20px 24px"><div><div class="h" style="font-size:26px">Agent = model + tools + loop</div><div class="d" style="font-size:21px">with a step limit</div></div></div><div class="task" style="--k:var(--amber);padding:20px 24px"><div><div class="h" style="font-size:26px">A human in the loop for risks</div><div class="d" style="font-size:21px">money, emails, deletion</div></div></div></div>
-    <div class="note" style="margin-top:28px;--k:var(--violet)"><b>Next, L12:</b> MCP — one standard way to plug tools into any model, plus agent frameworks.</div>
+    <div class="tasks" style="gap:30px 32px"><div class="task" style="--k:var(--cyan);padding:38px 34px;min-height:215px"><div><div class="h" style="font-size:31px">The model does not know live data</div><div class="d" style="font-size:25px;margin-top:12px">without a tool it guesses</div></div></div><div class="task" style="--k:var(--violet);padding:38px 34px;min-height:215px"><div><div class="h" style="font-size:31px">The model proposes, the program runs it</div><div class="d" style="font-size:25px;margin-top:12px">the trust boundary lives in your code</div></div></div><div class="task" style="--k:var(--green);padding:38px 34px;min-height:215px"><div><div class="h" style="font-size:31px">Agent = model + tools + loop</div><div class="d" style="font-size:25px;margin-top:12px">with a step limit</div></div></div><div class="task" style="--k:var(--amber);padding:38px 34px;min-height:215px"><div><div class="h" style="font-size:31px">A human in the loop for risks</div><div class="d" style="font-size:25px;margin-top:12px">money, emails, deletion</div></div></div></div>
+    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--violet)"><b>Next, L12:</b> MCP — one standard way to plug tools into any model, plus agent frameworks.</div>
   </div>
   <div class="foot"><span>GenAI Basics • Lesson 11 • Function calling and agents</span><span>21 / 21</span></div>
   <template class="notes"><p>⏱ 3 min. Four ideas. The model does not know live data and guesses without a tool. The model only proposes a call; the program runs and checks it. An agent is a model, tools and a loop with a limit. For risky actions a human stays in the loop.</p><p>Next lesson: MCP. Today we described functions for one model by hand. MCP is a standard that lets you connect a tool once (mail, a database, files) and use it from Claude, ChatGPT, LM Studio and your own agents.</p></template>

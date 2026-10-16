@@ -1,6 +1,6 @@
 # Lesson 15 • Homework: one-page AI rules for your team
 
-**Course:** GenAI Basics • Module 4 (Idea to Product)  
+**Course:** GenAI Basics • Module 6 (Idea to Product)  
 **Submit:** the `genai-homeworks/L15/` folder in your personal GitHub repository  
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Time:** 2 hours  
@@ -14,7 +14,7 @@ Write `ai_rules.md` — AI usage rules for your team (or a fictional team from y
 
 1. **Context (3–5 lines):** the team and 3 real tasks where you use or want to use AI.
 2. **Approved tools:** which AI tools and which accounts (business / personal) may be used.
-3. **Data traffic light:** 2–3 examples from your work for green, amber and red.
+3. **Data traffic light:** 2–3 examples from your work for green (any AI), amber (only work AI) and red (only approved work AI, with permission; never a personal one).
 4. **What a human checks:** numbers, links, decisions about people, money, deletion.
 5. **Labelling:** when and how to label AI content (external publications, clients).
 6. **Incidents:** what to do on a leak, or on a suspicious call or video call asking for money; whom to tell.

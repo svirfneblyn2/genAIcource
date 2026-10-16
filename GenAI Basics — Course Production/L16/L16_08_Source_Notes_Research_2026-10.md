@@ -9,6 +9,8 @@ Primary sources checked on 2026-10-16 for the v2 rebuild. Facts are marked VERIF
 | `assets/v2/img/claude_code_auto_mode.png` | own capture of claude.ai/code, 2026-10-16: “Auto mode is now Claude Code’s default permission mode” (mouse cursor removed) |
 | `assets/v2/img/cover_terminal.png` | cover schematic generated with genai-assets |
 
+Slide 9 terminal block: real `pytest -q` output of the homework starter project (`L16_05_Homework*.md`), run locally on 2026-10-16 with Python 3.12 / pytest 9.1.1 (before the fix: `1 failed, 2 passed in 0.06s`; after a sample fix adding a `priority` parameter: `3 passed in 0.02s`; the traceback is shortened on the slide).
+
 The agent anatomy and the work loop are drawn in HTML (bilingual, readable over Teams); the generated `agent_anatomy`/`dev_loop` images were dropped (English-only, small text).
 
 ---
@@ -87,8 +89,8 @@ Other points for the lecture:
 
 Permission modes, in Claude Code's names:
 - **Manual** (`default`): only reads run without asking.
-- **acceptEdits**: file edits run without asking.
-- **plan**: read and plan only.
+- **acceptEdits**: file edits plus common filesystem commands (`mkdir`, `touch`, `rm`, `rmdir`, `mv`, `cp`, `sed`) inside the working directory run without asking; other commands still prompt (rechecked 2026-10-16 on https://code.claude.com/docs/en/permission-modes).
+- **plan**: reads files and runs shell commands to explore (reviewed by the auto classifier, or limited to the read-only set when auto is unavailable), writes a plan, no edits until you approve.
 - **auto**: a classifier model reviews actions instead of you. This is the default from v2.1.283.
 - **dontAsk**: only pre-approved tools run; everything else is denied. For CI.
 - **bypassPermissions**: no checks. Only for isolated containers or VMs.

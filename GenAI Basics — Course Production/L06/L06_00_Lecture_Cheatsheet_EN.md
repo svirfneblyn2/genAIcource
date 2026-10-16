@@ -1,6 +1,6 @@
 # 1-Page Speaker Cheatsheet • Lesson 06 (v2: 21 Slides • 90 Minutes)
 *Speaker: Ihar Rubanovich (EPAM Systems • ihar_rubanovich@epam.com)*  
-*Topic: Speech and Audio. Voice-over, sound and music for a video • facts as of 2026-10-12*  
+*Topic: Speech and Audio. Voice-over, sound and music for a video • facts as of 2026-10-16*  
 *Presentation: `presentation_L06_Speech_and_Audio_EN_v2.html` (PDF: same basename) • source: `deck_v2/build.py` • full script: `L06_02_Instructor_Script_90MIN_EN.md`*  
 *Homework: `L06_05_Homework_EN.md` • Repo: `genai-homeworks/L06/` • Collaborator: `ihar_rubanovich@epam.com`*
 
@@ -21,14 +21,14 @@
 * **04 Four tasks (4, 09–13):** text-to-speech (TTS) • speech-to-text (STT, also ASR) • speech-to-speech • music and sound effects. A voice-over uses three of them.
 * **05 How it works (4, 13–17):** text → model → audio tokens → decoder → waveform. Gemini bills 25 audio tokens/s; MusicGen 50 steps/s; studio audio 48,000 numbers/s. No reading rules inside → numbers, names, abbreviations fail.
 * **06 Audio inside video models (4, 17–21):** Veo invented “Here’s your order. Thank you. Have a good day.” (shot 1) and “Continue straight for 200 meters…” (failure clip); no dialogue in either prompt. Veo 3.1 on Vertex AI: **$0.40/s with audio, $0.20/s without** (`generateAudio`); Gemini API: always on. Exact words → separate voice.
-* **07 Step 1 script (5, 21–26):** one row per shot: time, line, words / length, effects, music. Measured 3.2 words/s; plan 2–2.5 (RU 1.8–2.2). **8 s shot ≈ 6 s speech ≈ 12–15 words.** Exercise: line for shot 4, ≤12 words.
+* **07 Step 1 script (5, 21–26):** one row per shot: time, line, words / length, effects, music. Measured 3.2 words/s: faster than plan, fits only because the lines are short; plan 2–2.5 (RU 1.8–2.2). **8 s shot ≈ 6 s speech ≈ 12–15 words.** Exercise: line for shot 4, ≤12 words.
 * **08 Step 2 spoken text (5, 26–31):** 6:42 → “six forty-two”, 417 → “four one seven” (you decide), 12 min → “twelve minutes”. Style: OpenAI `instructions`, Gemini 3.8 `style` field, ElevenLabs v3 tags `[whispers]`, pronunciation dictionaries.
 * **09 Step 3 voice (4, 31–35):** library (Gemini 30 voices, OpenAI 13) • designed from a description • clone only with written consent (ElevenLabs Instant 1–2 min, Professional 30+ min; open models clone from 3 s). Test the hard words first.
-* **10 Step 4 effects and music (4, 35–39):** our MusicGen bed (CC BY-NC: lesson only). Suno v6: commercial rights only on paid plans • Lyria 3.5: SynthID on every track • ElevenLabs Music 3 s–5 min • ElevenLabs Sound Effects ≤30 s.
-* **11 Step 5 mix (5, 39–44):** voice −19.2 LUFS, Veo −22.8 → mix **−14.4 LUFS, −2.2 dBTP** in the final MP4 (AAC raises the peak, so limit to −3 dBTP before encoding). Ducking; Spotify −14, Apple Podcasts −16, EBU R128 −23; true peak ≤ −1 dBTP. First pass RU −0.6 dBTP failed → two-pass + limiter. No code: Audacity Auto Duck → Loudness Normalization → Limiter.
+* **10 Step 4 effects and music (4, 35–39):** our MusicGen bed (CC BY-NC: lesson only). Suno v6: commercial rights only on paid plans • Lyria 3.5: per Google’s terms, SynthID on every track, API $0.08 per song • ElevenLabs Music 3 s–5 min • ElevenLabs Sound Effects ≤30 s.
+* **11 Step 5 mix (5, 39–44):** voice −19.2 LUFS, Veo −22.8 → mix **−14.4 LUFS, −2.2 dBTP** in the final MP4 (AAC raises the peak by ~0.5 dB, so set the limiter to −2 dB, headroom to the −1 limit). Ducking; Spotify −14, Apple Podcasts −16, EBU R128 −23; true peak ≤ −1 dBTP. First pass RU −0.6 dBTP failed → two-pass + limiter. No code: Audacity Auto Duck → Loudness Normalization → Limiter.
 * **12 Step 6 check (6, 44–50):** Whisper small on the mix. EN: WER 18.5%, “Here’s your order” leaks from Veo audio, “642” = transcriber format → critical terms 3/4 → **4/4 after listening**. RU: «Часть 42», «Оно» = voice errors, 2/4. Never paste the script into a transcription prompt.
-* **13 Local models (4, 50–54):** Hugging Face model card + weight files → cached on disk → Python package → CPU or GPU → WAV, offline. Kokoro 0.36 GB and Whisper small run on a laptop CPU (our voice-over and check). Qwen3-TTS 0.6B: 2.5 GB, CPU ≈9× slower than real time (our run); 1.7B: 4.5 GB, GPU with 8 GB+ (third-party). $0 per minute, but hardware, electricity, setup time; local wins for privacy, steady volume, experiments. Architectures (batch / streaming / voice agent) only in notes.
-* **14 Market (4, 54–58):** see slide. Open ASR Leaderboard 9 Oct 2026: best commercial ≈4%, best open ≈5%, Whisper large-v3 7.84%. OpenAI shuts down tts-1 / gpt-4o-mini-tts **06.01.2027**, whisper-1 / gpt-4o-transcribe **26.02.2027**.
+* **13 Local models (4, 50–54):** Hugging Face model card + weight files → cached on disk → Python package → CPU or GPU → WAV, offline. Kokoro 0.36 GB and Whisper small run on a laptop CPU (our voice-over and check). Qwen3-TTS 0.6B: 2.5 GB, CPU ≈8–9× slower than real time (our run); 1.7B: 4.5 GB, GPU with 8 GB+ (third-party). $0 per minute, but hardware, electricity, setup time; local wins for privacy, steady volume, experiments. Architectures (batch / streaming / voice agent) only in notes.
+* **14 Market (4, 54–58):** see slide. Open ASR Leaderboard (Hugging Face): best systems ≈4–5% English word error rate, Whisper large-v3 ≈7–8%; check the current leaders on the site before class. Speech-to-speech: OpenAI gpt-realtime-2.1 and gpt-live-1. OpenAI shuts down tts-1 / gpt-4o-mini-tts **06.01.2027**, whisper-1 / gpt-4o-transcribe **26.02.2027**.
 
 ### Break (58:00–63:00)
 * **15 Break (5):** “Start”. Rest only, no chat tasks.
@@ -43,14 +43,14 @@
 
 ---
 
-### Key numbers (checked 2026-10-12)
+### Key numbers (checked 2026-10-16)
 | What | $ / second | $ / minute | $ / hour |
 |---|---|---|---|
 | Gemini 3.8 Flash TTS ($9 / 1M audio tokens, until 31.12.2026) | $0.00022 | $0.0135 | $0.81 |
 | ElevenLabs v3 / v4 ($0.08 / 1K characters) | $0.00133 | $0.08 | $4.80 |
 | OpenAI gpt-transcribe | $0.00007 | $0.0045 | $0.27 |
 | ElevenLabs Scribe v2 | $0.00006 | $0.0037 | $0.22 |
-| OpenAI gpt-live-1 (+ backend model) | $0.00083 | $0.05 | $3.00 |
+| OpenAI gpt-live-1 (+ language model, billed separately) | $0.00083 | $0.05 | $3.00 |
 | ElevenLabs Music | $0.0025 | $0.15 | $9.00 |
 | Conversion | 1 minute of speech ≈ 1,000 characters (ElevenLabs) | | |
 

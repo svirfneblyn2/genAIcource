@@ -7,10 +7,11 @@ Primary sources checked on 2026-10-16 for the v2 rebuild of Lesson 11. Replaces 
 | File | What | Source |
 |---|---|---|
 | `assets/v2/img/aistudio_fn_declare.png` | Function declarations editor with `get_order_status` | own capture, Google AI Studio, 2026-10-16 |
-| `assets/v2/img/aistudio_fn_call.png`, `aistudio_fn_done.png` | Gemini 3.8 Flash proposes `get_order_status(order_id="417")`; synthetic function response; final answer | own capture, Google AI Studio, 2026-10-16 (free tier, synthetic data) |
+| `assets/v2/img/aistudio_fn_call.png`, `aistudio_fn_done.png` | Gemini 3.8 Flash proposes `get_order_status(order_id="417")`; synthetic function response; final answer | own capture, Google AI Studio, 2026-10-16 (free tier, synthetic data); re-cropped with Pillow for larger on-slide text (empty UI bands removed, answer cropped on the right) |
+| `assets/v2/img/aistudio_fn_call_full.png`, `aistudio_fn_done_full.png` | the uncropped originals of the two captures above (not shown in the deck) | own capture, 2026-10-16 |
 | `assets/v2/img/aistudio_tools_panel.png` | Run settings → Tools panel | own capture, 2026-10-16 |
 | `assets/v2/img/claude_websearch.png` | claude.ai answering "latest Ollama version" with web search and page reads | own capture, 2026-10-16 (sidebar cropped out) |
-| `assets/v2/img/model_proposes.png`, `agent_loop.png`, `cover_right.png` | schematics | generated with genai-assets (client `genaicource`, subscription providers only) |
+| — | cover, slide 5 (trust boundary) and slide 10 (agent loop) schematics | drawn in HTML/SVG in `deck_v2/build.py` (`app_steps()`, `boundary_diagram()`, `loop_diagram()`), RU/EN labels; replaced the English-only genai-assets images on 2026-10-16 |
 
 Observed in the AI Studio capture: the default model in a new chat is the paid Gemini 4 Argon; switch to Gemini 3.8 Flash for the free demo. Function calling: Run settings → Tools → switch on → Edit function declarations (Code Editor / Visual Editor). The model returns a `get_order_status` block with `{"order_id": "417"}` and an "Enter a function response" field.
 

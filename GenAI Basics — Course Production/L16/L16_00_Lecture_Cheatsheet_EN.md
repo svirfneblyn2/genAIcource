@@ -10,10 +10,11 @@
 |---|---|
 | Prices | $0 to try · $10–30 daily · $100+ many agents; Claude Code has no free tier |
 | 2026 renames | Windsurf → Devin Desktop · Gemini CLI → Antigravity CLI · Copilot coding agent → cloud agent |
-| Claude Code | auto mode is the default in the terminal (a model reviews commands); people approve 93% of prompts; the auto check misses ~17% of risky actions |
+| Claude Code | auto mode is the default in the terminal (a model reviews commands); people approve 93% of prompts; the auto check misses ~17% of risky actions; acceptEdits edits files and runs simple file commands (mkdir, mv, cp, rm) itself |
 | AGENTS.md | open format, 60,000+ projects; Claude Code reads CLAUDE.md, or AGENTS.md if there is none |
 | METR 2025 | expected +24%, felt +20%, measured −19% (16 developers, 246 tasks) |
 | Benchmarks (notes only) | SWE-bench Verified retired (OpenAI, Feb 2026); announcement numbers depend on the agent app |
+| Homework | inline starter project in L16_05 (app.py + tests, pytest -q) or own repo; non-coders: README only; submit to genai-homeworks/L16/ |
 | Incidents | PocketOS 9 s (2026) · Replit (2025) · Nx: 2,349 secrets (2025) · Clinejection (2026) |
 
 ## Recheck within 24 hours

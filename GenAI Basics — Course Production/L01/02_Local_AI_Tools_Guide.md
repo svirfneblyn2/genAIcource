@@ -17,14 +17,14 @@ Traditional code editors (like classic Notepad or basic VS Code) are passive: th
 
 ## 2. Tool Comparison & Free Downloads
 
-The table below outlines the primary AI development environments available today, their free-tier policies, and official download links:
+The table below outlines the primary AI development environments, their free-tier policies and official download links (as of 16.10.2026; prices change often — L16 has the current overview):
 
 | Tool & Provider | Type | Download Link | Free Tier Details | Best For |
 |---|---|---|---|---|
-| **Google Antigravity**<br>*(Google DeepMind)* | Standalone AI-first IDE (VS Code based) + CLI (`agy`) | [antigravity.google](https://antigravity.google) | **100% Free** via Google Account.<br>Includes generous daily request quotas for Gemini 2.5 / Flash and agent orchestration. $300 Google Cloud credit available for enterprise expansion. | Multi-step agent workflows, zero-config onboarding, native Gemini model ecosystem. |
-| **GitHub Copilot / Codex**<br>*(GitHub & OpenAI)* | Extension for VS Code / JetBrains + ChatGPT Desktop Canvas | [code.visualstudio.com](https://code.visualstudio.com)<br>+ [Copilot Extension](https://github.com/features/copilot) | **Copilot Free Plan:**<br>Includes 2,000 code completions/month and 50 chat messages/month with standard GitHub account.<br>ChatGPT Desktop Free includes Canvas mode. | Fast inline autocomplete, seamless integration for existing VS Code users. |
-| **Anthropic Claude**<br>*(Anthropic)* | Desktop App + Claude Code CLI agent | [claude.ai/download](https://claude.ai/download)<br>+ [Claude Code CLI](https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/overview) | **Claude Free Tier:**<br>Free web and desktop access to Claude 3.5 Sonnet with rolling daily limits.<br>Claude Code CLI requires an Anthropic Console account ($5 free initial sign-up credit). | Deep architectural reasoning, long-document analysis, visual UI Artifacts. |
-| **Cursor**<br>*(Anysphere)* | Standalone AI-first IDE (VS Code fork) | [cursor.com](https://cursor.com) | **Cursor Hobby (Free):**<br>Includes 2-week Pro trial upon signup, then continues with 2,000 completions and 50 slow agent requests per month at $0. | Full codebase indexing, rapid file-to-file refactoring, keyboard-driven workflow. |
+| **Google Antigravity**<br>*(Google)* | AI-first IDE + Antigravity CLI | [antigravity.google](https://antigravity.google) | **Individuals plan: $0** with basic weekly rate limits (Gemini models). Higher limits with Google AI Pro / Ultra. The consumer Gemini CLI moved here in June 2026. | Multi-step agent workflows, zero-config onboarding, Gemini models. |
+| **GitHub Copilot / OpenAI Codex**<br>*(GitHub & OpenAI)* | Extension for VS Code / JetBrains; Codex app, CLI and IDE extension | [code.visualstudio.com](https://code.visualstudio.com)<br>+ [Copilot](https://github.com/features/copilot) · [Codex](https://openai.com/codex) | **Copilot Free:** 2,000 completions + 50 chat requests a month, limited agent mode.<br>**Codex** is included in every ChatGPT plan, including Free (quick tasks). | Inline autocomplete for VS Code users; Codex for agent tasks from a ChatGPT account. |
+| **Anthropic Claude**<br>*(Anthropic)* | Claude app (web, desktop) + Claude Code agent | [claude.ai/download](https://claude.ai/download)<br>+ [Claude Code](https://code.claude.com/docs/en/overview) | **Claude Free:** chat in the web and desktop app with daily limits.<br>**Claude Code has no free tier:** it starts with the Pro plan ($20/month, $17 billed yearly). | Long-document analysis, Artifacts; Claude Code for serious agent work (L16). |
+| **Cursor**<br>*(Anysphere)* | AI-first IDE (VS Code fork) | [cursor.com](https://cursor.com) | **Free:** limited agent requests. Paid: Plus $8 (Grok models only), Premium $30 (cloud agents). | Codebase indexing, fast multi-file refactoring. |
 
 ---
 

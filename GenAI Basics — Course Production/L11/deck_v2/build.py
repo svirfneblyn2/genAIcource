@@ -90,13 +90,101 @@ def gb(v):
     return (f"{v:.1f} ГБ".replace(".", ",") if LANG == "ru" else f"{v:.1f} GB")
 
 
+# ---------------------------------------------------------------- diagrams (HTML, bilingual)
+_ICON = {
+    "chat": '<path d="M5 6h22a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H13l-6 5v-5H5a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3z"/><circle cx="10" cy="15" r="1.4" fill="currentColor"/><circle cx="16" cy="15" r="1.4" fill="currentColor"/><circle cx="22" cy="15" r="1.4" fill="currentColor"/>',
+    "app": '<rect x="3" y="5" width="26" height="22" rx="3"/><path d="M3 11h26"/><circle cx="7.5" cy="8" r="1" fill="currentColor"/><circle cx="11" cy="8" r="1" fill="currentColor"/>',
+    "search": '<circle cx="13" cy="13" r="8"/><path d="M19 19l8 8"/>',
+    "shield": '<path d="M16 3l11 4v8c0 7-5 12-11 14C10 27 5 22 5 15V7z"/><path d="M11 16l4 4 7-8"/>',
+    "run": '<circle cx="16" cy="16" r="12"/><path d="M13 10.5l9 5.5-9 5.5z"/>',
+    "log": '<path d="M8 3h12l6 6v20H8z"/><path d="M20 3v6h6M12 15h10M12 20h10M12 25h6"/>',
+}
+
+
+def icon(name, size=34, k="cyan"):
+    return (f'<svg width="{size}" height="{size}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" '
+            f'stroke-linecap="round" stroke-linejoin="round" style="color:var(--{k});flex:none">{_ICON[name]}</svg>')
+
+
+def app_steps(w=440, h=72, gap=20, fs=21):
+    """The four things your program does with a proposed call (used on the cover and on slide 5)."""
+    steps = [("search", "cyan", t("проверить аргументы", "check the arguments")),
+             ("shield", "amber", t("спросить человека, если риск", "ask a human for risky actions")),
+             ("run", "cyan", t("выполнить функцию", "run the function")),
+             ("log", "cyan", t("записать в журнал", "log it"))]
+    out = ""
+    for i, (ic, k, txt) in enumerate(steps):
+        out += (f'<div style="display:flex;align-items:center;gap:16px;width:{w}px;height:{h}px;padding:0 20px;border:2px solid var(--{k});'
+                f'border-radius:14px;background:var(--surface-card);font:600 {fs}px/1.2 var(--body);color:var(--fg)">{icon(ic, 36, k)}<span>{txt}</span></div>')
+        if i < len(steps) - 1:
+            out += f'<div style="width:{w}px;height:{gap}px;display:flex;justify-content:center;color:#64748b;font:700 {gap}px/{gap}px var(--body)">↓</div>'
+    return out
+
+
+def boundary_diagram():
+    """Slide 5: the model proposes a call, the trust boundary, your program checks / asks / runs / logs, the result goes back."""
+    W, H = 960, 540
+    model = (f'<div style="position:absolute;left:0;top:0;width:380px;display:flex;flex-direction:column;align-items:center;gap:6px">{icon("chat", 54, "violet")}'
+             f'<div style="font:800 30px var(--display);color:var(--fg)">{t("Модель", "Model")}</div></div>'
+             f'<div style="position:absolute;left:10px;top:122px;width:360px;padding:16px 20px;border:2px solid var(--violet);border-radius:14px;background:var(--surface-card)">'
+             f'<div style="font:600 20px var(--body);color:var(--violet)">{t("предлагает вызов:", "proposes a call:")}</div>'
+             f'<div style="font:500 22px/1.35 var(--mono);color:var(--fg);margin-top:6px">get_order_status<br>(order_id="417")</div></div>')
+    app = (f'<div style="position:absolute;left:520px;top:0;width:440px;display:flex;flex-direction:column;align-items:center;gap:6px">{icon("app", 54, "cyan")}'
+           f'<div style="font:800 30px var(--display);color:var(--fg)">{t("Ваша программа", "Your program")}</div></div>'
+           f'<div style="position:absolute;left:520px;top:122px">{app_steps()}</div>')
+    line = (f'<div style="position:absolute;left:455px;top:44px;height:{H - 44}px;border-left:3px dashed #38bdf8"></div>'
+            f'<div style="position:absolute;left:355px;top:0;width:200px;text-align:center;font:600 20px var(--body);color:var(--cyan)">{t("граница доверия", "trust boundary")}</div>')
+    svg = (f'<svg width="{W}" height="{H}" style="position:absolute;left:0;top:0"><defs>'
+           f'<marker id="bv" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#c084fc"/></marker>'
+           f'<marker id="ba" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto"><path d="M0,0 L18,9 L0,18 z" fill="#fbbf24"/></marker></defs>'
+           f'<path d="M 372 158 H 516" stroke="#c084fc" stroke-width="4" fill="none" marker-end="url(#bv)"/>'
+           f'<path d="M 740 494 V 522 H 120 V 240" stroke="#fbbf24" stroke-width="4" fill="none" marker-end="url(#ba)"/></svg>')
+    res = (f'<div style="position:absolute;left:150px;top:478px;font:700 21px var(--body);color:var(--amber);background:var(--bg);padding:0 8px">'
+           f'{t("результат возвращается модели", "the result goes back to the model")}</div>')
+    return f'<div style="position:relative;width:{W}px;height:{H}px">{svg}{line}{model}{app}{res}</div>'
+
+
+def loop_diagram():
+    """Slide 10: the agent loop with a step limit and the exit to the final answer."""
+    W, H, R = 880, 560, 94
+    nodes = [("violet", 1, t("Модель думает", "Model thinks"), 290, 100),
+             ("violet", 2, t("Выбирает инструмент", "Picks a tool"), 480, 280),
+             ("cyan", 3, t("Программа выполняет", "The program runs it"), 290, 460),
+             ("amber", 4, t("Результат обратно", "Result goes back"), 100, 280)]
+    circ = "".join(
+        f'<div style="position:absolute;left:{x - R}px;top:{y - R}px;width:{2 * R}px;height:{2 * R}px;border-radius:50%;border:4px solid var(--{k});background:var(--surface-card);'
+        f'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 14px">'
+        f'<div style="width:36px;height:36px;border-radius:50%;background:var(--{k});color:#0b0f17;font:800 20px/36px var(--body)">{n}</div>'
+        f'<div style="font:700 22px/1.15 var(--body);color:var(--fg);margin-top:6px">{h}</div></div>' for k, n, h, x, y in nodes)
+    chip = (f'<div style="position:absolute;left:{480 - 105}px;top:{280 + R + 6}px;width:210px;text-align:center;font:500 18px var(--mono);color:var(--violet);'
+            f'border:2px solid var(--violet);border-radius:8px;padding:3px 0;background:var(--bg)">get_order_status</div>')
+    arcs = "".join(f'<path d="{d}" fill="none" stroke="#64748b" stroke-width="4" marker-end="url(#la)"/>' for d in
+                   ("M 380 130 Q 450 160 465 182", "M 455 372 Q 420 430 382 445", "M 198 445 Q 150 420 125 373", "M 115 185 Q 160 120 196 112"))
+    svg = (f'<svg width="{W}" height="{H}" style="position:absolute;left:0;top:0"><defs><marker id="la" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto">'
+           f'<path d="M0,0 L18,9 L0,18 z" fill="#64748b"/></marker><marker id="lg" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" refX="12" refY="9" orient="auto">'
+           f'<path d="M0,0 L18,9 L0,18 z" fill="#34d399"/></marker></defs>{arcs}'
+           f'<path d="M 388 100 H 600" stroke="#34d399" stroke-width="4" fill="none" marker-end="url(#lg)"/></svg>')
+    exit_lbl = (f'<div style="position:absolute;left:400px;top:58px;width:200px;text-align:center;font:600 18px/1.2 var(--body);color:var(--green)">'
+                f'{t("инструмент не нужен", "no tool needed")}</div>')
+    final = (f'<div style="position:absolute;left:612px;top:62px;width:260px;height:76px;border:3px solid var(--green);border-radius:14px;display:flex;align-items:center;'
+             f'justify-content:center;font:800 25px var(--display);color:var(--green);background:var(--surface-card)">{t("Финальный ответ", "Final answer")}</div>')
+    limit = (f'<div style="position:absolute;left:52px;top:62px;width:132px;padding:8px 6px;border:3px solid var(--red);border-radius:12px;text-align:center;'
+             f'font:700 19px/1.2 var(--body);color:var(--red);background:var(--bg)">{t("лимит:<br>5 шагов", "limit:<br>5 steps")}</div>')
+    centre = (f'<div style="position:absolute;left:{290 - 95}px;top:{280 - 50}px;width:190px;text-align:center;font:800 24px/1.2 var(--display);color:var(--fg)">'
+              f'{t("Цель:", "Goal:")}<div style="font:500 20px/1.25 var(--body);color:var(--muted);margin-top:4px">{t("ответить клиенту", "answer the customer")}</div></div>')
+    return f'<div style="position:relative;width:{W}px;height:{H}px">{svg}{circ}{chip}{exit_lbl}{final}{limit}{centre}</div>'
+
+
 # ---------------------------------------------------------------- slides
 def s_cover():
     return dict(min=2, cls="cover", html=f'''
-  <div class="bg"><img src="{IMG}cover_right.png" alt="" style="object-fit:contain;object-position:right center;background:#0b0f17;padding:60px 40px 60px 0"></div>
   <div class="shade"></div>
+  <div style="position:absolute;right:86px;top:150px;width:500px;display:flex;flex-direction:column;align-items:center;gap:10px">
+    {icon("app", 64, "cyan")}<div style="font:800 34px var(--display);color:var(--fg);margin-bottom:14px">{t("Ваша программа", "Your program")}</div>
+    {app_steps(w=500, h=84, gap=22, fs=25)}
+  </div>
   <div class="txt">
-    <div class="kicker">{t("GenAI Basics • Урок 11 • Модуль 3: свои модели и агенты", "GenAI Basics • Lesson 11 • Module 3: models & agents")}</div>
+    <div class="kicker">{t("GenAI Basics • Урок 11 • Модуль 5: агенты, инструменты и MCP", "GenAI Basics • Lesson 11 • Module 5: agents, tools and MCP")}</div>
     <h1>{t("Вызов функций и первый агент", "Function calling and your first agent")}</h1>
     <h2>{t("Как модель перестаёт выдумывать и начинает спрашивать вашу систему", "How a model stops guessing and starts asking your system")}</h2>
     <p>{t("Инструменты, вызов функций, цикл агента, риски. Google AI Studio, Claude, ChatGPT, локальные модели. Данные на октябрь 2026.",
@@ -110,12 +198,16 @@ def s_cover():
                       "Plan: why the model lies about an order, where you have already seen tools, how to describe a function, a live demo in Google AI Studio, built-in tools, the agent loop, code. After the break: risks, reliability, rules, an exercise and homework.")))
 
 
+# aistudio_fn_done.png (cropped, 726x304): violet = the model's function call, amber = the function response, green = the model's answer
+FN_DONE_BOXES = [(1.2, 13.2, 94.0, 42.0, "violet"), (1.2, 59.2, 94.0, 22.0, "amber"), (0.3, 87.5, 93.6, 10.0, "green")]
+
+
 def s_hook():
     bad = t("«Ваш заказ 417 уже в пути и будет у вас завтра утром.»", "“Your order 417 is on its way and will arrive tomorrow morning.”")
     return dict(min=4, html=f'''
   {head(t("Проблема", "The problem"), t("Модель не знает, где ваш заказ, но уверенно ответит", "The model does not know where your order is, but it will answer confidently"), k="red")}
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1fr 1.35fr;gap:40px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:440px 1fr;gap:40px;align-items:center;flex:none;">
       <div class="stack" style="gap:16px;">
         <div class="prompt-label">{t("Без инструментов", "Without tools")}</div>
         <div class="tx" style="font-size:26px;line-height:1.45;border-left:4px solid var(--red)"><small>{t("Вопрос", "Question")}</small>{t("Где сейчас заказ 417?", "Where is order 417 right now?")}<small style="margin-top:14px">{t("Ответ модели", "Model answer")}</small><span style="color:var(--red)">{bad}</span></div>
@@ -123,8 +215,8 @@ def s_hook():
       </div>
       <div class="stack" style="gap:10px;">
         <div class="prompt-label">{t("С инструментом · Google AI Studio, снято 16.10.2026", "With a tool · Google AI Studio, captured 16.10.2026")}</div>
-        {shot("aistudio_fn_done", boxes=[(2.0, 28.0, 96.0, 46.6, "cyan"), (1.5, 84.5, 68.0, 8.5, "green")])}
-        <div class="note" style="--k:var(--green)">{t("<b>Инструмент</b> — функция вашей системы, которую модель может попросить вызвать. Модель попросила данные о заказе и ответила по ним.", "A <b>tool</b> is a function of your system the model can ask to call. The model asked for the order data and answered from it.")}</div>
+        {shot("aistudio_fn_done", boxes=FN_DONE_BOXES)}
+        <div class="note" style="--k:var(--green)">{t("<b>Инструмент</b> — функция вашей системы, которую модель может попросить вызвать. Модель попросила данные о заказе (фиолетовая рамка), получила их (жёлтая) и ответила по ним (зелёная).", "A <b>tool</b> is a function of your system the model can ask to call. The model asked for the order data (violet), got it (amber) and answered from it (green).")}</div>
       </div>
     </div>
   </div>''',
@@ -168,9 +260,9 @@ def s_define():
     return dict(min=5, html=f'''
   {head(t("Инструмент", "A tool"), t("Описание функции (function declaration): имя, описание, параметры. Модель видит только их", "A function declaration: a name, a description, parameters. That is all the model sees"), k="violet")}
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.35fr 1fr;gap:40px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:1.55fr 1fr;gap:40px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
-        <div class="prompt-label">{t("Google AI Studio → Tools → Function calling → Edit", "Google AI Studio → Tools → Function calling → Edit")}</div>
+        <div class="prompt-label">{t("AI Studio → Run settings → Tools → Function calling → Edit", "AI Studio → Run settings → Tools → Function calling → Edit")}</div>
         {sh}
       </div>
       <div class="stack" style="gap:20px;">
@@ -185,15 +277,17 @@ def s_define():
                     t("⏱ 5 мин. Чтобы модель могла попросить действие, ей нужно рассказать, какие действия бывают. Это и есть описание функции, по-английски function declaration. В Google AI Studio оно делается без кода: Run settings, раздел Tools, переключатель Function calling, кнопка Edit.",
                       "⏱ 5 min. For the model to ask for an action, you have to tell it which actions exist. That is the function declaration. In Google AI Studio you do it without code: Run settings, the Tools section, the Function calling switch, the Edit button."),
                     t("Три поля. Имя: get_order_status, без пробелов, понятное. Описание: одно предложение, когда эту функцию звать; модель выбирает инструмент именно по описанию. Параметры: что функция ждёт на входе, у нас номер заказа как строка. Важно: сам код функции, базу данных и пароли модель не видит. Она видит только эту карточку и может лишь попросить её вызвать.",
-                      "Three fields. Name: get_order_status, no spaces, clear. Description: one sentence on when to call it; the model picks a tool by its description. Parameters: what the function expects, here the order number as a string. Important: the model does not see the function’s code, the database or passwords. It sees only this card and can only ask for it to be called.")))
+                      "Three fields. Name: get_order_status, no spaces, clear. Description: one sentence on when to call it; the model picks a tool by its description. Parameters: what the function expects, here the order number as a string. Important: the model does not see the function’s code, the database or passwords. It sees only this card and can only ask for it to be called."),
+                    t("На скриншоте описание короче, чем на слайде 9: так было в живом демо. На слайде 9 — улучшенная версия, которую стоит брать в работу.",
+                      "The description in this screenshot is shorter than on slide 9: that is what the live demo used. Slide 9 shows the improved version to use in real work.")))
 
 
 def s_boundary():
     return dict(min=5, html=f'''
   {head(t("Кто что делает", "Who does what"), t("Модель только предлагает вызов. Выполняет его ваша программа", "The model only proposes a call. Your program runs it"), k="violet")}
   <div class="body" style="margin-top:6px;">
-    <div class="row" style="grid-template-columns:1.9fr 1fr;gap:36px;align-items:center;flex:none;">
-      <img src="{IMG}model_proposes.png" alt="" style="width:100%;border-radius:14px;">
+    <div class="row" style="grid-template-columns:960px 1fr;gap:36px;align-items:center;flex:none;">
+      {boundary_diagram()}
       <div class="stack" style="gap:20px;">
         <div class="note" style="--k:var(--cyan)">{t("<b>Граница доверия</b> (trust boundary): слева модель, которая может ошибиться; справа ваша программа, которая решает, выполнять ли.", "<b>Trust boundary</b>: on the left a model that can be wrong; on the right your program, which decides whether to run it.")}</div>
         <div class="note" style="--k:var(--amber)">{t("<b>Рискованные действия</b> (вернуть деньги, отправить письмо) — только после подтверждения человеком.", "<b>Risky actions</b> (refund money, send an email) — only after a human confirms.")}</div>
@@ -210,14 +304,15 @@ def s_boundary():
 
 
 def s_demo_call():
-    sh = shot("aistudio_fn_call", marks=[(1, 41.0, 8.0, "cyan"), (2, 97.0, 52.0, "violet"), (3, 97.0, 82.0, "amber")],
-              boxes=[(2.0, 3.0, 38.0, 10.0, "cyan"), (2.1, 37.8, 96.0, 30.5, "violet"), (3.3, 77.0, 93.4, 10.0, "amber")])
+    # aistudio_fn_call.png is cropped (578x406): the empty middle band of the UI was cut out with Pillow
+    sh = shot("aistudio_fn_call", marks=[(1, 69.5, 8.0, "cyan"), (2, 97.0, 52.0, "violet"), (3, 40.5, 74.0, "amber")],
+              boxes=[(0.8, 0.8, 66.0, 15.0, "cyan"), (2.4, 37.0, 95.5, 29.0, "violet"), (4.0, 77.5, 92.5, 10.5, "amber")])
     return dict(min=5, html=f'''
   {head(t("Демо • шаг 1", "Demo • step 1"), t("Демо: модель не отвечает сразу, а просит вызвать функцию", "Demo: the model does not answer right away, it asks for a function call"), k="green")}
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.8fr 1fr;gap:36px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:36px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
-        <div class="prompt-label">{t("Google AI Studio · Gemini 3.8 Flash · бесплатно · снято 16.10.2026", "Google AI Studio · Gemini 3.8 Flash · free · captured 16.10.2026")}</div>
+        <div class="prompt-label">{t("AI Studio · Gemini 3.8 Flash · бесплатно · 16.10.2026", "AI Studio · Gemini 3.8 Flash · free · 16.10.2026")}</div>
         {sh}
       </div>
       <div class="stack" style="gap:20px;">
@@ -238,13 +333,12 @@ def s_demo_call():
 
 
 def s_demo_done():
-    sh = shot("aistudio_fn_done", marks=[(1, 97.0, 68.0, "amber"), (2, 71.5, 89.0, "green")],
-              boxes=[(2.0, 63.5, 96.0, 9.0, "amber"), (1.5, 84.5, 68.0, 8.5, "green")])
+    sh = shot("aistudio_fn_done", marks=[(1, 97.5, 70.0, "amber"), (2, 97.5, 92.0, "green")], boxes=FN_DONE_BOXES[1:])
     resp = '{"status": "on the way", "courier": "Anna", "eta_minutes": 12}'
     return dict(min=4, html=f'''
   {head(t("Демо • шаг 2", "Demo • step 2"), t("Возвращаем результат, и модель пересказывает его человеческим языком", "Return the result, and the model puts it into plain words"), k="green")}
   <div class="body" style="margin-top:8px;">
-    <div class="row" style="grid-template-columns:1.8fr 1fr;gap:36px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:1000px 1fr;gap:36px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;">
         <div class="prompt-label">{t("Тот же чат после ответа функции", "The same chat after the function response")}</div>
         {sh}
@@ -266,19 +360,19 @@ def s_demo_done():
 
 def s_builtin():
     sh = shot("aistudio_tools_panel", marks=[(1, 92.0, 36.0, "cyan"), (2, 92.0, 65.0, "green"), (3, 92.0, 93.6, "amber"), ("★", 92.0, 50.6, "violet")],
-              boxes=[(2.0, 29.0, 96.0, 14.0, "cyan"), (2.0, 58.0, 96.0, 14.0, "green"), (2.0, 86.0, 96.0, 13.0, "amber"), (2.0, 44.0, 96.0, 13.0, "violet")], style="max-width:420px")
+              boxes=[(2.0, 29.0, 96.0, 14.0, "cyan"), (2.0, 58.0, 96.0, 14.0, "green"), (2.0, 86.0, 96.0, 13.0, "amber"), (2.0, 44.0, 96.0, 13.0, "violet")], style="max-width:500px")
     rows = [("cyan", t("Выполнение кода", "Code execution"), "Gemini · ChatGPT · Claude", t("посчитать, построить график", "compute, draw a chart")),
             ("green", t("Поиск в интернете", "Web search"), "Gemini · ChatGPT · Claude", t("свежие факты со ссылками", "fresh facts with links")),
             ("amber", t("Чтение страниц и файлов", "Reading pages and files"), t("Google: URL context · OpenAI: file search · Anthropic: web fetch", "Google: URL context · OpenAI: file search · Anthropic: web fetch"), t("ответ по документу", "answer from a document"))]
-    cards = legend([(i, k, f"<b>{h}</b>: {d}<br><span style='font-size:18px'>{w}</span>") for i, (k, h, w, d) in enumerate(rows, 1)])
+    cards = legend([(i, k, f"<b>{h}</b>: {d}<br><span style='font-size:19px'>{w}</span>") for i, (k, h, w, d) in enumerate(rows, 1)]).replace('class="legend"', 'class="legend" style="gap:22px;font-size:23px"')
     return dict(min=4, html=f'''
   {head(t("Встроенные инструменты", "Built-in tools"), t("Часть инструментов уже встроена: код, поиск, чтение страниц", "Some tools come built in: code, search, reading pages"), k="cyan")}
   <div class="body" style="margin-top:10px;">
-    <div class="row" style="grid-template-columns:420px 1fr;gap:48px;align-items:center;flex:none;">
+    <div class="row" style="grid-template-columns:500px 1fr;gap:56px;align-items:center;flex:none;">
       <div class="stack" style="gap:8px;"><div class="prompt-label">{t("AI Studio · Tools", "AI Studio · Tools")}</div>{sh}</div>
       <div class="stack" style="gap:18px;">
         {cards}
-        <div class="note" style="--k:var(--violet)">{t("<b>1–3 встроенные</b>: выполняет поставщик. <b>★ Function calling</b>: свою функцию (заказы, CRM, склад) выполняет ваша программа.", "<b>1–3 built-in</b>: the vendor runs them. <b>★ Function calling</b>: your own function (orders, CRM, stock) is run by your program.")}</div>
+        <div class="note" style="--k:var(--violet);font-size:23px">{t("<b>1–3 встроенные</b>: выполняет поставщик. <b>★ Function calling</b>: свою функцию (заказы, CRM, склад) выполняет ваша программа.", "<b>1–3 built-in</b>: the vendor runs them. <b>★ Function calling</b>: your own function (orders, CRM, stock) is run by your program.")}</div>
       </div>
     </div>
   </div>''',
@@ -290,16 +384,16 @@ def s_builtin():
 
 
 def s_describe():
-    card = lambda k, tag, name, desc, why: (f'<div class="vopt" style="--k:var(--{k})"><div class="h" style="font-size:24px">{tag}</div>'
-                                            f'<pre class="code" style="font-size:20px;margin:10px 0;white-space:pre-wrap">{name}\n"{desc}"</pre><div class="ex" style="font-size:20px">{why}</div></div>')
+    card = lambda k, tag, name, desc, why: (f'<div class="vopt" style="--k:var(--{k});padding:30px 30px"><div class="h" style="font-size:30px">{tag}</div>'
+                                            f'<pre class="code" style="font-size:23px;line-height:1.55;margin:16px 0;white-space:pre-wrap">{name}\n"{desc}"</pre><div class="ex" style="font-size:23px">{why}</div></div>')
     return dict(min=4, html=f'''
   {head(t("Описание", "Description"), t("Модель выбирает инструмент по описанию. Пишите его как задачу для стажёра", "The model picks a tool by its description. Write it like a task for an intern"), k="amber")}
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:1fr 1fr;gap:32px;flex:none;align-items:stretch;">
       {card("red", t("✗ Плохо", "✗ Weak"), "get_data", "Gets data.", t("Какие данные? Когда звать? Модели придётся угадывать.", "Which data? When to call it? The model has to guess."))}
-      {card("green", t("✓ Хорошо", "✓ Good"), "get_order_status", "Current status, courier and ETA of ONE delivery order by its number. Use when the customer asks where an order is.", t("Что делает, для чего и когда звать. Один инструмент — одна задача.", "What it does, what for and when to call it. One tool, one job."))}
+      {card("green", t("✓ Хорошо", "✓ Good"), "get_order_status", "Current status, courier and arrival time of ONE delivery order by its number. Use when the customer asks where an order is.", t("Что делает, для чего и когда звать. Один инструмент — одна задача.", "What it does, what for and when to call it. One tool, one job."))}
     </div>
-    <div class="note" style="margin-top:26px;--k:var(--amber)">{t("Если два инструмента звучат похоже (<code>get_order</code> и <code>find_order</code>), модель будет путать их. Переименуйте или объедините.", "If two tools sound alike (<code>get_order</code> and <code>find_order</code>), the model will mix them up. Rename or merge them.")}</div>
+    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--amber)">{t("Если два инструмента звучат похоже (<code>get_order</code> и <code>find_order</code>), модель будет путать их. Переименуйте или объедините.", "If two tools sound alike (<code>get_order</code> and <code>find_order</code>), the model will mix them up. Rename or merge them.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Самая частая причина, почему агент «тупит»: плохие описания инструментов. Модель не читает ваш код, она видит только имя и описание. get_data «Gets data» — непонятно, какие данные и когда. Хорошее описание отвечает на три вопроса: что делает, для чего, когда звать.",
@@ -312,8 +406,8 @@ def s_loop():
     return dict(min=5, html=f'''
   {head(t("Агент", "Agent"), t("Агент = модель + инструменты + цикл, пока задача не решена", "An agent = a model + tools + a loop until the task is done"), k="violet")}
   <div class="body" style="margin-top:4px;">
-    <div class="row" style="grid-template-columns:1.75fr 1fr;gap:32px;align-items:center;flex:none;">
-      <img src="{IMG}agent_loop_crop.png" alt="" style="width:100%;border-radius:14px;">
+    <div class="row" style="grid-template-columns:880px 1fr;gap:40px;align-items:center;flex:none;">
+      {loop_diagram()}
       <div class="stack" style="gap:18px;">
         <div class="note" style="--k:var(--violet)">{t("Шаги 1→4 повторяются: модель может вызвать несколько инструментов подряд, как Claude на слайде 3.", "Steps 1→4 repeat: the model may call several tools in a row, as Claude did on slide 3.")}</div>
         <div class="note" style="--k:var(--green)">{t("Цикл заканчивается, когда модели больше не нужен инструмент: она пишет <b>финальный ответ</b>.", "The loop ends when the model needs no more tools: it writes the <b>final answer</b>.")}</div>
@@ -325,13 +419,14 @@ def s_loop():
                     t("⏱ 5 мин. Теперь можно дать определение агента без магии. Агент — это модель, у которой есть инструменты, и программа, которая крутит цикл: модель думает, выбирает инструмент, программа его выполняет, результат возвращается модели, и так по кругу, пока модели больше не нужен инструмент. Тогда она пишет финальный ответ.",
                       "⏱ 5 min. Now we can define an agent without magic. An agent is a model with tools plus a program that runs a loop: the model thinks, picks a tool, the program runs it, the result goes back to the model, and round again until the model needs no more tools. Then it writes the final answer."),
                     t("Так их описывают и сами поставщики: OpenAI и Anthropic описывают агента как систему, в которой модель сама планирует шаги и вызывает инструменты, чтобы выполнить задачу. Обязательный предохранитель — лимит шагов. В Python-библиотеке Gemini, например, автоматический вызов функций по умолчанию останавливается после 10 вызовов. Плюс лимит денег и времени.",
-                      "This is how the vendors describe it too: OpenAI and Anthropic describe an agent as a system in which the model plans its own steps and calls tools to complete a task. The mandatory safety catch is a step limit. In the Gemini Python library, for example, automatic function calling stops after 10 calls by default. Add limits on money and time too.")))
+                      "This is how the vendors describe it too: OpenAI and Anthropic describe an agent as a system in which the model plans its own steps and calls tools to complete a task. The mandatory safety catch is a step limit. In the Gemini Python library, for example, automatic function calling stops after 10 calls by default. Add limits on money and time too."),
+                    t("На схеме лимит 5 — его ставите вы; 10 — это просто значение по умолчанию.", "The diagram's limit of 5 is yours to set; 10 is just the default.")))
 
 
 def s_code():
     code = ('from google import genai\nfrom google.genai import types\n\n'
             'def get_order_status(order_id: str) -> dict:\n'
-            '    """<span style=\'color:var(--amber)\'>Current status and ETA of one delivery order.</span>"""\n'
+            '    """<span style=\'color:var(--amber)\'>Current status and arrival time of one delivery order.</span>"""\n'
             '    return {"status": "on the way", "courier": "Anna", "eta_minutes": 12}\n\n'
             'client = genai.Client()          # ключ из GEMINI_API_KEY\n'
             'r = client.models.generate_content(\n'
@@ -356,22 +451,23 @@ def s_code():
                 notes=notes(
                     t("⏱ 5 мин. Для тех, кто программирует. В библиотеке google-genai достаточно написать обычную функцию Python с подсказкой типов и docstring: docstring станет описанием инструмента, тип станет параметром. Передаём функцию в tools, и библиотека сама крутит цикл: получает от модели вызов, выполняет функцию, отправляет результат обратно и отдаёт финальный текст. Это называется автоматический вызов функций; по умолчанию не больше 10 вызовов.",
                       "⏱ 5 min. For those who code. In the google-genai library you write a plain Python function with type hints and a docstring: the docstring becomes the tool description, the type becomes the parameter. Pass the function in tools and the library runs the loop: it receives the call from the model, runs the function, sends the result back and returns the final text. This is automatic function calling; by default at most 10 calls."),
-                    t("Справочно: у OpenAI инструменты передаются в Responses API (поле tools, GPT-6 Astra и GPT-6.1 Sol вызывают инструменты только через Responses API), у Anthropic — в Messages API блоками tool_use и tool_result. Google теперь рекомендует для новых проектов Interactions API, но generate_content из примера полностью поддерживается. Пример не прогонялся в этом уроке: нужен ключ Gemini API; перед показом проверьте на своём ключе.",
-                      "For reference: OpenAI takes tools in the Responses API (the tools field; GPT-6 Astra and GPT-6.1 Sol call tools only through the Responses API); Anthropic uses tool_use and tool_result blocks in the Messages API. Google now recommends the Interactions API for new projects, but generate_content from the example is fully supported. The example was not run for this lesson: it needs a Gemini API key; test it with your own key before showing it.")))
+                    t("Справочно: у OpenAI инструменты передаются в Responses API (поле tools), у Anthropic — в Messages API блоками tool_use и tool_result. Google теперь рекомендует для новых проектов Interactions API, но generate_content из примера полностью поддерживается. Пример не прогонялся в этом уроке: нужен ключ Gemini API; перед показом проверьте на своём ключе.",
+                      "For reference: OpenAI takes tools in the Responses API (the tools field); Anthropic uses tool_use and tool_result blocks in the Messages API. Google now recommends the Interactions API for new projects, but generate_content from the example is fully supported. The example was not run for this lesson: it needs a Gemini API key; test it with your own key before showing it.")))
 
 
 def s_local():
     rows = [("green", "Qwen3.5", t("от 0,8 до 122 млрд параметров", "0.8 to 122 billion parameters"), t("есть маленькие для ноутбука", "small sizes fit a laptop")), ("green", "Granite 4.2", t("3, 8 и 30 млрд параметров", "3, 8 and 30 billion parameters"), t("есть маленькие для ноутбука", "small sizes fit a laptop")),
-            ("amber", "gpt-oss-20b", t("≈ 16 ГБ памяти", "≈ 16 GB memory"), t("нужна видеокарта", "needs a GPU"))]
-    li = "".join(f'<div class="lrow" style="--k:var(--{k})"><div class="dot"></div><div><div class="h">{n}</div><div class="d">{s} · {w}</div></div></div>' for k, n, s, w in rows)
+            ("amber", "gpt-oss-20b", t("≈ 16 ГБ памяти", "≈ 16 GB memory"), t("нужен мощный ноутбук или ПК", "needs a strong laptop or PC"))]
+    li = "".join(f'<div class="lrow" style="--k:var(--{k});padding:26px 24px"><div class="dot" style="margin-top:6px"></div><div><div class="h" style="font-size:30px">{n}</div>'
+                 f'<div class="d" style="font-size:22px;margin-top:6px">{s}</div><div class="d" style="font-size:22px;color:var(--fg)">{w}</div></div></div>' for k, n, s, w in rows)
     return dict(min=4, html=f'''
   {head(t("Мост из L10", "Bridge from L10"), t("Локальные модели тоже умеют вызывать функции, но ошибаются чаще", "Local models can call functions too, but they make more mistakes"), k="green")}
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:1fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="stack" style="gap:12px;"><div class="prompt-label">{t("С инструментами в Ollama и LM Studio, октябрь 2026", "Tool-capable in Ollama and LM Studio, October 2026")}</div><div class="light" style="gap:12px">{li}</div></div>
-      <div class="stack" style="gap:18px;">
-        <div class="note" style="--k:var(--violet)">{t("Та же идея локально: <code>localhost:1234</code> (LM Studio) и <code>localhost:11434</code> (Ollama) принимают инструменты в формате OpenAI. Нужна библиотека <code>openai</code>, как в L10, а не google-genai.", "The same idea locally: <code>localhost:1234</code> (LM Studio) and <code>localhost:11434</code> (Ollama) accept OpenAI-format tools. Use the <code>openai</code> library, as in L10, not google-genai.")}</div>
-        <div class="note" style="--k:var(--amber)">{t("Маленькая модель чаще путает инструмент или формат аргументов. Начинайте с 1–2 простых функций и проверяйте.", "A small model more often picks the wrong tool or argument format. Start with 1–2 simple functions and test.")}</div>
+      <div class="stack" style="gap:12px;"><div class="prompt-label">{t("С инструментами в Ollama и LM Studio, октябрь 2026", "Tool-capable in Ollama and LM Studio, October 2026")}</div><div class="light" style="gap:18px">{li}</div></div>
+      <div class="stack" style="gap:28px;">
+        <div class="note" style="--k:var(--violet);font-size:23px">{t("Та же идея локально: <code>localhost:1234</code> (LM Studio) и <code>localhost:11434</code> (Ollama) принимают инструменты в формате OpenAI. Нужна библиотека <code>openai</code>, как в L10, а не google-genai.", "The same idea locally: <code>localhost:1234</code> (LM Studio) and <code>localhost:11434</code> (Ollama) accept OpenAI-format tools. Use the <code>openai</code> library, as in L10, not google-genai.")}</div>
+        <div class="note" style="--k:var(--amber);font-size:23px">{t("Маленькая модель чаще путает инструмент или формат аргументов. Начинайте с 1–2 простых функций и проверяйте.", "A small model more often picks the wrong tool or argument format. Start with 1–2 simple functions and test.")}</div>
       </div>
     </div>
   </div>''',
@@ -400,16 +496,16 @@ def s_agentbuild():
   {head(t("Практика с агентом", "Hands-on with an agent"), t("Первого агента может собрать агент разработки по одному промпту", "A coding agent can build your first agent from one prompt"), k="violet")}
   <div class="body" style="margin-top:8px;">
     <div class="row" style="grid-template-columns:1.5fr 1fr;gap:36px;align-items:center;flex:none;">
-      <div><div class="prompt-label">{t("Промпт для Claude Code, Codex или Antigravity", "Prompt for Claude Code, Codex or Antigravity")}</div><pre class="code" style="font-size:19px;line-height:1.55;white-space:pre-wrap">{prompt}</pre></div>
-      <div class="stack" style="gap:18px;">
-        <div class="note" style="--k:var(--green)">{t("В промпте уже все правила урока: <b>узкие функции</b>, <b>подтверждение</b> рискованного действия, <b>лимит шагов</b>, <b>журнал</b>.", "The prompt already has every rule of the lesson: <b>narrow functions</b>, <b>confirmation</b> for the risky action, a <b>step limit</b>, a <b>log</b>.")}</div>
-        <div class="note" style="--k:var(--amber)">{t("Нужен свой ключ Gemini API (бесплатный уровень в AI Studio → Get API key).", "You need your own Gemini API key (free tier in AI Studio → Get API key).")}</div>
+      <div><div class="prompt-label">{t("Промпт для агента разработки: Codex в ChatGPT или Antigravity — бесплатно с лимитом, Claude Code — платно", "Prompt for a coding agent: Codex in ChatGPT or Antigravity (free, with limits), Claude Code (paid)")}</div><pre class="code" style="font-size:23px;line-height:1.7;white-space:pre-wrap;padding:30px 30px">{prompt}</pre></div>
+      <div class="stack" style="gap:28px;">
+        <div class="note" style="--k:var(--green);font-size:23px">{t("В промпте уже все правила урока: <b>узкие функции</b>, <b>подтверждение</b> рискованного действия, <b>лимит шагов</b>, <b>журнал</b>.", "The prompt already has every rule of the lesson: <b>narrow functions</b>, <b>confirmation</b> for the risky action, a <b>step limit</b>, a <b>log</b>.")}</div>
+        <div class="note" style="--k:var(--amber);font-size:23px">{t("Нужен свой ключ Gemini API (бесплатный уровень с дневным лимитом: AI Studio → Get API key; хватит на 3–4 тестовых диалога).", "You need your own Gemini API key (free tier with a daily limit: AI Studio → Get API key; enough for 3–4 test dialogues).")}</div>
       </div>
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 4 мин. Связь с уроками про агентов разработки. Свой первый агент не обязательно писать руками. Этот промпт описывает маленького агента поддержки: две функции, данные в файле, подтверждение перед возвратом, лимит в 5 вызовов и журнал. Агент разработки (Claude Code, Codex, Antigravity) напишет код, запустит и покажет примеры.",
-                      "⏱ 4 min. A link to the coding-agent lessons. You do not have to hand-write your first agent. This prompt describes a small support agent: two functions, data in a file, a confirmation before a return, a 5-call limit and a log. A coding agent (Claude Code, Codex, Antigravity) writes the code, runs it and shows examples."),
+                    t("⏱ 4 мин. Связь с уроками про агентов разработки. Свой первый агент не обязательно писать руками. Этот промпт описывает маленького агента поддержки: две функции, данные в файле, подтверждение перед возвратом, лимит в 5 вызовов и журнал. Агент разработки (Codex, Antigravity, Claude Code) напишет код, запустит и покажет примеры. Что такое агент разработки и как его выбрать — L16.",
+                      "⏱ 4 min. A link to the coding-agent lessons. You do not have to hand-write your first agent. This prompt describes a small support agent: two functions, data in a file, a confirmation before a return, a 5-call limit and a log. A coding agent (Codex, Antigravity, Claude Code) writes the code, runs it and shows examples. What a coding agent is and how to choose one: L16."),
                     t("Обратите внимание, что все правила безопасности мы заложили в задачу заранее, а не надеемся, что агент догадается. Ключ Gemini API бесплатно выдаётся в Google AI Studio (кнопка Get API key); храните его в переменной окружения, не в коде. Это вариант для домашнего задания по желанию.",
                       "Note that we put every safety rule into the task up front rather than hoping the agent guesses. A Gemini API key is free from Google AI Studio (Get API key); keep it in an environment variable, not in code. This is an optional homework path.")))
 
@@ -427,13 +523,20 @@ def s_market():
     html_cols = ""
     for (k, h, ms), g in zip(cols, gl):
         names = " · ".join(n for n, _ in ms)
-        html_cols += (f'<div class="task" style="--k:var(--{k});padding:24px 26px;align-items:flex-start"><div><div class="h" style="font-size:26px">{h}</div>'
-                      f'<div class="d" style="font-size:21px;margin-top:8px">{g}</div><div class="d" style="font-size:20px;margin-top:12px;color:var(--fg)">{names}</div></div></div>')
+        html_cols += (f'<div class="task" style="--k:var(--{k});padding:32px 30px;align-items:flex-start;min-height:380px"><div><div class="h" style="font-size:29px">{h}</div>'
+                      f'<div class="d" style="font-size:23px;margin-top:12px">{g}</div><div class="d" style="font-size:24px;margin-top:20px;color:var(--fg)">{names}</div></div></div>')
+    dots = "".join(f'<div style="position:absolute;left:{x}%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;background:var(--{k});border:4px solid var(--bg)"></div>'
+                   for x, k in ((16.2, "cyan"), (50, "violet"), (83.8, "green")))
+    strip = (f'<div style="position:relative;height:30px;margin:0 0 14px">'
+             f'<div style="position:absolute;left:0;right:0;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:linear-gradient(90deg,var(--cyan),var(--violet),var(--green))"></div>{dots}</div>'
+             f'<div style="display:flex;justify-content:space-between;font:600 22px var(--body);color:var(--muted);margin-bottom:22px">'
+             f'<span>← {t("быстрее начать, меньше контроля", "quicker to start, less control")}</span><span>{t("больше контроля, больше работы", "more control, more work")} →</span></div>')
     return dict(min=4, html=f'''
   {head(t("Рынок • октябрь 2026", "Market • October 2026"), t("Где сейчас живут агенты: в чатах, в наборах для разработчиков, у вас", "Where agents live now: in chat apps, in developer kits, on your machine"), k="amber")}
   <div class="body" style="margin-top:12px;">
-    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:30px;flex:none;align-items:start;">{html_cols}</div>
-    <div class="note" style="margin-top:30px;--k:var(--amber)">{t("Названия меняются быстро: ChatGPT agent заменён на ChatGPT Work, OpenAI Agent Builder закрывается 30.11.2026. Учим механизм, а не кнопки.", "Names change fast: ChatGPT agent was replaced by ChatGPT Work; OpenAI Agent Builder shuts down on 30.11.2026. Learn the mechanism, not the buttons.")}</div>
+    {strip}
+    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:30px;flex:none;align-items:stretch;">{html_cols}</div>
+    <div class="note" style="margin-top:34px;font-size:22px;--k:var(--amber)">{t("Названия меняются быстро: ChatGPT agent заменён на ChatGPT Work, OpenAI Agent Builder закрывается 30.11.2026. Учим механизм, а не кнопки.", "Names change fast: ChatGPT agent was replaced by ChatGPT Work; OpenAI Agent Builder shuts down on 30.11.2026. Learn the mechanism, not the buttons.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Три места, где сегодня встречаются агенты. В чатах: ChatGPT Work (запущен в июле 2026 вместо ChatGPT agent), Claude с поиском, кодом и коннекторами, Gemini с функцией Tasks (нужна подписка Pro или Ultra, пока недоступна в ЕЭЗ (включая ЕС), Великобритании, Швейцарии и Нигерии).",
@@ -459,13 +562,22 @@ def s_risks():
             ("amber", t("Действие без спроса", "Action without asking"), t("агент сам отправил письмо или оформил возврат", "the agent sent an email or created a refund on its own")),
             ("amber", t("Бесконечный цикл", "Endless loop"), t("агент ходит по кругу и тратит деньги", "the agent goes round in circles burning money")),
             ("violet", t("Лишний доступ", "Too much access"), t("у бота поддержки есть право удалять заказы", "the support bot can delete orders"))]
-    lr = "".join(f'<div class="lrow" style="--k:var(--{k})"><div class="dot"></div><div><div class="h">{h}</div><div class="d">{d}</div></div></div>' for k, h, d in rows)
+    lr = "".join(f'<div class="lrow" style="--k:var(--{k});padding:26px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:27px">{h}</div><div class="d" style="font-size:22px;margin-top:4px">{d}</div></div></div>' for k, h, d in rows)
+    dl = [t("минимум прав у каждого инструмента", "least privilege for every tool"),
+          t("человек подтверждает действия с последствиями", "a human confirms actions with consequences"),
+          t("лимит шагов и денег", "step and money limits"),
+          t("журнал всех вызовов", "a log of every call"),
+          t("ответ инструмента — данные, а не команды", "tool results are data, not commands")]
+    defs = "".join(f'<div style="display:flex;gap:14px;align-items:baseline;font:500 25px/1.35 var(--body);color:var(--fg)"><span style="color:var(--green);font-weight:800">✓</span><span>{d}</span></div>' for d in dl)
     return dict(min=5, html=f'''
   {head(t("Риски", "Risks"), t("Инструменты дают модели руки. Главный риск — чужой текст, который ей приказывает", "Tools give the model hands. The main risk is someone else’s text giving it orders"), k="red")}
   <div class="body" style="margin-top:10px;">
     <div class="row" style="grid-template-columns:1.25fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="light" style="gap:14px">{lr}</div>
-      <div class="plaque" style="font-size:22px;line-height:1.5">{t("<b>Защита:</b> минимум прав у каждого инструмента · подтверждение человеком для действий с последствиями · лимит шагов и денег · журнал всех вызовов · данные из инструментов — это данные, а не команды.", "<b>Defences:</b> least privilege for every tool · human confirmation for actions with consequences · step and money limits · a log of every call · tool results are data, not commands.")}</div>
+      <div class="light" style="gap:18px">{lr}</div>
+      <div class="stack" style="gap:22px;">
+        <div style="font:800 32px var(--display);color:var(--green)">{t("Защита — в коде", "Defences live in code")}</div>
+        {defs}
+      </div>
     </div>
   </div>''',
                 notes=notes(
@@ -478,15 +590,15 @@ def s_risks():
 def s_reliability():
     rows = [(t("Поддержка: магазин, авиа, телеком", "Support: retail, airline, telecom"), t("тест τ²-bench, лучший результат", "τ²-bench test, best score"), 87.9, "green"),
             (t("Банк", "Banking"), t("другой тест, τ³-bench, лучший", "a different test, τ³-bench, best"), 55.2, "amber")]
-    ch = bars(rows, 0, 100, lambda v: (f"{v:.1f}%".replace(".", ",") if LANG == "ru" else f"{v:.1f}%"), ticks=[(0, "0"), (50, "50"), (100, "100%")], label_w=300)
+    ch = bars(rows, 0, 100, lambda v: (f"{v:.1f}%".replace(".", ",") if LANG == "ru" else f"{v:.1f}%"), ticks=[(0, "0"), (50, "50"), (100, "100%")], label_w=320)
     return dict(min=4, html=f'''
   {head(t("Надёжность", "Reliability"), t("Даже лучшие агенты ошибаются: на сложных задачах — почти в каждом втором случае", "Even the best agents fail: on hard tasks, almost every second time"), k="amber")}
-  <div class="body">
+  <div class="body" style="margin-top:30px;">
     <div class="row" style="grid-template-columns:1.5fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="stack" style="gap:10px;"><div class="prompt-label">{t("Доля полностью решённых задач, лучшие модели, 2026", "Share of tasks fully solved, best models, 2026")}</div>{ch}</div>
+      <div class="stack tall" style="gap:34px;"><div class="prompt-label">{t("Решено с 1 попытки (Pass^1), лучший результат в каждом тесте на 16.10.2026", "Solved in one try (Pass^1), best result on each leaderboard as of 16.10.2026")}</div>{ch}</div>
       <div class="stack" style="gap:20px;">
-        <div class="stat" style="--k:var(--amber)"><div class="n">≈ 1 {t("из", "in")} 2</div><div class="d">{t("сложных многошаговых задач агент не доводит до конца правильно", "complex multi-step tasks the agent does not finish correctly")}</div></div>
-        <div class="note" style="--k:var(--green)">{t("Поэтому человек остаётся в цикле там, где ошибка стоит денег.", "That is why a human stays in the loop wherever a mistake costs money.")}</div>
+        <div class="stat" style="--k:var(--amber)"><div class="n" style="font-size:72px">≈ 1 {t("из", "in")} 2</div><div class="d" style="font-size:24px">{t("сложных многошаговых задач агент не доводит до конца правильно", "complex multi-step tasks the agent does not finish correctly")}</div></div>
+        <div class="note" style="--k:var(--green);font-size:23px">{t("Поэтому человек остаётся в цикле там, где ошибка стоит денег.", "That is why a human stays in the loop wherever a mistake costs money.")}</div>
       </div>
     </div>
   </div>''',
@@ -502,12 +614,12 @@ def s_rules():
              ("green", t("Проверка в коде", "Checks in code"), t("аргументы и права проверяет программа, не модель", "the program checks arguments and rights, not the model")),
              ("amber", t("Человек подтверждает", "A human confirms"), t("деньги, письма, удаление — только после «да»", "money, emails, deletion only after a “yes”")),
              ("violet", t("Лимиты и журнал", "Limits and a log"), t("шаги, бюджет, запись каждого вызова", "steps, budget, a record of every call"))]
-    li = "".join(f'<div class="task" style="--k:var(--{k});padding:22px 26px"><div><div class="h" style="font-size:28px">{h}</div><div class="d" style="font-size:22px">{d}</div></div></div>' for k, h, d in rules)
+    li = "".join(f'<div class="task" style="--k:var(--{k});padding:38px 34px;min-height:225px"><div><div class="h" style="font-size:34px">{h}</div><div class="d" style="font-size:25px;margin-top:12px">{d}</div></div></div>' for k, h, d in rules)
     return dict(min=4, html=f'''
-  {head(t("Правила", "Rules"), t("Четыре правила первого агента", "Four rules for your first agent"), k="green")}
+  {head(t("Правила", "Rules"), t("Четыре правила делают агента безопасным", "Four rules make an agent safe"), k="green")}
   <div class="body" style="margin-top:12px;">
-    <div class="tasks">{li}</div>
-    <div class="note" style="margin-top:26px;--k:var(--cyan)">{t("Это же чек-лист оценки домашнего задания.", "This is also the homework grading checklist.")}</div>
+    <div class="tasks" style="gap:30px 32px">{li}</div>
+    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--cyan)">{t("Это же чек-лист оценки домашнего задания.", "This is also the homework grading checklist.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Сводим урок в четыре правила. Узкие инструменты с понятными описаниями. Все проверки в коде: модель предлагает, программа проверяет. Человек подтверждает действия с последствиями. Лимиты шагов и денег плюс журнал вызовов.",
@@ -521,15 +633,15 @@ def s_exercise():
           (t("«Верните деньги, пицца холодная»", "“Refund me, the pizza was cold”"), t("create_return + подтверждение", "create_return + confirmation"), "amber"),
           (t("«Какие у вас часы работы?»", "“What are your opening hours?”"), t("без инструмента: есть в инструкции", "no tool: it is in the instructions"), "cyan"),
           (t("«Удалите мой аккаунт и все заказы»", "“Delete my account and all orders”"), t("нет такого инструмента → человеку", "no such tool → hand to a human"), "red")]
-    rows = "".join(f'<div class="lrow" style="--k:var(--cyan)"><div class="dot"></div><div><div class="h">{q}</div><div class="d">→ ?</div></div></div>' for q, a, k in qs)
+    rows = "".join(f'<div class="lrow" style="--k:var(--cyan);padding:22px 24px"><div class="dot" style="margin-top:4px"></div><div><div class="h" style="font-size:28px">{q}</div><div class="d" style="font-size:22px">→ ?</div></div></div>' for q, a, k in qs)
     return dict(min=5, html=f'''
-  {head(t("Упражнение", "Exercise"), t("Упражнение: какой инструмент вызовет агент поддержки?", "Exercise: which tool will the support agent call?"), k="cyan")}
+  {head(t("Упражнение", "Exercise"), t("Хороший агент знает, какой инструмент звать, а что отдать человеку", "A good agent knows which tool to call and what to hand to a human"), k="cyan")}
   <div class="body" style="margin-top:10px;">
     <div class="row" style="grid-template-columns:1.3fr 1fr;gap:44px;align-items:center;flex:none;">
-      <div class="light" style="gap:14px">{rows}</div>
-      <div class="stack" style="gap:18px;">
-        <div class="note" style="--k:var(--violet)">{t("У агента два инструмента: <code>get_order_status</code> и <code>create_return</code>. Сначала ответы в чат, потом разбираем вместе.", "The agent has two tools: <code>get_order_status</code> and <code>create_return</code>. Answers in the chat first, then we go through them together.")}</div>
-        <div class="note" style="--k:var(--red)">{t("Подсказка: один вопрос не требует инструмента, а один агент вообще не должен выполнять. Ответы — в заметках спикера.", "Hint: one question needs no tool, and one the agent must not carry out at all. Answers are in the speaker notes.")}</div>
+      <div class="light" style="gap:18px">{rows}</div>
+      <div class="stack" style="gap:28px;">
+        <div class="note" style="--k:var(--violet);font-size:23px">{t("У агента два инструмента: <code>get_order_status</code> и <code>create_return</code>. Сначала ответы в чат, потом разбираем вместе.", "The agent has two tools: <code>get_order_status</code> and <code>create_return</code>. Answers in the chat first, then we go through them together.")}</div>
+        <div class="note" style="--k:var(--red);font-size:23px">{t("Подсказка: один вопрос не требует инструмента, а один агент вообще не должен выполнять. Ответы — в заметках спикера.", "Hint: one question needs no tool, and one the agent must not carry out at all. Answers are in the speaker notes.")}</div>
       </div>
     </div>
   </div>''',
@@ -541,9 +653,9 @@ def s_exercise():
 
 
 def s_hw():
-    tree = ("L11_homework/\n├─ README.md   # задача и вывод\n├─ tools.md    # 2–3 функции\n├─ demo.png    # вызов и ответ\n└─ risks.md    # подтверждение, лимит")
+    tree = ("genai-homeworks/L11/\n├─ README.md   # задача и вывод\n├─ tools.md    # 2–3 функции\n├─ demo.png    # вызов и ответ\n└─ risks.md    # подтверждение, лимит")
     if LANG == "en":
-        tree = ("L11_homework/\n├─ README.md   # task, conclusion\n├─ tools.md    # 2–3 functions\n├─ demo.png    # call and answer\n└─ risks.md    # confirmation, limit")
+        tree = ("genai-homeworks/L11/\n├─ README.md   # task, conclusion\n├─ tools.md    # 2–3 functions\n├─ demo.png    # call and answer\n└─ risks.md    # confirmation, limit")
     steps = [t("Выберите рабочую задачу для агента (поддержка, склад, HR…)", "Pick a work task for an agent (support, warehouse, HR…)"),
              t("Опишите 2–3 функции: имя, описание, параметры", "Describe 2–3 functions: name, description, parameters"),
              t("Повторите демо в AI Studio на своих функциях и синтетических данных", "Repeat the AI Studio demo with your functions and synthetic data"),
@@ -553,12 +665,12 @@ def s_hw():
     return dict(min=5, html=f'''
   {head(t("Домашнее задание", "Homework"), t("ДЗ: спроектировать инструменты агента и проверить их в AI Studio", "Homework: design an agent’s tools and test them in AI Studio"), k="green")}
   <div class="body" style="margin-top:10px;">
-    <div class="row" style="grid-template-columns:1.25fr 1fr;gap:40px;align-items:center;flex:none;">
-      <ol class="checklist">{ol}</ol>
-      <div class="stack" style="gap:18px;">
-        <pre class="code" style="font-size:19px;line-height:1.5">{tree}</pre>
-        <div class="note" style="--k:var(--amber)">{t("Код по желанию: промпт со слайда 13.", "Code optional: the slide 13 prompt.")}</div>
-        <div class="small" style="font-size:18px">{t("Только синтетические данные. Бесплатно: Gemini 3.8 Flash в AI Studio.", "Synthetic data only. Free: Gemini 3.8 Flash in AI Studio.")}</div>
+    <div class="row" style="grid-template-columns:1.3fr 1fr;gap:44px;align-items:center;flex:none;margin-top:20px">
+      <div class="big"><ol class="checklist">{ol}</ol></div>
+      <div class="stack" style="gap:24px;">
+        <pre class="code" style="font-size:23px;line-height:1.7;padding:28px 30px">{tree}</pre>
+        <div class="note" style="--k:var(--amber);font-size:23px">{t("Код по желанию: промпт со слайда 13.", "Code optional: the slide 13 prompt.")}</div>
+        <div class="small" style="font-size:20px">{t("Только синтетические данные. Бесплатно: Gemini 3.8 Flash в AI Studio.", "Synthetic data only. Free: Gemini 3.8 Flash in AI Studio.")}</div>
       </div>
     </div>
   </div>''',
@@ -574,12 +686,12 @@ def s_summary():
              ("violet", t("Модель предлагает, программа выполняет", "The model proposes, the program runs it"), t("граница доверия в вашем коде", "the trust boundary lives in your code")),
              ("green", t("Агент = модель + инструменты + цикл", "Agent = model + tools + loop"), t("с лимитом шагов", "with a step limit")),
              ("amber", t("Человек в цикле для рисков", "A human in the loop for risks"), t("деньги, письма, удаление", "money, emails, deletion"))]
-    li = "".join(f'<div class="task" style="--k:var(--{k});padding:20px 24px"><div><div class="h" style="font-size:26px">{h}</div><div class="d" style="font-size:21px">{d}</div></div></div>' for k, h, d in rules)
+    li = "".join(f'<div class="task" style="--k:var(--{k});padding:38px 34px;min-height:215px"><div><div class="h" style="font-size:31px">{h}</div><div class="d" style="font-size:25px;margin-top:12px">{d}</div></div></div>' for k, h, d in rules)
     return dict(min=3, html=f'''
-  {head(t("Итоги", "Summary"), t("Итоги урока", "Lesson summary"), k="green")}
+  {head(t("Итоги", "Summary"), t("Модель предлагает, программа решает, человек подтверждает", "The model proposes, the program decides, a human confirms"), k="green")}
   <div class="body" style="margin-top:10px;">
-    <div class="tasks">{li}</div>
-    <div class="note" style="margin-top:28px;--k:var(--violet)">{t("<b>Дальше, L12:</b> MCP — единый способ подключать инструменты к любым моделям, и фреймворки агентов.", "<b>Next, L12:</b> MCP — one standard way to plug tools into any model, plus agent frameworks.")}</div>
+    <div class="tasks" style="gap:30px 32px">{li}</div>
+    <div class="note" style="margin-top:34px;font-size:23px;--k:var(--violet)">{t("<b>Дальше, L12:</b> MCP — единый способ подключать инструменты к любым моделям, и фреймворки агентов.", "<b>Next, L12:</b> MCP — one standard way to plug tools into any model, plus agent frameworks.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 3 мин. Четыре мысли. Модель не знает текущих данных и без инструмента угадывает. Модель только предлагает вызов, выполняет и проверяет программа. Агент — это модель, инструменты и цикл с лимитом. Для рискованных действий человек остаётся в цикле.",
@@ -596,6 +708,16 @@ SLIDES = [s_cover, s_hook, s_seen, s_define, s_boundary, s_demo_call, s_demo_don
 EXTRA_CSS = """
 .bars .ref, .vline { position: absolute; top: 0; bottom: 26px; border-left: 2px dashed var(--k, var(--amber)); }
 .vline span { position: absolute; top: -32px; left: 6px; white-space: nowrap; font: 600 17px var(--body); color: var(--k); }
+.slide:not(.cover) .body { justify-content: flex-start; padding-top: 22px; }
+.code, pre.code { font-variant-ligatures: none; }
+.tall .bars { gap: 70px; }
+.tall .bars .bt { height: 100px; }
+.tall .bars .bl { font-size: 27px; }
+.tall .bars .bl small { font-size: 20px; margin-top: 6px; }
+.tall .bars .bv { font-size: 34px; }
+.big .checklist { gap: 34px; }
+.big .checklist li { font-size: 27px; grid-template-columns: 48px 1fr; color: var(--fg); }
+.big .checklist li::before { width: 34px; height: 34px; font-size: 19px; }
 """
 
 

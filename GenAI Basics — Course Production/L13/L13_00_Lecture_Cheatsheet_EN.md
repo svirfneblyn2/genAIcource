@@ -13,15 +13,15 @@
 |---|---|
 | GPTs | retire 11.12.2026, move to plugins; Enterprise with a deferral — until 11.02.2027 |
 | Moves / doesn’t | instructions → skill, files, apps / Actions, model, sharing |
-| Gems (Gemini) | become skills from 17.11.2026 |
+| Gems (Gemini) | become skills: personal from 17.11.2026, Workspace from March 2027 |
 | Claude Projects | every plan, up to 5 on Free; sharing on Team/Enterprise |
 | Assistants API | shut down 26.08.2026; Agent Builder — 30.11.2026 |
-| Agents API | beta since 10.09.2026, no fee beyond tokens |
+| Agents API | beta since 10.09.2026, you pay only for tokens and tools |
 | openai-agents | 0.24 (15.10.2026) |
 | gpt-6-luna | $0.10 / $0.50 per 1M tokens; web search $10 per 1,000 calls |
 
 ## Recheck within 24 hours of class
-1. The ChatGPT path “Plugins → Add → Create plugin” and the GPTs banner.
+1. The ChatGPT path “Plugins → Add → Create plugin” (checked on Business; may be missing on Free/Plus) and the GPTs banner.
 2. Claude Projects: Free limits, the Instructions/Context panel.
 3. Gems → skills status.
 4. gpt-6-luna and web search prices, the openai-agents version.

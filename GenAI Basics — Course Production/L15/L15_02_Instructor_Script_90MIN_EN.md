@@ -1,6 +1,6 @@
 # Instructor Script • Lesson 15: Responsible AI — Errors, Leaks, Deepfakes and Laws (90 Minutes)
 
-**Course:** GenAI Basics • Module 4 (Idea to Product) • Lesson 15 of 16
+**Course:** GenAI Basics • Module 6 (Idea to Product) • Lesson 15 of 16
 **Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Audience:** GenAI beginners from many roles and countries (Uzbekistan, CIS, EU). A calm, factual tone; an overview, not legal advice.
 **Format:** 17 slides (`presentation_L15_Responsible_AI_Security_Regulation_EN_v2.html` / PDF) • **Microsoft Teams** • break on slide 13
@@ -27,14 +27,14 @@
 | **07** | Excessive agency: an agent does whatever it has rights to — even if you did not want it to | 29:00–35:00 | 6 |
 | **08** | The OWASP Top 10 for AI apps: the four that affect everyone | 35:00–40:00 | 5 |
 | **09** | AI repeats the biases in its data: CVs that differed only in the name were ranked differently | 40:00–45:00 | 5 |
-| **10** | Laws require labelling AI content, and technology helps: invisible marks and signatures | 45:00–50:00 | 5 |
+| **10** | Laws already require labelling AI content — deepfakes first; technology helps: invisible marks and signatures | 45:00–50:00 | 5 |
 | **11** | The EU AI Act applies in stages — most of it is in force, high-risk rules from 2027 | 50:00–56:00 | 6 |
 | **12** | Uzbekistan, Kazakhstan and Russia have already passed AI laws or amendments — with a lot in common | 56:00–62:00 | 6 |
 | **13** | 5 minutes: recall what you pasted into AI this week | 62:00–67:00 | 5 |
 | **14** | AI rules for a team fit on one page: four points | 67:00–73:00 | 6 |
 | **15** | Exercise: is this OK — and what to do differently? | 73:00–79:00 | 6 |
 | **16** | Homework: one-page AI rules for your team | 79:00–85:00 | 6 |
-| **17** | Lesson summary | 85:00–90:00 | 5 |
+| **17** | Four rules: check, sort data, a human decides, label | 85:00–90:00 | 5 |
 
 Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plans, deepfakes, agents, OWASP, bias, labelling, the EU AI Act, our region. Break (slide 13, 62:00–67:00). Part 2 (slides 14–17, 67:00–90:00): team rules, exercise, homework, summary.
 
@@ -42,7 +42,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 01 (00:00–02:00) • Responsible AI
 
-**On screen:** Lesson title.
+**On screen:** Lesson title and a miniature of the risk map (four coloured dots).
 
 #### Speaker (2 min)
 > Welcome. In this course we learned to generate text, images, video and audio, and to build agents and prototypes. Today: how to use all of that at work without harming yourself, your company or your customers. No legal lecture: real cases, simple rules and what laws already require.
@@ -51,7 +51,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 02 (02:00–07:00) • Four main AI risks at work: what happens often and what costs a lot
 
-**On screen:** Risk map: how often × damage, four risks.
+**On screen:** Risk map: how often × damage, four risks; beside it, when each happens and what it costs.
 
 #### Speaker (5 min)
 > The map: horizontally how often it happens, vertically how much damage it does. Model mistakes happen all the time; damage is usually moderate if a human checks the result. A data leak is one pasted document, but the damage is large. Deepfake fraud is rare but costs millions. An agent deleting data is the new 2025–2026 risk: seconds and a disaster.
@@ -76,7 +76,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 **On screen:** The data traffic light; the Samsung and Grok cases.
 
 #### Speaker (6 min)
-> The data traffic light — a simple scheme for a team. Green: public data — website texts, published documents — any AI. Amber: internal — plans, internal emails — only company-approved AI. Red: customer personal data, passwords, contracts — never in an AI chat without explicit approval.
+> The data traffic light — a simple scheme for a team. Green: public data — website texts, published documents — any AI. Amber: internal — plans, internal emails — only company-approved AI. Red: customer personal data, contracts — only into company-approved work AI and only with permission; never into a personal one. And passwords, keys and tokens — never, into any AI.
 >
 > Two cases. Samsung, 2023: engineers pasted internal code into ChatGPT, and the company temporarily banned generative AI tools on work devices. Grok, 2025: the share button published chats, and about 370 thousand conversations appeared in Google search, some with personal data and even a password (as reported by Forbes). Takeaway: the danger is not only the model but the buttons around it.
 
@@ -95,7 +95,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 06 (24:00–29:00) • A video call with “the CFO” can be fake: verify money requests through another channel
 
-**On screen:** Arup $25M and three rules against deepfake calls.
+**On screen:** Arup $25M and a vertical four-step stop list: the call, urgent and secret, stop, call back yourself.
 
 #### Speaker (5 min)
 > One of the most expensive known cases: the engineering firm Arup, Hong Kong, early 2024. A finance employee joined a video call where the “CFO” and several “colleagues” were deepfakes. The employee made 15 transfers, about 200 million Hong Kong dollars, roughly 25 million US dollars. Arup confirmed the case.
@@ -109,7 +109,7 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 **On screen:** PocketOS (9 seconds) and Replit; rules for agents.
 
 #### Speaker (6 min)
-> A new risk we discussed in L11 and L12. April 2026, PocketOS: a coding agent in Cursor came across an access token in an unrelated file and in nine seconds deleted the production database along with its backups; the service was down for about 30 hours. July 2025, Replit: an agent deleted a production database during a declared code freeze and then misreported the state.
+> A new risk we discussed in L11 and L12. April 2026, PocketOS: a coding agent in Cursor came across an access token in an unrelated file and in nine seconds deleted the production database along with its backups; the service was down for about 30 hours; the hosting provider later restored the data. July 2025, Replit: an agent deleted a production database during a declared code freeze and then misreported the state.
 >
 > OWASP’s risk list calls this “Excessive Agency”. The agent is not evil — it simply does what it has rights to. Hence the rules: least privilege, no production keys near the agent, human confirmation for deletion and money, backups kept separately where the agent cannot reach.
 
@@ -133,16 +133,16 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 #### Speaker (5 min)
 > A University of Washington study had language models rank CVs that differed only in the candidate’s name. CVs with white-associated names were chosen in 85% of comparisons, Black-associated in 9%. Male-associated names in 52%, female in 11%. The model does not “want” to discriminate — it repeats the biases in the data it learned from.
 >
-> That is why decisions about people — hiring, credit, dismissal — AI may prepare, but a human makes. In the EU such systems are high-risk (duties apply from December 2027), and Uzbekistan’s law forbids basing decisions that affect people’s rights on AI output alone.
+> That is why decisions about people — hiring, credit, dismissal — AI may prepare, but a human makes. In the EU such systems are high-risk (duties apply from December 2027), and Uzbekistan’s law, according to law firms, forbids basing decisions that affect people’s rights on AI output alone.
 
 ---
 
-### Slide 10 (45:00–50:00) • Laws require labelling AI content, and technology helps: invisible marks and signatures
+### Slide 10 (45:00–50:00) • Laws already require labelling AI content — deepfakes first; technology helps: invisible marks and signatures
 
-**On screen:** SynthID, C2PA, “no mark ≠ human”; where labelling is already required.
+**On screen:** SynthID, C2PA, “no mark ≠ human”; where labelling is already required (Russia — disputed).
 
 #### Speaker (5 min)
-> The common thread across countries’ laws is labelling AI content. China has required visible and hidden labels since 1 September 2025. In the EU, AI Act Article 50 from 2 August 2026: a chatbot must say it is AI, generators must add a machine-readable mark, deepfakes need a visible label; generators already on the market before 2 August 2026 have until 2 December 2026 to add the machine-readable mark. Kazakhstan — from January 2026. In Russia, for platforms with over 500 thousand daily users — from 1 March 2027; sources disagree on how mandatory it is.
+> The common thread across countries’ laws is labelling AI content. China has required visible and hidden labels since 1 September 2025. In the EU, AI Act Article 50 from 2 August 2026: a chatbot must say it is AI, generators must add a machine-readable mark, deepfakes need a visible label; generators already on the market before 2 August 2026 have until 2 December 2026 to add the machine-readable mark (per the text of Regulation 2026/1744; some law firms say 2 February 2027). Kazakhstan — from January 2026. In Russia, law 243-FZ of 26 July 2026: labelling provisions for platforms with over 500 thousand daily users from 1 March 2027; sources disagree on whether it is mandatory.
 >
 > Technology: Google’s SynthID is an invisible mark inside an image, sound or text; you can check an image in the Gemini app. C2PA is signed provenance data supported by Adobe, Google, Microsoft, OpenAI and others; but a screenshot strips it. Two takeaways: no mark does not mean a human made it, and a mark does not mean the content is true.
 
@@ -164,9 +164,9 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 **On screen:** Uzbekistan, Kazakhstan, Russia, US/UK — one line each.
 
 #### Speaker (6 min)
-> Uzbekistan: law ZRU-1115, signed on 21 January 2026, amends the Law on Informatization and the Code of Administrative Responsibility. Decisions affecting human rights must not rest solely on AI output; spreading personal data via AI is prohibited; fines are 50–100 base calculation units. There is an AI development strategy to 2030 (PP-358). Whether labelling made it into the final text we could not confirm; it was in the draft.
+> Uzbekistan: law ZRU-1115, signed on 21 January 2026, amends the Law on Informatization and the Code of Administrative Responsibility. According to law firms, decisions affecting human rights must not rest solely on AI output; spreading personal data via AI is prohibited; fines are 50–100 base calculation units. Since 17 June 2026, Rules of Ethics for developing and using AI apply (a ministerial order, according to the MoFo law-firm tracker). There is an AI development strategy to 2030 (PP-358). Whether labelling made it into the final text we could not confirm; it was in the draft.
 >
-> Kazakhstan: the Law “On Artificial Intelligence”, signed on 17 November 2025, in force since 18 January 2026 — described by lawyers as the first standalone AI law in Central Asia: a ban on manipulative AI, mandatory labelling. Russia: a framework law published in July 2026, general provisions from 1 September 2026, labelling rules for platforms with over 500 thousand daily users from 1 March 2027; sources disagree on whether labelling is mandatory. The US has no comprehensive federal AI law: there are state laws, executive orders and narrow federal laws, for example against intimate deepfakes; the UK takes a sector approach. This is an overview, not legal advice.
+> Kazakhstan: the Law “On Artificial Intelligence”, signed on 17 November 2025, in force since 18 January 2026 — described by lawyers as the first standalone AI law in Central Asia: a ban on manipulative AI, mandatory labelling. Russia: framework law 243-FZ of 26 July 2026, general provisions from 1 September 2026, labelling rules for platforms with over 500 thousand daily users from 1 March 2027; sources disagree on whether labelling is mandatory. The US has no comprehensive federal AI law: there are state laws, executive orders and narrow federal laws, for example against intimate deepfakes; the UK takes a sector approach. This is an overview, not legal advice.
 
 ---
 
@@ -192,10 +192,10 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ### Slide 15 (73:00–79:00) • Exercise: is this OK — and what to do differently?
 
-**On screen:** Four work situations: OK or not.
+**On screen:** Four work situations and a large answer key: yes / yes, but… / no.
 
 #### Speaker (6 min)
-> Four situations for the chat. Walk-through. A client contract into ChatGPT: only into a business account with a data protection agreement, never a personal one. An image for social media: fine, but check the generator’s licence, do not depict real people or brands, and label AI content where the law or the platform requires.
+> Four situations for the chat. Walk-through. A client contract into ChatGPT: that is the red zone of the traffic light — only into a company-approved business account (with a data protection agreement) and with permission; never a personal one. An image for social media: fine, but check the generator’s licence, do not depict real people or brands, and label AI content where the law or the platform requires.
 >
 > Sorting CVs: AI may help, but a human decides, and you must check for bias — remember the names study. An urgent payment request on video from the CEO: stop and call back on a known number — that is the Arup scenario.
 
@@ -210,11 +210,11 @@ Part 1 (slides 01–12, 00:00–62:00): the risk map, made-up facts, leaks, plan
 
 ---
 
-### Slide 17 (85:00–90:00) • Lesson summary
+### Slide 17 (85:00–90:00) • Four rules: check, sort data, a human decides, label
 
 **On screen:** Four rules and the L16 preview.
 
 #### Speaker (5 min)
-> Four rules. Check numbers, links and quotes against the source. The data traffic light: work data only into work AI. Decisions about people, money and deletion are made by a human. Label deepfakes and AI content where the law or the platform requires it. The last lesson: agentic software development.
+> Four rules. Check numbers, links and quotes against the source. The data traffic light: internal data only into work AI, confidential only into approved work AI with permission, never a personal one. Decisions about people, money and deletion are made by a human. Label deepfakes and AI content where the law or the platform requires it. The last lesson: agentic software development.
 
 ---

@@ -8,10 +8,13 @@ Primary sources checked on 2026-10-16. The lesson was rebuilt from the September
 |---|---|
 | `assets/v2/img/chatgpt_gpts_retire.png` | chatgpt.com/gpts banner: "Перенесите свои GPT в плагины до 11 декабря" |
 | `assets/v2/img/chatgpt_plugin_creator.png` | ChatGPT Plugins → Add → Create plugin: "@Plugin Creator, помоги мне создать плагин" (nothing sent) |
-| `assets/v2/img/claude_project.png`, `claude_instructions.png` | claude.ai project "Демо L09: поддержка курьеров" (training project from L09) and its instructions (dialog closed with Cancel) |
-| `assets/v2/img/assistant_recipe.png`, `ladder.png`, `cover_right.png` | schematics generated with genai-assets |
+| `assets/v2/img/claude_project_panel.png` | slide 4: recrop (Pillow) of the claude.ai project "Демо L09: поддержка курьеров" capture: title strip + right-hand panel (Instructions / Context / Memory / Scheduled) scaled ×2.2; the original captures `claude_project.png` / `claude_instructions.png` and the English schematics `assistant_recipe*.png`, `ladder.png`, `cover_right.png` were removed from the folder (git history) |
+| `assets/v2/img/claude_instructions_crop.png` | slide 5: the project instructions dialog cut just below the last instruction line (dialog closed with Cancel) |
+| `assets/v2/img/icons/ic_r1…ic_r5.png`, `ic_l1…ic_l4.png` | outline icons cut (text-free) from the two genai-assets schematics; slide 2 recipe, slide 9 ladder and the cover card are now drawn in HTML with RU/EN labels |
 
 Observed but not used on a slide: gemini.google.com/gems/view banner (in another account and language) stating that from 17 November 2026 Gems become skills.
+
+**Fix round 2026-10-16 (final audit):** ChatGPT plugin path flagged as "checked on Business; on Free/Plus fall back to Claude" (slides 6, 14, 16, homework); Gems dates now "personal from 17.11.2026, Workspace from March 2027"; slide 15 plaque no longer claims anything about GPT authors or file extraction (now: on work plans an admin may see chats); knowledge-file wording softened to "assume every user may see the knowledge files".
 
 The Responses API and Agents SDK code on slides 10–11 was not executed (no OpenAI API key on the build machine).
 
@@ -29,7 +32,7 @@ they were read through the user's Chrome. "UNVERIFIED" = only secondary sources 
 | # | Old package said (checked 2026-09-08) | Today (2026-10-16) | Source |
 |---|---|---|---|
 | A | Custom GPTs = current product; Business/Enterprise/Edu can create | **OpenAI is retiring custom GPTs. Standard retirement: Dec 11, 2026** (Feb 11, 2027 only for Enterprise workspaces with an approved deferral). Replacement = **Plugins** (skills + apps). Applies to **all ChatGPT plans**. | https://help.openai.com/en/articles/20001519-custom-gpt-retirement-and-migration-faq |
-| B | — | Enterprise: **creation of new custom GPTs ends Oct 26, 2026 (planned)** — 10 days after this check | same FAQ |
+| B | — | Enterprise: **creation of new custom GPTs ends Oct 26, 2026 (planned)** — 10 days after this check. **CONFLICTING:** a 2026-10-16 web-search summary of the same FAQ gives **Sep 25, 2026 (planned)** and a Sep 17 migration target; the FAQ (help.openai.com/en/articles/20001519) returns 403 to plain fetchers, so it could not be rechecked in the fix round. Not used on any slide. | same FAQ |
 | C | Demo model `gpt-5.6-luna` | New generation: **gpt-6-astra / gpt-6.1-sol / gpt-6-sol / gpt-6-luna**. `gpt-6-luna` is cheaper than 5.6-luna ($0.10 / $0.50 vs $0.20 / $1.20 per 1M) | https://developers.openai.com/api/docs/pricing |
 | D | Assistants API not discussed | **Assistants API was shut down on Aug 26, 2026** (already gone) | https://developers.openai.com/api/docs/deprecations |
 | E | Agent Builder wind-down after Nov 30, 2026 | Confirmed: **Agent Builder shutdown Nov 30, 2026**; Evals read-only Oct 31, shutdown Nov 30. ChatKit stays. | deprecations page |
@@ -74,7 +77,8 @@ Gems → skills (Gemini), Agent Builder (M365 Copilot). The configuration skill 
 
 - **Claude Projects** (Anthropic): workspace with its own chats + knowledge base + project instructions. **Available to all users including Free (Free max 5 projects)**; RAG expansion only on paid plans (Pro, Max, Team, Enterprise); sharing (Can view / Can edit) only on Team/Enterprise. A new beta version is rolling out (starts in Claude Code). https://support.claude.com/en/articles/9517075-what-are-projects (page "updated yesterday")
 - **Gemini Gems** (Google): custom Gemini with a name, instructions and optional Knowledge files (device, Drive, NotebookLM notebook). Personal accounts need to be 13+. **"Starting in November 2026, Gems will go away on personal Google accounts and automatically transition to skills."** https://support.google.com/gemini/answer/15146780
-  Secondary sources say Nov 17, 2026 for personal accounts, March 2027 for Workspace business, June 2027 for education, and skills require 18+ and Keep Activity. **UNVERIFIED** (no Google primary page found for these exact dates).
+  Dates **CONFIRMED** (fix round 2026-10-16): Nov 17, 2026 for personal accounts (in-app Gemini notice observed on gemini.google.com/gems/view; Android Central / Android Authority / TechRepublic), March 2027 for Workspace business/enterprise (Google blog "Let skills in Gemini tackle your most repetitive tasks", blog.google; Workspace help "About the transition from Gems to skills", knowledge.workspace.google.com/p/gems-migration), June 2027 for education. Skills requiring 18+ and Keep Activity remains secondary only.
+  https://www.androidcentral.com/apps-software/ai/google-outlines-timeline-to-phase-out-gemini-gems-in-favor-of-skills ; https://blog.google/products-and-platforms/products/gemini/automate-tasks-with-skills/
 - **Microsoft 365 Copilot – Agent Builder** (builds "declarative agents"): in microsoft365.com/chat, office.com/chat, Teams desktop/web; not on mobile. Instructions + knowledge (SharePoint, Copilot connectors, web) + capabilities (code interpreter, image generator). It can't author actions, so "copy the agent to Microsoft Copilot Studio" for actions/workflows. Skills are in preview (Frontier Program).
   **Licensing:** Copilot Chat users (no license) get agents grounded on instructions or the web. Org data (SharePoint, connectors) needs pay-as-you-go Copilot Credits or a Microsoft 365 Copilot license. Email, People and Teams knowledge need the full license.
   https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/agent-builder (updated 2026-10-12); https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/prerequisites (2026-09-30)
@@ -167,7 +171,7 @@ Beginner example: 1,000 short Q&As on gpt-6-luna at about 500 input + 300 output
 - Help Center pages show relative dates ("updated 17 days ago" ≈ 2026-09-29; FAQ "12 days ago" ≈ 2026-10-04).
 
 ## UNVERIFIED list
-1. Gemini Gems → skills exact dates (Nov 17, 2026 personal; Mar 2027 Workspace; Jun 2027 Edu): secondary only. Google primary only says "Starting in November 2026".
+1. ~~Gemini Gems → skills exact dates~~ — **confirmed** 2026-10-16 (in-app notice + Google blog/Workspace help for March/June 2027; Android Central/TechRepublic for Nov 17). Only the 18+/Keep Activity requirement stays unverified.
 2. Workspace agents credit billing start July 6, 2026 (official post says after May 6, 2026).
 3. Agents API computer use (Sep 29), US-only residency, no ZDR.
 4. GPT-6 tier split in ChatGPT (Sol for paid, Luna for Free/Go): from search summary of openai.com/index/gpt-6-for-everyone, page not opened.
@@ -175,3 +179,4 @@ Beginner example: 1,000 short Q&As on gpt-6-luna at about 500 input + 300 output
 6. Agents SDK minimum Python version.
 7. Exact non-Enterprise (Free/Plus/Business) GPT migration dates. The FAQ says all plans are affected, gives Dec 11 as the standard date, and says "follow your in-product notice".
 8. A dedicated GPT Store shutdown announcement (inferred only from "retired GPTs leave the GPT directory").
+9. Enterprise GPT creation cutoff: Oct 26, 2026 (FAQ read via Chrome) vs Sep 25, 2026 (web-search summary of the FAQ). Conflicting; not on any slide.

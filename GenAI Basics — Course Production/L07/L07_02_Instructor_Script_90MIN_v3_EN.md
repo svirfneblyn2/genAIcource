@@ -378,6 +378,6 @@ Part 1 (slides 01–14, 00:00–52:00): the family map, new words (model, chat, 
 #### Speaker (3 min)
 > Five rules out loud. Then the chat question: “which Copilot will you try this week, and for what?” Read 3–4 answers.
 >
-> Next lesson L08: data analysis with AI. We return to the orders table from slide 13 and go from a question to a checked conclusion in Excel and with the Analyst agent.
+> Next lesson L08: data analysis with AI. Chatting with a file, code that does the maths, and checking the conclusion on a practice sales table; Copilot in Excel is one of the options.
 
 ---

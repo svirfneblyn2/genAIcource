@@ -6,7 +6,7 @@ Before class: in claude.ai → Settings → Capabilities make sure Artifacts (an
 
 ## Slide 01 · 0–2 min · Claude Ecosystem and Artifacts
 
-⏱ 2 min. Welcome. In L07 we looked at the Microsoft Copilot ecosystem. Today it is the second big assistant, Claude by Anthropic, and its signature feature: artifacts.
+⏱ 2 min. Welcome. L07 covered Microsoft's ecosystem and L08 data analysis. Today, the second ecosystem: Claude by Anthropic, and its signature feature: artifacts.
 
 Plan: where Claude lives → what an artifact is → how to order and check one (live demo) → break → the artifact as an app, projects, connectors, skills → safety → homework.
 

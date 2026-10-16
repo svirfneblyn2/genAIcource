@@ -19,10 +19,10 @@
 * **14 Market (4, 55–59):** ChatGPT Work, Claude, Gemini Tasks; OpenAI Agents SDK, Claude Agent SDK, Gemini API; Agent Builder shuts down 30.11.2026.
 * **15 Break (5, 59–64).**
 * **16 Risks (5, 64–69):** prompt injection (#1 on OWASP), action without asking, endless loop, too much access.
-* **17 Reliability (4, 69–73):** τ²-bench best 87.9%, τ³-bench (banking) 55.2%.
+* **17 Reliability (4, 69–73):** τ²-bench best 87.9%, τ³-bench (banking) 55.2% (solved in one try, Pass^1).
 * **18 Rules (4, 73–77):** narrow tools, checks in code, a human confirms, limits and a log.
-* **19 Exercise (5, 77–82):** 4 customer questions → which tool.
-* **20 Homework (5, 82–87).**
+* **19 Exercise (5, 77–82):** 4 customer questions → which tool; answers only in the speaker notes.
+* **20 Homework (5, 82–87):** submit to `genai-homeworks/L11/`.
 * **21 Summary (3, 87–90):** L12 (MCP) preview.
 
 ## Terms in plain words

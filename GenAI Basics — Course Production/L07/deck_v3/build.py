@@ -788,15 +788,15 @@ def s_summary():
       <ol class="pts big" style="list-style:none;">{rl}</ol>
       <div class="stack" style="gap:16px;">
         <div class="poll" style="font-size:21px;"><b>{t("В чат:", "In chat:")}</b> {t("какой Copilot вы попробуете на этой неделе и для какой задачи?", "which Copilot will you try this week, and for what?")}</div>
-        <div class="note" style="--k:var(--amber)"><b>{t("Дальше: L08 — ИИ для анализа данных.", "Next: L08, AI for data analysis.")}</b> {t("Copilot в Excel и агент Analyst — от вопроса до проверенного вывода.", "Copilot in Excel and the Analyst agent: from a question to a checked conclusion.")}</div>
+        <div class="note" style="--k:var(--amber)"><b>{t("Дальше: L08 — ИИ для анализа данных.", "Next: L08, AI for data analysis.")}</b> {t("Чат с файлом, код, который считает сам, и проверка вывода на учебной таблице продаж.", "Chatting with a file, code that does the maths, and checking the conclusion on a practice sales table.")}</div>
       </div>
     </div>
   </div>''',
                 notes=notes(
                     t("⏱ 3 мин. Пять правил вслух. Потом вопрос в чат: «какой Copilot попробуете на этой неделе и для чего?» Прочитайте 3–4 ответа.",
                       "⏱ 3 min. Five rules out loud. Then the chat question: “which Copilot will you try this week, and for what?” Read 3–4 answers."),
-                    t("Следующий урок L08: анализ данных с ИИ. Вернёмся к таблице заказов со слайда 13 и пройдём путь от вопроса до проверенного вывода в Excel и с агентом Analyst.",
-                      "Next lesson L08: data analysis with AI. We return to the orders table from slide 13 and go from a question to a checked conclusion in Excel and with the Analyst agent.")))
+                    t("Следующий урок L08: анализ данных с ИИ. Чат с файлом, код, который считает сам, и проверка вывода на учебной таблице продаж; Copilot в Excel будет одним из вариантов.",
+                      "Next lesson L08: data analysis with AI. Chatting with a file, code that does the maths, and checking the conclusion on a practice sales table; Copilot in Excel is one of the options.")))
 
 
 SLIDES = [s_cover, s_map, s_terms, s_assist_agent, s_models, s_app, s_money, s_you, s_vision, s_windows, s_teams, s_word, s_excel, s_ppt_outlook,

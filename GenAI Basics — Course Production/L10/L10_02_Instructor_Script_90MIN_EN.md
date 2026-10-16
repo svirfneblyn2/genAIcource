@@ -1,6 +1,6 @@
 # Instructor Script • Lesson 10: Open Models. Your Laptop and a Rented GPU (90 Minutes)
 
-**Course:** GenAI Basics • Module 3 (Own Models and Agents) • Lesson 10 of 16
+**Course:** GenAI Basics • Module 4 (Open Models) • Lesson 10 of 16
 **Instructor:** Ihar Rubanovich (`ihar_rubanovich@epam.com`), Engineering Manager II & AI Ambassador @ EPAM Systems
 **Audience:** GenAI beginners from many roles. Plain language; code only as one short reference example (slide 11).
 **Format:** 21 slides (`presentation_L10_Open_Models_Local_and_RunPod_EN_v2.html` / PDF) • class runs in **Microsoft Teams** • break timer on slide 15
@@ -8,9 +8,9 @@
 **Source of truth:** `deck_v2/build.py` (slide text and speaker notes). This script is generated from it (`deck_v2/make_docs.py`); if anything differs, `build.py` wins.
 **Facts:** as of 16.10.2026, sources in `L10_08_Source_Notes_Research_2026-10.md`. The “recheck within 24 hours” list is at the end of the cheatsheet.
 
-> **Before class:** install LM Studio (the classic app, not Bionic) and download `granite-4.2-3b` at Q4_K_M (2.2 GB) in advance for the slide 10 demo. RunPod is shown on screenshots; a live launch is paid and optional.
+> **Before class:** install LM Studio (the classic app, not Bionic) and download `granite-4.2-3b` at Q4_K_M (2.2 GB) in advance for the slide 10 demo. Runpod is shown on screenshots; a live launch is paid and optional.
 
-**Lesson objective:** students understand what an open model is (a file plus a licence), can estimate whether a model fits their computer and how fast it will run, run a model in LM Studio or Ollama and connect it to code through a local server, and understand when a rented GPU is needed (RunPod Pod or Serverless), what it costs and how to choose between a cloud API, a laptop and renting.
+**Lesson objective:** students understand what an open model is (a file plus a licence), can estimate whether a model fits their computer and how fast it will run, run a model in LM Studio or Ollama and connect it to code through a local server, and understand when a rented GPU is needed (Runpod Pod or Serverless), what it costs and how to choose between a cloud API, a laptop and renting.
 
 ---
 
@@ -34,35 +34,35 @@
 | **14** | Open models by size: what runs where | 56:00–60:00 | 4 |
 | **15** | 5 minutes: grab a coffee while the model downloads | 60:00–65:00 | 5 |
 | **16** | When a laptop is not enough: four signs | 65:00–68:00 | 3 |
-| **17** | RunPod: a GPU rented with per-second billing, two modes | 68:00–73:00 | 5 |
+| **17** | Runpod: a GPU rented with per-second billing, two modes | 68:00–73:00 | 5 |
 | **18** | Renting a GPU only pays off if it is busy all the time | 73:00–78:00 | 5 |
 | **19** | Choose by two questions: can the data leave, and how much work is there | 78:00–82:00 | 4 |
 | **20** | Homework: run a model yourself and compare it honestly with the cloud | 82:00–87:00 | 5 |
-| **21** | Lesson summary | 87:00–90:00 | 3 |
+| **21** | Your own model is a file and memory; in code only the address and model name change | 87:00–90:00 | 3 |
 
-Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio, the local server, an agent, security, market. Break (slide 15, 60:00–65:00). Part 2 (slides 16–21, 65:00–90:00): laptop limits, RunPod, price, choosing, homework, summary.
+Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio, the local server, an agent, security, market. Break (slide 15, 60:00–65:00). Part 2 (slides 16–21, 65:00–90:00): laptop limits, Runpod, price, choosing, homework, summary.
 
 ---
 
 ### Slide 01 (00:00–02:00) • Open models
 
-**On screen:** Lesson title, subtitle, scope; on the right the cloud / laptop / rented GPU schematic.
+**On screen:** Lesson title, subtitle, scope; on the right three cards: cloud API, your laptop, rented GPU with their addresses.
 
 #### Speaker (2 min)
 > Welcome. So far we have used other people’s models: ChatGPT, Gemini, Claude, ElevenLabs. They live in the cloud; we pay a subscription or per token, and our data goes to the vendor. Today we run a model ourselves.
 >
-> Plan: what an open model is, what your computer needs, LM Studio and a local server, an agent installs a model for you, the open model market. After the break: when a laptop is not enough, renting a GPU on RunPod, price, how to choose, homework.
+> Plan: what an open model is, what your computer needs, LM Studio and a local server, an agent installs a model for you, the open model market. After the break: when a laptop is not enough, renting a GPU on Runpod, price, how to choose, homework.
 
 ---
 
 ### Slide 02 (02:00–06:00) • One app, three places where the model runs
 
-**On screen:** Schematic: one app sends a request to a cloud API, a laptop (localhost:1234) or a rented GPU. Legend 1–3 on the right.
+**On screen:** Schematic: your app sends a request to three addresses — cloud API, laptop (localhost:1234), rented GPU. Legend 1–3 on the right; below, “only the address and model name change”.
 
 #### Speaker (4 min)
-> On the left is an app, for example the support bot from earlier lessons. It sends a request to a model. The first option we know: a cloud API at api.openai.com or the Gemini API. The second: the same task, but the model is a file on your laptop, at localhost, meaning “this computer”. The third: your model on a rented GPU in the RunPod cloud.
+> On the left is an app, for example the support bot from earlier lessons. It sends a request to a model. The first option we know: a cloud API at api.openai.com or the Gemini API. The second: the same task, but the model is a file on your laptop, at localhost, meaning “this computer”. The third: your model on a rented GPU in the Runpod cloud.
 >
-> Why it matters. Many local tools (LM Studio, Ollama) speak the same “language” as the OpenAI API. So moving between the three options means changing one address line, not rewriting the app. By the end of the lesson you can choose one of the three on purpose.
+> Why it matters. Many local tools (LM Studio, Ollama) speak the same “language” as the OpenAI API. So moving between the three options means changing the address and the model name in settings, not rewriting the app. By the end of the lesson you can choose one of the three on purpose.
 >
 > Question for the chat: what company data would you not send to ChatGPT? That is the first reason for a local model.
 
@@ -96,7 +96,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 05 (15:00–19:00) • Five parts: file, engine, hardware, server, app
 
-**On screen:** Five-part schematic: model file → llama.cpp engine → hardware → localhost:1234 server → app; bracket “LM Studio does this for you”.
+**On screen:** Five-part schematic with icons: model file → llama.cpp engine → hardware → localhost:1234 server → app; over the first four a bracket “LM Studio or Ollama does this for you”.
 
 #### Speaker (4 min)
 > When we use ChatGPT everything is hidden. Locally you see five parts. The model file: weights, GGUF format. The engine: a program that can run it; almost everywhere that is llama.cpp. Hardware: CPU, GPU and their memory. The server: gives the model an address, localhost:1234, so other programs can call it. And your app: a chat window or a Python script.
@@ -120,12 +120,12 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 07 (24:00–29:00) • The model file plus room for the conversation must fit the GPU memory
 
-**On screen:** Q4 sizes of seven models as bars, with memory lines at 6 / 16 / 24 GB; on the right “+20–30%”.
+**On screen:** Q4 bars of seven models with a hatched +25%, memory lines at 6 / 16 / 24 GB; bar colour = the smallest GPU it fits; on the right “+25%”.
 
 #### Speaker (5 min)
 > The beginner’s main question: which model fits my computer. The solid bar is the real 4-bit file size; the hatching is a 25% margin for the context, meaning the conversation history and attached documents. The vertical lines are GPU memory (called VRAM): 6 GB on a laptop gaming GPU (like the RTX 3060 Laptop), 16 GB on a mid-range card, 24 GB on an RTX 4090.
 >
-> Read it like this: if the bar plus hatching is left of a line, the model fits that GPU entirely. 6 GB — models up to 4B. 16 GB — up to 12B, with gpt-oss-20b just squeezing in. 24 GB — up to 27B. If the model does not fit the GPU entirely, LM Studio puts part of it in system RAM, but speed drops several times.
+> Read it like this: if the bar plus hatching is left of a line, the model fits that GPU entirely; the bar colour is the smallest of the three GPUs it fits. 6 GB — models up to 4B. 8 GB (common in laptops, no line on the chart) — up to 9B: Granite 8B and Qwen3.5 9B take about 7 GB with the margin. 16 GB — up to 12B, with gpt-oss-20b just squeezing in. 24 GB — up to 27B. If the model does not fit the GPU entirely, LM Studio puts part of it in system RAM, but speed drops several times.
 >
 > A laptop without a GPU: the model sits in system RAM, and 16 GB is enough even for 8B, but the CPU computes slowly (slide 8). So without a GPU take 3–4B, Granite 3B or Qwen 4B. Start with the smallest model that does the job; “the biggest that fits” is not the goal. LM Studio recommends 16 GB of memory or more and, on Windows, 4 GB of VRAM or more; a CPU with AVX2 is required on Windows.
 
@@ -133,12 +133,12 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 08 (29:00–33:00) • A GPU answers 2–25× faster than a CPU
 
-**On screen:** Speed bars in tokens per second: laptop CPU, Apple M4, RTX 4050 Laptop, M4 Max, RTX 4090, H100; on the right “≥ 20 t/s”.
+**On screen:** Speed bars in tokens per second: laptop CPU, Apple M5, RTX 4050 Laptop, M5 Max, RTX 4090, H100; on the right “≥ 20 t/s”.
 
 #### Speaker (4 min)
 > Speed is measured in tokens per second; a token is a piece of a word, as in L02. The data are open llama.cpp measurements for a 7-billion-parameter model at 4 bits; for 8B multiply by about 0.7. A laptop CPU without a GPU gives roughly 5–15 tokens per second, our estimate: slow, but bearable for short answers.
 >
-> A gaming laptop with an RTX 4050 gives about 44, a base M4 Mac 24, a top M4 Max 83. An RTX 4090 gives 186, a server H100 268; both can be rented, which is the second half of the lesson. People read about 4–7 tokens per second, so from 20 upwards chat feels live. For batch work, such as 10,000 emails overnight, speed matters more, and that is where renting a GPU helps.
+> A gaming laptop with an RTX 4050 gives about 44, a base M5 Mac 32, a top M5 Max 120 (on a Mac the GPU is built into the chip and shares its memory). An RTX 4090 gives 186, a server H100 268; both can be rented, which is the second half of the lesson. People read about 4–7 tokens per second, so from 20 upwards chat feels live. For batch work, such as 10,000 emails overnight, speed matters more, and that is where renting a GPU helps.
 >
 > Why the GPU is faster: a model is a huge number of multiplications, and a GPU does thousands of them at once and has very fast memory.
 
@@ -159,10 +159,10 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 10 (38:00–43:00) • Demo: download a small model and ask it a work question
 
-**On screen:** Five demo steps (find, download, load, ask, check speed), the ticket prompt, what to notice and the fallback.
+**On screen:** Five demo steps on a line (find, download, load, ask, check speed), the ticket prompt, a sample good JSON answer and what to notice.
 
 #### Speaker (5 min)
-> Live demo. Before class download granite-4.2-3b at Q4_K_M (2.2 GB) so you do not depend on the internet. Five steps: Discover, search by name, Download on the Q4_K_M file, then in Chat pick the model in the bottom menu (it loads into memory in a few seconds) and send the prompt.
+> Live demo. Before class download granite-4.2-3b at Q4_K_M (2.2 GB) so you do not depend on the internet. Five steps: Discover, search by name, Download on the Q4_K_M file, then in Chat pick the model in the bottom menu (it loads into memory in a few seconds) and send the prompt. On the right of the slide is what a good answer looks like: compare it with what the model returns. Fallback: if the Wi-Fi is slow, demo with the model downloaded in advance.
 >
 > The prompt is a work task from L03: extract the issue, urgency and next step from a ticket as JSON. For effect, turn off Wi-Fi before sending: the model still answers. Point at the speed line under the answer (tokens per second) and open Task Manager: you can see how much memory the model took.
 >
@@ -177,7 +177,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 #### Speaker (5 min)
 > The key slide for those who code. LM Studio’s Developer tab has a Start server toggle. After that the model is available at localhost:1234 and understands the same requests as the OpenAI API: chat/completions, responses, embeddings. There is also Anthropic API compatibility.
 >
-> On the left is the L03 code. Two lines change, highlighted in green: the address (base_url) and the model name. The local server needs no key; the library just wants some string. The /v1 at the end of the address is the API version, as at OpenAI; keep it as is. Ollama uses a different address, localhost:11434, but the idea is the same. So keep the address and model name in settings (a .env file), not in code: moving from the cloud to a laptop or to RunPod is then a one-line change.
+> On the left is the L03 code. Two lines change, highlighted in green: the address (base_url) and the model name. The local server needs no key; the library just wants some string. The /v1 at the end of the address is the API version, as at OpenAI; keep it as is. Ollama uses a different address, localhost:11434, but the idea is the same. So keep the address and model name in settings (a .env file), not in code: moving from the cloud to a laptop or to Runpod then means editing the address and model name, not the code.
 >
 > Caveat: “compatible” does not mean “identical”. A small model follows the JSON format less reliably and may not support tool calling. Test on your own task.
 
@@ -188,7 +188,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 **On screen:** Prompt for a coding agent (install Ollama, download a model, measure speed, localhost only) and three notes.
 
 #### Speaker (4 min)
-> A link to the coding-agent lessons. You do not have to install everything by hand: Claude Code, Codex or Antigravity will do it from a prompt like this. The steps are numbered so the agent skips nothing, and step 5 forbids exposing the server to the network.
+> A link to the coding-agent lessons. You do not have to install everything by hand: Codex, Antigravity or Claude Code will do it from a prompt like this. The steps are numbered so the agent skips nothing, and step 5 forbids exposing the server to the network. What a coding agent is and how to choose one: L16.
 >
 > Why Ollama rather than LM Studio: everything in Ollama can be done with commands (it also has a chat window, but you don't need it), which is easier for an agent. It is open-source under the MIT licence; version 0.40.5 from 14 October 2026. The Ollama server runs on localhost:11434 and also understands OpenAI-style requests. LM Studio has the lms command-line tool, and llmster for servers without a screen.
 >
@@ -198,7 +198,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 13 (52:00–56:00) • “Local” does not automatically mean “private”: check the whole data path
 
-**On screen:** Data-path traffic light: local compute, downloads, tools, network-exposed server; on the right the class rule.
+**On screen:** Four-point data-path traffic light: local compute, downloads, plug-ins, network-exposed server; on the right the class rule.
 
 #### Speaker (4 min)
 > A common mistake: I installed the model locally, so everything is private. The generation itself does stay on the computer. But around it there is a data path. Downloading the model and updates use the internet. If you connect plug-ins (MCP servers in LM Studio) or web search, they may send data out.
@@ -211,7 +211,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 14 (56:00–60:00) • Open models by size: what runs where
 
-**On screen:** Three columns of models with licences: laptop up to 8 GB, one GPU 16–24 GB, server.
+**On screen:** Three lists of models with licences under coloured headers: GPU up to 8 GB, 16–24 GB, server.
 
 #### Speaker (4 min)
 > A map by size, not by ranking: what you can run on your hardware at all. Almost everything here is Apache-2.0: fine for work. Laptop: IBM Granite 4.2 (3B and 8B), Alibaba Qwen3.5 (4B and 9B), Google Gemma 4 (E4B and 12B), Mistral Ministral 3; Microsoft Phi-4 (14B, ≈ 9 GB) already needs a 12–16 GB GPU.
@@ -238,39 +238,39 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 #### Speaker (3 min)
 > A laptop is good for trying things, for one person and for offline work. Four signs it is time to move on. The model does not fit in memory. You need speed: say, process 10,000 emails overnight. Many simultaneous users: a laptop answers one at a time. It must run around the clock.
 >
-> Then you do not have to jump straight to a cloud API. You can keep the same open model, the same licence and the same code, and rent a GPU. The most beginner-friendly service is RunPod.
+> Then you do not have to jump straight to a cloud API. You can keep the same open model, the same licence and the same code, and rent a GPU. The most beginner-friendly service is Runpod.
 
 ---
 
-### Slide 17 (68:00–73:00) • RunPod: a GPU rented with per-second billing, two modes
+### Slide 17 (68:00–73:00) • Runpod: a GPU rented with per-second billing, two modes
 
-**On screen:** RunPod pricing screenshot (48 GB GPUs, L40S $1.09/h highlighted) and three notes: Pod, Serverless, the Stop trap.
+**On screen:** Runpod Community pricing (RTX 4090 $0.34/h highlighted) and a day timeline: Pod vs Serverless; the Stop trap.
 
 #### Speaker (5 min)
-> RunPod is a GPU cloud billed per second. On the left is the pricing page (updated 8 October, captured 16 October) in Community Cloud mode, partners’ machines: an RTX 4090 with 24 GB costs $0.34 per hour, an RTX 3090 $0.22. Secure Cloud, in certified data centres, costs more: for example an L40S is $1.09 versus $0.79. On the right, one working day of a support bot in both modes.
+> Runpod is a GPU cloud billed per second. On the left is the pricing page (updated 8 October, captured 16 October) in Community Cloud mode, partners’ machines: an RTX 4090 with 24 GB costs $0.34 per hour, an RTX 3090 $0.22. Secure Cloud, in certified data centres, costs more: for example an L40S is $1.09 versus $0.79. On the right, one working day of a support bot in both modes.
 >
 > Two modes. A Pod is like your own computer in the cloud: pick a GPU and a ready template (for example PyTorch), connect via the browser (web terminal, JupyterLab) or SSH, install Ollama or vLLM, and work. You pay for every second it is on, including while you are off getting coffee. Serverless is for apps: the GPU wakes when a request arrives and sleeps without them. The first request after sleep waits for the model to load (cold start).
 >
-> The main beginner trap: Stop does not fully stop billing. A stopped Pod’s disk costs $0.20 per GB per month. When done — Terminate. And mind the spend limit: by default it is $80 per hour across all resources. For learning, top up only a small amount: at a zero balance the Pod stops. In this lesson RunPod is shown on screenshots; launching one yourself is optional and paid.
+> The main beginner trap: Stop does not fully stop billing. A stopped Pod’s disk costs $0.20 per GB per month. When done — Terminate. And mind the spend limit: by default it is $80 per hour across all resources. For learning, top up only a small amount, but watch it: at a zero balance the Pod stops, and without a network volume it is deleted together with its data. In this lesson Runpod is shown on screenshots; launching one yourself is optional and paid.
 
 ---
 
 ### Slide 18 (73:00–78:00) • Renting a GPU only pays off if it is busy all the time
 
-**On screen:** Hourly price bars for five GPUs; on the right ≈ $0.73 per 1M tokens at 100% load versus $0.40–4.50 for cloud models.
+**On screen:** Hourly price bars for five GPUs (A100 and H100 are SXM); on the right ≈ $0.73 → $7.30 per 1M tokens at 100% vs 10% load versus $0.40–4.50 for cloud models.
 
 #### Speaker (5 min)
-> Hourly prices in RunPod Community Cloud: RTX 4090 $0.34, RTX 5090 $0.69, L40S $0.79, A100 $1.39, H100 $2.69. Secure Cloud is roughly 1.3–2.6× more. Serverless costs more per hour (RTX 4090 about $1.10), but you pay only for seconds of work.
+> Hourly prices in Runpod Community Cloud: RTX 4090 $0.34, RTX 5090 $0.69, L40S $0.79, A100 SXM $1.39, H100 SXM $2.69 (SXM is the server-board version; the PCIe variant is cheaper). Secure Cloud is roughly 1.3–2.6× more. Serverless costs more per hour (RTX 4090 about $1.10), but you pay only for seconds of work.
 >
 > Compare with a cloud API. An RTX 4090 with an 8B model gives about 130 tokens per second, about 470 thousand tokens per hour. At $0.34 per hour that is about $0.73 per million tokens, but only if the card is busy non-stop. Cheap cloud models cost $0.40–4.50 per million output tokens and charge nothing for idle time.
 >
-> If the card is busy only 10% of the time, the same million tokens costs $7.30, more than the cloud. Takeaway: money-wise your own model wins only with a large, steady stream of work. More often it is chosen for privacy, version control and offline work. That is the honest answer to “isn’t it cheaper?”.
+> If the card is busy only 10% of the time, the same million tokens costs $7.30, more than the cloud. Takeaway: money-wise your own model wins only with a large, steady stream of work. More often it is chosen for privacy, version control and offline work. That is the honest answer to “isn’t it cheaper?”. Caveat: $0.73 is the single-user worst case. A server with batching (for example vLLM) handles many requests at once, so total throughput, and with it the price per million tokens, gets several times better.
 
 ---
 
 ### Slide 19 (78:00–82:00) • Choose by two questions: can the data leave, and how much work is there
 
-**On screen:** 2×2 grid: cloud API, your laptop, RunPod Serverless, RunPod Pod with conditions and examples.
+**On screen:** 2×2 grid (data may leave / must stay × few / many requests): cloud API ×2, your laptop, Runpod (Pod or Serverless); a note on Secure Cloud.
 
 #### Speaker (4 min)
 > Everything comes down to two questions. One: may the data go to the model vendor? If yes and the task is hard — a cloud API: best quality, pay for use. If no — your own model. Two: how much work? One person and a few tasks — a laptop. Requests in bursts, such as a daytime support bot — Serverless. A large steady flow or model experiments — a Pod.
@@ -281,7 +281,7 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ### Slide 20 (82:00–87:00) • Homework: run a model yourself and compare it honestly with the cloud
 
-**On screen:** Five homework steps, the submission folder layout, a tip for weak computers.
+**On screen:** Five homework steps, the genai-homeworks/L10/ submission folder, a tip for weak computers.
 
 #### Speaker (5 min)
 > Homework for the week. Install LM Studio or Ollama, download a 3–9B model at Q4. Give it three tasks from your work (on synthetic data): for example, classify an email, summarise, reply to a customer. Give the same tasks to ChatGPT or Gemini.
@@ -290,12 +290,12 @@ Part 1 (slides 01–14, 00:00–60:00): open models, memory and speed, LM Studio
 
 ---
 
-### Slide 21 (87:00–90:00) • Lesson summary
+### Slide 21 (87:00–90:00) • Your own model is a file and memory; in code only the address and model name change
 
-**On screen:** Six lesson rules and the L11 preview.
+**On screen:** Four lesson rules and the L11 preview.
 
 #### Speaker (3 min)
-> Four rules. An open model is a file and a licence: find it on Hugging Face and read the card. Fit the size to memory: Q4 plus a 25% margin must fit the GPU. LM Studio or Ollama give you a server on localhost, and one line changes in code; never expose the server, because local does not mean private. On RunPod idle time costs money too: when done — Terminate.
+> Four rules. An open model is a file and a licence: find it on Hugging Face and read the card. Fit the size to memory: Q4 plus a 25% margin must fit the GPU. LM Studio or Ollama give you a server on localhost, and only the address and model name change in code; never expose the server, because local does not mean private. On Runpod idle time costs money too: when done — Terminate.
 >
 > Next lesson: function calling. The model learns not only to answer in text but to call tools: search, compute, send. That is the first step towards agents.
 

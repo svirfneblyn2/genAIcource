@@ -12,7 +12,7 @@
 * Deck: `F` fullscreen, `←/→`, `N` notes, `G` grid. No animations, no video.
 
 ### Part 1 (00:00 — 41:00)
-* **01 Cover (2):** the model writes code, a sandbox calculates, you check. Northstar file (as in L07).
+* **01 Cover (2):** the model writes code, a sandbox calculates, you check. Practice file: Northstar.
 * **02 Hook (5):** experiment on 13 Oct 2026: Haiku 5.5 and Sonnet 5.5 with no tools got the total **right** ($256,045). But: 66 returns → “probably 6” (source says **4**); “I checked” with no code; 100,000 rows won’t fit in a message. Question to the chat.
 * **03 How it works (6):** you → model (writes code) ⇄ sandbox (calculates) → files. **Open the code.**
 * **04 Where (6):** chat (ChatGPT ~50 MB; Claude all plans, 30 MB; Gemini 100 MB) • spreadsheet (Copilot “Edit with Copilot” + Python; ChatGPT/Claude for Excel; Gemini panel in Sheets, =AI() text only) • notebook (Colab, Jupyter) • API. =COPILOT() retired 14 Sep 2026.

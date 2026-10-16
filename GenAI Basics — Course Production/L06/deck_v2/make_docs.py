@@ -20,10 +20,10 @@ SCREEN = {
                 "Background: a frame from L05 shot 2 (the courier in the rain). Title, subtitle, lesson scope, key hints."),
     "s_hook": ("Слева озвученный ролик курьера (23 с, со звуком, запуск кликом). Справа три числа: 3 реплики, 3 дорожки, итоговая громкость в LUFS.",
                "Left: the voiced courier video (23 s, with sound, click to play). Right: three numbers: 3 lines, 3 tracks, final loudness in LUFS."),
-    "s_layers": ("Три колонки: чат-приложения, веб-студии, API (инструменты, управление, оплата, для чего, с чего начать). Внизу: четвёртый путь, открытые модели.",
-                 "Three columns: chat apps, web studios, API (tools, control, billing, use, starting point). Below: the fourth path, open-weight models."),
-    "s_tasks": ("Четыре карточки «вход → выход»: синтез речи, распознавание речи, речь в речь, музыка и шумы. Внизу: озвучка использует три из четырёх.",
-                "Four input → output cards: text-to-speech, speech-to-text, speech-to-speech, music and sound effects. Below: voicing a video uses three of the four."),
+    "s_layers": ("Крупный кадр Google AI Studio → Generate speech с метками 1–4 (текст, стиль, модель, готовый звук) и легенда. Внизу: главная строка кода из кнопки Get code и ещё два пути (чат, открытые модели).",
+                 "Large Google AI Studio → Generate speech crop with markers 1–4 (text, style, model, result) and a legend. Below: the key code line from the Get code button and two more paths (chat, open-weight models)."),
+    "s_tasks": ("Четыре карточки «вход → выход»: синтез речи, распознавание речи, речь в речь, музыка и шумы; под каждой строка «в нашем примере» (Kokoro/Piper, Whisper, —, MusicGen).",
+                "Four input → output cards: text-to-speech, speech-to-text, speech-to-speech, music and sound effects; under each, an “in our example” line (Kokoro/Piper, Whisper, —, MusicGen)."),
     "s_how": ("Цепочка «текст → модель → аудиотокены → декодер → звук»; реальная форма волны реплики 1; две заметки: объём данных и почему ошибаются числа и имена.",
               "Chain text → model → audio tokens → decoder → waveform; the real waveform of line 1; two notes: data volume and why numbers and names fail."),
     "s_video_audio": ("Два плеера со звуком Veo (шот 1 и неудачный клип L05) и распознанный в них текст. Внизу: что звук видеомодели даёт и чего не даёт.",
@@ -32,14 +32,14 @@ SCREEN = {
                  "Script table: frame, time, line, words / length, sound effects. Below: measured speech rate and the word budget rule."),
     "s_text": ("Таблица «сценарий → текст для голоса → почему» для 6:42, 417, 12 мин. Справа пример инструкции стиля и три способа управлять голосом.",
                "Table script → spoken text → why for 6:42, 417, 12 min. Right: a style instruction example and three ways to control the voice."),
-    "s_voice": ("Три карточки: готовый голос, голос по описанию, клон; у каждой условие использования. Внизу: проверить сложные слова до выбора голоса.",
-                "Three cards: library voice, designed voice, clone, each with its usage condition. Below: test the hard words before choosing a voice."),
+    "s_voice": ("Слева ряд готовых голосов из библиотеки Google AI Studio (1), справа окно Create voice: голос по описанию (2) и клон (3); легенда с условием для каждого. Внизу: проверить сложные слова до выбора голоса.",
+                "Left: a row of library voices in Google AI Studio (1); right: the Create voice window with a designed voice (2) and a clone (3); a legend with each one’s condition. Below: test the hard words before choosing a voice."),
     "s_music": ("Плеер музыкальной подложки MusicGen, её промпт и лицензия. Справа таблица: Suno v6, Lyria 3.5, ElevenLabs Music и SFX (длина, коммерческое использование).",
                 "Player with the MusicGen bed, its prompt and licence. Right: table of Suno v6, Lyria 3.5, ElevenLabs Music and SFX (length, commercial use)."),
     "s_mix": ("Четыре реальные дорожки (голос, звук Veo, музыка, итог) с громкостью; три правила (приглушение, громкость, пик) и команда ffmpeg.",
               "Four real tracks (voice, Veo audio, music, mix) with loudness; three rules (ducking, loudness, peak) and the ffmpeg command."),
-    "s_check": ("Сценарий и то, что услышал Whisper, с подсветкой ошибок; разбор двух ошибок. Справа частота ошибок в словах и число верных критичных слов.",
-                "The script and what Whisper heard, with errors highlighted; two errors explained. Right: word error rate and the number of correct critical terms."),
+    "s_check": ("Сценарий и то, что услышал Whisper, с подсветкой (красный — ошибка, зелёный — верное критичное слово); разбор ошибок. Справа частота ошибок в словах и число верных критичных слов.",
+                "The script and what Whisper heard, highlighted (red: error, green: correct critical term, amber: formatting only); the errors explained. Right: word error rate and the number of correct critical terms."),
     "s_arch": ("Три дорожки-архитектуры: файл, поток, речь в речь, с задержкой. Внизу: два способа построить голосового агента.",
                "Three architecture lanes: file, stream, speech-to-speech, with latency. Below: two ways to build a voice agent."),
     "s_local": ("Цепочка «Hugging Face → диск → Python-пакет → процессор или видеокарта → WAV»; таблица моделей с размером файлов и замером на процессоре; $0 за минуту и чем за это платим.",
@@ -126,8 +126,13 @@ def main():
             start += m
         table = (f"## {t('Тайминг (21 слайд • 90 минут, включая 5 минут перерыва)', 'Timing (21 slides • 90 minutes incl. a 5-minute break)')}\n\n"
                  f"| {t('Слайд', 'Slide')} | {t('Заголовок', 'Title')} | {t('Время', 'Time')} | {t('Мин', 'Min')} |\n|---|---|---|---|\n" + "\n".join(rows) + "\n")
-        parts = t("Часть 1 (слайды 01–14, 00:00–58:00): задачи, модели и пайплайн из 6 шагов. Перерыв (слайд 15, 58:00–63:00). Часть 2 (слайды 16–21, 63:00–90:00): код, стоимость, приёмка, риски, ДЗ, итоги.",
-                  "Part 1 (slides 01–14, 00:00–58:00): tasks, models and the 6-step pipeline. Break (slide 15, 58:00–63:00). Part 2 (slides 16–21, 63:00–90:00): code, cost, acceptance, risks, homework, summary.")
+        # Part times are computed from the slide minutes, so they cannot drift from the deck.
+        mins = [fn()["min"] for fn in build.SLIDES]
+        b = build.SLIDES.index(build.s_break)
+        n = len(build.SLIDES)
+        t1, t2 = sum(mins[:b]), sum(mins[:b + 1])
+        parts = t(f"Часть 1 (слайды 01–{b:02d}, 00:00–{mmss(t1)}): задачи, модели и пайплайн из 6 шагов. Перерыв (слайд {b + 1:02d}, {mmss(t1)}–{mmss(t2)}). Часть 2 (слайды {b + 2:02d}–{n:02d}, {mmss(t2)}–{mmss(sum(mins))}): агент и клон голоса, стоимость, приёмка, риски, ДЗ, итоги.",
+                  f"Part 1 (slides 01–{b:02d}, 00:00–{mmss(t1)}): tasks, models and the 6-step pipeline. Break (slide {b + 1:02d}, {mmss(t1)}–{mmss(t2)}). Part 2 (slides {b + 2:02d}–{n:02d}, {mmss(t2)}–{mmss(sum(mins))}): agent voice cloning, cost, acceptance, risks, homework, summary.")
         OUT[lang].write_text(HEAD[lang] + "\n---\n\n" + table + "\n" + parts + "\n\n---\n\n" + "\n".join(body), encoding="utf-8")
         print(OUT[lang].name, start, "min")
 

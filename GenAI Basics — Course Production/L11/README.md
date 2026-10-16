@@ -19,24 +19,24 @@ Open AI Studio, switch to Gemini 3.8 Flash (a new chat defaults to the paid Gemi
 ## Slide map (21 slides, 90 minutes incl. 5-minute break)
 | # | Min | Slide | Main visual |
 |---|---|---|---|
-| 01 | 2 | Cover | Schematic fragment |
+| 01 | 2 | Cover | HTML schematic: the four steps of your program |
 | 02 | 4 | The model does not know where your order is | Invented answer vs AI Studio screenshot |
 | 03 | 4 | Chat assistants already call tools | Claude web-search screenshot, callouts 1–3 |
 | 04 | 5 | A tool = name, description, parameters | AI Studio Function declarations screenshot |
-| 05 | 5 | The model proposes, your program runs it | Trust-boundary schematic |
-| 06 | 5 | Demo step 1: the model asks for a function call | AI Studio screenshot |
-| 07 | 4 | Demo step 2: return the result | AI Studio screenshot + JSON |
+| 05 | 5 | The model proposes, your program runs it | Trust-boundary schematic (HTML, RU/EN labels) |
+| 06 | 5 | Demo step 1: the model asks for a function call | AI Studio screenshot (re-cropped) |
+| 07 | 4 | Demo step 2: return the result | AI Studio screenshot (re-cropped) + JSON |
 | 08 | 4 | Built-in tools | AI Studio Tools panel + three tool kinds |
 | 09 | 4 | The model picks a tool by its description | Weak vs good description |
-| 10 | 5 | Agent = model + tools + loop | Agent-loop schematic |
+| 10 | 5 | Agent = model + tools + loop | Agent-loop schematic (HTML, RU/EN labels) |
 | 11 | 5 | Code (reference) | google-genai example |
 | 12 | 4 | Local models call functions too | Tool-capable models list |
 | 13 | 4 | A coding agent builds your first agent | Prompt |
-| 14 | 4 | Where agents live | Three columns |
+| 14 | 4 | Where agents live | “Quicker to start ↔ more control” strip + three columns |
 | 15 | 5 | Break | Timer |
-| 16 | 5 | Risks: someone else’s text gives orders | Risk list + defences |
-| 17 | 4 | Even the best agents fail | τ²/τ³-bench bars |
-| 18 | 4 | Four rules | 4 cards (= homework rubric) |
-| 19 | 5 | Exercise: which tool? | 4 questions with answers |
-| 20 | 5 | Homework | Steps + folder tree |
-| 21 | 3 | Summary | 4 takeaways + L12 preview |
+| 16 | 5 | Risks: someone else’s text gives orders | Risk list + borderless defences list |
+| 17 | 4 | Even the best agents fail | τ²/τ³-bench bars (Pass^1) |
+| 18 | 4 | Four rules make an agent safe | 4 cards (= homework rubric) |
+| 19 | 5 | A good agent knows which tool to call and what to hand to a human | 4 questions, answers in the notes |
+| 20 | 5 | Homework | Steps + `genai-homeworks/L11/` folder tree |
+| 21 | 3 | The model proposes, the program decides, a human confirms | 4 takeaways + L12 preview |

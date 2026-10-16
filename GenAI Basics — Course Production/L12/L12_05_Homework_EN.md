@@ -1,6 +1,6 @@
 # Lesson 12 • Homework: pick MCP servers for your task and write the access rules
 
-**Course:** GenAI Basics • Module 3 (Own Models and Agents)  
+**Course:** GenAI Basics • Module 5 (Agents, Tools and MCP)  
 **Submit:** the `genai-homeworks/L12/` folder in your personal GitHub repository  
 **Reviewer:** Ihar Rubanovich (`ihar_rubanovich@epam.com`)  
 **Time:** 2–3 hours  
@@ -24,6 +24,8 @@ For each, record in `servers.md`: the publisher (the company’s official server
 
 ### 3. Connect on test data (40 min)
 Connect one server in Claude or ChatGPT to a **personal or training** account with test data (for example a separate Google Drive folder with synthetic files). Ask 3 questions that need the server. Screenshot the permission prompt.
+
+**Free plan:** Claude → Customize → Connectors → Add custom connector (one on the Free plan). Use a remote MCP server URL from the official registry (slide 8) or the service's site, and screenshot the permission prompt on the first call. If that fails, screenshot the connector's tool list. If you code: LM Studio + the slide 11 server. Adding your own server in ChatGPT needs a paid plan (developer mode).
 
 ### 4. Access rules (20 min)
 In `rules.md`:

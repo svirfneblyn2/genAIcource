@@ -8,9 +8,9 @@ Primary sources checked on 2026-10-16 for the v2 rebuild of Lesson 10. Replaces 
 |---|---|---|
 | `assets/v2/img/hf_granite_header.png`, `hf_granite_files.png` | Hugging Face page and file list of `ibm-granite/granite-4.2-8b-GGUF` | own capture 2026-10-16, https://huggingface.co/ibm-granite/granite-4.2-8b-GGUF/tree/main |
 | `assets/v2/img/lmstudio_app.png` | LM Studio app with two chats (GLM-4.7-Flash) | official image, credit "LM Studio / Element Labs", https://lmstudio.ai/assets/marketing/blog/0.4.0/app-screen.png (0.4.0 release blog, Jan 2026) |
-| `assets/v2/img/lmstudio_bionic_home.png` | lmstudio.ai home page showing LM Studio Bionic | own capture 2026-10-16 (not used on a slide; reference) |
-| `assets/v2/img/runpod_pricing_48gb.png`, `runpod_pricing_80gb.png` | RunPod pricing page, Pods, Secure Cloud, page "Updated October 8, 2026" | own capture 2026-10-16, https://www.runpod.io/pricing |
-| `assets/v2/img/hook_three_places.png`, `cover_right.png`, `five_layers.png`, `five_layers_crop.png` | schematics | generated with genai-assets (client `genaicource`, subscription providers, no paid fallback) |
+| `assets/v2/img/runpod_pricing_community.png` | Runpod pricing page, Pods, Community Cloud (RTX 4090 $0.34/hr row highlighted on the slide), page "Updated October 8, 2026" | own capture 2026-10-16, https://www.runpod.io/pricing |
+
+Schematics (cover, slide 2 "three places", slide 5 "five parts") are drawn in HTML/SVG inside `deck_v2/build.py` with RU/EN labels; the earlier genai-assets PNGs (`hook_three_places.png`, `cover_right.png`, `five_layers.png`, `five_layers_crop.png`) and the unused reference capture `lmstudio_bionic_home.png` were removed in the final audit round (2026-10-16).
 
 LM Studio itself was not installed for this rebuild (owner decision 2026-10-16), so there are no own LM Studio screenshots; replace `lmstudio_app.png` with an own capture of LM Studio 0.4.x when available.
 

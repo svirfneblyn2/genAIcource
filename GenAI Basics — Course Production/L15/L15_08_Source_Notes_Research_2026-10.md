@@ -31,7 +31,7 @@ All items were checked on 2026-10-16 unless noted. "VERIFIED" means a primary or
 | 2 Feb 2025 | Prohibited practices (Art. 5) + AI literacy (Art. 4) | VERIFIED |
 | 2 Aug 2025 | Governance rules + general-purpose AI (GPAI) model obligations | VERIFIED |
 | 2 Aug 2026 | General application, including **Art. 50 transparency**. AI Office enforcement powers over GPAI begin. | VERIFIED |
-| 2 Dec 2026 | (a) Grace-period end for Art. 50(2) machine-readable marking, only for generative systems placed on the market **before** 2 Aug 2026. (b) New ban on AI systems that generate non-consensual intimate imagery or CSAM ("nudification" apps). | VERIFIED |
+| 2 Dec 2026 | (a) Grace-period end for Art. 50(2) machine-readable marking, only for generative systems placed on the market **before** 2 Aug 2026 (per the text of Regulation 2026/1744; some law firms, e.g. CMS, give 2 Feb 2027 — the deck notes say so). (b) New ban on AI systems that generate non-consensual intimate imagery or CSAM ("nudification" apps). | VERIFIED |
 | 2 Dec 2027 | High-risk rules, Annex III (biometrics, education, employment, migration, credit, etc.). Originally 2 Aug 2026. | VERIFIED |
 | 2 Aug 2028 | High-risk AI embedded in regulated products (Annex I: toys, lifts, medical devices, etc.). Originally 2 Aug 2027. | VERIFIED |
 
@@ -74,9 +74,10 @@ Sources:
   - Law **ZRU-1115**, signed 21 Jan 2026. It is a package of amendments (to the Law on Informatization and the Code of Administrative Responsibility), not a standalone AI code.
   - Decisions affecting human rights may **not rest solely on AI output**. AI must not harm life, health, honour or dignity. Spreading personal data through AI is prohibited.
   - Fines: 50–100 base calculation units (BCU) (roughly USD 1.7–3.4k).
-  - Status: SECONDARY (Kun.uz, Legal500/Vakhidov & Partners). The full text on lex.uz was not read.
+  - Status: SECONDARY (Kun.uz, Legal500/Vakhidov & Partners). The full text on lex.uz was not read. The "not solely on AI" clause comes from law-firm summaries only; the MoFo tracker does not mention it, so slides/notes say "according to law firms".
   - A **labelling duty for AI content was in the 2025 draft**, but it is UNVERIFIED in the final text.
   - Sources: https://kun.uz/en/news/2026/01/21/uzbekistan-tightens-oversight-of-ai-with-penalties-for-data-misuse · https://www.legal500.com/developments/thought-leadership/legislative-updates-in-the-field-of-artificial-intelligence-and-personal-data-regulation-uzbekistan/
+- **Uzbekistan, AI ethics rules.** "Rules of Ethics for the Development, Implementation and Use of AI-Based Solutions" (ministerial order), effective **17 Jun 2026**, supplementing ZRU-1115 with governance duties for developers, implementers and users. Status: SECONDARY (MoFo AI tracker, https://www.mofo.com/artificial-intelligence/uzbekistan, read 2026-10-16; the order itself was not read).
 - **Uzbekistan, strategy.**
   - Presidential Resolution **PP-358 of 14 Oct 2024**: "Strategy for the Development of AI Technologies until 2030" (VERIFIED existence via lex.uz and gov.uz).
   - Targets reported in the press (USD 1.5bn AI services market by 2030, etc.) are SECONDARY.
@@ -92,7 +93,7 @@ Sources:
   - Status: signing VERIFIED (kt.kz). Effective date SECONDARY (EY, law firms).
   - Sources: https://www.kt.kz/eng/government/tokayev_signs_law_on_artificial_intelligence_1377983990.html · https://www.ey.com/en_kz/technical/tax-alerts/2025/12/law-on-artificial-intelligence-kazakhstan
 - **Russia.**
-  - First framework AI law (Duma bill 1271570-8, passed 8 Jul 2026), signed by Putin and **published 26 Jul 2026**.
+  - First framework AI law: **Federal Law No. 243-FZ of 26 Jul 2026** "On supporting the development of AI technologies in the Russian Federation" (Duma bill 1271570-8, passed 8 Jul 2026). Number and date: SECONDARY, consistent across legal databases (https://www.kontur-extern.ru/info/normativ/document/1/507359-federalnyy-zakon-ot-26-07-2026-n-243-fz · https://ppt.ru/obzory/zakon-ob-ii-243-fz).
   - It introduces "sovereign" and "national" models that must respect "traditional values". Training on lawfully accessible copyrighted works is allowed.
   - Platforms with more than 500k daily users must enable **labelling** of AI content. Sources disagree on whether labelling is mandatory or optional for users.
   - General provisions apply from **1 Sep 2026**. Labelling and copyright parts apply from **1 Mar 2027** (SECONDARY, Lidings).
@@ -118,7 +119,7 @@ Sources:
   - Requires **visible labels plus hidden metadata labels** on AI text, images, audio, video and virtual scenes (SECONDARY, consistent across law firms).
   - Source: https://www.loeb.com/en/insights/publications/2025/03/chinas-ai-labeling-measures-and-mandatory-national-standards-take-effect-september-1
 
-**Slide idea:** "labelling of AI content" is the common thread across the EU (Art. 50), China (Sep 2025), Kazakhstan (Jan 2026) and Russia (Mar 2027).
+**Slide idea:** "labelling of AI content" is the common thread across the EU (Art. 50), China (Sep 2025) and Kazakhstan (Jan 2026). Russia (243-FZ) has labelling provisions from Mar 2027, but whether they are mandatory is disputed, so the deck does not list Russia as "already requires".
 
 ---
 
@@ -179,7 +180,7 @@ Sources:
 | **Hallucinated-citations database** | live | Damien Charlotin's database lists **2,190 court decisions** worldwide where AI-hallucinated material was found (USA 1,492; Canada 232; Australia 112; UK 76; Russia 1). It was ~1,600 in Jun 2026, so it grew by about 40% in four months. | VERIFIED (page read 2026-10-16). https://www.damiencharlotin.com/hallucinations/ |
 | **Deloitte Australia report** | Jul–Oct 2025 | An AU$440k government report contained fabricated citations and a fake court quote. The corrected version (26 Sep 2025) disclosed Azure OpenAI use. Deloitte partially refunded. | VERIFIED (AP syndicated). https://www.ctvnews.ca/business/article/deloitte-to-partially-refund-australian-government-for-report-with-apparent-ai-generated-errors/ |
 | **Replit agent deletes production DB** | Jul 2025 | During SaaStr founder Jason Lemkin's test, the agent deleted the production DB (~1,200 executives and ~1,200 companies) during a "code freeze" and gave misleading status reports. The Replit CEO apologised and added dev/prod separation. | VERIFIED as an event (multiple outlets). "Lied" claims come from Lemkin's posts. https://www.eweek.com/news/replit-ai-coding-assistant-failure/ |
-| **PocketOS: Cursor agent deletes DB + backups** | ~25–27 Apr 2026 | A Cursor agent (Claude Opus 4.6) used an API token it found in an unrelated file. It deleted the **production database and its backups in ~9 seconds**, causing a ~30h outage and lost bookings. The agent: "I violated every principle I was given". | VERIFIED as listed in the OECD AI Incidents Monitor (~150 articles: The Verge, The Register, Guardian). https://oecd.ai/en/incidents/2026-04-27-6153 |
+| **PocketOS: Cursor agent deletes DB + backups** | ~25–27 Apr 2026 | A Cursor agent (Claude Opus 4.6) used an API token it found in an unrelated file. It deleted the **production database and its backups in ~9 seconds**, causing a ~30h outage and lost bookings. The agent: "I violated every principle I was given". | VERIFIED as listed in the OECD AI Incidents Monitor (~150 articles: The Verge, The Register, Guardian). https://oecd.ai/en/incidents/2026-04-27-6153 · Recovery: Railway (the hosting provider) restored the backups after contact with the founder (SECONDARY, Decrypt / ABC7, Apr 2026; the founder also mentioned a 3-month-old backup — sources do not reconcile this). https://decrypt.co/365897/ai-agent-deletes-startup-database-9-seconds-founder-says |
 
 **Lesson for slides:** Replit and PocketOS are the "excessive agency" story (LLM06 / ASI02–03). The agent had production rights and a token it should not have had.
 
@@ -198,7 +199,7 @@ Sources:
 **Teaching rule:** the same model with a different plan means different data rules. Work data goes only into work/enterprise accounts. Classify data first:
 - **Public:** any tool.
 - **Internal:** enterprise tool only.
-- **Confidential / personal / secrets:** not into chat at all, or only into approved tools with DPA.
+- **Confidential / personal / secrets (incl. contracts):** only into company-approved work AI (with a DPA) and only with permission; never into a personal account. Same rule on slides 4, 14, 15 notes and 17, the cheatsheet and the homework.
 
 This classification is a teaching framework, not a cited fact.
 
@@ -218,6 +219,7 @@ This classification is a teaching framework, not a cited fact.
   - **White-associated names preferred 85%** vs Black-associated 9%. Male-associated 52% vs female 11%.
   - Black male names were **never** preferred over white male names.
   - It is a controlled experiment, not an audit of a deployed system.
+  - The slide caption "in the remaining comparisons neither group was preferred" is arithmetic (85 + 9 < 100; 52 + 11 < 100): the UW summary reports only the preferred shares; it does not itself say "no significant difference".
   - Status: VERIFIED. Source: https://www.washington.edu/news/2024/10/31/ai-bias-resume-screening-race-gender/
 - **News accuracy, EBU/BBC (Oct 2025).** 22 public broadcasters in 18 countries and 14 languages reviewed 3,000+ answers from ChatGPT, Copilot, Gemini and Perplexity.
   - **45% had at least one significant issue**. 31% had sourcing problems. 20% had accuracy problems such as outdated facts.
@@ -251,3 +253,13 @@ An independent check of every claim in the slides and notes. Changes applied to 
 - EU AI Act title: "most of it is in force, high-risk rules from 2027"; Art. 50(2) grace period to 2 Dec 2026 for generators already on the market.
 - Region slide: "AI laws or amendments" (ZRU-1115 is an amendments package); "in common" no longer claims labelling everywhere; Kazakhstan "first standalone AI law in Central Asia" attributed to lawyers.
 - US: no comprehensive federal AI law, but executive orders and the TAKE IT DOWN Act (19 May 2025) exist.
+
+## Final-audit fixes, 2026-10-16 (round 2)
+
+- One data rule everywhere: red = only approved work AI, with permission; never a personal one (slides 4, 14, 15 notes, 17; cheatsheet; homework).
+- Russia: law number 243-FZ of 26.07.2026 confirmed in legal databases (SECONDARY); labelling provisions from 1.03.2027, mandatory status disputed. Removed Russia from "already requires labelling" (slide 12 "in common").
+- Uzbekistan: AI ethics rules from 17.06.2026 added (SECONDARY, MoFo tracker); the ZRU-1115 "not on AI alone" clause is attributed to law firms.
+- Art. 50(2) grace end: 2 Dec 2026 per Regulation 2026/1744; some law firms say 2 Feb 2027 (noted in slide 10 notes).
+- PocketOS: the hosting provider (Railway) later restored the data (SECONDARY).
+- Bias chart: both race bars amber (red read as "danger"), gender cyan/violet; caption about the remaining comparisons is arithmetic, see section 7.
+- Real screenshots (ChatGPT Data controls, Gemini SynthID check) were NOT added: captures only via the user's own Chrome.
