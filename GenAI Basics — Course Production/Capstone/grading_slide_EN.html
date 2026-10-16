@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course Grading</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0f17; --surface: #121a28; --line: #233047;
+    --text: #e6edf7; --muted: #94a3b8;
+    --cyan: #38bdf8; --green: #34d399; --amber: #fbbf24; --violet: #c084fc; --pink: #f472b6; --slate: #8b9bb4;
+    --s: 1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #05070c; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; font-family: Onest, "Segoe UI", sans-serif; color: var(--text); }
+  .stage { width: 1600px; height: 900px; flex: none; transform: scale(var(--s)); background: var(--bg); position: relative; padding: 50px 76px 62px; }
+  .kicker { font-family: "JetBrains Mono", Consolas, monospace; font-size: 18px; letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); }
+  h1 { font-size: 50px; font-weight: 800; line-height: 1.1; margin-top: 10px; }
+  h1 em { font-style: normal; color: var(--amber); }
+  .lead { font-size: 23px; color: var(--muted); margin-top: 10px; }
+
+  /* ---- stack ---- */
+  .chart { position: absolute; left: 76px; top: 230px; width: 560px; height: 600px; }
+  .axis { position: absolute; left: 0; top: 0; width: 70px; height: 100%; }
+  .tick { position: absolute; right: 12px; transform: translateY(50%); font-family: "JetBrains Mono", Consolas, monospace; font-size: 18px; color: var(--muted); }
+  .stack { position: absolute; left: 80px; top: 0; width: 290px; height: 100%; display: flex; flex-direction: column-reverse; border-radius: 14px; overflow: hidden; border: 2px solid var(--line); }
+  .seg { display: flex; align-items: center; gap: 14px; padding: 0 22px; color: #0b0f17; border-top: 3px solid var(--bg); }
+  .seg b { font-size: 44px; font-weight: 800; line-height: 1; min-width: 56px; }
+  .seg span { font-size: 21px; font-weight: 700; line-height: 1.15; }
+  .hw  { height: 32%; background: var(--cyan); }
+  .att { height: 8%;  background: var(--slate); }
+  .att b { font-size: 30px; } .att span { font-size: 19px; }
+  .c1  { height: 30%; background: var(--violet); border-top: none; }
+  .c2  { height: 30%; background: var(--pink); }
+
+  .pass { position: absolute; left: 66px; width: 318px; bottom: 60%; border-top: 4px dashed var(--amber); }
+  .br { position: absolute; left: 384px; width: 16px; border: 3px solid; border-left: none; border-radius: 0 8px 8px 0; }
+  .br.lo { bottom: 4px; height: calc(60% - 8px); border-color: var(--muted); }
+  .br.hi { top: 4px; height: calc(40% - 8px); border-color: var(--muted); }
+  .br-label { position: absolute; left: 414px; transform: translateY(50%); line-height: 1.2; }
+  .br-label b { font-size: 52px; font-weight: 800; line-height: 1; display: block; }
+  .br-label span { font-size: 19px; font-weight: 600; display: block; }
+  .br-label.lo { bottom: 30%; color: var(--muted); }
+  .pass-tag { position: absolute; left: 225px; bottom: 60%; transform: translate(-50%, 50%); background: var(--bg); border: 3px solid var(--amber); border-radius: 999px; padding: 6px 18px; color: var(--amber); font-size: 20px; font-weight: 800; white-space: nowrap; }
+  .br-label.hi { bottom: 80%; color: var(--muted); }
+
+  /* ---- breakdown ---- */
+  .parts { position: absolute; left: 700px; top: 230px; width: 824px; }
+  .row { display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 22px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  .row:first-child { border-top: 1px solid var(--line); }
+  .dot { width: 18px; height: 52px; border-radius: 5px; }
+  .row h3 { font-size: 26px; font-weight: 700; }
+  .row p { font-size: 20px; color: var(--muted); margin-top: 3px; }
+  .row .pts { font-size: 48px; font-weight: 800; text-align: right; }
+  .total { display: flex; justify-content: space-between; align-items: baseline; padding: 14px 0 0 40px; }
+  .total h3 { font-size: 26px; font-weight: 700; color: var(--muted); }
+  .total .pts { font-size: 56px; font-weight: 800; }
+
+  .callout { position: absolute; left: 700px; top: 700px; width: 824px; background: var(--surface); border: 2px solid var(--amber); border-radius: 14px; padding: 18px 26px; display: flex; gap: 22px; align-items: center; }
+  .callout .big { font-size: 52px; font-weight: 800; color: var(--amber); line-height: 1; }
+  .callout p { font-size: 22px; line-height: 1.35; }
+  .callout p b { color: var(--amber); }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="kicker">GenAI Basics · Grading</div>
+  <h1>Score <em>at least 60 of 100</em> points to complete the course</h1>
+  <div class="lead">Capstones, homework and attendance add up to one total out of 100. Any mix that reaches 60 works.</div>
+
+  <div class="chart">
+    <div class="axis">
+      <div class="tick" style="bottom:100%">100</div>
+      <div class="tick" style="bottom:92%">92</div>
+      <div class="tick" style="bottom:60%;color:var(--amber);font-weight:700">60</div>
+      <div class="tick" style="bottom:30%">30</div>
+      <div class="tick" style="bottom:0">0</div>
+    </div>
+    <div class="stack">
+      <div class="seg c1"><b>30</b><span>Capstone 1<br>Voice → Image</span></div>
+      <div class="seg c2"><b>30</b><span>Capstone 2<br>Data Assistant</span></div>
+      <div class="seg hw"><b>32</b><span>Homework</span></div>
+      <div class="seg att"><b>8</b><span>Attendance</span></div>
+    </div>
+    <div class="pass"></div>
+    <div class="br hi"></div>
+    <div class="br-label hi"><b>40</b><span>homework +<br>attendance</span></div>
+    <div class="br lo"></div>
+    <div class="br-label lo"><b>60</b><span>30 + 30<br>capstones</span></div>
+    <div class="pass-tag">MINIMUM TO PASS · 60</div>
+  </div>
+
+  <div class="parts">
+    <div class="row"><div class="dot" style="background:var(--slate)"></div><div><h3>Attendance</h3><p>More than half of the sessions = 8, otherwise 0</p></div><div class="pts" style="color:var(--slate)">8</div></div>
+    <div class="row"><div class="dot" style="background:var(--cyan)"></div><div><h3>Homework</h3><p>16 topics: 2 = done, 1 = partly / no conclusions, 0 = not submitted</p></div><div class="pts" style="color:var(--cyan)">32</div></div>
+    <div class="row"><div class="dot" style="background:var(--pink)"></div><div><h3>Capstone 2 — Data Assistant</h3><p>Bonus up to +3 can make up lost points; max 30</p></div><div class="pts" style="color:var(--pink)">30</div></div>
+    <div class="row"><div class="dot" style="background:var(--violet)"></div><div><h3>Capstone 1 — Voice → Image</h3><p>Bonus up to +3 can make up lost points; max 30</p></div><div class="pts" style="color:var(--violet)">30</div></div>
+    <div class="total"><h3>Total</h3><div class="pts">100</div></div>
+  </div>
+
+  <div class="callout">
+    <div class="big">60</div>
+    <p>Points from <b>all parts</b> add up. Example:<br>26 homework + 8 attendance + 26 from capstones = 60.</p>
+  </div>
+</div>
+<script>
+  function fit() {
+    const s = Math.min(innerWidth / 1600, innerHeight / 900);
+    document.documentElement.style.setProperty('--s', s);
+  }
+  addEventListener('resize', fit); fit();
+  addEventListener('keydown', e => { if (e.key === 'f' || e.key === 'F') document.documentElement.requestFullscreen?.(); });
+</script>
+</body>
+</html>
