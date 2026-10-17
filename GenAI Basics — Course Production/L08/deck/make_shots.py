@@ -1,0 +1,41 @@
+# -*- coding: utf-8 -*-
+"""Crop the real ChatGPT run screenshots (assets/v2/chat/) into slide-sized frames (assets/v2/shots/).
+
+    python make_shots.py
+
+Source frames: real run on demo_v2/northstar_2025.xlsx, October 2026. Crops only, no retouching.
+"""
+from pathlib import Path
+
+from PIL import Image
+
+HERE = Path(__file__).resolve().parent
+SRC = HERE.parent / "assets" / "v2" / "chat"
+OUT = HERE.parent / "assets" / "v2" / "shots"
+OUT.mkdir(parents=True, exist_ok=True)
+
+# name: (source file, (left, top, right, bottom))
+CROPS = {
+    "p1_problems": ("gpt_p1_problems.jpg", (400, 40, 1180, 515)),
+    "p1_questions": ("gpt_p1_questions.jpg", (400, 215, 1180, 495)),
+    "p2_roas_chat": ("gpt_p2_roas_chart_sheet.jpg", (60, 50, 528, 568)),
+    "p2_roas_sheet": ("gpt_p2_roas_table.jpg", (533, 55, 1536, 435)),
+    "p2_sales_sheet": ("gpt_p2_roas_chart_sheet.jpg", (533, 55, 1340, 695)),
+    "p3_heatmap": ("gpt_p3_heatmap.jpg", (512, 185, 1076, 512)),
+    "p3_themes_before": ("gpt_p3_themes_before.jpg", (425, 148, 1163, 462)),
+    "p3_caveat": ("gpt_p3_examples_caveat.jpg", (400, 165, 1180, 530)),
+    "p4_themes_after": ("gpt_p4_themes_after.jpg", (64, 64, 1508, 628)),
+    "p4_what_changed": ("gpt_p4_what_changed.jpg", (400, 185, 1180, 600)),
+    "p5_fake_preview": ("gpt_p5_fake_report_preview.jpg", (230, 52, 1306, 662)),
+    "p5_report_top": ("gpt_p5_report_top_script.jpg", (622, 96, 1438, 695)),
+    "p5_report_bottom": ("gpt_p5_report_bottom.jpg", (622, 180, 1438, 320)),
+    "p5_script": ("gpt_p5_report_top_script.jpg", (60, 290, 530, 590)),
+    "p5_answer": ("gpt_p5_report_answer_small.jpg", (200, 80, 640, 305)),
+}
+
+for name, (src, box) in CROPS.items():
+    im = Image.open(SRC / src).convert("RGB").crop(box)
+    if name == "p5_answer":
+        im = im.resize((im.width * 2, im.height * 2), Image.LANCZOS)
+    im.save(OUT / f"{name}.jpg", quality=88)
+    print(name, im.size)

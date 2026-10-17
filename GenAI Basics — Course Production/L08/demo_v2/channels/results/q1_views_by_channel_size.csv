@@ -1,0 +1,5 @@
+channel_size,channels,videos,median_views_per_video,median_views_per_subscriber
+1: <10k,1311,30449,766.0,1.06
+2: 10k-100k,267,6589,3600.0,0.1
+3: 100k-1M,235,5852,17000.0,0.06
+4: 1M+,130,3242,118808.0,0.04
