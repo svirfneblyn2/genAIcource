@@ -76,7 +76,7 @@ PNG names can differ. You need three charts plus a before/after pair for one of 
 
 ## Option B: your own work data
 
-You may use your own table instead of Northstar if you are allowed to use it and it has no names, phone numbers, emails or other personal data. Check it against the traffic light from slide 17:
+You may use your own table instead of Northstar if you are allowed to use it and it has no names, phone numbers, emails or other personal data. Check it against the traffic light from slide 29:
 
 | Colour | What data | What is allowed |
 |---|---|---|

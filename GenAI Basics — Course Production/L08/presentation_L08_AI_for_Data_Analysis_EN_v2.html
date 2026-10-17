@@ -356,12 +356,29 @@ svg.dia text { font-family: var(--body); }
 .chartbox .f { font-size: 17px; color: var(--muted); line-height: 1.3; margin-top: 4px; }
 .chartbox .f b { color: var(--fg); }
 .chartbox svg { display: block; width: 100%; height: auto; }
+
+/* ---------- v2.1: prompt anatomy, bad / good, reviews, row anatomy ---------- */
+.an { display: flex; flex-direction: column; gap: 10px; }
+.an-row { display: grid; grid-template-columns: 46px 1.25fr 1fr; gap: 16px; align-items: center; background: var(--surface-card); border: 1px solid var(--line); border-left: 5px solid var(--k); border-radius: 10px; padding: 10px 14px; }
+.an-n { font-family: var(--display); font-size: 26px; font-weight: 800; color: #0b0f17; background: var(--k); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; }
+.an-t { font-family: var(--mono); font-size: 21px; line-height: 1.4; color: var(--fg); }
+.an-w { font-size: 20px; line-height: 1.35; color: var(--muted); }
+.bg-q { font-size: 20px; line-height: 1.4; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--k); border-radius: 10px; padding: 10px 14px; }
+.bg-q .badge { margin-right: 8px; vertical-align: 2px; }
+.rvs { display: flex; flex-direction: column; gap: 10px; }
+.rv { font-size: 20px; line-height: 1.4; color: var(--fg); background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.rv small { display: block; font-family: var(--mono); font-size: 14px; color: var(--dim); margin-top: 4px; }
+.rv-s { color: var(--amber); letter-spacing: 1px; margin-right: 6px; }
+.tbl.rowx th { font-size: 17px; padding: 10px 8px; color: var(--fg); }
+.tbl.rowx td.big { font-size: 24px; font-weight: 700; color: var(--fg); padding: 14px 8px; }
+.tbl.rowx td.typ { font-family: var(--body); font-size: 18px; font-weight: 600; border-bottom: none; }
+.checklist.lg { gap: 22px; } .checklist.lg li { font-size: 26px; grid-template-columns: 48px 1fr; } .checklist.lg li::before { width: 34px; height: 34px; font-size: 19px; }
 </style>
 </head>
 <body>
 <main class="stage" id="stage">
 
-<!-- SLIDE 01 · s_cover · 2 min -->
+<!-- SLIDE 01 · s_cover · 1 min -->
 <section class="slide cover" data-n="1">
   <div class="bg"><img class="full" src="assets/l08_cover_hero.png" alt=""></div>
   <div class="shade soft"></div>
@@ -372,124 +389,261 @@ svg.dia text { font-family: var(--body); }
     <p>Formulas, pivots and charts on request in plain words — in Excel, Google Sheets or a chat with a file. Case study: Northstar online shop sales for 2025.</p>
   </div>
   <div class="keys">← → navigate • N speaker notes • G all slides • F fullscreen</div>
-  <template class="notes"><p>⏱ 2 min. Today we take an ordinary sales spreadsheet and turn it into formulas, a pivot, three charts and a one-page report for a manager — using tools you already have.</p><p>The whole lesson uses one file: sales of a made-up shop, Northstar, for 2025 — 1,261 rows plus a reviews sheet. Near the end, a short example with a large YouTube channel database that no longer fits in Excel.</p></template>
+  <template class="notes"><p>⏱ 1 min. Today we take an ordinary sales spreadsheet and turn it into formulas, a pivot, three charts and a one-page report for a manager — using tools you already have.</p><p>The whole lesson uses one file: sales of a made-up shop, Northstar, for 2025 — 1,261 rows plus a reviews sheet. Near the end, a short example with a large YouTube channel database that no longer fits in Excel.</p></template>
 </section>
-<!-- SLIDE 02 · s_hook · 3 min -->
+<!-- SLIDE 02 · s_outcomes · 2 min -->
 <section class="slide" data-n="2">
-  <div class="kicker" style="--k:var(--amber)">Where analysis starts</div>
-  <h2 class="title">The manager’s question comes first, then the file</h2>
-  <div class="body" style="margin-top:16px;">
-    <div class="row" style="grid-template-columns:0.9fr 1.1fr;gap:36px;align-items:stretch;">
-      <div class="stack" style="gap:18px;justify-content:center;">
-        <div class="plaque" style="font-size:24px;line-height:1.5;">
-          <div class="kicker" style="--k:var(--amber);margin-bottom:8px;">An e-mail from Anna, Commercial Director</div>
-          <div>Hi! How did sales go this year? Why did advertising pay off worse in the second half? And why so many returns in the autumn? I need one page by Friday.</div>
+  <div class="kicker">What this lesson gives you</div>
+  <h2 class="title">Five skills you take away today</h2>
+  <div class="body" style="margin-top:10px;">
+    <div class="row" style="grid-template-columns:1.1fr 1fr;gap:44px;align-items:center;">
+      <div class="rules" style="gap:22px;"><div class="rule" style="--k:var(--cyan)"><div class="n">1</div><div class="t">Describe a file<small>understand what is in a table in a minute</small></div></div><div class="rule" style="--k:var(--green)"><div class="n">2</div><div class="t">A formula in words<small>ask for a formula and a pivot in Excel</small></div></div><div class="rule" style="--k:var(--violet)"><div class="n">3</div><div class="t">A slide-ready chart<small>the type fits the question, the title states the finding</small></div></div><div class="rule" style="--k:var(--amber)"><div class="n">4</div><div class="t">A one-page report<small>a file you can forward</small></div></div><div class="rule" style="--k:var(--red)"><div class="n">5</div><div class="t">A one-minute check<small>rows, one point, percent of what</small></div></div></div>
+      <div class="stack" style="gap:16px;">
+        <div class="plaque" style="font-size:23px;line-height:1.5;">
+          <div class="kicker" style="--k:var(--amber);margin-bottom:8px;">The task we learn on</div>
+          An e-mail from the commercial director: “How did sales go this year? Why did advertising pay off worse in the second half? And why so many returns in the autumn? I need one page by Friday.”
         </div>
-        <div class="note" style="--k:var(--amber)">Three questions — three charts. “Find insights” won’t help here.</div>
-      </div>
-      <div class="stack" style="gap:6px;">
-        <div class="shot " style="--k:var(--cyan);"><div class="lbl" style="--k:var(--cyan)">northstar_2025.xlsx • 1,261 rows</div><img src="assets/v2/shots/p2_sales_sheet.jpg" alt=""></div>
-        <div class="scap">One row is the sales of one channel for one category, region and warehouse on one day. The second sheet holds 357 customer reviews.</div>
+        <div class="note" style="--k:var(--cyan)">We spend the lesson answering this e-mail. At the end we have the report page.</div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>02 / 19</span></div>
-  <template class="notes"><p>⏱ 3 min. This is what analysis looks like at work: an e-mail with questions and an exported file. On the right is the real lesson file opened in ChatGPT: 1,261 sales rows for 2025 and a reviews sheet.</p><p>The e-mail has three specific questions: the year overall, ad return in the second half, autumn returns. Each will become one chart. We spend the lesson answering Anna.</p><p>Ask the Teams chat: “Which question from the e-mail would you check first, and why?” Collect 2–3 answers.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>02 / 31</span></div>
+  <template class="notes"><p>⏱ 2 min. Say what students will leave with: the five skills on the slide. We show each on a live example, and almost each one gets a “quick / under control” pair from real ChatGPT answers.</p><p>On the right is the task: an e-mail from Anna, commercial director of the Northstar shop. We answer it throughout the lesson. The shop and data are made up, so the file can go into any chat.</p></template>
 </section>
-<!-- SLIDE 03 · s_first · 4 min -->
+<!-- SLIDE 03 · s_data_where · 3 min -->
 <section class="slide" data-n="3">
-  <div class="kicker">Step 1 • the first prompt</div>
-  <h2 class="title">First prompt: describe the file and suggest 5 questions</h2>
+  <div class="kicker">Part 1 • what data is</div>
+  <h2 class="title">Where data lives at work</h2>
   <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:26px;align-items:stretch;">
-      <div class="stack" style="gap:14px;">
-        <div class="pr lg" style="--k:var(--cyan)"><span class="no">Prompt</span>Describe this file: what one row is, how many rows, what period, what data problems. Suggest 5 questions a manager would ask. Don’t change anything yet.</div>
-        <div class="shot " style="--k:var(--cyan);"><div class="lbl" style="--k:var(--cyan)">ChatGPT answer • part 1</div><img src="assets/v2/shots/p1_problems.jpg" alt=""></div>
-      </div>
-      <div class="stack" style="gap:14px;">
-        <div class="shot " style="--k:var(--cyan);"><div class="lbl" style="--k:var(--cyan)">ChatGPT answer • part 2</div><img src="assets/v2/shots/p1_questions.jpg" alt=""></div>
-        <div class="note" style="--k:var(--green)">The model found the duplicate and the period and said: <b>“I did not change the file”</b>. But it took zero ad spend for missing values — that is the first question for the data owner.</div>
-        <div class="note" style="--k:var(--amber)">We take question 1, channels including ad spend — it matches the e-mail. That is what the demo computes.</div>
-      </div>
-    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"><div class="door" style="--k:var(--green)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="38" height="34" rx="3"/><path d="M5 18 h38 M5 29 h38 M18 7 v34 M31 7 v34"/></svg><div class="h">Spreadsheets</div><div class="w">Excel, Google Sheets: sales, budget, plan</div><div class="o">AI writes formulas and pivots</div></div><div class="door" style="--k:var(--cyan)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 v24 M14 20 l10 10 l10 -10"/><path d="M8 32 v8 h32 v-8"/></svg><div class="h">Exports</div><div class="w">CSV from a CRM, accounting, ad accounts, YouTube Studio</div><div class="o">file into a chat, AI writes code</div></div><div class="door" style="--k:var(--amber)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="10" rx="16" ry="5"/><path d="M8 10 v28 c0 3 7 5 16 5 s16-2 16-5 V10 M8 24 c0 3 7 5 16 5 s16-2 16-5"/></svg><div class="h">Databases</div><div class="w">CRM, website, warehouse: millions of rows, updated daily</div><div class="o">AI writes an SQL query</div></div><div class="door" style="--k:var(--violet)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10 h34 a3 3 0 0 1 3 3 v18 a3 3 0 0 1 -3 3 H20 l-8 7 v-7 H7 a3 3 0 0 1 -3 -3 V13 a3 3 0 0 1 3 -3 z"/><path d="M13 19 h22 M13 25 h14"/></svg><div class="h">Text</div><div class="w">reviews, e-mails, support chats, surveys</div><div class="o">AI reads and sorts into themes</div></div><div class="door" style="--k:var(--red)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4 h18 l10 10 v30 H11 z M29 4 v10 h10"/><path d="M16 24 h18 M16 31 h18 M16 38 h18 M25 20 v22"/></svg><div class="h">Documents</div><div class="w">PDF invoices, contracts, partner reports</div><div class="o">AI pulls the numbers into a table</div></div><div class="door" style="--k:var(--green)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 14 l-10 10 l10 10 M32 14 l10 10 l-10 10 M27 9 l-6 30"/></svg><div class="h">Events and logs</div><div class="w">clicks, orders by the minute, calls</div><div class="o">usually an analyst queries the database</div></div></div>
+    <div class="plaque" style="margin-top:16px;"><b>Most often you have a spreadsheet or an export.</b> Sometimes text. Less often a database. Today we cover all three.</div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>03 / 19</span></div>
-  <template class="notes"><p>⏱ 4 min. This is the first prompt for any file. It does two things: the model describes what is in the table and suggests questions. “Don’t change anything yet” matters: without it the model may quietly drop duplicates or fill blanks, and you won’t know what it changed.</p><p>Left: the real answer — 1,261 rows, 1 Jan to 31 Dec 2025, one fully duplicated row. Right: five manager questions. The first, about channels including ad spend, matches Anna’s e-mail: Demo 1 computes it. The third, about returns, is Demo 2.</p><p>The model got it wrong: it said “632 ad_spend values are missing”. The file has zeros there: Email and Organic have no advertising. It also missed the text date 10/05/2025. Ask back: “Are these missing or zeros? Any dates in another format?” The data owner knows what the zeros mean.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>03 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. Before uploading files to a chat, let’s agree what data is: any records you can count or read something from — spreadsheets, system exports, databases, text, documents, logs.</p><p>The bottom line of each tile says how AI works with it. That’s the key: with a table AI writes a formula or code, with text it reads, with a database it writes a query. Ask the chat: “Which of these do you have at work?”</p></template>
 </section>
-<!-- SLIDE 04 · s_doors · 4 min -->
+<!-- SLIDE 04 · s_table_text · 3 min -->
 <section class="slide" data-n="4">
-  <div class="kicker">Where to analyse</div>
-  <h2 class="title">Pick the tool by where the data lives</h2>
-  <div class="lead">Inside it is always the same: the model writes a formula, code or a query, and a program does the counting. That is why you can open and check the working.</div>
-  <div class="body" style="margin-top:10px;">
-    <div class="doors"><div class="door" style="--k:var(--green)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="38" height="34" rx="3"/><path d="M5 18 h38 M5 29 h38 M18 7 v34 M31 7 v34"/></svg><div class="h">Excel</div><div class="w">Data already lives in a workbook. AI writes <b>formulas and pivots</b> you can see in the cells.</div><div class="o">Claude / Copilot in Excel, or a file from a chat</div></div><div class="door" style="--k:var(--cyan)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4 h18 l10 10 v30 H11 z M29 4 v10 h10"/><path d="M16 24 h18 M16 31 h18 M16 38 h18 M25 20 v22"/></svg><div class="h">Google Sheets</div><div class="w">The file lives in Google Drive. Gemini in the side panel builds <b>pivots and charts</b>.</div><div class="o">Gemini in Sheets</div></div><div class="door" style="--k:var(--violet)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10 h34 a3 3 0 0 1 3 3 v18 a3 3 0 0 1 -3 3 H20 l-8 7 v-7 H7 a3 3 0 0 1 -3 -3 V13 a3 3 0 0 1 3 -3 z"/><path d="M13 19 h22 M13 25 h14"/></svg><div class="h">Chat with a file</div><div class="w">Upload a CSV or XLSX. The model writes <b>Python code</b>, a program runs it, and you see the code.</div><div class="o">ChatGPT · Claude · Gemini</div></div><div class="door" style="--k:var(--amber)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="10" rx="16" ry="5"/><path d="M8 10 v28 c0 3 7 5 16 5 s16-2 16-5 V10 M8 24 c0 3 7 5 16 5 s16-2 16-5"/></svg><div class="h">Database</div><div class="w">Millions of rows that won’t fit in a chat. The model writes <b>an SQL query</b>, the database does the counting.</div><div class="o">SQL + an AI assistant</div></div></div>
-    <div class="flow" style="margin-top:30px;justify-content:center;gap:16px;">
-      <div class="box">your question<small>in plain words</small></div><div class="arr">→</div>
-      <div class="box k" style="--k:var(--violet)">the model writes<small>formula · code · SQL</small></div><div class="arr">→</div>
-      <div class="box k" style="--k:var(--green)">a program counts<small>Excel · Python · database</small></div><div class="arr">→</div>
-      <div class="box hl" style="--k:var(--amber)">you open and check<small>the cell · code · query</small></div>
-    </div>
-    <div class="cap" style="margin-top:18px;text-align:center;">In today’s demos: Excel and a chat with a file. The channel database example is on slide 13.</div>
-  </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>04 / 19</span></div>
-  <template class="notes"><p>⏱ 4 min. Four places where AI helps with data. The choice is simple: where does the file live, and what do you need at the end?</p><p>Excel: when the data is already in a workbook that colleagues open. AI writes formulas you can see in the formula bar. AI panels: Claude for Excel (paid Claude plans), Copilot in Excel (Microsoft 365 Copilot licence), ChatGPT for Excel. Without a panel, the demo workaround works: upload the file to a chat and download a workbook with formulas.</p><p>Google Sheets: Gemini in the side panel does pivots, charts and formulas if the company has Google Workspace with Gemini. Chat with a file: the fastest start, and you see the code. Database: when there are millions of rows — slide 13.</p><p>To check whether you have Copilot in Excel: look for the Copilot button on the right of the Home tab. Button names and plans change, so check on the day.</p></template>
-</section>
-<!-- SLIDE 05 · s_demo1 · 12 min -->
-<section class="slide" data-n="5">
-  <div class="kicker" style="--k:var(--green)">Demo 1 • Excel • 12 minutes</div>
-  <h2 class="title">You can ask for a formula and a chart in words</h2>
+  <div class="kicker">Part 1 • two kinds of data</div>
+  <h2 class="title">Table and text: AI handles them differently</h2>
   <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;flex:0 0 auto;">
-      <div class="stack" style="gap:12px;">
-        <div class="pr " style="--k:var(--green)"><span class="no">Prompt 2</span>Add a sheet “Ad return” to the workbook: by month, revenue, ad spend and revenue per $1 of ads for Search and Social. Use Excel formulas, not pasted numbers. Build a line chart and let me download the .xlsx.</div>
-        <div class="note" style="--k:var(--cyan)">Have Claude or Copilot in Excel? Type the same text in the side panel; nothing to download.</div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+      <div class="stack" style="gap:10px;">
+        <div class="cap" style="font-size:22px;font-weight:700;color:var(--fg);">Sales sheet: numbers, dates, categories</div>
+        <table class="tbl"><tr><th>date</th><th>channel</th><th>category</th><th>region</th><th class="num">orders</th><th class="num">revenue</th></tr><tr><td>2025-01-01</td><td>Social</td><td>Home</td><td>Central</td><td class="num">10</td><td class="num">580</td></tr><tr><td>2025-01-02</td><td>Organic</td><td>Sports</td><td>West</td><td class="num">11</td><td class="num">670</td></tr><tr><td>2025-01-02</td><td>Social</td><td>Books</td><td>West</td><td class="num">18</td><td class="num">400</td></tr><tr><td>2025-01-02</td><td>Social</td><td>Home</td><td>West</td><td class="num">16</td><td class="num">890</td></tr><tr><td>2025-01-03</td><td>Organic</td><td>Electronics</td><td>South</td><td class="num">39</td><td class="num">3,660</td></tr><tr><td>2025-01-03</td><td>Organic</td><td>Sports</td><td>North</td><td class="num">19</td><td class="num">1,170</td></tr></table>
+        <div class="note" style="--k:var(--cyan)"><b>AI counts:</b> it writes a formula or code, a program adds and divides. The typical error is a wrong formula.</div>
+      </div>
+      <div class="stack" style="gap:10px;">
+        <div class="cap" style="font-size:22px;font-weight:700;color:var(--fg);">Reviews sheet: customers’ own words</div>
+        <div class="rvs"><div class="rv"><span class="rv-s">★★★★★</span> All great, arrived fast. Thanks.<small>C1 · 2025-01-04</small></div><div class="rv"><span class="rv-s">★★★★</span> The product matches the description. Will order again.<small>N1 · 2025-01-06</small></div><div class="rv"><span class="rv-s">★</span> Badly packed — no wrap, no foam, scratched all over.<small>N2 · 2025-09-07</small></div><div class="rv"><span class="rv-s">★★</span> Courier handed over a wet, torn box. Thanks.<small>N2 · 2025-09-07</small></div></div>
+        <div class="note" style="--k:var(--violet)"><b>AI reads:</b> it assigns each review to a theme and counts themes. The typical error is the wrong theme.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>04 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. Left: the real first rows of the Sales sheet. Right: real reviews from the Reviews sheet of the same file. These are two different worlds.</p><p>With a table, AI doesn’t add in its head: it writes a formula or code, a program counts. Errors are usually in the formula — wrong column, wrong period. With text it’s the opposite: AI reads each review and decides what it is about. The error is a wrong theme. In half an hour we’ll see exactly that error.</p></template>
+</section>
+<!-- SLIDE 05 · s_anatomy_row · 3 min -->
+<section class="slide" data-n="5">
+  <div class="kicker">Part 1 • what a table is made of</div>
+  <h2 class="title">One row: what the record is and what it measures</h2>
+  <div class="body" style="margin-top:14px;">
+    <table class="tbl rowx"><tr><th style="border-bottom:4px solid var(--cyan)">order_date</th><th style="border-bottom:4px solid var(--violet)">channel</th><th style="border-bottom:4px solid var(--violet)">category</th><th style="border-bottom:4px solid var(--violet)">region</th><th style="border-bottom:4px solid var(--violet)">warehouse</th><th style="border-bottom:4px solid var(--green)">orders</th><th style="border-bottom:4px solid var(--amber)">revenue</th><th style="border-bottom:4px solid var(--amber)">ad_spend</th><th style="border-bottom:4px solid var(--green)">returns</th></tr><tr><td class="big">2025-01-05</td><td class="big">Email</td><td class="big">Electronics</td><td class="big">North</td><td class="big">N2</td><td class="big">11</td><td class="big">980.0</td><td class="big">0</td><td class="big">1</td></tr><tr><td class="typ" style="color:var(--cyan)">date</td><td class="typ" style="color:var(--violet)">category</td><td class="typ" style="color:var(--violet)">category</td><td class="typ" style="color:var(--violet)">category</td><td class="typ" style="color:var(--violet)">category</td><td class="typ" style="color:var(--green)">number, pcs</td><td class="typ" style="color:var(--amber)">number, $</td><td class="typ" style="color:var(--amber)">number, $</td><td class="typ" style="color:var(--green)">number, pcs</td></tr></table>
+    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px;flex:0 0 auto;">
+      <div class="note" style="--k:var(--cyan)"><b>A row</b> is the sales of one channel for one category, region and warehouse on one day. Not an order, not a customer.</div>
+      <div class="note" style="--k:var(--violet)"><b>Categories</b> are what we slice by: channel, region, warehouse. Breakdowns are built on them.</div>
+      <div class="note" style="--k:var(--amber)"><b>Numbers</b> are what we add and divide. Each has its unit: dollars or pieces.</div>
+    </div>
+    <div class="plaque" style="margin-top:20px;"><b>First question for any file:</b> what is one row? Get it wrong and every “average per customer” is wrong.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>05 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. One real row of the file, enlarged. Walk through the colours: blue is the date, violet the categories we slice by, green and amber the numbers with their units.</p><p>Ask the chat: “What is one row in this file?” A common answer is “an order”. Wrong: this row holds 11 orders. It is a channel’s sales for a day in one slice. The model can get this wrong too, so the first prompt of the lesson asks it to describe a row.</p></template>
+</section>
+<!-- SLIDE 06 · s_scale · 3 min -->
+<section class="slide" data-n="6">
+  <div class="kicker">Part 1 • how much data</div>
+  <h2 class="title">Size decides where the data goes</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="hbars" style="gap:26px;"><div class="hb" style="--k:var(--green)"><div class="lab">dozens of rows<small>can be pasted into a message</small></div><div class="tr" style="height:52px"><div class="b" style="width:20.6%"></div><div class="v" style="left:calc(20.6% + 14px);font-size:38px;">73</div></div></div><div class="hb" style="--k:var(--cyan)"><div class="lab">thousands of rows<small>our Northstar file: upload as a file</small></div><div class="tr" style="height:52px"><div class="b" style="width:34.2%"></div><div class="v" style="left:calc(34.2% + 14px);font-size:38px;">1,261</div></div></div><div class="hb" style="--k:var(--violet)"><div class="lab">tens of thousands<small>channel DB sample: a file still works</small></div><div class="tr" style="height:52px"><div class="b" style="width:51.5%"></div><div class="v" style="left:calc(51.5% + 14px);font-size:38px;">46,132</div></div></div><div class="hb" style="--k:var(--amber)"><div class="lab">hundreds of thousands+<small>the whole video DB: ask the database with a query</small></div><div class="tr" style="height:52px"><div class="b" style="width:62.0%"></div><div class="v" style="left:calc(62.0% + 14px);font-size:38px;">416,809</div></div></div></div>
+    <div class="cap" style="margin-top:14px;">Log scale: each step is roughly 10× the previous one.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>06 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. Four steps. Dozens of rows can be pasted as text into a message. Thousands, like our file, go in as a file. Tens of thousands, like the channel DB sample, a file still handles. Hundreds of thousands and millions, updated daily, aren’t exported to a file: you ask the database with a query.</p><p>The scale is logarithmic, otherwise the first three bars would be invisible. In practice a chat slows down noticeably from a few tens of thousands of rows.</p></template>
+</section>
+<!-- SLIDE 07 · s_ai_data · 3 min -->
+<section class="slide" data-n="7">
+  <div class="kicker" style="--k:var(--violet)">Part 1 • the key diagram</div>
+  <h2 class="title">Data stays in the file. AI writes instructions, a program counts</h2>
+  <div class="body" style="margin-top:6px;">
+    <svg class="dia" viewBox="0 0 1440 470"><defs><marker id="ad" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#5f6e84"/></marker></defs><text x="20" y="40" font-size="20" font-weight="700" fill="#34d399">DATA</text><text x="20" y="300" font-size="20" font-weight="700" fill="#c084fc">AI</text><line x1="20" y1="230" x2="1420" y2="230" stroke="#5f6e84" stroke-dasharray="6 6"/><rect x="120" y="60" width="300" height="100" rx="14" fill="#0f1624" stroke="#34d399" stroke-width="2.5"/><text x="270.0" y="98" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">file or database</text><text x="270.0" y="128" text-anchor="middle" font-size="18" fill="#a3b1c4">1,261 rows stay there</text><rect x="560" y="60" width="320" height="100" rx="14" fill="#0f1624" stroke="#34d399" stroke-width="2.5"/><text x="720.0" y="98" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">a program counts</text><text x="720.0" y="128" text-anchor="middle" font-size="18" fill="#a3b1c4">Excel · Python · database</text><rect x="1020" y="60" width="300" height="100" rx="14" fill="#0f1624" stroke="#34d399" stroke-width="2.5"/><text x="1170.0" y="98" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">result</text><text x="1170.0" y="128" text-anchor="middle" font-size="18" fill="#a3b1c4">table · chart · file</text><rect x="120" y="320" width="300" height="100" rx="14" fill="#0f1624" stroke="#38bdf8" stroke-width="2.5"/><text x="270.0" y="358" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">your question</text><text x="270.0" y="388" text-anchor="middle" font-size="18" fill="#a3b1c4">in plain words</text><rect x="560" y="320" width="320" height="100" rx="14" fill="#0f1624" stroke="#c084fc" stroke-width="2.5"/><text x="720.0" y="358" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">the model writes</text><text x="720.0" y="388" text-anchor="middle" font-size="18" fill="#a3b1c4">formula · code · SQL</text><rect x="1020" y="320" width="300" height="100" rx="14" fill="#0f1624" stroke="#c084fc" stroke-width="2.5"/><text x="1170.0" y="358" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">the model explains</text><text x="1170.0" y="388" text-anchor="middle" font-size="18" fill="#a3b1c4">in words, with numbers</text><path d="M420 370 L552 370" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><path d="M720 320 L720 168" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><path d="M880 110 L1012 110" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><path d="M1170 160 L1170 312" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><path d="M420 110 L552 110" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><text x="736" y="250" font-size="18" fill="#a3b1c4">code goes to the data</text><circle cx="270" cy="440" r="0"/><text x="1180" y="250" font-size="18" fill="#a3b1c4">the answer comes back</text></svg>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:24px;flex:0 0 auto;">
+      <div class="plaque"><b>You stand at two points:</b> asking the question and checking the result.</div>
+      <div class="plaque g"><b>Rule:</b> when AI states a number, ask which program computed it.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>07 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. This is the key diagram; we’ll come back to it. Top lane — data: the file or database, the program that counts, the result. Bottom lane — AI: it reads your question and the column names, writes a formula, code or a query. That instruction goes to the data, the program runs it, and the model retells the result in words.</p><p>Hence a simple rule: a number in an AI answer should be computed by a program. If the model “just knows” a number, it’s a guess. You stand at two points: you ask at the start and check at the end.</p></template>
+</section>
+<!-- SLIDE 08 · s_data_problems · 3 min -->
+<section class="slide" data-n="8">
+  <div class="kicker" style="--k:var(--red)">Part 1 • real data</div>
+  <h2 class="title">Four traps in real data, three of them in our file</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="doors"><div class="door" style="--k:var(--red)"><div class="h">A duplicated row</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">2025-03-19 · Social · Home · 3,890.5 ×2</div><div class="w">revenue is inflated by this amount</div></div><div class="door" style="--k:var(--amber)"><div class="h">A date as text</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">10/05/2025  ←  2025-05-10?</div><div class="w">10 May or 5 October? Depends on the format</div></div><div class="door" style="--k:var(--violet)"><div class="h">Zero or missing?</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">Email · ad_spend = 0</div><div class="w">Email has no ads. The model called these zeros “missing”</div></div><div class="door" style="--k:var(--cyan)"><div class="h">Mixed units</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">1,200 (RUB) and 15 ($) in one column</div><div class="w">a real-life example: they can’t be added</div></div></div>
+    <div class="plaque" style="margin-top:20px;"><b>The model often finds these, but doesn’t always understand them.</b> The data owner knows what a zero means and which date is right.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>08 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. We deliberately put a few typical problems into the practice file. A duplicate: one sales row written twice, revenue inflated. A text date 10/05/2025: is it 10 May or 5 October? Zeros in ad spend for Email and Organic: they simply have no ads. Mixed units is a real-life example, not in our file.</p><p>Why it matters: in our run ChatGPT found the duplicate itself, but called the zeros “missing” and missed the text date. The model sees oddities, but only the data owner knows the meaning.</p></template>
+</section>
+<!-- SLIDE 09 · s_nocode · 3 min -->
+<section class="slide" data-n="9">
+  <div class="kicker" style="--k:var(--amber)">Part 1 • experiment</div>
+  <h2 class="title">73 rows pasted into a message: the model got it right. Why we still don’t do it</h2>
+  <div class="body" style="margin-top:12px;">
+    <div class="row" style="grid-template-columns:0.75fr 1fr;gap:26px;align-items:start;">
+      <div class="stack" style="gap:8px;">
+        <div class="shot " style="--k:var(--amber);"><div class="lbl" style="--k:var(--amber)">prompt: 73 CSV rows, “no tools or code”</div><img src="assets/v2/shots/b0_paste.jpg" alt="" style="max-height:330px"></div>
+      </div>
+      <div class="stack" style="gap:10px;">
+        <div class="shot good" style="--k:var(--green);"><div class="lbl" style="--k:var(--green)">ChatGPT answer, 17 Oct 2026</div><img src="assets/v2/shots/b0_answer.jpg" alt="" style="max-height:300px"></div>
+        <div class="big3">
+          <div class="note" style="--k:var(--green)"><b>The total is right</b>; the duplicate and blank region found.</div>
+          <div class="note" style="--k:var(--red)"><b>No visible working.</b> Nothing to repeat or check.</div>
+          <div class="note" style="--k:var(--amber)"><b>1,261 rows</b> won’t paste like this. You need a file and code.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>09 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. A real run on 17 Oct 2026: we pasted 73 rows of the practice CSV into a message and asked for no tools. ChatGPT got revenue right (256,045 without the duplicate) and found all four problems. For the row with 66 returns on 62 orders it said “needs checking”.</p><p>For comparison: on 13 Oct, on the same file, other models without code “fixed” that row to “probably 6”, while the source said 4. Models have become more careful. But the working is invisible, and a real file of thousands of rows won’t fit in a message. So from here on we work with the file and look at the code the model wrote.</p></template>
+</section>
+<!-- SLIDE 10 · s_hook · 2 min -->
+<section class="slide" data-n="10">
+  <div class="kicker" style="--k:var(--amber)">Part 2 • Excel and the first question</div>
+  <h2 class="title">Three questions in the e-mail — three parts of the lesson</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="row" style="grid-template-columns:0.85fr 1.15fr;gap:36px;align-items:center;">
+      <div class="stack" style="gap:16px;">
+        <div class="chk" style="--k:var(--green)"><div class="n">1</div><div class="t">How did sales go this year?<small>Part 2: Excel, formulas, seasonality</small></div></div>
+        <div class="chk" style="--k:var(--amber)"><div class="n">2</div><div class="t">Why does advertising pay off worse?<small>Parts 2–3: Search and Social return</small></div></div>
+        <div class="chk" style="--k:var(--red)"><div class="n">3</div><div class="t">Why the autumn returns?<small>Part 3: the table + review text</small></div></div>
       </div>
       <div class="stack" style="gap:6px;">
-        <div class="shot " style="--k:var(--amber);"><div class="lbl" style="--k:var(--amber)">ChatGPT returned a sheet: numbers in the cells</div><img src="assets/v2/shots/p2_roas_sheet.jpg" alt="" style="max-height:200px"></div>
-        <div class="scap">Click a cell. See a number? Write: “replace the numbers with formulas”.</div>
+        <div class="shot " style="--k:var(--cyan);"><div class="lbl" style="--k:var(--cyan)">northstar_2025.xlsx • 1,261 rows • Reviews sheet: 357 reviews</div><img src="assets/v2/shots/p2_sales_sheet.jpg" alt="" style="max-height:470px"></div>
       </div>
     </div>
-    <div class="stack" style="gap:6px;margin-top:14px;">
-      <div class="shot good" style="--k:var(--green);"><div class="lbl" style="--k:var(--green)">Excel: the cell holds a formula, visible in the fx bar</div><img src="assets/v2/shots/xl_fx_sumifs.jpg" alt=""></div>
-    </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>05 / 19</span></div>
-  <template class="notes"><p>⏱ 12 min (2 prompts + open the workbook). Follow runbook L08_04. Upload northstar_2025.xlsx to ChatGPT. Prompt 1 is the file description from the previous slide. Prompt 2 is on screen.</p><p>Key words in the prompt: “Excel formulas, not pasted numbers”. Without them the model often pastes computed values, which can’t be checked in the workbook. Download the file, open it in Excel and click an ad-return cell. The formula bar should show revenue divided by spend, e.g. =B2/C2. Revenue and spend should be formulas too (SUMIFS over the Sales sheet).</p><p>What you will see: Search returns about 5.4 per $1 all year. Social drops from about 4 to 2 in July. That is the second story from Anna’s e-mail; we come back to it after the break.</p><p>Top right is the real sheet from the workbook ChatGPT returned: in our run the cells held numbers, not formulas. Below is the same table in Excel where revenue is a SUMIFS over the Sales sheet and the return is =B2/C2, with a chart built on those cells. That is how the workbook should look after “replace the numbers with formulas”. Reference workbook: demo_v2/excel_demo/northstar_2025_formulas_EN.xlsx. If you have Claude for Excel or Copilot, show the same request in the side panel, 90 seconds. If the service takes longer than 90 seconds, show the ready frames and move on.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>10 / 31</span></div>
+  <template class="notes"><p>⏱ 2 min. This is what analysis looks like at work: an e-mail with questions and an exported file. On the right is the real lesson file opened in ChatGPT: 1,261 sales rows for 2025 and a reviews sheet.</p><p>The e-mail has three specific questions: the year overall, ad return in the second half, autumn returns. Each will become one chart. We spend the lesson answering Anna.</p><p>Ask the Teams chat: “Which question from the e-mail would you check first, and why?” Collect 2–3 answers.</p></template>
 </section>
-<!-- SLIDE 06 · s_season · 3 min -->
-<section class="slide" data-n="6">
-  <div class="kicker" style="--k:var(--amber)">What we saw • seasonality</div>
-  <h2 class="title">Growth this year: +161.7% or +15.1%? It depends on the base</h2>
+<!-- SLIDE 11 · s_p1_anatomy · 3 min -->
+<section class="slide" data-n="11">
+  <div class="kicker">Part 2 • prompt 1 line by line</div>
+  <h2 class="title">The first prompt for any file: a description</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="an"><div class="an-row" style="--k:var(--cyan)"><div class="an-n">1</div><div class="an-t">Describe this file: what one row is,</div><div class="an-w">understand the data first, not compute</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">2</div><div class="an-t">how many rows, what period,</div><div class="an-w">numbers you’ll check later</div></div><div class="an-row" style="--k:var(--amber)"><div class="an-n">3</div><div class="an-t">what data problems.</div><div class="an-w">duplicates and oddities — before any maths</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">4</div><div class="an-t">Suggest 5 questions a manager would ask.</div><div class="an-w">a work plan: pick the question from the e-mail</div></div><div class="an-row" style="--k:var(--red)"><div class="an-n">5</div><div class="an-t">Don’t change anything yet.</div><div class="an-w">or the model quietly “cleans” the file</div></div></div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>11 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. Go through the prompt line by line. Line 1 makes the model understand the file first. Line 2 gives numbers to check: 1,261 rows, 2025. Line 3 asks for problems before any maths. Line 4 turns the answer into a plan: five manager questions. Line 5 forbids silent edits.</p><p>The full prompt is in the cheatsheet. Students can copy it for any file of their own.</p></template>
+</section>
+<!-- SLIDE 12 · s_bg_insights · 4 min -->
+<section class="slide" data-n="12">
+  <div class="kicker" style="--k:var(--amber)">Quick / under control #1</div>
+  <h2 class="title">“Find insights” works too. But the model picks the questions</h2>
   <div class="body" style="margin-top:10px;">
-    <div class="row" style="grid-template-columns:1.55fr 1fr;gap:34px;align-items:center;">
-      <div class="stack" style="gap:4px;">
-        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Northstar revenue by month, 2025</div>
-        <svg class="dia" viewBox="0 0 1000 520"><line x1="96" y1="476.0" x2="940" y2="476.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="482.0" text-anchor="end" font-size="17" fill="#6b7a90">0k</text><line x1="96" y1="367.0" x2="940" y2="367.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="373.0" text-anchor="end" font-size="17" fill="#6b7a90">100k</text><line x1="96" y1="258.0" x2="940" y2="258.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="264.0" text-anchor="end" font-size="17" fill="#6b7a90">200k</text><line x1="96" y1="149.0" x2="940" y2="149.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="155.0" text-anchor="end" font-size="17" fill="#6b7a90">300k</text><line x1="96" y1="40.0" x2="940" y2="40.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="46.0" text-anchor="end" font-size="17" fill="#6b7a90">400k</text><text x="96.0" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Jan</text><text x="172.7" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Feb</text><text x="249.5" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Mar</text><text x="326.2" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Apr</text><text x="402.9" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">May</text><text x="479.6" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Jun</text><text x="556.4" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Jul</text><text x="633.1" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Aug</text><text x="709.8" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Sep</text><text x="786.5" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Oct</text><text x="863.3" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Nov</text><text x="940.0" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">Dec</text><polyline points="96.0,320.4 172.7,310.4 249.5,276.5 326.2,280.2 402.9,252.6 479.6,270.8 556.4,289.4 633.1,276.1 709.8,261.7 786.5,235.5 863.3,122.5 940.0,69.0" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linejoin="round"/><circle cx="96.0" cy="320.4" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="172.7" cy="310.4" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="249.5" cy="276.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="326.2" cy="280.2" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="402.9" cy="252.6" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="479.6" cy="270.8" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="556.4" cy="289.4" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="633.1" cy="276.1" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="709.8" cy="261.7" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="786.5" cy="235.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="863.3" cy="122.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="940.0" cy="69.0" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><text x="96.0" y="302.4" text-anchor="start" font-size="21" font-weight="700" fill="#f1f5f9">$143k</text><text x="934.0" y="51.0" text-anchor="end" font-size="21" font-weight="700" fill="#f1f5f9">$373k</text><line x1="96.0" y1="320.4" x2="940.0" y2="320.4" stroke="#fbbf24" stroke-width="2" stroke-dasharray="7 6"/><line x1="962.0" y1="320.4" x2="962.0" y2="69.0" stroke="#fbbf24" stroke-width="3"/><text x="633.1" y="354.4" text-anchor="middle" font-size="24" font-weight="800" fill="#fbbf24">+161.7% from the January level</text><line x1="863.3" y1="122.5" x2="940.0" y2="69.0" stroke="#34d399" stroke-width="7" stroke-linecap="round"/><text x="845.3" y="118.5" text-anchor="end" font-size="24" font-weight="800" fill="#34d399">+15.1% vs November</text></svg>
-      </div>
-      <div class="stack" style="gap:20px;">
-        <div class="stat" style="--k:var(--amber)"><div class="n">+161.7%</div><div class="d">December vs January. January is the weakest month</div></div>
-        <div class="stat" style="--k:var(--green)"><div class="n">+15.1%</div><div class="d">December vs November. The peak already started in November</div></div>
-        <div class="stat" style="--k:var(--cyan)"><div class="n">27.7%</div><div class="d">of annual revenue came in November and December</div></div>
-        <div class="plaque"><b>Ask:</b> a percentage of which month, over what period?</div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:28px;align-items:start;"><div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--amber)"><span class="badge solid" style="--k:var(--amber)">Quick</span> “Here is the file. Find interesting insights.”</div><div class="shot " style="--k:var(--amber);"><img src="assets/v2/shots/b1_top.jpg" alt="" style="max-height:360px"></div><div class="shot " style="--k:var(--amber);"><img src="assets/v2/shots/b1_dup.jpg" alt="" style="max-height:80px"></div><div class="note" style="--k:var(--amber)">The model found Social and N2. But it chose the comparisons itself (quarters) and <b>kept the duplicate in the maths</b>.</div></div><div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">✓ Under control</span> Prompt 1: description + 5 questions + change nothing</div><div class="shot good" style="--k:var(--green);"><img src="assets/v2/shots/p1_questions.jpg" alt="" style="max-height:330px"></div><div class="note" style="--k:var(--green)">✓ 1,261 rows, period, duplicate · ✗ called 632 zero ad-spend values “missing” · ✗ missed the text date. <b>We take question 1.</b></div></div></div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>12 / 31</span></div>
+  <template class="notes"><p>⏱ 4 min. An honest result from 17 Oct: on “find interesting insights” ChatGPT found both main stories in a minute and a half — Social’s falling return and N2 returns. Models have become strong.</p><p>On the right: the answer to prompt 1. Say aloud what is right: 1,261 rows, period, duplicate. And what isn’t: “632 ad_spend values missing” — they are zeros, Email and Organic have no ads; the model missed the text date 10/05/2025. Ask back: “Missing or zeros?” Of the five questions we take the first, channels including ad spend — it matches the e-mail.</p><p>But look closer. The model chose the comparisons itself: quarters, half-years. It found the duplicate but wrote “calculations keep the original rows” — so the duplicate stayed in the numbers. Anna’s question “how did sales go this year” has no direct answer. The description prompt gives a plan and leaves the choice to you.</p></template>
+</section>
+<!-- SLIDE 13 · s_p2_anatomy · 3 min -->
+<section class="slide" data-n="13">
+  <div class="kicker" style="--k:var(--green)">Part 2 • prompt 2 line by line</div>
+  <h2 class="title">A formula in words: each line has a job</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="an"><div class="an-row" style="--k:var(--cyan)"><div class="an-n">1</div><div class="an-t">Add a sheet “Ad return” to the workbook:</div><div class="an-w">where the result appears</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">2</div><div class="an-t">by month … for Search and Social.</div><div class="an-w">the breakdown: time and channels</div></div><div class="an-row" style="--k:var(--amber)"><div class="an-n">3</div><div class="an-t">revenue, ad spend and revenue per $1 of ads.</div><div class="an-w">the metric: revenue ÷ spend</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">4</div><div class="an-t">Use Excel formulas, not pasted numbers.</div><div class="an-w">so you can check and recalculate</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">5</div><div class="an-t">Build a line chart</div><div class="an-w">the type for “how did it change”</div></div><div class="an-row" style="--k:var(--cyan)"><div class="an-n">6</div><div class="an-t">and let me download the .xlsx.</div><div class="an-w">the result is a file, not chat text</div></div></div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>13 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. This is question 1 from the model’s answer: which channels pay off including ad spend. Line by line: where the result goes — a new sheet; the breakdown — months and two ad channels; the metric — revenue per ad dollar, i.e. revenue divided by spend; formulas, not numbers — otherwise nothing to check; a line chart — because the question is “how did it change over time”; and a file as output.</p></template>
+</section>
+<!-- SLIDE 14 · s_bg_formulas · 3 min -->
+<section class="slide" data-n="14">
+  <div class="kicker" style="--k:var(--green)">Quick / under control #2</div>
+  <h2 class="title">Numbers in cells can’t be checked. Formulas can</h2>
+  <div class="body" style="margin-top:10px;gap:12px;">
+    <div class="row" style="grid-template-columns:330px 1fr;gap:20px;align-items:center;flex:0 0 auto;">
+      <div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--amber)"><span class="badge solid" style="--k:var(--amber)">Quick</span> Sheet from ChatGPT: plain numbers in the cells</div>
+        <div class="note" style="--k:var(--amber)">Where 5.39 comes from is invisible. Change the file — numbers don’t update.</div></div>
+      <div class="shot " style="--k:var(--amber);"><img src="assets/v2/shots/p2_roas_sheet.jpg" alt="" style="max-height:300px"></div>
+    </div>
+    <div class="row" style="grid-template-columns:330px 1fr;gap:20px;align-items:center;flex:0 0 auto;margin-top:14px;">
+      <div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">✓ Under control</span> Excel: a SUMIFS formula in the fx bar</div>
+        <div class="note" style="--k:var(--green)">You can see which columns are summed for which month. The fix is one phrase: “replace the numbers with formulas”.</div></div>
+      <div class="shot good" style="--k:var(--green);"><img src="assets/v2/shots/xl_fx_sumifs.jpg" alt=""></div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>14 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. Left: the real sheet ChatGPT returned in our run — numbers in the cells. Right: the same table in Excel, revenue as SUMIFS over the Sales sheet and return as =B2/C2. The numbers match, but only the right one can be checked.</p><p>Rule: click any result cell. See a number — ask “replace the numbers with formulas”. Reference workbook: demo_v2/excel_demo/northstar_2025_formulas_EN.xlsx.</p></template>
+</section>
+<!-- SLIDE 15 · s_demo1 · 5 min -->
+<section class="slide" data-n="15">
+  <div class="kicker" style="--k:var(--green)">Demo 1 live • 5 minutes</div>
+  <h2 class="title">We do it live: from the file to a formula in a cell</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="row" style="grid-template-columns:1.15fr 1fr;gap:36px;align-items:center;">
+      <ol class="checklist lg">
+        <li><span><b>Upload</b> northstar_2025.xlsx to ChatGPT</span></li>
+        <li><span><b>Prompt 1</b> — describe the file (slide 11)</span></li>
+        <li><span><b>Prompt 2</b> — the “Ad return” sheet (slide 13)</span></li>
+        <li><span><b>Download</b> the workbook and open it in Excel</span></li>
+        <li><span><b>Click</b> an ad-return cell: a number → “replace the numbers with formulas”</span></li>
+        <li><span><b>Out of time?</b> Show the ready frames from slide 14</span></li>
+      </ol>
+      <div class="stack" style="gap:16px;">
+        <div class="plaque g"><b>What you should get:</b> Search earns about $5 per ad dollar all year; Social drops to about $2 from July.</div>
+        <div class="note" style="--k:var(--cyan)">Have Claude or Copilot in Excel? The same prompt 2 in the side panel, no download.</div>
+        <div class="note" style="--k:var(--amber)">Answer takes over 90 seconds — show the frame and move on.</div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>06 / 19</span></div>
-  <template class="notes"><p>⏱ 3 min. The file’s first story: seasonality. December vs January: +161.7%. December vs November: +15.1%. Both numbers are right, but they sound very different.</p><p>Models happily write “160% growth”. Your job is to ask: from what base? January after the holidays is the weakest month; November and December are sales season. Only the monthly chart shows this; the annual total doesn’t.</p><p>The chart is built from the lesson file when the deck is generated; numbers match demo_v2/answers.md.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>15 / 31</span></div>
+  <template class="notes"><p>⏱ 5 min (2 prompts + open the workbook; the walkthrough was slides 11–14). Follow runbook L08_04. Upload northstar_2025.xlsx to ChatGPT. Steps are on the slide; prompt texts are in the runbook and on slides 11 and 13.</p><p>Key words in the prompt: “Excel formulas, not pasted numbers”. Without them the model often pastes computed values, which can’t be checked in the workbook. Download the file, open it in Excel and click an ad-return cell. The formula bar should show revenue divided by spend, e.g. =B2/C2. Revenue and spend should be formulas too (SUMIFS over the Sales sheet).</p><p>What you will see: Search returns about 5.4 per $1 all year. Social drops from about 4 to 2 in July. That is the second story from Anna’s e-mail; we come back to it after the break.</p><p>Ready fallback frames are on slide 14: the real sheet from the workbook ChatGPT returned: in our run the cells held numbers, not formulas. Below is the same table in Excel where revenue is a SUMIFS over the Sales sheet and the return is =B2/C2, with a chart built on those cells. That is how the workbook should look after “replace the numbers with formulas”. Reference workbook: demo_v2/excel_demo/northstar_2025_formulas_EN.xlsx. If you have Claude for Excel or Copilot, show the same request in the side panel, 90 seconds. If the service takes longer than 90 seconds, show the ready frames and move on.</p></template>
 </section>
-<!-- SLIDE 07 · s_charts · 4 min -->
-<section class="slide" data-n="7">
-  <div class="kicker">Charts</div>
+<!-- SLIDE 16 · s_bg_growth · 4 min -->
+<section class="slide" data-n="16">
+  <div class="kicker" style="--k:var(--amber)">Weak / good • seasonality</div>
+  <h2 class="title">“One number for the slide” — and the model picked the loudest</h2>
+  <div class="body" style="margin-top:10px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:28px;align-items:start;">
+      <div class="stack" style="gap:8px;">
+        <div class="bg-q" style="--k:var(--red)"><span class="badge solid" style="--k:var(--red)">✗ Weak</span> “How much did sales grow this year? One number for the slide.”</div>
+        <div class="shot bad" style="--k:var(--red);"><img src="assets/v2/shots/b3_bad.jpg" alt="" style="max-height:120px"></div>
+        <div class="note" style="--k:var(--red)">+161.7% is December vs January. January is the weakest month, December is sales season. It sounds like growth; it’s the season.</div>
+        <div class="cap" style="font-size:20px;font-weight:700;color:var(--fg);margin-top:6px;">Revenue by month</div>
+        <svg class="dia" viewBox="0 0 1000 380"><line x1="96" y1="336.0" x2="940" y2="336.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="342.0" text-anchor="end" font-size="17" fill="#6b7a90">0k</text><line x1="96" y1="262.0" x2="940" y2="262.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="268.0" text-anchor="end" font-size="17" fill="#6b7a90">100k</text><line x1="96" y1="188.0" x2="940" y2="188.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="194.0" text-anchor="end" font-size="17" fill="#6b7a90">200k</text><line x1="96" y1="114.0" x2="940" y2="114.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="120.0" text-anchor="end" font-size="17" fill="#6b7a90">300k</text><line x1="96" y1="40.0" x2="940" y2="40.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="46.0" text-anchor="end" font-size="17" fill="#6b7a90">400k</text><text x="96.0" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Jan</text><text x="172.7" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Feb</text><text x="249.5" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Mar</text><text x="326.2" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Apr</text><text x="402.9" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">May</text><text x="479.6" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Jun</text><text x="556.4" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Jul</text><text x="633.1" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Aug</text><text x="709.8" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Sep</text><text x="786.5" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Oct</text><text x="863.3" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Nov</text><text x="940.0" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">Dec</text><polyline points="96.0,230.4 172.7,223.6 249.5,200.5 326.2,203.1 402.9,184.3 479.6,196.7 556.4,209.3 633.1,200.3 709.8,190.5 786.5,172.7 863.3,96.0 940.0,59.7" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linejoin="round"/><circle cx="96.0" cy="230.4" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="172.7" cy="223.6" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="249.5" cy="200.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="326.2" cy="203.1" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="402.9" cy="184.3" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="479.6" cy="196.7" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="556.4" cy="209.3" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="633.1" cy="200.3" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="709.8" cy="190.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="786.5" cy="172.7" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="863.3" cy="96.0" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="940.0" cy="59.7" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><text x="96.0" y="212.4" text-anchor="start" font-size="21" font-weight="700" fill="#f1f5f9">$143k</text><text x="934.0" y="41.7" text-anchor="end" font-size="21" font-weight="700" fill="#f1f5f9">$373k</text><line x1="96.0" y1="230.4" x2="940.0" y2="230.4" stroke="#fbbf24" stroke-width="2" stroke-dasharray="7 6"/><line x1="962.0" y1="230.4" x2="962.0" y2="59.7" stroke="#fbbf24" stroke-width="3"/><text x="633.1" y="264.4" text-anchor="middle" font-size="24" font-weight="800" fill="#fbbf24">+161.7% from the January level</text><line x1="863.3" y1="96.0" x2="940.0" y2="59.7" stroke="#34d399" stroke-width="7" stroke-linecap="round"/><text x="845.3" y="92.0" text-anchor="end" font-size="24" font-weight="800" fill="#34d399">+15.1% vs November</text></svg>
+      </div>
+      <div class="stack" style="gap:8px;">
+        <div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">✓ Good</span> “Compute growth three ways, give the base and period for each. Which number goes on the slide and why?”</div>
+        <div class="shot good" style="--k:var(--green);"><img src="assets/v2/shots/b3_table.jpg" alt="" style="max-height:420px"></div>
+        <div class="note" style="--k:var(--green)">Three numbers with their base and a verdict: “the second half is about 40% above the first”.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>16 / 31</span></div>
+  <template class="notes"><p>⏱ 4 min. A real run from 17 Oct. Asked for “one number for the slide”, the model said: “+161.7% — December revenue vs January”. The number is right, but January after the holidays is the weakest month and December is sales season. A manager will read it as the business growing 2.5×.</p><p>The good prompt asks for three ways and the base for each. The model itself proposed the fair number: second half vs first, about 40%, and noted there is no 2024 data, so “year over year” can’t be claimed. Bottom left: the chart from our file showing both bases.</p><p>The first prompt’s text on the slide is retyped: in the chat window it got duplicated while typing; the answer doesn’t depend on it.</p></template>
+</section>
+<!-- SLIDE 17 · s_charts · 3 min -->
+<section class="slide" data-n="17">
+  <div class="kicker">Part 2 • charts</div>
   <h2 class="title">Five questions, five charts — all from our file</h2>
   <div class="body" style="margin-top:16px;">
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;"><div class="chartbox"><div class="q">How did it change over time?</div><div class="c">line</div><svg viewBox="0 0 300 250"><line x1="44" y1="226.0" x2="292" y2="226.0" stroke="#2b3648" stroke-width="1"/><text x="34" y="232.0" text-anchor="end" font-size="14" fill="#6b7a90">0k</text><line x1="44" y1="118.0" x2="292" y2="118.0" stroke="#2b3648" stroke-width="1"/><text x="34" y="124.0" text-anchor="end" font-size="14" fill="#6b7a90">200k</text><line x1="44" y1="10.0" x2="292" y2="10.0" stroke="#2b3648" stroke-width="1"/><text x="34" y="16.0" text-anchor="end" font-size="14" fill="#6b7a90">400k</text><polyline points="44.0,148.9 66.5,144.0 89.1,127.2 111.6,129.0 134.2,115.3 156.7,124.4 179.3,133.5 201.8,127.0 224.4,119.8 246.9,106.8 269.5,50.9 292.0,24.3" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round"/><circle cx="44.0" cy="148.9" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="66.5" cy="144.0" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="89.1" cy="127.2" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="111.6" cy="129.0" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="134.2" cy="115.3" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="156.7" cy="124.4" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="179.3" cy="133.5" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="201.8" cy="127.0" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="224.4" cy="119.8" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="246.9" cy="106.8" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="269.5" cy="50.9" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="292.0" cy="24.3" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><text x="44.0" y="244" text-anchor="start" font-size="15" fill="#a3b1c4">Jan</text><text x="292.0" y="244" text-anchor="end" font-size="15" fill="#a3b1c4">Dec</text></svg><div class="f">peak in Nov–Dec</div></div><div class="chartbox"><div class="q">Which is bigger?</div><div class="c">sorted bars</div><svg viewBox="0 0 300 250"><line x1="10" y1="220" x2="294" y2="220" stroke="#2b3648" stroke-width="2"/><rect x="16.0" y="26.0" width="51.5" height="194.0" rx="3" fill="#38bdf8"/><text x="41.8" y="22.0" text-anchor="middle" font-size="13" fill="#f1f5f9">877k</text><text x="41.8" y="240" text-anchor="middle" font-size="14" fill="#a3b1c4">Electr.</text><rect x="83.5" y="74.0" width="51.5" height="146.0" rx="3" fill="#5f6e84"/><text x="109.2" y="70.0" text-anchor="middle" font-size="13" fill="#f1f5f9">660k</text><text x="109.2" y="240" text-anchor="middle" font-size="14" fill="#a3b1c4">Home</text><rect x="151.0" y="91.3" width="51.5" height="128.7" rx="3" fill="#5f6e84"/><text x="176.8" y="87.3" text-anchor="middle" font-size="13" fill="#f1f5f9">582k</text><text x="176.8" y="240" text-anchor="middle" font-size="14" fill="#a3b1c4">Sports</text><rect x="218.5" y="131.5" width="51.5" height="88.5" rx="3" fill="#5f6e84"/><text x="244.2" y="127.5" text-anchor="middle" font-size="13" fill="#f1f5f9">400k</text><text x="244.2" y="240" text-anchor="middle" font-size="14" fill="#a3b1c4">Books</text></svg><div class="f">Electronics leads revenue</div></div><div class="chartbox"><div class="q">How are values spread?</div><div class="c">histogram</div><svg viewBox="0 0 300 250"><line x1="10" y1="224" x2="294" y2="224" stroke="#2b3648" stroke-width="2"/><rect x="12.0" y="214.7" width="11.0" height="9.3" fill="#38bdf8"/><rect x="26.0" y="165.9" width="11.0" height="58.1" fill="#38bdf8"/><rect x="40.0" y="24.0" width="11.0" height="200.0" fill="#38bdf8"/><rect x="54.0" y="143.9" width="11.0" height="80.1" fill="#38bdf8"/><rect x="68.0" y="213.0" width="11.0" height="11.0" fill="#38bdf8"/><rect x="82.0" y="222.0" width="11.0" height="2.0" fill="#38bdf8"/><rect x="96.0" y="224.0" width="11.0" height="0.0" fill="#38bdf8"/><rect x="110.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="124.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="138.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="152.0" y="222.0" width="11.0" height="2.0" fill="#f87171"/><rect x="166.0" y="222.0" width="11.0" height="2.0" fill="#f87171"/><rect x="180.0" y="222.0" width="11.0" height="2.0" fill="#f87171"/><rect x="194.0" y="221.7" width="11.0" height="2.3" fill="#f87171"/><rect x="208.0" y="222.0" width="11.0" height="2.0" fill="#f87171"/><rect x="222.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="236.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="250.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="264.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="278.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><text x="12" y="244" font-size="13" fill="#a3b1c4">0%</text><text x="292" y="244" text-anchor="end" font-size="13" fill="#a3b1c4">40%+</text></svg><div class="f">red tail: 22 rows with 14%+ returns</div></div><div class="chartbox"><div class="q">Are two numbers related?</div><div class="c">scatter</div><svg viewBox="0 0 300 250"><line x1="30" y1="226" x2="294" y2="226" stroke="#2b3648" stroke-width="2"/><line x1="30" y1="8" x2="30" y2="226" stroke="#2b3648" stroke-width="2"/><circle cx="69.3" cy="149.4" r="5" fill="#5f6e84"/><circle cx="71.0" cy="147.3" r="5" fill="#5f6e84"/><circle cx="79.3" cy="132.4" r="5" fill="#5f6e84"/><circle cx="81.9" cy="128.7" r="5" fill="#5f6e84"/><circle cx="88.1" cy="116.2" r="5" fill="#5f6e84"/><circle cx="83.3" cy="126.1" r="5" fill="#5f6e84"/><circle cx="75.8" cy="139.5" r="5" fill="#5f6e84"/><circle cx="75.5" cy="139.1" r="5" fill="#5f6e84"/><circle cx="86.9" cy="119.9" r="5" fill="#5f6e84"/><circle cx="92.9" cy="106.8" r="5" fill="#5f6e84"/><circle cx="120.8" cy="53.2" r="5" fill="#5f6e84"/><circle cx="133.8" cy="24.7" r="5" fill="#5f6e84"/><circle cx="75.4" cy="159.3" r="5" fill="#38bdf8"/><circle cx="80.8" cy="152.9" r="5" fill="#38bdf8"/><circle cx="89.2" cy="139.8" r="5" fill="#38bdf8"/><circle cx="79.6" cy="155.6" r="5" fill="#38bdf8"/><circle cx="94.8" cy="133.5" r="5" fill="#38bdf8"/><circle cx="88.3" cy="142.6" r="5" fill="#38bdf8"/><circle cx="133.8" cy="152.1" r="5" fill="#fbbf24"/><circle cx="148.7" cy="140.6" r="5" fill="#fbbf24"/><circle cx="161.4" cy="130.9" r="5" fill="#fbbf24"/><circle cx="158.0" cy="132.4" r="5" fill="#fbbf24"/><circle cx="241.2" cy="72.7" r="5" fill="#fbbf24"/><circle cx="268.2" cy="53.6" r="5" fill="#fbbf24"/><text x="294" y="244" text-anchor="end" font-size="13" fill="#a3b1c4">spend →</text><text x="36" y="20" font-size="13" fill="#a3b1c4">revenue</text></svg><div class="f"><b style="color:#5f6e84">●</b> Search <b style="color:#38bdf8">●</b> Social Jan–Jun <b style="color:#fbbf24">●</b> Social Jul–Dec: spend up, revenue not</div></div><div class="chartbox"><div class="q">What makes up the whole?</div><div class="c">100% bars</div><svg viewBox="0 0 300 250"><rect x="16.0" y="160.1" width="49.5" height="63.9" fill="#38bdf8" opacity=".9"/><rect x="16.0" y="102.0" width="49.5" height="58.0" fill="#fbbf24" opacity=".9"/><rect x="16.0" y="60.3" width="49.5" height="41.7" fill="#34d399" opacity=".9"/><rect x="16.0" y="14.0" width="49.5" height="46.3" fill="#c084fc" opacity=".9"/><text x="40.8" y="242" text-anchor="middle" font-size="13" fill="#a3b1c4">Q1</text><rect x="83.5" y="158.2" width="49.5" height="65.8" fill="#38bdf8" opacity=".9"/><rect x="83.5" y="105.5" width="49.5" height="52.8" fill="#fbbf24" opacity=".9"/><rect x="83.5" y="63.8" width="49.5" height="41.7" fill="#34d399" opacity=".9"/><rect x="83.5" y="14.0" width="49.5" height="49.8" fill="#c084fc" opacity=".9"/><text x="108.2" y="242" text-anchor="middle" font-size="13" fill="#a3b1c4">Q2</text><rect x="151.0" y="161.8" width="49.5" height="62.2" fill="#38bdf8" opacity=".9"/><rect x="151.0" y="105.2" width="49.5" height="56.6" fill="#fbbf24" opacity=".9"/><rect x="151.0" y="63.7" width="49.5" height="41.5" fill="#34d399" opacity=".9"/><rect x="151.0" y="14.0" width="49.5" height="49.7" fill="#c084fc" opacity=".9"/><text x="175.8" y="242" text-anchor="middle" font-size="13" fill="#a3b1c4">Q3</text><rect x="218.5" y="158.1" width="49.5" height="65.9" fill="#38bdf8" opacity=".9"/><rect x="218.5" y="102.1" width="49.5" height="56.0" fill="#fbbf24" opacity=".9"/><rect x="218.5" y="60.7" width="49.5" height="41.4" fill="#34d399" opacity=".9"/><rect x="218.5" y="14.0" width="49.5" height="46.7" fill="#c084fc" opacity=".9"/><text x="243.2" y="242" text-anchor="middle" font-size="13" fill="#a3b1c4">Q4</text></svg><div class="f">revenue shares by quarter: <b style="color:#38bdf8">●</b> Search <b style="color:#fbbf24">●</b> Social <b style="color:#34d399">●</b> Email <b style="color:#c084fc">●</b> Organic</div></div></div>
-    <div class="plaque" style="margin-top:22px;"><b>Ask like this:</b> “Build one chart that answers …, label the axes and units.” Name the question first; the model will pick the chart type.</div>
+    <div class="plaque" style="margin-top:22px;"><b>Ask like this:</b> “Build one chart that answers …, label the axes and units.” Name the chart type if you know it; otherwise the model will suggest one.</div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>07 / 19</span></div>
-  <template class="notes"><p>⏱ 4 min. Five typical questions and a chart for each, all built from the Northstar file. Time — line: the year-end peak is visible. Comparison — sorted bars, axis from zero. Distribution — histogram: most rows have 2–8% returns, but there is a tail at 14% and above; that is warehouse N2. Relationship — scatter: each dot is one channel-month; Social’s amber second-half dots moved right (more spend) but not up. Shares — 100% bars, no more than 4–5 parts.</p><p>AI happily makes a “six-chart dashboard”. Ask for one chart per question; it is easier to check and to present.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>17 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. Five typical questions and a chart for each, all built from the Northstar file. Time — line: the year-end peak is visible. Comparison — sorted bars, axis from zero. Distribution — histogram: most rows have 2–8% returns, but there is a tail at 14% and above; that is warehouse N2. Relationship — scatter: each dot is one channel-month; Social’s amber second-half dots moved right (more spend) but not up. Shares — 100% bars, no more than 4–5 parts.</p><p>AI happily makes a “six-chart dashboard”. Ask for one chart per question; it is easier to check and to present.</p></template>
 </section>
-<!-- SLIDE 08 · s_break · 5 min -->
-<section class="slide" data-n="8">
+<!-- SLIDE 18 · s_break · 5 min -->
+<section class="slide" data-n="18">
   <div class="brk">
     <div class="kicker" style="--k:var(--amber)">Break</div>
     <h2 class="title">5 minutes</h2>
@@ -497,23 +651,25 @@ svg.dia text { font-family: var(--body); }
     <div style="display:flex;gap:14px;"><button class="btn primary" id="timerStart">START 5 MIN</button><button class="btn" id="timerReset">RESET</button></div>
     <p>Next: a demo in a chat with a file — returns, reviews, a slide-ready chart. Then a large database, a one-page report and homework.</p>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>08 / 19</span></div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>18 / 31</span></div>
   <template class="notes"><p>⏱ 5 min. Press “Start”. Keep the chat open: after the break we continue in it, because prompt 6 builds on the charts from demos 1 and 2.</p></template>
 </section>
-<!-- SLIDE 09 · s_demo2 · 12 min -->
-<section class="slide" data-n="9">
-  <div class="kicker" style="--k:var(--violet)">Demo 2 • chat with a file • 12 minutes</div>
+<!-- SLIDE 19 · s_p34_anatomy · 5 min -->
+<section class="slide" data-n="19">
+  <div class="kicker" style="--k:var(--violet)">Part 3 • demo 2 • prompts 3 and 4</div>
   <h2 class="title">6% returns for the year. One cell shows 24.8%</h2>
-  <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:0.85fr 1.15fr;gap:26px;align-items:start;"><div class="stack" style="gap:10px;"><div class="pr " style="--k:var(--violet)"><span class="no">Prompt 3</span>Compute the return rate by region and category for September–December and show it as a heatmap.</div><div class="shot " style="--k:var(--violet);"><div class="lbl" style="--k:var(--violet)">heatmap</div><img src="assets/v2/shots/p3_heatmap.jpg" alt="" style="max-height:420px"></div></div><div class="stack" style="gap:10px;"><div class="pr " style="--k:var(--violet)"><span class="no">Prompt 4</span>For the warehouse with the highest return rate, sort the reviews into themes and compare it with the other warehouses. Show 5 example reviews.</div><div class="shot " style="--k:var(--violet);"><div class="lbl" style="--k:var(--violet)">review themes</div><img src="assets/v2/shots/p3_themes_before.jpg" alt=""></div><div class="pr " style="--k:var(--violet)"><span class="no">Prompt 5</span>Rework the chart for a slide. Full text and result on slide 11.</div></div></div>
-    <div class="plaque g" style="margin-top:14px;"><b>Teams chat task:</b> which number on the heatmap would you check first?</div>
+  <div class="body" style="margin-top:12px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:26px;align-items:start;">
+      <div class="stack" style="gap:8px;"><div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Prompt 3 — the table</div><div class="an"><div class="an-row" style="--k:var(--amber)"><div class="an-n">1</div><div class="an-t">Compute the return rate</div><div class="an-w">metric: returns ÷ orders</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">2</div><div class="an-t">by region and category</div><div class="an-w">breakdown: two axes</div></div><div class="an-row" style="--k:var(--cyan)"><div class="an-n">3</div><div class="an-t">for September–December</div><div class="an-w">the period Anna asked about</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">4</div><div class="an-t">and show it as a heatmap.</div><div class="an-w">type: the outlier shows as colour</div></div></div><div class="shot " style="--k:var(--violet);"><div class="lbl" style="--k:var(--violet)">result: 24.8% in one cell</div><img src="assets/v2/shots/p3_heatmap.jpg" alt="" style="max-height:260px"></div></div>
+      <div class="stack" style="gap:8px;"><div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Prompt 4 — the text</div><div class="an"><div class="an-row" style="--k:var(--amber)"><div class="an-n">1</div><div class="an-t">For the warehouse with the highest return rate</div><div class="an-w">the model finds the slice</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">2</div><div class="an-t">sort the reviews into themes</div><div class="an-w">text → categories</div></div><div class="an-row" style="--k:var(--cyan)"><div class="an-n">3</div><div class="an-t">and compare with the other warehouses.</div><div class="an-w">the base for comparison</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">4</div><div class="an-t">Show 5 example reviews.</div><div class="an-w">a check by eye</div></div></div><div class="shot " style="--k:var(--violet);"><div class="lbl" style="--k:var(--violet)">result: N2 vs other review themes · prompt 5 → slide 21</div><img src="assets/v2/shots/p3_themes_before.jpg" alt="" style="max-height:260px"></div></div>
+    </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>09 / 19</span></div>
-  <template class="notes"><p>⏱ 12 min (3 prompts). Same chat, the file is already uploaded. After each answer open the code: the “Analysis complete” block or the code button above the chart.</p><p>Prompt 3: the heatmap. The overall return rate is about 6%, but one cell lights up: North × Electronics — 24.8%. The rest are about 5%. The annual total hides it.</p><p>Prompt 4: reviews. The model picked warehouse N2 by itself and sorted reviews into themes. “Packaging / damage” is 49% at N2 and 12% elsewhere. The text explains the number: parcels arrive damaged.</p><p>Prompt 5: a slide-ready chart, covered in detail two slides on. If any prompt takes longer than 90 seconds, show the ready frame and move on.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>19 / 31</span></div>
+  <template class="notes"><p>⏱ 5 min. The e-mail’s third question is autumn returns. Prompt 3 works with the table: metric, breakdown, period, chart type. Prompt 4 works with text: the model finds the worst warehouse, sorts reviews into themes and compares with the rest. “Show 5 examples” lets you check the themes by eye.</p><p>Demo: same chat, the file is already uploaded. Open the code after each answer (the “Analysis complete” block or the code button above the chart). Under the breakdown are the real results: one heatmap cell lights up, North × Electronics at 24.8% vs about 5%. That is warehouse N2. Review themes: “packaging / damage” is 49% at N2 and 12% elsewhere. Answer over 90 seconds — show the frame.</p></template>
 </section>
-<!-- SLIDE 10 · s_found · 4 min -->
-<section class="slide" data-n="10">
-  <div class="kicker" style="--k:var(--red)">What we found</div>
+<!-- SLIDE 20 · s_found · 3 min -->
+<section class="slide" data-n="20">
+  <div class="kicker" style="--k:var(--red)">Part 3 • what we found</div>
   <h2 class="title">Two problems the annual total doesn’t show</h2>
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;align-items:stretch;">
@@ -534,12 +690,12 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>10 / 19</span></div>
-  <template class="notes"><p>⏱ 4 min. Two findings from the demo, redrawn from the data. Left, Social: from July ad spend nearly tripled (first half $69,402, second $197,009) while revenue grew 43%. Each ad dollar now brings half as much. The annual total looks fine: revenue grows.</p><p>Right, warehouse N2: until August returns match everyone else; from September about a quarter of orders. Reviews explain why: crushed boxes, broken screens. The numbers say where; the text says why.</p><p>To avoid confusion: warehouse N2 is the North × Electronics cell from the heatmap. The cell shows 24.8% for September–December; the monthly line is about 26% in some months.</p><p>Ask the chat: “What would you suggest to Anna for each finding?” We’ll discuss “cut Social” on slide 16.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>20 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. Two findings from the demo, redrawn from the data. Left, Social: from July ad spend nearly tripled (first half $69,402, second $197,009) while revenue grew 43%. Each ad dollar now brings half as much. The annual total looks fine: revenue grows.</p><p>Right, warehouse N2: until August returns match everyone else; from September about a quarter of orders. Reviews explain why: crushed boxes, broken screens. The numbers say where; the text says why.</p><p>To avoid confusion: warehouse N2 is the North × Electronics cell from the heatmap. The cell shows 24.8% for September–December; the monthly line is about 26% in some months.</p><p>Ask the chat: “What would you suggest to Anna for each finding?” We cover “cut Social” on slide 23.</p></template>
 </section>
-<!-- SLIDE 11 · s_makeover · 4 min -->
-<section class="slide" data-n="11">
-  <div class="kicker" style="--k:var(--violet)">A slide-ready chart</div>
+<!-- SLIDE 21 · s_makeover · 3 min -->
+<section class="slide" data-n="21">
+  <div class="kicker" style="--k:var(--violet)">Part 3 • a slide-ready chart</div>
   <h2 class="title">You edit a chart with words, like text</h2>
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:0.75fr 1.25fr;gap:26px;align-items:center;">
@@ -557,12 +713,12 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>11 / 19</span></div>
-  <template class="notes"><p>⏱ 4 min. This is prompt 5 from the demo. Left: the chart the model builds by default — a topic title, a legend, two bright colours, small labels. Right: the same chart after one prompt. The right one goes into a manager’s slide.</p><p>The five rules in the prompt work for any chart: title = finding; sorted; labels on the bars; nothing extra (legend, grid); one accent colour. Save the prompt; it is in the cheatsheet.</p><p>Look closely at the numbers: 49% became 46%. That is the next slide.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>21 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. This is prompt 5 from the demo. Left: the chart the model builds by default — a topic title, a legend, two bright colours, small labels. Right: the same chart after one prompt. The right one goes into a manager’s slide.</p><p>The five rules in the prompt work for any chart: title = finding; sorted; labels on the bars; nothing extra (legend, grid); one accent colour. Save the prompt; it is in the cheatsheet.</p><p>Look closely at the numbers: 49% became 46%. That is the next slide.</p></template>
 </section>
-<!-- SLIDE 12 · s_check · 3 min -->
-<section class="slide" data-n="12">
-  <div class="kicker" style="--k:var(--green)">Check • 60 seconds</div>
+<!-- SLIDE 22 · s_check · 4 min -->
+<section class="slide" data-n="22">
+  <div class="kicker" style="--k:var(--green)">Part 3 • a 60-second check</div>
   <h2 class="title">Three versions of a chart, three different numbers. Compare after every redo</h2>
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1.15fr 1fr;gap:36px;align-items:stretch;">
@@ -584,40 +740,67 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>12 / 19</span></div>
-  <template class="notes"><p>⏱ 3 min. We only asked for a new look. The model also re-classified the themes: praise of packaging (“neatly packed”) moved from “damage” to “product OK”. The share became 46%, and 44% in the final report. By the labels we used to build the practice file, 53 of 87 reviews are about damage — 61%. The model searches by keywords and misses complaints written in other words.</p><p>The N2 conclusion doesn’t change: there are many times more damage complaints there than elsewhere. What changes is the number that goes to the manager. So after every redo compare a couple of numbers with the previous version, and check review themes by reading a sample.</p><p>A 60-second check in three steps. Rows: how many before, how many after. One point: find one number from the chart in the source file by eye. Percent base: from which month, over what period.</p><p>For the curious, an experiment from lesson prep: on a small table, models without code got the sum right but “fixed” a row with 66 returns on 62 orders to 6, while the source said 4. Tell the model’s guess apart from the data. Details: demo_assets/no_code_experiment_2026-10-13.md.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>22 / 31</span></div>
+  <template class="notes"><p>⏱ 4 min. We only asked for a new look. The model also re-classified the themes: praise of packaging (“neatly packed”) moved from “damage” to “product OK”. The share became 46%, and 44% in the final report. By the labels we used to build the practice file, 53 of 87 reviews are about damage — 61%. The model searches by keywords and misses complaints written in other words.</p><p>If asked about “the others”: the other warehouses were 12% in the first chart and 5% after restyling. The model re-counted both groups.</p><p>The N2 conclusion doesn’t change: there are many times more damage complaints there than elsewhere. What changes is the number that goes to the manager. So after every redo compare a couple of numbers with the previous version, and check review themes by reading a sample.</p><p>A 60-second check in three steps. Rows: how many before, how many after. One point: find one number from the chart in the source file by eye. Percent base: from which month, over what period.</p><p>For the curious, an experiment from lesson prep: on a small table, models without code got the sum right but “fixed” a row with 66 returns on 62 orders to 6, while the source said 4. Tell the model’s guess apart from the data. Details: demo_assets/no_code_experiment_2026-10-13.md.</p></template>
 </section>
-<!-- SLIDE 13 · s_db · 5 min -->
-<section class="slide" data-n="13">
-  <div class="kicker" style="--k:var(--amber)">A large database • cooking YouTube channels</div>
-  <h2 class="title">The database updates daily: don’t export a file, ask the database</h2>
+<!-- SLIDE 23 · s_bg_social · 3 min -->
+<section class="slide" data-n="23">
+  <div class="kicker" style="--k:var(--red)">Part 3 • quick / under control #3</div>
+  <h2 class="title">The first line is a scenario, not a forecast. Read the assumptions</h2>
+  <div class="body" style="margin-top:10px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:28px;align-items:start;"><div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--amber)"><span class="badge solid" style="--k:var(--amber)">Quick</span> The first line of the answer to “If we cut the Social budget in half from January, how much do we save and how much revenue do we lose per quarter?”</div><div class="shot " style="--k:var(--amber);"><img src="assets/v2/shots/b5_top.jpg" alt="" style="max-height:290px"></div><div class="note" style="--k:var(--amber)">“Revenue loss — 122.5k” in the first line. That assumes revenue falls <b>together with</b> the budget.</div></div><div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">✓ Under control</span> The same answer, paragraphs below</div><div class="shot good" style="--k:var(--green);"><img src="assets/v2/shots/b5_reco.jpg" alt="" style="max-height:330px"></div><div class="note" style="--k:var(--green)">The model itself says: the file can’t show the real loss; you need a test with a control group.</div></div></div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>23 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. After the Social finding it’s tempting to cut the budget at once. We asked the model directly. The answer is good if you read to the end: the first line says “revenue loss 122.5k”, but that is a scenario “if revenue falls in proportion to the budget”. Further down the model says the file can’t show the real loss and suggests a test on part of the audience.</p><p>The lesson: a manager reads the first line. Before passing a number on, find the words “assuming”, “if”, “scenario” in the answer. The table says what happened. Only a test shows what will happen.</p></template>
+</section>
+<!-- SLIDE 24 · s_db_schema · 2 min -->
+<section class="slide" data-n="24">
+  <div class="kicker" style="--k:var(--amber)">Part 4 • a large database</div>
+  <h2 class="title">The channel database: three linked tables, updated daily</h2>
+  <div class="body" style="margin-top:14px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;"><div class="door" style="--k:var(--cyan)"><div class="h" style="font-family:var(--mono);font-size:22px;">channels</div><div class="stat" style="--k:var(--cyan)"><div class="n" style="font-size:40px;">26,544</div><div class="d">rows · row = one channel</div></div><div class="code" style="font-size:17px;padding:10px 12px;">title<br>subscriber_count<br>country<br>language</div></div><div class="door" style="--k:var(--violet)"><div class="h" style="font-family:var(--mono);font-size:22px;">videos</div><div class="stat" style="--k:var(--violet)"><div class="n" style="font-size:40px;">416,809</div><div class="d">rows · row = one video</div></div><div class="code" style="font-size:17px;padding:10px 12px;">channel_id → channels<br>published_at<br>duration_seconds<br>tags</div></div><div class="door" style="--k:var(--amber)"><div class="h" style="font-family:var(--mono);font-size:22px;">video_stat_observations</div><div class="stat" style="--k:var(--amber)"><div class="n" style="font-size:40px;">668,665</div><div class="d">rows · row = one view measurement</div></div><div class="code" style="font-size:17px;padding:10px 12px;">video_id → videos<br>observed_at<br>views</div></div></div>
+    <div class="flow" style="margin-top:20px;justify-content:center;gap:14px;"><div class="box">channels</div><div class="arr">→</div><div class="box">videos</div><div class="arr">→</div><div class="box">video_stat_observations</div></div>
+    <div class="cap" style="margin-top:12px;text-align:center;">An arrow is a link: a video holds its channel id, a measurement holds its video id. For the lesson: an anonymised sample of 1,943 channels and 46,132 videos.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>24 / 31</span></div>
+  <template class="notes"><p>⏱ 2 min. The course author’s working database: cooking YouTube channels collected via the official API. Three tables: channels (26,544), videos (416,809) and daily view measurements (668,665). They are linked: each video holds its channel id, each measurement its video id.</p><p>Why not a file: there are three linked tables updated daily. Exporting them for every question is impractical. It’s simpler to ask the database with a query — the next slide.</p></template>
+</section>
+<!-- SLIDE 25 · s_sql_anatomy · 3 min -->
+<section class="slide" data-n="25">
+  <div class="kicker" style="--k:var(--amber)">Part 4 • SQL line by line</div>
+  <h2 class="title">SQL reads almost like a plain sentence</h2>
+  <div class="body" style="margin-top:14px;">
+    <div class="pr " style="--k:var(--amber)"><span class="no">Prompt</span>The database has a videos table: length and views of every video. Write an SQL query: which video length gets the most views? Explain every line.</div>
+    <div style="margin-top:14px;"><div class="an"><div class="an-row" style="--k:var(--cyan)"><div class="an-n">1</div><div class="an-t">SELECT duration_bucket,</div><div class="an-w">what to show: length</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">2</div><div class="an-t">COUNT(*) AS videos,</div><div class="an-w">how many videos in the group</div></div><div class="an-row" style="--k:var(--amber)"><div class="an-n">3</div><div class="an-t">MEDIAN(views) AS typical</div><div class="an-w">typical views: half above, half below</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">4</div><div class="an-t">FROM videos</div><div class="an-w">from which table</div></div><div class="an-row" style="--k:var(--cyan)"><div class="an-n">5</div><div class="an-t">GROUP BY duration_bucket;</div><div class="an-w">what to group by</div></div></div></div>
+    <div class="note" style="--k:var(--amber);margin-top:14px;"><b>Describe the tables in the prompt.</b> Without it the model guesses column names and the query fails.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>25 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min. Read the query as a sentence: select the length, count the videos, take typical views, from the videos table, group by length. Students don’t need to write SQL; they need to read what the database computed. MEDIAN isn’t in every database (PostgreSQL uses PERCENTILE_CONT) — the model picks the right function if you name your database.</p><p>On describing tables: if the model can’t see the schema, it invents column names. In our run ChatGPT instead pulled the real schema of the author’s database from connected sources — which is why we don’t show that frame. At work do it on purpose: give the model the table and column names, not the data.</p></template>
+</section>
+<!-- SLIDE 26 · s_db · 2 min -->
+<section class="slide" data-n="26">
+  <div class="kicker" style="--k:var(--amber)">Part 4 • the result and the trap</div>
+  <h2 class="title">Long videos 12× more popular? No: big channels make them</h2>
   <div class="body" style="margin-top:12px;">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr) 1.2fr;gap:24px;align-items:end;"><div class="stat" style="--k:var(--amber)"><div class="n">26,544</div><div class="d">channels: name, subscribers, country</div></div><div class="stat" style="--k:var(--amber)"><div class="n">416,809</div><div class="d">videos: length, date, channel</div></div><div class="stat" style="--k:var(--amber)"><div class="n">668,665</div><div class="d">daily view measurements</div></div>
-      <div class="cap">For the lesson, an anonymised sample: <b>1,943</b> channels, <b>46,132</b> videos. No e-mails, links or ids.</div>
-    </div>
-    <div class="row" style="grid-template-columns:0.95fr 1.05fr;gap:32px;margin-top:20px;align-items:stretch;">
-      <div class="stack" style="gap:12px;">
-        <div class="pr " style="--k:var(--amber)"><span class="no">Prompt</span>The database has a videos table: length and views of every video. Write an SQL query: which video length gets the most views? Explain every line.</div>
-        <div class="code"><span class="cm">-- Which video length gets the most views?</span>
-<span class="kw">SELECT</span> duration_bucket,            <span class="cm">-- length</span>
-       <span class="kw">COUNT</span>(*)      <span class="kw">AS</span> videos,   <span class="cm">-- how many videos</span>
-       <span class="kw">MEDIAN</span>(views) <span class="kw">AS</span> typical   <span class="cm">-- typical views</span>
-<span class="kw">FROM</span> videos
-<span class="kw">GROUP BY</span> duration_bucket;</div>
-      </div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:32px;margin-top:10px;align-items:stretch;">
       <div class="stack" style="gap:6px;">
-        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Typical views per video by length</div>
+        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">First query: typical views by length</div>
         <svg viewBox="0 0 700 330"><line x1="10" y1="290" x2="694" y2="290" stroke="#2b3648" stroke-width="2"/><rect x="14.0" y="269.7" width="95.3" height="20.3" rx="4" fill="#5f6e84"/><text x="61.7" y="261.7" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1,100</text><text x="61.7" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">< 1 min</text><rect x="127.3" y="269.7" width="95.3" height="20.3" rx="4" fill="#5f6e84"/><text x="175.0" y="261.7" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1,100</text><text x="175.0" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">1–5 min</text><rect x="240.7" y="245.7" width="95.3" height="44.3" rx="4" fill="#5f6e84"/><text x="288.3" y="237.7" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">2,400</text><text x="288.3" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">5–10 min</text><rect x="354.0" y="179.2" width="95.3" height="110.8" rx="4" fill="#5f6e84"/><text x="401.7" y="171.2" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">6,000</text><text x="401.7" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">10–20 min</text><rect x="467.3" y="50.0" width="95.3" height="240.0" rx="4" fill="#fbbf24"/><text x="515.0" y="42.0" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">13,000</text><text x="515.0" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">20–40 min</text><rect x="580.7" y="133.1" width="95.3" height="156.9" rx="4" fill="#5f6e84"/><text x="628.3" y="125.1" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">8,500</text><text x="628.3" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">40+ min</text></svg>
         <div class="note" style="--k:var(--red)">20–40 minutes gets 12× more than short videos? Compared with ordinary videos <b>of the same channel</b>, they are only 3% above usual. Big channels simply make long videos more often.</div>
       </div>
+      <div class="stack" style="gap:6px;">
+        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Second query: a video vs its own channel’s usual video</div>
+        <svg viewBox="0 0 700 330"><line x1="10" y1="290" x2="694" y2="290" stroke="#2b3648" stroke-width="2"/><line x1="10" y1="118.6" x2="694" y2="118.6" stroke="#34d399" stroke-width="2" stroke-dasharray="7 6"/><rect x="14.0" y="120.3" width="95.3" height="169.7" rx="4" fill="#5f6e84"/><text x="61.7" y="112.3" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">0.99</text><text x="61.7" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">< 1 min</text><rect x="127.3" y="118.6" width="95.3" height="171.4" rx="4" fill="#5f6e84"/><text x="175.0" y="110.6" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1.00</text><text x="175.0" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">1–5 min</text><rect x="240.7" y="118.6" width="95.3" height="171.4" rx="4" fill="#5f6e84"/><text x="288.3" y="110.6" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1.00</text><text x="288.3" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">5–10 min</text><rect x="354.0" y="111.7" width="95.3" height="178.3" rx="4" fill="#5f6e84"/><text x="401.7" y="103.7" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1.04</text><text x="401.7" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">10–20 min</text><rect x="467.3" y="113.4" width="95.3" height="176.6" rx="4" fill="#5f6e84"/><text x="515.0" y="105.4" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1.03</text><text x="515.0" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">20–40 min</text><rect x="580.7" y="101.4" width="95.3" height="188.6" rx="4" fill="#5f6e84"/><text x="628.3" y="93.4" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1.10</text><text x="628.3" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">40+ min</text></svg>
+        <div class="note" style="--k:var(--green)">1.0 means the same as the channel’s usual video. Every length is about 1.0.</div>
+      </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>13 / 19</span></div>
-  <template class="notes"><p>⏱ 5 min (ready frames, not run live). This is the course author’s working database: cooking YouTube channels collected via the official API. 26,544 channels, 416,809 videos, 668,665 view measurements. The data sits in three linked tables and updates daily, so exporting a file for every question is impractical.</p><p>Same move as with Excel: you describe the table and ask in words, the model writes an SQL query, the database counts in a second. SQL reads almost like English: select the length, count the videos, take typical views, from the videos table, grouped by length. MEDIAN is the typical value: half the videos above, half below. Rare viral hits spoil the average.</p><p>The first answer is tempting: 20–40-minute videos get 12× more views than short ones. But big channels, which already have many viewers, make long videos more often. A second query compares each video with ordinary videos of its own channel, and the gap nearly disappears. This data does not prove “make long videos”. Same story as with Social.</p><p>The sample is anonymised: descriptions, links, phone numbers and YouTube ids removed; no e-mails in the sample. We don’t hand the files to students, only show the charts. Queries and answers: demo_v2/channels/queries.sql and results/answers.md.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>26 / 31</span></div>
+  <template class="notes"><p>⏱ 2 min (ready frames, not run live). This is the course author’s working database: cooking YouTube channels collected via the official API. 26,544 channels, 416,809 videos, 668,665 view measurements. The data sits in three linked tables and updates daily, so exporting a file for every question is impractical.</p><p>Same move as with Excel: you describe the table and ask in words, the model writes an SQL query, the database counts in a second. SQL reads almost like English: select the length, count the videos, take typical views, from the videos table, grouped by length. MEDIAN is the typical value: half the videos above, half below. Rare viral hits spoil the average.</p><p>The first answer is tempting: 20–40-minute videos get 12× more views than short ones. But big channels, which already have many viewers, make long videos more often. A second query compares each video with ordinary videos of its own channel, and the gap nearly disappears. This data does not prove “make long videos”. Same story as with Social.</p><p>The sample is anonymised: descriptions, links, phone numbers and YouTube ids removed; no e-mails in the sample. We don’t hand the files to students, only show the charts. Queries and answers: demo_v2/channels/queries.sql and results/answers.md.</p></template>
 </section>
-<!-- SLIDE 14 · s_sources · 3 min -->
-<section class="slide" data-n="14">
-  <div class="kicker">Where data comes from</div>
+<!-- SLIDE 27 · s_sources · 2 min -->
+<section class="slide" data-n="27">
+  <div class="kicker">Part 4 • where data comes from</div>
   <h2 class="title">Look for an Export button first, then an API. Scraping is the last option</h2>
   <div class="body" style="margin-top:18px;">
     <div class="row" style="grid-template-columns:1fr 1.25fr 1fr;gap:22px;align-items:center;">
@@ -629,19 +812,19 @@ svg.dia text { font-family: var(--body); }
   <span class="st">"subscriberCount"</span>: <span class="nm">"184000"</span>,
   <span class="st">"videoCount"</span>: <span class="nm">"412"</span> }</div>
         <div class="w">A program asks the service and gets an answer like this. AI writes a script that turns it into table rows.</div>
-        <div class="o">this is how the slide 13 channel database was collected</div></div>
+        <div class="o">this is how the slide 24 channel database was collected</div></div>
       <div class="door" style="--k:var(--red)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M6 24 h36 M24 6 c-8 8 -8 28 0 36 M24 6 c8 8 8 28 0 36"/></svg><div class="h">3. Scraping</div>
         <div class="w">A program reads website pages like a person would. Before you do it, check:</div>
         <ul class="checklist" style="gap:8px;"><li style="font-size:20px;">the site’s terms allow it</li><li style="font-size:20px;">no personal data</li><li style="font-size:20px;">you don’t overload the site</li></ul></div>
     </div>
     <div class="plaque" style="margin-top:18px;"><b>Ask the AI:</b> “What official export or API does system X have to download a year of sales?”</div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>14 / 19</span></div>
-  <template class="notes"><p>Before you start this slide, send prompt 6 (report and script) to the chat: the answer takes 3–4 minutes and will be ready by slide 15.</p><p>⏱ 3 min. The data you need almost always already sits somewhere. First look for an export button: CRM, accounting software, ad accounts and YouTube Studio all have one. It is the fastest and safest route.</p><p>Second, an official API: a program’s way into the service. The answer comes as JSON, like the middle of the slide. You don’t write the code yourself: AI writes a script that turns the answer into a table. The channel database we just saw was collected this way, through the YouTube Data API. The JSON on the slide is simplified.</p><p>Third, scraping: a program reads a site’s pages. It is the last option. Three checks: the site’s terms allow it, no personal data, you don’t put load on someone else’s server. For most work tasks, export is enough.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>27 / 31</span></div>
+  <template class="notes"><p>Before you start this slide, send prompt 6 (report and script) to the chat: the answer takes 3–4 minutes and will be ready by slide 28.</p><p>⏱ 2 min. The data you need almost always already sits somewhere. First look for an export button: CRM, accounting software, ad accounts and YouTube Studio all have one. It is the fastest and safest route.</p><p>Second, an official API: a program’s way into the service. The answer comes as JSON, like the middle of the slide. You don’t write the code yourself: AI writes a script that turns the answer into a table. The channel database we just saw was collected this way, through the YouTube Data API. The JSON on the slide is simplified.</p><p>Third, scraping: a program reads a site’s pages. It is the last option. Three checks: the site’s terms allow it, no personal data, you don’t put load on someone else’s server. For most work tasks, export is enough.</p></template>
 </section>
-<!-- SLIDE 15 · s_report · 5 min -->
-<section class="slide" data-n="15">
-  <div class="kicker" style="--k:var(--green)">The result of the analysis</div>
+<!-- SLIDE 28 · s_report · 3 min -->
+<section class="slide" data-n="28">
+  <div class="kicker" style="--k:var(--green)">Part 5 • the answer to Anna</div>
   <h2 class="title">Send the manager the report file. The chat preview can lie</h2>
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:0.95fr 1fr 0.85fr;gap:22px;align-items:center;">
@@ -659,30 +842,12 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>15 / 19</span></div>
-  <template class="notes"><p>⏱ 5 min (1 live prompt). The result of an analysis is a file you can forward, not a chat screenshot. Prompt 6 asks for two things: a report page and a recipe script.</p><p>Left: what ChatGPT showed in the chat as the report preview — a stock picture with “Series A–E” and someone else’s numbers. Centre: the same report downloaded and opened — everything is there, with our numbers. Simple rule: don’t judge the preview, check the opened file.</p><p>Right: the recipe — a script that builds the same three charts from next month’s file. In January you don’t repeat the whole conversation: drop in the new file and run the script, in Colab or by asking the chat: “run this script on the new file”. Caveat: the script expects a workbook with Sales and Reviews sheets. On the practice demo_v2/northstar_sales_2026-01.csv (sales only, one month) the reviews chart won’t build and the monthly chart has one point. That is fine: tell students in advance.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>28 / 31</span></div>
+  <template class="notes"><p>⏱ 3 min (1 live prompt). The result of an analysis is a file you can forward, not a chat screenshot. Prompt 6 asks for two things: a report page and a recipe script.</p><p>Left: what ChatGPT showed in the chat as the report preview — a stock picture with “Series A–E” and someone else’s numbers. Centre: the same report downloaded and opened — everything is there, with our numbers. Simple rule: don’t judge the preview, check the opened file.</p><p>Right: the recipe — a script that builds the same three charts from next month’s file. In January you don’t repeat the whole conversation: drop in the new file and run the script, in Colab or by asking the chat: “run this script on the new file”. Caveat: the script expects a workbook with Sales and Reviews sheets. On the practice demo_v2/northstar_sales_2026-01.csv (sales only, one month) the reviews chart won’t build and the monthly chart has one point. That is fine: tell students in advance.</p></template>
 </section>
-<!-- SLIDE 16 · s_causal · 2 min -->
-<section class="slide" data-n="16">
-  <div class="kicker" style="--k:var(--red)">After the finding</div>
-  <h2 class="title">The table says what happened. Only a test shows what a budget cut will do</h2>
-  <div class="lead">The temptation after the demo: <b>cut Social ads in half?</b></div>
-  <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:50px;align-items:center;">
-      <div class="stack" style="gap:20px;">
-        <div class="note" style="--k:var(--amber)">The data shows: since July Social spends twice as much per dollar of revenue.</div>
-        <div class="note" style="--k:var(--red)">The data doesn’t show: how much revenue disappears if ads are cut.</div>
-        <div class="plaque g"><b>How to find out:</b> cut the budget in one region for 2–4 weeks and compare with the others.</div>
-      </div>
-      <svg class="dia" viewBox="0 0 620 330"><defs><marker id="ca" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#5f6e84"/></marker></defs><defs><marker id="cr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#f87171"/></marker></defs><rect x="10" y="0" width="290" height="54" rx="10" fill="#0f1624" stroke="#5f6e84" stroke-width="1.5" stroke-dasharray="5 4"/><text x="155" y="35" text-anchor="middle" font-size="21" fill="#a3b1c4">sales season</text><rect x="320" y="0" width="290" height="54" rx="10" fill="#0f1624" stroke="#5f6e84" stroke-width="1.5" stroke-dasharray="5 4"/><text x="465" y="35" text-anchor="middle" font-size="21" fill="#a3b1c4">who saw the ads</text><rect x="10" y="66" width="290" height="54" rx="10" fill="#0f1624" stroke="#5f6e84" stroke-width="1.5" stroke-dasharray="5 4"/><text x="155" y="101" text-anchor="middle" font-size="21" fill="#a3b1c4">new ad creatives</text><rect x="320" y="66" width="290" height="54" rx="10" fill="#0f1624" stroke="#5f6e84" stroke-width="1.5" stroke-dasharray="5 4"/><text x="465" y="101" text-anchor="middle" font-size="21" fill="#a3b1c4">which channel got credit</text><path d="M310 124 L 310 133" stroke="#5f6e84" stroke-width="2"/><path d="M310 138 L 160 194" stroke="#5f6e84" stroke-width="2" fill="none" marker-end="url(#ca)"/><path d="M310 138 L 460 194" stroke="#5f6e84" stroke-width="2" fill="none" marker-end="url(#ca)"/><text x="310" y="178" text-anchor="middle" font-size="18" fill="#a3b1c4">affect both</text><rect x="40" y="200" width="220" height="70" rx="12" fill="#0f1624" stroke="#fbbf24" stroke-width="2"/><text x="150" y="243" text-anchor="middle" font-size="22" font-weight="700" fill="#f1f5f9">Social budget</text><rect x="360" y="200" width="220" height="70" rx="12" fill="#0f1624" stroke="#fbbf24" stroke-width="2"/><text x="470" y="243" text-anchor="middle" font-size="22" font-weight="700" fill="#f1f5f9">revenue</text><path d="M264 235 L 354 235" stroke="#f87171" stroke-width="3" fill="none" stroke-dasharray="8 6" marker-end="url(#cr)"/><text x="309" y="300" text-anchor="middle" font-size="19" font-weight="700" fill="#f87171">cause? not proven</text></svg>
-    </div>
-  </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>16 / 19</span></div>
-  <template class="notes"><p>⏱ 2 min. After the Social finding it is tempting to cut the budget at once. Models often advise exactly that. But the table describes the past. Season, audience, creatives and the rules that credit a sale to a channel all affect both budget and revenue.</p><p>A good AI answer sounds like: “this data can’t say how much revenue would be lost; I suggest a test”. If the model didn’t say so, ask: “What assumption are you making?”</p></template>
-</section>
-<!-- SLIDE 17 · s_privacy · 2 min -->
-<section class="slide" data-n="17">
-  <div class="kicker" style="--k:var(--amber)">Data and privacy</div>
+<!-- SLIDE 29 · s_privacy · 1 min -->
+<section class="slide" data-n="29">
+  <div class="kicker" style="--k:var(--amber)">Part 5 • data and privacy</div>
   <h2 class="title">What you may upload to a chat</h2>
   <div class="body" style="margin-top:20px;">
     <div class="row" style="grid-template-columns:1.3fr 1fr;gap:44px;align-items:center;">
@@ -693,12 +858,12 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>17 / 19</span></div>
-  <template class="notes"><p>⏱ 2 min. A traffic light. Green — practice and public data, like our file. Amber — internal company data, only in the work account. Red — personal data of customers and staff, finance, health: only in a company-approved environment.</p><p>Settings as of October 2026: business plans (ChatGPT Business/Enterprise, Claude Team/Enterprise/API, Google Workspace) are not used for training by default. In personal accounts check the settings named on the slide.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>29 / 31</span></div>
+  <template class="notes"><p>⏱ 1 min. A traffic light. Green — practice and public data, like our file. Amber — internal company data, only in the work account. Red — personal data of customers and staff, finance, health: only in a company-approved environment.</p><p>Settings as of October 2026: business plans (ChatGPT Business/Enterprise, Claude Team/Enterprise/API, Google Workspace) are not used for training by default. In personal accounts check the settings named on the slide.</p></template>
 </section>
-<!-- SLIDE 18 · s_hw · 4 min -->
-<section class="slide" data-n="18">
-  <div class="kicker" style="--k:var(--green)">Practice and homework</div>
+<!-- SLIDE 30 · s_hw · 2 min -->
+<section class="slide" data-n="30">
+  <div class="kicker" style="--k:var(--green)">Part 5 • homework</div>
   <h2 class="title">A pack you can send to a manager</h2>
   <div class="lead">File <code>northstar_2025.xlsx</code>. Answer Anna’s e-mail: <b>how did sales go this year, and what should we check next?</b></div>
   <div class="body" style="margin-top:18px;">
@@ -716,21 +881,21 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>18 / 19</span></div>
-  <template class="notes"><p>⏱ 4 min. The homework result is a five-part pack another person can open and understand in 5 minutes. An Excel workbook with an AI-written formula, a pivot and a chart. Three charts, one as a before/after pair. A one-page report. A recipe: the prompt and a script that builds the charts from the January file. A checks file.</p><p>No paid licence needed: the chat-and-download route works for everyone. Your own work data only if anonymised and allowed, per the traffic light. One required item: a statement that suggests itself but the data doesn’t support. For example, “if we cut the Social budget, revenue won’t drop”.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>30 / 31</span></div>
+  <template class="notes"><p>⏱ 2 min. The homework result is a five-part pack another person can open and understand in 5 minutes. An Excel workbook with an AI-written formula, a pivot and a chart. Three charts, one as a before/after pair. A one-page report. A recipe: the prompt and a script that builds the charts from the January file. A checks file.</p><p>No paid licence needed: the chat-and-download route works for everyone. Your own work data only if anonymised and allowed, per the traffic light. One required item: a statement that suggests itself but the data doesn’t support. For example, “if we cut the Social budget, revenue won’t drop”.</p></template>
 </section>
-<!-- SLIDE 19 · s_summary · 2 min -->
-<section class="slide" data-n="19">
+<!-- SLIDE 31 · s_summary · 1 min -->
+<section class="slide" data-n="31">
   <div class="kicker">Summary</div>
   <h2 class="title">What to take away</h2>
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1.5fr 1fr;gap:50px;align-items:center;">
-      <div class="rules" style="gap:24px;"><div class="rule" style="--k:var(--cyan)"><div class="n">1</div><div class="t">The describe prompt first<small>“describe the file, suggest 5 questions, change nothing”</small></div></div><div class="rule" style="--k:var(--green)"><div class="n">2</div><div class="t">Formulas in words<small>“Excel formulas, not pasted numbers”</small></div></div><div class="rule" style="--k:var(--violet)"><div class="n">3</div><div class="t">One chart per question<small>title = finding, one accent colour</small></div></div><div class="rule" style="--k:var(--amber)"><div class="n">4</div><div class="t">The report as a file<small>open the downloaded file, attach the recipe</small></div></div><div class="rule" style="--k:var(--red)"><div class="n">5</div><div class="t">60 seconds of checks<small>rows, one point, percent of what</small></div></div></div>
+      <div class="rules" style="gap:24px;"><div class="rule" style="--k:var(--cyan)"><div class="n">1</div><div class="t">✓ Describe a file<small>“describe the file, suggest 5 questions, change nothing”</small></div></div><div class="rule" style="--k:var(--green)"><div class="n">2</div><div class="t">✓ A formula in words<small>“Excel formulas, not pasted numbers” + click a cell</small></div></div><div class="rule" style="--k:var(--violet)"><div class="n">3</div><div class="t">✓ A slide-ready chart<small>one question, one chart, title = finding</small></div></div><div class="rule" style="--k:var(--amber)"><div class="n">4</div><div class="t">✓ A one-page report<small>open the downloaded file, attach the recipe</small></div></div><div class="rule" style="--k:var(--red)"><div class="n">5</div><div class="t">✓ A one-minute check<small>rows, one point, percent of what</small></div></div></div>
       <div class="plaque"><b>Next lesson — L09:</b> the Claude ecosystem and artifacts. The same analysis becomes an interactive page opened by a link.</div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>19 / 19</span></div>
-  <template class="notes"><p>⏱ 2 min. Five moves you can use on your own spreadsheet on Monday: the describe prompt, formulas in words, one chart per question, the report as a file with a recipe, and 60 seconds of checks.</p><p>L09 teaser: in Claude an analysis can become an artifact — an interactive page with charts that colleagues open by link. Questions.</p></template>
+  <div class="foot"><span>GenAI Basics • Lesson 08 • AI for Data Analysis</span><span>31 / 31</span></div>
+  <template class="notes"><p>⏱ 1 min. Five moves you can use on your own spreadsheet on Monday: the describe prompt, formulas in words, one chart per question, the report as a file with a recipe, and 60 seconds of checks.</p><p>L09 teaser: in Claude an analysis can become an artifact — an interactive page with charts that colleagues open by link. Questions.</p></template>
 </section>
 
 </main>

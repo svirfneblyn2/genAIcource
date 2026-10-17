@@ -345,3 +345,20 @@ svg.dia text { font-family: var(--body); }
 .chartbox .f { font-size: 17px; color: var(--muted); line-height: 1.3; margin-top: 4px; }
 .chartbox .f b { color: var(--fg); }
 .chartbox svg { display: block; width: 100%; height: auto; }
+
+/* ---------- v2.1: prompt anatomy, bad / good, reviews, row anatomy ---------- */
+.an { display: flex; flex-direction: column; gap: 10px; }
+.an-row { display: grid; grid-template-columns: 46px 1.25fr 1fr; gap: 16px; align-items: center; background: var(--surface-card); border: 1px solid var(--line); border-left: 5px solid var(--k); border-radius: 10px; padding: 10px 14px; }
+.an-n { font-family: var(--display); font-size: 26px; font-weight: 800; color: #0b0f17; background: var(--k); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; }
+.an-t { font-family: var(--mono); font-size: 21px; line-height: 1.4; color: var(--fg); }
+.an-w { font-size: 20px; line-height: 1.35; color: var(--muted); }
+.bg-q { font-size: 20px; line-height: 1.4; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--k); border-radius: 10px; padding: 10px 14px; }
+.bg-q .badge { margin-right: 8px; vertical-align: 2px; }
+.rvs { display: flex; flex-direction: column; gap: 10px; }
+.rv { font-size: 20px; line-height: 1.4; color: var(--fg); background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.rv small { display: block; font-family: var(--mono); font-size: 14px; color: var(--dim); margin-top: 4px; }
+.rv-s { color: var(--amber); letter-spacing: 1px; margin-right: 6px; }
+.tbl.rowx th { font-size: 17px; padding: 10px 8px; color: var(--fg); }
+.tbl.rowx td.big { font-size: 24px; font-weight: 700; color: var(--fg); padding: 14px 8px; }
+.tbl.rowx td.typ { font-family: var(--body); font-size: 18px; font-weight: 600; border-bottom: none; }
+.checklist.lg { gap: 22px; } .checklist.lg li { font-size: 26px; grid-template-columns: 48px 1fr; } .checklist.lg li::before { width: 34px; height: 34px; font-size: 19px; }

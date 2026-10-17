@@ -11,6 +11,7 @@ Real screenshots: ../assets/v2/chat/ (ChatGPT run on the Northstar 2025 workbook
 Slide map and reasoning: ../L08_11_Method_Review_2026-10-17.md. v1 (73-row CSV deck) is in git history.
 """
 import csv
+import re
 import shutil
 import subprocess
 import sys
@@ -24,7 +25,7 @@ NAME = "presentation_L08_AI_for_Data_Analysis"
 OUT = {"ru": L08 / f"{NAME}_v2.html", "en": L08 / f"{NAME}_EN_v2.html"}
 IMG = "assets/"
 SHOT = "assets/v2/shots/"
-BUFFER = 7  # minutes of slack inside the 90 (demos overrun)
+BUFFER = 0  # 85 min of content + 5 min break
 
 LANG = "ru"
 
@@ -307,7 +308,7 @@ def n2_chart(w=660, h=300):
 
 # ---------------------------------------------------------------- slides
 def s_cover():
-    return dict(min=2, cls="cover", html=f'''
+    return dict(min=1, cls="cover", html=f'''
   <div class="bg"><img class="full" src="{IMG}l08_cover_hero.png" alt=""></div>
   <div class="shade soft"></div>
   <div class="txt">
@@ -326,21 +327,17 @@ def s_cover():
 
 
 def s_hook():
-    return dict(min=3, html=f'''
-  {head(t("С чего начинается анализ", "Where analysis starts"), t("Сначала вопрос руководителя, потом файл", "The manager’s question comes first, then the file"), k="amber")}
+    return dict(min=2, html=f'''
+  {head(t("Часть 2 • Excel и первый вопрос", "Part 2 • Excel and the first question"), t("Три вопроса письма — три части урока", "Three questions in the e-mail — three parts of the lesson"), k="amber")}
   <div class="body" style="margin-top:16px;">
-    <div class="row" style="grid-template-columns:0.9fr 1.1fr;gap:36px;align-items:stretch;">
-      <div class="stack" style="gap:18px;justify-content:center;">
-        <div class="plaque" style="font-size:24px;line-height:1.5;">
-          <div class="kicker" style="--k:var(--amber);margin-bottom:8px;">{t("Письмо коммерческого директора Анны", "An e-mail from Anna, Commercial Director")}</div>
-          <div>{t("Привет! Что у нас с продажами за год? Почему во втором полугодии реклама стала хуже окупаться? И откуда столько возвратов осенью? Нужна одна страница к пятнице.",
-                               "Hi! How did sales go this year? Why did advertising pay off worse in the second half? And why so many returns in the autumn? I need one page by Friday.")}</div>
-        </div>
-        <div class="note" style="--k:var(--amber)">{t("Три вопроса — три графика. «Найди инсайты» здесь не поможет.", "Three questions — three charts. “Find insights” won’t help here.")}</div>
+    <div class="row" style="grid-template-columns:0.85fr 1.15fr;gap:36px;align-items:center;">
+      <div class="stack" style="gap:16px;">
+        <div class="chk" style="--k:var(--green)"><div class="n">1</div><div class="t">{t("Что с продажами за год?", "How did sales go this year?")}<small>{t("Часть 2: Excel, формулы, сезонность", "Part 2: Excel, formulas, seasonality")}</small></div></div>
+        <div class="chk" style="--k:var(--amber)"><div class="n">2</div><div class="t">{t("Почему реклама хуже окупается?", "Why does advertising pay off worse?")}<small>{t("Часть 2–3: отдача Search и Social", "Parts 2–3: Search and Social return")}</small></div></div>
+        <div class="chk" style="--k:var(--red)"><div class="n">3</div><div class="t">{t("Откуда возвраты осенью?", "Why the autumn returns?")}<small>{t("Часть 3: таблица + текст отзывов", "Part 3: the table + review text")}</small></div></div>
       </div>
       <div class="stack" style="gap:6px;">
-        {shot("p2_sales_sheet", t("northstar_2025.xlsx • 1 261 строка", "northstar_2025.xlsx • 1,261 rows"), k="cyan")}
-        <div class="scap">{t("Одна строка — продажи одного канала по одной категории, региону и складу за день. Второй лист — 357 отзывов покупателей.", "One row is the sales of one channel for one category, region and warehouse on one day. The second sheet holds 357 customer reviews.")}</div>
+        {shot("p2_sales_sheet", t("northstar_2025.xlsx • 1 261 строка • лист Reviews: 357 отзывов", "northstar_2025.xlsx • 1,261 rows • Reviews sheet: 357 reviews"), k="cyan", h=470)}
       </div>
     </div>
   </div>''',
@@ -354,8 +351,8 @@ def s_hook():
 
 
 def s_first():
-    return dict(min=4, html=f'''
-  {head(t("Шаг 1 • первый промпт", "Step 1 • the first prompt"), t("Первый промпт: опиши файл и предложи 5 вопросов", "First prompt: describe the file and suggest 5 questions"))}
+    return dict(min=2, html=f'''
+  {head(t("Часть 2 • ответ на промпт 1", "Part 2 • the answer to prompt 1"), t("Что ответила модель: что верно, что нет и какой вопрос берём", "What the model answered: what is right, what isn’t, which question we take"))}
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1fr 1fr;gap:26px;align-items:stretch;">
       <div class="stack" style="gap:14px;">
@@ -409,33 +406,34 @@ def s_doors():
 
 
 def s_demo1():
-    return dict(min=12, html=f'''
-  {head(t("Демо 1 • Excel • 12 минут", "Demo 1 • Excel • 12 minutes"), t("Формулу и график можно попросить словами", "You can ask for a formula and a chart in words"), k="green")}
-  <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;flex:0 0 auto;">
-      <div class="stack" style="gap:12px;">
-        {pr(t("Промпт 2", "Prompt 2"), t("Добавь в книгу лист «Отдача рекламы»: по месяцам выручка, рекламный расход и выручка на $1 рекламы для Search и Social. Считай формулами Excel, а не готовыми числами. Построй линейный график и дай скачать .xlsx.",
-                                         "Add a sheet “Ad return” to the workbook: by month, revenue, ad spend and revenue per $1 of ads for Search and Social. Use Excel formulas, not pasted numbers. Build a line chart and let me download the .xlsx."), k="green")}
-        <div class="note" style="--k:var(--cyan)">{t("Есть Claude или Copilot в Excel? Тот же текст пишем в боковой панели, скачивать ничего не нужно.", "Have Claude or Copilot in Excel? Type the same text in the side panel; nothing to download.")}</div>
+    return dict(min=5, html=f'''
+  {head(t("Демо 1 вживую • 5 минут", "Demo 1 live • 5 minutes"), t("Повторяем всё вживую: от файла до формулы в ячейке", "We do it live: from the file to a formula in a cell"), k="green")}
+  <div class="body" style="margin-top:16px;">
+    <div class="row" style="grid-template-columns:1.15fr 1fr;gap:36px;align-items:center;">
+      <ol class="checklist lg">
+        <li><span>{t("<b>Загрузить</b> northstar_2025.xlsx в ChatGPT", "<b>Upload</b> northstar_2025.xlsx to ChatGPT")}</span></li>
+        <li><span>{t("<b>Промпт 1</b> — опись файла (слайд 11)", "<b>Prompt 1</b> — describe the file (slide 11)")}</span></li>
+        <li><span>{t("<b>Промпт 2</b> — лист «Отдача рекламы» (слайд 13)", "<b>Prompt 2</b> — the “Ad return” sheet (slide 13)")}</span></li>
+        <li><span>{t("<b>Скачать</b> книгу и открыть в Excel", "<b>Download</b> the workbook and open it in Excel")}</span></li>
+        <li><span>{t("<b>Щёлкнуть</b> ячейку с отдачей: число → «замени числа формулами»", "<b>Click</b> an ad-return cell: a number → “replace the numbers with formulas”")}</span></li>
+        <li><span>{t("<b>Не успели?</b> Показываем готовые кадры со слайда 14", "<b>Out of time?</b> Show the ready frames from slide 14")}</span></li>
+      </ol>
+      <div class="stack" style="gap:16px;">
+        <div class="plaque g">{t("<b>Что должно получиться:</b> у Search около 5 долларов выручки на доллар рекламы весь год, у Social с июля около 2.", "<b>What you should get:</b> Search earns about $5 per ad dollar all year; Social drops to about $2 from July.")}</div>
+        <div class="note" style="--k:var(--cyan)">{t("Есть Claude или Copilot в Excel? Тот же промпт 2 — в боковой панели, без скачивания.", "Have Claude or Copilot in Excel? The same prompt 2 in the side panel, no download.")}</div>
+        <div class="note" style="--k:var(--amber)">{t("Ответ дольше 90 секунд — показываем кадр и идём дальше.", "Answer takes over 90 seconds — show the frame and move on.")}</div>
       </div>
-      <div class="stack" style="gap:6px;">
-        {shot("p2_roas_sheet", t("ChatGPT вернул лист: в ячейках числа", "ChatGPT returned a sheet: numbers in the cells"), k="amber", h=200)}
-        <div class="scap">{t("Щёлкните ячейку. Видите число — напишите: «замени числа формулами».", "Click a cell. See a number? Write: “replace the numbers with formulas”.")}</div>
-      </div>
-    </div>
-    <div class="stack" style="gap:6px;margin-top:14px;">
-      {shot("xl_fx_sumifs", t("Excel: в ячейке формула, её видно в строке fx", "Excel: the cell holds a formula, visible in the fx bar"), k="green", cls="good")}
     </div>
   </div>''',
                 notes=notes(
-                    t("⏱ 12 мин (2 промпта + открыть книгу). Ведите по ранбуку L08_04. Загрузите northstar_2025.xlsx в ChatGPT. Промпт 1 — описание файла с прошлого слайда. Промпт 2 — на экране.",
-                      "⏱ 12 min (2 prompts + open the workbook). Follow runbook L08_04. Upload northstar_2025.xlsx to ChatGPT. Prompt 1 is the file description from the previous slide. Prompt 2 is on screen."),
+                    t("⏱ 5 мин (2 промпта + открыть книгу; разбор был на слайдах 11–14). Ведите по ранбуку L08_04. Загрузите northstar_2025.xlsx в ChatGPT. Шаги на слайде, тексты промптов — в ранбуке и на слайдах 11 и 13.",
+                      "⏱ 5 min (2 prompts + open the workbook; the walkthrough was slides 11–14). Follow runbook L08_04. Upload northstar_2025.xlsx to ChatGPT. Steps are on the slide; prompt texts are in the runbook and on slides 11 and 13."),
                     t("Ключевые слова в промпте: «формулами Excel, а не готовыми числами». Без них модель часто вставляет посчитанные значения, и проверить их в книге нельзя. Скачайте файл, откройте в Excel, щёлкните ячейку с отдачей рекламы. В строке формул должно быть деление выручки на расход, например =B2/C2. Выручка и расход тоже должны быть формулами (СУММЕСЛИМН / SUMIFS по листу Sales).",
                       "Key words in the prompt: “Excel formulas, not pasted numbers”. Without them the model often pastes computed values, which can’t be checked in the workbook. Download the file, open it in Excel and click an ad-return cell. The formula bar should show revenue divided by spend, e.g. =B2/C2. Revenue and spend should be formulas too (SUMIFS over the Sales sheet)."),
                     t(f"Что увидим: у Search выручка на $1 рекламы держится около {dec(ROAS['Search'][1], 1)} весь год. У Social с июля падает примерно с 4 до 2. Это вторая история из письма Анны, к ней вернёмся после перерыва.",
                       f"What you will see: Search returns about {dec(ROAS['Search'][1], 1)} per $1 all year. Social drops from about 4 to 2 in July. That is the second story from Anna’s e-mail; we come back to it after the break."),
-                    t("Справа вверху реальный лист из книги, которую вернул ChatGPT: в нашем прогоне в ячейках оказались числа, формул не было. Внизу та же таблица в Excel, где выручка посчитана формулой СУММЕСЛИМН по листу Sales, а отдача — делением =B2/C2; рядом график по этим ячейкам. Так должна выглядеть книга после просьбы «замени числа формулами». Эталонная книга: demo_v2/excel_demo/northstar_2025_formulas.xlsx. Если у вас есть Claude for Excel или Copilot, покажите ту же просьбу в боковой панели, 90 секунд. Если сервис думает дольше 90 секунд — показывайте готовые кадры и идите дальше." + EN_SHOTS,
-                      "Top right is the real sheet from the workbook ChatGPT returned: in our run the cells held numbers, not formulas. Below is the same table in Excel where revenue is a SUMIFS over the Sales sheet and the return is =B2/C2, with a chart built on those cells. That is how the workbook should look after “replace the numbers with formulas”. Reference workbook: demo_v2/excel_demo/northstar_2025_formulas_EN.xlsx. If you have Claude for Excel or Copilot, show the same request in the side panel, 90 seconds. If the service takes longer than 90 seconds, show the ready frames and move on." + EN_SHOTS)))
+                    t("Готовые кадры для запасного пути — на слайде 14. Там реальный лист из книги, которую вернул ChatGPT: в нашем прогоне в ячейках оказались числа, формул не было. Внизу та же таблица в Excel, где выручка посчитана формулой СУММЕСЛИМН по листу Sales, а отдача — делением =B2/C2; рядом график по этим ячейкам. Так должна выглядеть книга после просьбы «замени числа формулами». Эталонная книга: demo_v2/excel_demo/northstar_2025_formulas.xlsx. Если у вас есть Claude for Excel или Copilot, покажите ту же просьбу в боковой панели, 90 секунд. Если сервис думает дольше 90 секунд — показывайте готовые кадры и идите дальше." + EN_SHOTS,
+                      "Ready fallback frames are on slide 14: the real sheet from the workbook ChatGPT returned: in our run the cells held numbers, not formulas. Below is the same table in Excel where revenue is a SUMIFS over the Sales sheet and the return is =B2/C2, with a chart built on those cells. That is how the workbook should look after “replace the numbers with formulas”. Reference workbook: demo_v2/excel_demo/northstar_2025_formulas_EN.xlsx. If you have Claude for Excel or Copilot, show the same request in the side panel, 90 seconds. If the service takes longer than 90 seconds, show the ready frames and move on." + EN_SHOTS)))
 
 
 def s_season():
@@ -472,11 +470,11 @@ def s_charts():
              (mini_scatter(), t("Связаны ли два числа?", "Are two numbers related?"), t("точки", "scatter"), t("<b style=\"color:#5f6e84\">●</b> Search <b style=\"color:#38bdf8\">●</b> Social янв–июн <b style=\"color:#fbbf24\">●</b> Social июл–дек: расход вырос, выручка нет", "<b style=\"color:#5f6e84\">●</b> Search <b style=\"color:#38bdf8\">●</b> Social Jan–Jun <b style=\"color:#fbbf24\">●</b> Social Jul–Dec: spend up, revenue not")),
              (mini_stack(), t("Из чего состоит целое?", "What makes up the whole?"), t("столбцы 100 %", "100% bars"), t("доли выручки по кварталам: <b style=\"color:#38bdf8\">●</b> Search <b style=\"color:#fbbf24\">●</b> Social <b style=\"color:#34d399\">●</b> Email <b style=\"color:#c084fc\">●</b> Organic", "revenue shares by quarter: <b style=\"color:#38bdf8\">●</b> Search <b style=\"color:#fbbf24\">●</b> Social <b style=\"color:#34d399\">●</b> Email <b style=\"color:#c084fc\">●</b> Organic"))]
     m = "".join(f'<div class="chartbox"><div class="q">{q}</div><div class="c">{c}</div>{svg}<div class="f">{f}</div></div>' for svg, q, c, f in items)
-    return dict(min=4, html=f'''
-  {head(t("Графики", "Charts"), t("Пять вопросов — пять графиков. Все из нашего файла", "Five questions, five charts — all from our file"))}
+    return dict(min=3, html=f'''
+  {head(t("Часть 2 • графики", "Part 2 • charts"), t("Пять вопросов — пять графиков. Все из нашего файла", "Five questions, five charts — all from our file"))}
   <div class="body" style="margin-top:16px;">
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;">{m}</div>
-    <div class="plaque" style="margin-top:22px;">{t("<b>Просите так:</b> «Построй один график, который отвечает на вопрос …, подпиши оси и единицы». Сначала назовите вопрос, тип графика модель подберёт.", "<b>Ask like this:</b> “Build one chart that answers …, label the axes and units.” Name the question first; the model will pick the chart type.")}</div>
+    <div class="plaque" style="margin-top:22px;">{t("<b>Просите так:</b> «Построй один график, который отвечает на вопрос …, подпиши оси и единицы». Тип графика назовите сами, если знаете; иначе модель предложит.", "<b>Ask like this:</b> “Build one chart that answers …, label the axes and units.” Name the chart type if you know it; otherwise the model will suggest one.")}</div>
   </div>''',
                 notes=notes(
                     t("⏱ 4 мин. Пять типовых вопросов и пять графиков к ним, все построены из файла Northstar. Время — линия: видно пик в конце года. Сравнение — столбцы по убыванию, ось от нуля. Распределение — гистограмма: у большинства строк возвраты 2–8 %, но есть хвост от 14 % и выше, это склад N2. Связь — точки: каждая точка — месяц одного канала, жёлтые точки Social со второго полугодия ушли вправо (расход больше), но не вверх. Доли — столбцы 100 %, не больше 4–5 частей.",
@@ -504,16 +502,16 @@ def s_demo2():
              ("p4_themes_after", "violet", t("Промпт 5", "Prompt 5"), t("Переделай этот график для слайда: заголовок — вывод, столбцы отсортированы, подписи значений на столбцах, без легенды и сетки, один акцентный цвет для N2, остальное серым. Объясни в 3 пунктах, что поменял.", "Rework this chart for a slide: the title states the finding, bars sorted, value labels on the bars, no legend and no gridlines, one accent colour for N2, everything else grey. Explain in 3 points what you changed."))]
     cols = (f'<div class="stack" style="gap:10px;">{pr(steps[0][2], steps[0][3], k="violet")}{shot(steps[0][0], t("тепловая карта", "heatmap"), k="violet", h=420)}</div>'
             f'<div class="stack" style="gap:10px;">{pr(steps[1][2], steps[1][3], k="violet")}{shot(steps[1][0], t("темы отзывов", "review themes"), k="violet")}'
-            f'{pr(steps[2][2], t("Переделка графика для слайда. Полный текст и результат — на слайде 11.", "Rework the chart for a slide. Full text and result on slide 11."), k="violet")}</div>')
-    return dict(min=12, html=f'''
-  {head(t("Демо 2 • чат с файлом • 12 минут", "Demo 2 • chat with a file • 12 minutes"), t("За год 6 % возвратов. В одной клетке — 24,8 %", "6% returns for the year. One cell shows 24.8%"), k="violet")}
+            f'{pr(steps[2][2], t("Переделка графика для слайда. Полный текст и результат — на слайде 23.", "Rework the chart for a slide. Full text and result on slide 23."), k="violet")}</div>')
+    return dict(min=4, html=f'''
+  {head(t("Часть 3 • демо 2 • чат с файлом", "Part 3 • demo 2 • chat with a file"), t("За год 6 % возвратов. В одной клетке — 24,8 %", "6% returns for the year. One cell shows 24.8%"), k="violet")}
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:0.85fr 1.15fr;gap:26px;align-items:start;">{cols}</div>
     <div class="plaque g" style="margin-top:14px;">{t("<b>Задание в чат Teams:</b> какое число на тепловой карте вы бы проверили первым?", "<b>Teams chat task:</b> which number on the heatmap would you check first?")}</div>
   </div>''',
                 notes=notes(
-                    t("⏱ 12 мин (3 промпта). Тот же чат, файл уже загружен. После каждого ответа раскрывайте код: блок «Анализ завершён» или кнопка кода над графиком.",
-                      "⏱ 12 min (3 prompts). Same chat, the file is already uploaded. After each answer open the code: the “Analysis complete” block or the code button above the chart."),
+                    t("⏱ 4 мин (результаты промптов 3 и 4; промпт 5 — на слайде 23). Тот же чат, файл уже загружен. После каждого ответа раскрывайте код: блок «Анализ завершён» или кнопка кода над графиком.",
+                      "⏱ 4 min (results of prompts 3 and 4; prompt 5 is slide 23). Same chat, the file is already uploaded. After each answer open the code: the “Analysis complete” block or the code button above the chart."),
                     t(f"Промпт 3: тепловая карта. Общая доля возвратов около 6 %, но одна клетка горит: North × Electronics — {pc(RET[('North', 'Electronics')])}. Остальные около 5 %. По итогу за год этого не видно.",
                       f"Prompt 3: the heatmap. The overall return rate is about 6%, but one cell lights up: North × Electronics — {pc(RET[('North', 'Electronics')])}. The rest are about 5%. The annual total hides it."),
                     t("Промпт 4: отзывы. Модель сама выбрала склад N2 и разложила отзывы на темы. Тема «упаковка / повреждения» у N2 — 49 %, у остальных — 12 %. Текст объясняет цифру: посылки приходят повреждёнными.",
@@ -526,8 +524,8 @@ def s_found():
     soc_sp = [SPEND[("Social", m)] for m in M12]
     soc_rv = [REV[("Social", m)] for m in M12]
     amber = lambda i: C["amber"] if i >= 6 else C["grey"]
-    return dict(min=4, html=f'''
-  {head(t("Что нашли", "What we found"), t("Две проблемы, которых не видно в итоге за год", "Two problems the annual total doesn’t show"), k="red")}
+    return dict(min=3, html=f'''
+  {head(t("Часть 3 • что нашли", "Part 3 • what we found"), t("Две проблемы, которых не видно в итоге за год", "Two problems the annual total doesn’t show"), k="red")}
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;align-items:stretch;">
       <div class="stack" style="gap:6px;">
@@ -556,13 +554,13 @@ def s_found():
                       "Right, warehouse N2: until August returns match everyone else; from September about a quarter of orders. Reviews explain why: crushed boxes, broken screens. The numbers say where; the text says why."),
                     t("Чтобы не запутаться: склад N2 — это и есть клетка North × Electronics с тепловой карты. В клетке 24,8 % за сентябрь–декабрь, на графике по месяцам — около 26 % в отдельные месяцы.",
                       "To avoid confusion: warehouse N2 is the North × Electronics cell from the heatmap. The cell shows 24.8% for September–December; the monthly line is about 26% in some months."),
-                    t("Вопрос в чат: «Что бы вы предложили Анне по каждой находке?» Ответ «урезать Social» обсудим на слайде 16.",
-                      "Ask the chat: “What would you suggest to Anna for each finding?” We’ll discuss “cut Social” on slide 16.")))
+                    t("Вопрос в чат: «Что бы вы предложили Анне по каждой находке?» Ответ «урезать Social» разберём на слайде 23.",
+                      "Ask the chat: “What would you suggest to Anna for each finding?” We cover “cut Social” on slide 23.")))
 
 
 def s_makeover():
-    return dict(min=4, html=f'''
-  {head(t("График для слайда", "A slide-ready chart"), t("График правится словами, как текст", "You edit a chart with words, like text"), k="violet")}
+    return dict(min=3, html=f'''
+  {head(t("Часть 3 • график для слайда", "Part 3 • a slide-ready chart"), t("График правится словами, как текст", "You edit a chart with words, like text"), k="violet")}
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:0.75fr 1.25fr;gap:26px;align-items:center;">
       <div class="stack" style="gap:12px;">
@@ -589,8 +587,8 @@ def s_makeover():
 
 
 def s_check():
-    return dict(min=3, html=f'''
-  {head(t("Проверка • 60 секунд", "Check • 60 seconds"), t("Три версии графика — три разных числа. Сверяйте после каждой переделки", "Three versions of a chart, three different numbers. Compare after every redo"), k="green")}
+    return dict(min=4, html=f'''
+  {head(t("Часть 3 • проверка за 60 секунд", "Part 3 • a 60-second check"), t("Три версии графика — три разных числа. Сверяйте после каждой переделки", "Three versions of a chart, three different numbers. Compare after every redo"), k="green")}
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1.15fr 1fr;gap:36px;align-items:stretch;">
       <div class="stack" style="gap:10px;">
@@ -614,6 +612,8 @@ def s_check():
                 notes=notes(
                     t("⏱ 3 мин. Мы просили только поменять оформление. А модель заодно пересчитала темы: похвалу упаковке («аккуратно упаковано») перенесла из темы «повреждения» в «товар в порядке». Доля стала 46 %, в итоговом отчёте — 44 %. По разметке, из которой мы собирали учебный файл, про повреждения 53 отзыва из 87, то есть 61 %. Модель ищет по ключевым словам и пропускает жалобы, написанные своими словами.",
                       "⏱ 3 min. We only asked for a new look. The model also re-classified the themes: praise of packaging (“neatly packed”) moved from “damage” to “product OK”. The share became 46%, and 44% in the final report. By the labels we used to build the practice file, 53 of 87 reviews are about damage — 61%. The model searches by keywords and misses complaints written in other words."),
+                    t("Если спросят про «остальных»: в первом графике у остальных складов 12 %, после перекраски 5 %. Модель пересчитала обе группы.",
+                      "If asked about “the others”: the other warehouses were 12% in the first chart and 5% after restyling. The model re-counted both groups."),
                     t("Вывод про склад N2 от этого не меняется: жалоб на повреждения там во много раз больше, чем у остальных. Меняется число, которое уйдёт руководителю. Поэтому после каждой переделки сверяйте пару чисел с прошлой версией, а темы отзывов проверяйте выборочным чтением.",
                       "The N2 conclusion doesn’t change: there are many times more damage complaints there than elsewhere. What changes is the number that goes to the manager. So after every redo compare a couple of numbers with the previous version, and check review themes by reading a sample."),
                     t("Проверка за 60 секунд, три шага. Строки: сколько было, сколько стало. Одна точка: одно число с графика находите глазами в исходном файле. База процента: от какого месяца и за какой период.",
@@ -635,7 +635,7 @@ def _db_results():
 
 def s_db():
     # filled in once demo_v2/channels/ exists — see s_db_full
-    return s_db_full() if _db_results() else dict(min=5, html=head(t("Большая база", "A large database"), t("Файл не лезет в чат: модель пишет запрос, база считает", "The file won’t fit in a chat: the model writes a query, the database counts")), notes=notes("⏱ 5"))
+    return s_db_full() if _db_results() else dict(min=2, html=head(t("Большая база", "A large database"), t("Файл не лезет в чат: модель пишет запрос, база считает", "The file won’t fit in a chat: the model writes a query, the database counts")), notes=notes("⏱ 5"))
 
 
 def db_bars(rows, w=700, h=330):
@@ -651,6 +651,23 @@ def db_bars(rows, w=700, h=330):
         col = C["amber"] if v == mx else C["grey"]
         out += (f'<rect x="{x:.1f}" y="{h - 40 - bh:.1f}" width="{bw - 18:.1f}" height="{bh:.1f}" rx="4" fill="{col}"/>'
                 f'<text x="{x + (bw - 18) / 2:.1f}" y="{h - 48 - bh:.1f}" text-anchor="middle" font-size="20" font-weight="700" fill="{FG}">{num(v)}</text>'
+                f'<text x="{x + (bw - 18) / 2:.1f}" y="{h - 12}" text-anchor="middle" font-size="17" fill="{MUT}">{t(lb.replace("-", "–"), en[lb])}</text>')
+    return f'<svg viewBox="0 0 {w} {h}">{out}</svg>'
+
+
+def db_ratio(rows, w=700, h=330):
+    vals = [float(r["median_vs_own_channel"]) for r in rows]
+    labs = [r["duration_bucket"].split(": ", 1)[1] for r in rows]
+    en = {"до 1 мин": "< 1 min", "1-5 мин": "1–5 min", "5-10 мин": "5–10 min", "10-20 мин": "10–20 min", "20-40 мин": "20–40 min", "40+ мин": "40+ min"}
+    bw = (w - 20) / len(vals)
+    y1 = h - 40 - 1.0 / 1.4 * (h - 90)
+    out = (f'<line x1="10" y1="{h - 40}" x2="{w - 6}" y2="{h - 40}" stroke="{GRID}" stroke-width="2"/>'
+           f'<line x1="10" y1="{y1:.1f}" x2="{w - 6}" y2="{y1:.1f}" stroke="{C["green"]}" stroke-width="2" stroke-dasharray="7 6"/>')
+    for i, (v, lb) in enumerate(zip(vals, labs)):
+        bh = v / 1.4 * (h - 90)
+        x = 14 + i * bw
+        out += (f'<rect x="{x:.1f}" y="{h - 40 - bh:.1f}" width="{bw - 18:.1f}" height="{bh:.1f}" rx="4" fill="{C["grey"]}"/>'
+                f'<text x="{x + (bw - 18) / 2:.1f}" y="{h - 48 - bh:.1f}" text-anchor="middle" font-size="20" font-weight="700" fill="{FG}">{dec(v, 2)}</text>'
                 f'<text x="{x + (bw - 18) / 2:.1f}" y="{h - 12}" text-anchor="middle" font-size="17" fill="{MUT}">{t(lb.replace("-", "–"), en[lb])}</text>')
     return f'<svg viewBox="0 0 {w} {h}">{out}</svg>'
 
@@ -679,22 +696,20 @@ def s_db_full():
     stats = (f'<div class="stat" style="--k:var(--amber)"><div class="n">{num(full["channels"])}</div><div class="d">{t("каналов: название, подписчики, страна", "channels: name, subscribers, country")}</div></div>'
              f'<div class="stat" style="--k:var(--amber)"><div class="n">{num(full["videos"])}</div><div class="d">{t("видео: длительность, дата, канал", "videos: length, date, channel")}</div></div>'
              f'<div class="stat" style="--k:var(--amber)"><div class="n">{num(full["video_stat_observations"])}</div><div class="d">{t("замеров просмотров по дням", "daily view measurements")}</div></div>')
-    return dict(min=5, html=f'''
-  {head(t("Большая база • кулинарные YouTube-каналы", "A large database • cooking YouTube channels"), t("База обновляется каждый день: файл не выгружаем, спрашиваем базу", "The database updates daily: don’t export a file, ask the database"), k="amber")}
+    return dict(min=2, html=f'''
+  {head(t("Часть 4 • результат и ловушка", "Part 4 • the result and the trap"), t("Длинные видео в 12 раз популярнее? Нет: их снимают большие каналы", "Long videos 12× more popular? No: big channels make them"), k="amber")}
   <div class="body" style="margin-top:12px;">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr) 1.2fr;gap:24px;align-items:end;">{stats}
-      <div class="cap">{t(f"Для урока — обезличенный срез: <b>{num(smp['channels'])}</b> канала, <b>{num(smp['videos'])}</b> видео. Без e-mail, ссылок и id.", f"For the lesson, an anonymised sample: <b>{num(smp['channels'])}</b> channels, <b>{num(smp['videos'])}</b> videos. No e-mails, links or ids.")}</div>
-    </div>
-    <div class="row" style="grid-template-columns:0.95fr 1.05fr;gap:32px;margin-top:20px;align-items:stretch;">
-      <div class="stack" style="gap:12px;">
-        {pr(t("Промпт", "Prompt"), t("В базе таблица videos: длительность и просмотры каждого видео. Напиши SQL-запрос: видео какой длины набирают больше всего просмотров? Объясни каждую строку.", "The database has a videos table: length and views of every video. Write an SQL query: which video length gets the most views? Explain every line."), k="amber")}
-        <div class="code">{sql}</div>
-      </div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:32px;margin-top:10px;align-items:stretch;">
       <div class="stack" style="gap:6px;">
-        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">{t("Типичные просмотры видео по длительности", "Typical views per video by length")}</div>
+        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">{t("Первый запрос: типичные просмотры по длительности", "First query: typical views by length")}</div>
         {db_bars(q2)}
         <div class="note" style="--k:var(--red)">{t(f"20–40 минут — в {ratio:.0f} раз больше коротких? Сравнили каждое видео с обычными роликами <b>его же канала</b> — всего на {(q4[top['duration_bucket']] - 1) * 100:.0f} % выше обычного. Длинные видео просто чаще снимают большие каналы.",
                                                         f"20–40 minutes gets {ratio:.0f}× more than short videos? Compared with ordinary videos <b>of the same channel</b>, they are only {(q4[top['duration_bucket']] - 1) * 100:.0f}% above usual. Big channels simply make long videos more often.")}</div>
+      </div>
+      <div class="stack" style="gap:6px;">
+        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">{t("Второй запрос: видео против обычного видео своего канала", "Second query: a video vs its own channel’s usual video")}</div>
+        {db_ratio(res["q4_duration_vs_own_channel"])}
+        <div class="note" style="--k:var(--green)">{t("1,0 — как обычное видео этого же канала. Все длительности около 1,0.", "1.0 means the same as the channel’s usual video. Every length is about 1.0.")}</div>
       </div>
     </div>
   </div>''',
@@ -710,8 +725,8 @@ def s_db_full():
 
 
 def s_sources():
-    return dict(min=3, html=f'''
-  {head(t("Откуда берутся данные", "Where data comes from"), t("Сначала ищите кнопку «Экспорт», потом API. Скрапинг — последний вариант", "Look for an Export button first, then an API. Scraping is the last option"))}
+    return dict(min=2, html=f'''
+  {head(t("Часть 4 • откуда берутся данные", "Part 4 • where data comes from"), t("Сначала ищите кнопку «Экспорт», потом API. Скрапинг — последний вариант", "Look for an Export button first, then an API. Scraping is the last option"))}
   <div class="body" style="margin-top:18px;">
     <div class="row" style="grid-template-columns:1fr 1.25fr 1fr;gap:22px;align-items:center;">
       <div class="door" style="--k:var(--green)">{icon("export", 52, "var(--green)")}<div class="h">{t("1. Экспорт", "1. Export")}</div>
@@ -722,7 +737,7 @@ def s_sources():
   <span class="st">"subscriberCount"</span>: <span class="nm">"184000"</span>,
   <span class="st">"videoCount"</span>: <span class="nm">"412"</span> }}</div>
         <div class="w">{t("Программа спрашивает сервис и получает ответ вот в таком виде. ИИ пишет скрипт, который превращает это в строки таблицы.", "A program asks the service and gets an answer like this. AI writes a script that turns it into table rows.")}</div>
-        <div class="o">{t("так собрана база каналов со слайда 13", "this is how the slide 13 channel database was collected")}</div></div>
+        <div class="o">{t("так собрана база каналов со слайда 24", "this is how the slide 24 channel database was collected")}</div></div>
       <div class="door" style="--k:var(--red)">{icon("web", 52, "var(--red)")}<div class="h">{t("3. Скрапинг", "3. Scraping")}</div>
         <div class="w">{t("Программа читает страницы сайта, как человек. Перед этим проверьте:", "A program reads website pages like a person would. Before you do it, check:")}</div>
         <ul class="checklist" style="gap:8px;"><li style="font-size:20px;">{t("условия сайта разрешают", "the site’s terms allow it")}</li><li style="font-size:20px;">{t("нет персональных данных", "no personal data")}</li><li style="font-size:20px;">{t("не нагружаете чужой сайт", "you don’t overload the site")}</li></ul></div>
@@ -730,8 +745,8 @@ def s_sources():
     <div class="plaque" style="margin-top:18px;">{t("<b>Вопрос для ИИ:</b> «Какой официальный экспорт или API есть у системы X, чтобы выгрузить продажи за год?»", "<b>Ask the AI:</b> “What official export or API does system X have to download a year of sales?”")}</div>
   </div>''',
                 notes=notes(
-                    t("Перед началом слайда отправьте в чат промпт 6 (отчёт и скрипт): ответ идёт 3–4 минуты, к слайду 15 файл будет готов.",
-                      "Before you start this slide, send prompt 6 (report and script) to the chat: the answer takes 3–4 minutes and will be ready by slide 15."),
+                    t("Перед началом слайда отправьте в чат промпт 6 (отчёт и скрипт): ответ идёт 3–4 минуты, к слайду 28 файл будет готов.",
+                      "Before you start this slide, send prompt 6 (report and script) to the chat: the answer takes 3–4 minutes and will be ready by slide 28."),
                     t("⏱ 3 мин. Данные для анализа почти всегда уже где-то лежат. Первое, что ищем, — кнопку экспорта: она есть в CRM, 1С, рекламных кабинетах, YouTube Studio. Это самый быстрый и безопасный путь.",
                       "⏱ 3 min. The data you need almost always already sits somewhere. First look for an export button: CRM, accounting software, ad accounts and YouTube Studio all have one. It is the fastest and safest route."),
                     t("Второе — официальный API: программный вход в сервис. Ответ приходит в виде JSON, как в середине слайда. Код писать самим не нужно: ИИ напишет скрипт, который превратит ответ в таблицу. Так, через YouTube Data API, собрана база каналов, которую мы только что видели. Пример JSON на слайде упрощён.",
@@ -741,8 +756,8 @@ def s_sources():
 
 
 def s_report():
-    return dict(min=5, html=f'''
-  {head(t("Итог анализа", "The result of the analysis"), t("Руководителю отправляем файл отчёта. Превью в чате может врать", "Send the manager the report file. The chat preview can lie"), k="green")}
+    return dict(min=3, html=f'''
+  {head(t("Часть 5 • ответ Анне", "Part 5 • the answer to Anna"), t("Руководителю отправляем файл отчёта. Превью в чате может врать", "Send the manager the report file. The chat preview can lie"), k="green")}
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:0.95fr 1fr 0.85fr;gap:22px;align-items:center;">
       <div class="stack" style="gap:8px;">
@@ -811,8 +826,8 @@ def s_privacy():
             ("amber", t("Осторожно: внутренние данные компании", "Careful: internal company data"), t("только в рабочем аккаунте (ChatGPT Business/Enterprise, Claude Team/Enterprise, Google Workspace) — там данные не идут на обучение", "only in the work account (ChatGPT Business/Enterprise, Claude Team/Enterprise, Google Workspace) — data is not used for training there")),
             ("red", t("Нельзя без разрешения: клиенты, сотрудники, финансы, здоровье", "Not without approval: customers, staff, finance, health"), t("персональные данные — только в одобренной среде и с согласия владельца данных", "personal data — only in an approved environment with the data owner’s consent"))]
     lr = "".join(f'<div class="lrow" style="--k:var(--{c})"><div class="dot"></div><div><div class="h">{h}</div><div class="d">{d}</div></div></div>' for c, h, d in rows)
-    return dict(min=2, html=f'''
-  {head(t("Данные и приватность", "Data and privacy"), t("Что можно загружать в чат", "What you may upload to a chat"), k="amber")}
+    return dict(min=1, html=f'''
+  {head(t("Часть 5 • данные и приватность", "Part 5 • data and privacy"), t("Что можно загружать в чат", "What you may upload to a chat"), k="amber")}
   <div class="body" style="margin-top:20px;">
     <div class="row" style="grid-template-columns:1.3fr 1fr;gap:44px;align-items:center;">
       <div class="light">{lr}</div>
@@ -836,8 +851,8 @@ def s_hw():
              f'  report.docx     <span class="cm"># {t("1 страница: вопрос, 3 вывода", "1 page: question, 3 findings")}</span>\n'
              f'  recipe.md       <span class="cm"># {t("промпт + скрипт на январь", "prompt + script for January")}</span>\n'
              f'  checks.md       <span class="cm"># {t("60 секунд + «не доказывают»", "60 seconds + “does not prove”")}</span>')
-    return dict(min=4, html=f'''
-  {head(t("Практика и домашнее задание", "Practice and homework"), t("Пакет, который можно отправить руководителю", "A pack you can send to a manager"), t("Файл <code>northstar_2025.xlsx</code>. Ответьте Анне на одно письмо: <b>что с продажами за год и что проверить дальше?</b>", "File <code>northstar_2025.xlsx</code>. Answer Anna’s e-mail: <b>how did sales go this year, and what should we check next?</b>"), k="green")}
+    return dict(min=2, html=f'''
+  {head(t("Часть 5 • домашнее задание", "Part 5 • homework"), t("Пакет, который можно отправить руководителю", "A pack you can send to a manager"), t("Файл <code>northstar_2025.xlsx</code>. Ответьте Анне на одно письмо: <b>что с продажами за год и что проверить дальше?</b>", "File <code>northstar_2025.xlsx</code>. Answer Anna’s e-mail: <b>how did sales go this year, and what should we check next?</b>"), k="green")}
   <div class="body" style="margin-top:18px;">
     <div class="row" style="grid-template-columns:1.2fr 1fr;gap:40px;align-items:center;">
       <div class="files">{files}</div>
@@ -856,13 +871,13 @@ def s_hw():
 
 
 def s_summary():
-    rules = [("cyan", t("Промпт-опись первым", "The describe prompt first"), t("«опиши файл, предложи 5 вопросов, ничего не меняй»", "“describe the file, suggest 5 questions, change nothing”")),
-             ("green", t("Формулы словами", "Formulas in words"), t("«формулами Excel, а не готовыми числами»", "“Excel formulas, not pasted numbers”")),
-             ("violet", t("Один график на один вопрос", "One chart per question"), t("заголовок — вывод, один акцентный цвет", "title = finding, one accent colour")),
-             ("amber", t("Отчёт файлом", "The report as a file"), t("открыть скачанный файл, приложить рецепт", "open the downloaded file, attach the recipe")),
-             ("red", t("60 секунд проверки", "60 seconds of checks"), t("строки, одна точка, процент от чего", "rows, one point, percent of what"))]
+    rules = [("cyan", t("✓ Опись файла", "✓ Describe a file"), t("«опиши файл, предложи 5 вопросов, ничего не меняй»", "“describe the file, suggest 5 questions, change nothing”")),
+             ("green", t("✓ Формула словами", "✓ A formula in words"), t("«формулами Excel, а не готовыми числами» + щёлкнуть ячейку", "“Excel formulas, not pasted numbers” + click a cell")),
+             ("violet", t("✓ График для слайда", "✓ A slide-ready chart"), t("один вопрос — один график, заголовок — вывод", "one question, one chart, title = finding")),
+             ("amber", t("✓ Отчёт на страницу", "✓ A one-page report"), t("открыть скачанный файл, приложить рецепт", "open the downloaded file, attach the recipe")),
+             ("red", t("✓ Проверка за минуту", "✓ A one-minute check"), t("строки, одна точка, процент от чего", "rows, one point, percent of what"))]
     r = "".join(f'<div class="rule" style="--k:var(--{c})"><div class="n">{i + 1}</div><div class="t">{h}<small>{d}</small></div></div>' for i, (c, h, d) in enumerate(rules))
-    return dict(min=2, html=f'''
+    return dict(min=1, html=f'''
   {head(t("Итоги", "Summary"), t("Что забрать с урока", "What to take away"))}
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1.5fr 1fr;gap:50px;align-items:center;">
@@ -877,8 +892,434 @@ def s_summary():
                       "L09 teaser: in Claude an analysis can become an artifact — an interactive page with charts that colleagues open by link. Questions.")))
 
 
-SLIDES = [s_cover, s_hook, s_first, s_doors, s_demo1, s_season, s_charts, s_break, s_demo2, s_found,
-          s_makeover, s_check, s_db, s_sources, s_report, s_causal, s_privacy, s_hw, s_summary]
+
+# ---------------------------------------------------------------- v2.1 (2026-10-17 evening): data concepts, prompt anatomy, bad / good
+REV_RU = list(csv.DictReader((L08 / "demo_v2" / "northstar_reviews_2025.csv").open(encoding="utf-8")))
+REV_EN = list(csv.DictReader((L08 / "demo_v2" / "northstar_reviews_2025_EN.csv").open(encoding="utf-8")))
+
+
+def anatomy(lines, k_default="cyan"):
+    """Prompt split into lines; each line gets a number, a colour and a plain-language 'why'."""
+    rows = ""
+    for i, (txt, why, k) in enumerate(lines, 1):
+        rows += (f'<div class="an-row" style="--k:var(--{k or k_default})"><div class="an-n">{i}</div>'
+                 f'<div class="an-t">{txt}</div><div class="an-w">{why}</div></div>')
+    return f'<div class="an">{rows}</div>'
+
+
+def badgood(bad_q, bad_shots, good_q, good_shots, bad_note, good_note):
+    def col(kind, q, shots, note):
+        k = "amber" if kind == "bad" else "green"
+        lab = t("Быстро", "Quick") if kind == "bad" else t("✓ Под контролем", "✓ Under control")
+        sh = "".join(shot(n, None, k=k, cls=("" if kind == "bad" else "good"), h=h) for n, h in shots)
+        return (f'<div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--{k})"><span class="badge solid" style="--k:var(--{k})">{lab}</span> {q}</div>'
+                f'{sh}<div class="note" style="--k:var(--{k})">{note}</div></div>')
+    return f'<div class="row" style="grid-template-columns:1fr 1fr;gap:28px;align-items:start;">{col("bad", bad_q, bad_shots, bad_note)}{col("good", good_q, good_shots, good_note)}</div>'
+
+
+def s_outcomes():
+    items = [("cyan", t("Опись файла", "Describe a file"), t("за минуту понять, что лежит в таблице", "understand what is in a table in a minute")),
+             ("green", t("Формула словами", "A formula in words"), t("попросить формулу и сводную в Excel", "ask for a formula and a pivot in Excel")),
+             ("violet", t("График для слайда", "A slide-ready chart"), t("тип под вопрос, заголовок — вывод", "the type fits the question, the title states the finding")),
+             ("amber", t("Отчёт на страницу", "A one-page report"), t("файл, который можно переслать", "a file you can forward")),
+             ("red", t("Проверка за минуту", "A one-minute check"), t("строки, одна точка, процент от чего", "rows, one point, percent of what"))]
+    r = "".join(f'<div class="rule" style="--k:var(--{c})"><div class="n">{i + 1}</div><div class="t">{h}<small>{d}</small></div></div>' for i, (c, h, d) in enumerate(items))
+    return dict(min=2, html=f'''
+  {head(t("О чём урок", "What this lesson gives you"), t("Пять навыков, которые вы унесёте сегодня", "Five skills you take away today"))}
+  <div class="body" style="margin-top:10px;">
+    <div class="row" style="grid-template-columns:1.1fr 1fr;gap:44px;align-items:center;">
+      <div class="rules" style="gap:22px;">{r}</div>
+      <div class="stack" style="gap:16px;">
+        <div class="plaque" style="font-size:23px;line-height:1.5;">
+          <div class="kicker" style="--k:var(--amber);margin-bottom:8px;">{t("Задача, на которой учимся", "The task we learn on")}</div>
+          {t("Письмо коммерческого директора: «Что у нас с продажами за год? Почему во втором полугодии реклама стала хуже окупаться? И откуда столько возвратов осенью? Нужна одна страница к пятнице».", "An e-mail from the commercial director: “How did sales go this year? Why did advertising pay off worse in the second half? And why so many returns in the autumn? I need one page by Friday.”")}
+        </div>
+        <div class="note" style="--k:var(--cyan)">{t("Весь урок отвечаем на это письмо. В конце у нас готова страница отчёта.", "We spend the lesson answering this e-mail. At the end we have the report page.")}</div>
+      </div>
+    </div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 2 мин. Расскажите, с чем студенты уйдут: пять навыков на слайде. Каждый мы покажем на живом примере, и почти к каждому будет пара «быстро / под контролем» из настоящих ответов ChatGPT.",
+                      "⏱ 2 min. Say what students will leave with: the five skills on the slide. We show each on a live example, and almost each one gets a “quick / under control” pair from real ChatGPT answers."),
+                    t("Справа задача: письмо Анны, коммерческого директора магазина Northstar. На неё мы отвечаем весь урок. Магазин и данные вымышленные, поэтому файл можно спокойно загружать в любой чат.",
+                      "On the right is the task: an e-mail from Anna, commercial director of the Northstar shop. We answer it throughout the lesson. The shop and data are made up, so the file can go into any chat.")))
+
+
+def s_data_where():
+    tiles = [("green", "grid", t("Таблицы", "Spreadsheets"), t("Excel, Google Таблицы: продажи, бюджет, план", "Excel, Google Sheets: sales, budget, plan"), t("ИИ пишет формулы и сводные", "AI writes formulas and pivots")),
+             ("cyan", "export", t("Выгрузки", "Exports"), t("CSV из CRM, 1С, рекламного кабинета, YouTube Studio", "CSV from a CRM, accounting, ad accounts, YouTube Studio"), t("файл в чат, ИИ пишет код", "file into a chat, AI writes code")),
+             ("amber", "db", t("Базы данных", "Databases"), t("CRM, сайт, склад: миллионы строк, обновляются каждый день", "CRM, website, warehouse: millions of rows, updated daily"), t("ИИ пишет SQL-запрос", "AI writes an SQL query")),
+             ("violet", "chat", t("Тексты", "Text"), t("отзывы, письма, чаты поддержки, опросы", "reviews, e-mails, support chats, surveys"), t("ИИ читает и раскладывает на темы", "AI reads and sorts into themes")),
+             ("red", "sheet", t("Документы", "Documents"), t("PDF-счета, договоры, отчёты партнёров", "PDF invoices, contracts, partner reports"), t("ИИ достаёт цифры в таблицу", "AI pulls the numbers into a table")),
+             ("green", "api", t("События и логи", "Events and logs"), t("клики, заказы по минутам, звонки", "clicks, orders by the minute, calls"), t("обычно считает аналитик по базе", "usually an analyst queries the database"))]
+    d = "".join(f'<div class="door" style="--k:var(--{k})">{icon(ic, 44, f"var(--{k})")}<div class="h">{h}</div><div class="w">{w}</div><div class="o">{o}</div></div>' for k, ic, h, w, o in tiles)
+    return dict(min=3, html=f'''
+  {head(t("Часть 1 • что такое данные", "Part 1 • what data is"), t("Где на работе лежат данные", "Where data lives at work"))}
+  <div class="body" style="margin-top:14px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">{d}</div>
+    <div class="plaque" style="margin-top:16px;">{t("<b>Чаще всего у вас таблица или выгрузка.</b> Иногда текст. Реже база. Сегодня разберём все три.", "<b>Most often you have a spreadsheet or an export.</b> Sometimes text. Less often a database. Today we cover all three.")}</div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Прежде чем загружать файлы в чат, договоримся, что такое данные. Это любые записи, из которых можно что-то посчитать или прочитать: таблицы, выгрузки из систем, базы, тексты, документы, логи.",
+                      "⏱ 3 min. Before uploading files to a chat, let’s agree what data is: any records you can count or read something from — spreadsheets, system exports, databases, text, documents, logs."),
+                    t("В нижней строке каждой плитки — как с этим работает ИИ. Это главное: с таблицей ИИ пишет формулу или код, с текстом читает, с базой пишет запрос. Спросите в чат: «Какие из этих данных есть у вас на работе?»",
+                      "The bottom line of each tile says how AI works with it. That’s the key: with a table AI writes a formula or code, with text it reads, with a database it writes a query. Ask the chat: “Which of these do you have at work?”")))
+
+
+def s_table_text():
+    rows = "".join(f'<tr><td>{r["order_date"]}</td><td>{r["channel"]}</td><td>{r["category"]}</td><td>{r["region"]}</td><td class="num">{int(float(r["orders"]))}</td><td class="num">{float(r["revenue"]):,.0f}</td></tr>' for r in RAW[:6])
+    rev = REV_RU if LANG == "ru" else REV_EN
+    picks = [rev[1], rev[2]] + [x for x in rev if x["warehouse"] == "N2" and x["review_date"] >= "2025-09" and x["rating"] in ("1", "2")][:2]
+    rv = "".join(f'<div class="rv"><span class="rv-s">{"★" * int(x["rating"])}</span> {x["comment"]}<small>{x["warehouse"]} · {x["review_date"]}</small></div>' for x in picks)
+    return dict(min=3, html=f'''
+  {head(t("Часть 1 • два вида данных", "Part 1 • two kinds of data"), t("Таблица и текст: ИИ работает с ними по-разному", "Table and text: AI handles them differently"))}
+  <div class="body" style="margin-top:14px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+      <div class="stack" style="gap:10px;">
+        <div class="cap" style="font-size:22px;font-weight:700;color:var(--fg);">{t("Лист Sales: числа, даты, категории", "Sales sheet: numbers, dates, categories")}</div>
+        <table class="tbl"><tr><th>date</th><th>channel</th><th>category</th><th>region</th><th class="num">orders</th><th class="num">revenue</th></tr>{rows}</table>
+        <div class="note" style="--k:var(--cyan)">{t("<b>ИИ считает:</b> пишет формулу или код, программа складывает и делит. Ошибка — неверная формула.", "<b>AI counts:</b> it writes a formula or code, a program adds and divides. The typical error is a wrong formula.")}</div>
+      </div>
+      <div class="stack" style="gap:10px;">
+        <div class="cap" style="font-size:22px;font-weight:700;color:var(--fg);">{t("Лист Reviews: живые фразы покупателей", "Reviews sheet: customers’ own words")}</div>
+        <div class="rvs">{rv}</div>
+        <div class="note" style="--k:var(--violet)">{t("<b>ИИ читает:</b> относит каждый отзыв к теме и считает темы. Ошибка — не та тема.", "<b>AI reads:</b> it assigns each review to a theme and counts themes. The typical error is the wrong theme.")}</div>
+      </div>
+    </div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Слева настоящие первые строки листа Sales, справа настоящие отзывы из листа Reviews того же файла. Это два разных мира.",
+                      "⏱ 3 min. Left: the real first rows of the Sales sheet. Right: real reviews from the Reviews sheet of the same file. These are two different worlds."),
+                    t("С таблицей ИИ сам ничего не складывает в уме: он пишет формулу или код, считает программа. Ошибка обычно в формуле — не тот столбец, не тот период. С текстом наоборот: ИИ сам читает каждый отзыв и решает, о чём он. Ошибка — неверная тема. Через полчаса мы увидим именно такую ошибку.",
+                      "With a table, AI doesn’t add in its head: it writes a formula or code, a program counts. Errors are usually in the formula — wrong column, wrong period. With text it’s the opposite: AI reads each review and decides what it is about. The error is a wrong theme. In half an hour we’ll see exactly that error.")))
+
+
+def s_anatomy_row():
+    r = RAW[11]
+    cells = [("order_date", r["order_date"], "cyan", t("дата", "date")), ("channel", r["channel"], "violet", t("категория", "category")),
+             ("category", r["category"], "violet", t("категория", "category")), ("region", r["region"], "violet", t("категория", "category")),
+             ("warehouse", r["warehouse"], "violet", t("категория", "category")), ("orders", r["orders"], "green", t("число, шт.", "number, pcs")),
+             ("revenue", r["revenue"], "amber", t("число, $", "number, $")), ("ad_spend", r["ad_spend"], "amber", t("число, $", "number, $")),
+             ("returns", r["returns"], "green", t("число, шт.", "number, pcs"))]
+    head_row = "".join(f'<th style="border-bottom:4px solid var(--{k})">{c}</th>' for c, _, k, _ in cells)
+    val_row = "".join(f'<td class="big">{v}</td>' for _, v, _, _ in cells)
+    typ_row = "".join(f'<td class="typ" style="color:var(--{k})">{ty}</td>' for _, _, k, ty in cells)
+    return dict(min=3, html=f'''
+  {head(t("Часть 1 • из чего состоит таблица", "Part 1 • what a table is made of"), t("Одна строка: что это за запись и что в ней измеряют", "One row: what the record is and what it measures"))}
+  <div class="body" style="margin-top:14px;">
+    <table class="tbl rowx"><tr>{head_row}</tr><tr>{val_row}</tr><tr>{typ_row}</tr></table>
+    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px;flex:0 0 auto;">
+      <div class="note" style="--k:var(--cyan)">{t("<b>Строка</b> — продажи одного канала по одной категории, региону и складу за день. Не заказ и не клиент.", "<b>A row</b> is the sales of one channel for one category, region and warehouse on one day. Not an order, not a customer.")}</div>
+      <div class="note" style="--k:var(--violet)">{t("<b>Категории</b> — то, по чему режем: канал, регион, склад. По ним строят разрезы.", "<b>Categories</b> are what we slice by: channel, region, warehouse. Breakdowns are built on them.")}</div>
+      <div class="note" style="--k:var(--amber)">{t("<b>Числа</b> — то, что складываем и делим. У каждого свои единицы: доллары или штуки.", "<b>Numbers</b> are what we add and divide. Each has its unit: dollars or pieces.")}</div>
+    </div>
+    <div class="plaque" style="margin-top:20px;">{t("<b>Первый вопрос к любому файлу:</b> что такое одна строка? Если перепутать, все «средние на клиента» будут неверны.", "<b>First question for any file:</b> what is one row? Get it wrong and every “average per customer” is wrong.")}</div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Одна настоящая строка файла крупно. Пройдите по цветам: голубой — дата, фиолетовый — категории, по которым режем, зелёный и жёлтый — числа со своими единицами.",
+                      "⏱ 3 min. One real row of the file, enlarged. Walk through the colours: blue is the date, violet the categories we slice by, green and amber the numbers with their units."),
+                    t(f"Вопрос в чат: «Что такое одна строка в этом файле?» Частый ответ — «заказ». Неверно: в этой строке {r["orders"]} заказов. Это продажи канала за день в одном разрезе. Модель тоже может ошибиться, поэтому первый промпт урока просит её описать строку.",
+                      f"Ask the chat: “What is one row in this file?” A common answer is “an order”. Wrong: this row holds {r["orders"]} orders. It is a channel’s sales for a day in one slice. The model can get this wrong too, so the first prompt of the lesson asks it to describe a row.")))
+
+
+def s_scale():
+    steps = [(73, t("десятки строк", "dozens of rows"), t("можно вставить прямо в сообщение", "can be pasted into a message"), "green"),
+             (1261, t("тысячи строк", "thousands of rows"), t("наш файл Northstar: загружаем файлом", "our Northstar file: upload as a file"), "cyan"),
+             (46132, t("десятки тысяч", "tens of thousands"), t("срез базы каналов: файл ещё работает", "channel DB sample: a file still works"), "violet"),
+             (416809, t("сотни тысяч и больше", "hundreds of thousands+"), t("вся база видео: спрашиваем базу запросом", "the whole video DB: ask the database with a query"), "amber")]
+    import math
+    mx = math.log10(416809)
+    hb = "".join(f'<div class="hb" style="--k:var(--{k})"><div class="lab">{lab}<small>{d}</small></div>'
+                 f'<div class="tr" style="height:52px"><div class="b" style="width:{math.log10(n) / mx * 62:.1f}%"></div>'
+                 f'<div class="v" style="left:calc({math.log10(n) / mx * 62:.1f}% + 14px);font-size:38px;">{num(n)}</div></div></div>' for n, lab, d, k in steps)
+    return dict(min=3, html=f'''
+  {head(t("Часть 1 • сколько данных", "Part 1 • how much data"), t("От размера данных зависит, куда их нести", "Size decides where the data goes"))}
+  <div class="body" style="margin-top:16px;">
+    <div class="hbars" style="gap:26px;">{hb}</div>
+    <div class="cap" style="margin-top:14px;">{t("Шкала логарифмическая: каждая ступень примерно в 10 раз больше предыдущей.", "Log scale: each step is roughly 10× the previous one.")}</div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Четыре ступени. Десятки строк можно вставить текстом прямо в сообщение. Тысячи, как наш файл, загружаем файлом. Десятки тысяч, как срез базы каналов, файл ещё выдерживает. Сотни тысяч и миллионы, да ещё обновляемые каждый день, в файл не выгружают: базу спрашивают запросом.",
+                      "⏱ 3 min. Four steps. Dozens of rows can be pasted as text into a message. Thousands, like our file, go in as a file. Tens of thousands, like the channel DB sample, a file still handles. Hundreds of thousands and millions, updated daily, aren’t exported to a file: you ask the database with a query."),
+                    t("Шкала логарифмическая, иначе первые три полоски были бы не видны. На практике чат начинает заметно тормозить от нескольких десятков тысяч строк.",
+                      "The scale is logarithmic, otherwise the first three bars would be invisible. In practice a chat slows down noticeably from a few tens of thousands of rows.")))
+
+
+def s_ai_data():
+    g, mut, fg = "#5f6e84", "#a3b1c4", "#f1f5f9"
+    c = {"cy": "#38bdf8", "gr": "#34d399", "am": "#fbbf24", "vi": "#c084fc"}
+
+    def box(x, y, w, h, col, title, sub):
+        return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="14" fill="#0f1624" stroke="{col}" stroke-width="2.5"/>'
+                f'<text x="{x + w / 2}" y="{y + 38}" text-anchor="middle" font-size="24" font-weight="700" fill="{fg}">{title}</text>'
+                f'<text x="{x + w / 2}" y="{y + 68}" text-anchor="middle" font-size="18" fill="{mut}">{sub}</text>')
+    svg = '<svg class="dia" viewBox="0 0 1440 470">' + ARROW.format(id="ad", c=g)
+    svg += (f'<text x="20" y="40" font-size="20" font-weight="700" fill="{c["gr"]}">{t("ДАННЫЕ", "DATA")}</text>'
+            f'<text x="20" y="300" font-size="20" font-weight="700" fill="{c["vi"]}">{t("ИИ", "AI")}</text>'
+            f'<line x1="20" y1="230" x2="1420" y2="230" stroke="{g}" stroke-dasharray="6 6"/>')
+    svg += box(120, 60, 300, 100, c["gr"], t("файл или база", "file or database"), t("1 261 строка остаётся там", "1,261 rows stay there"))
+    svg += box(560, 60, 320, 100, c["gr"], t("программа считает", "a program counts"), t("Excel · Python · база", "Excel · Python · database"))
+    svg += box(1020, 60, 300, 100, c["gr"], t("результат", "result"), t("таблица · график · файл", "table · chart · file"))
+    svg += box(120, 320, 300, 100, c["cy"], t("ваш вопрос", "your question"), t("обычными словами", "in plain words"))
+    svg += box(560, 320, 320, 100, c["vi"], t("модель пишет", "the model writes"), t("формулу · код · SQL", "formula · code · SQL"))
+    svg += box(1020, 320, 300, 100, c["vi"], t("модель объясняет", "the model explains"), t("словами, с числами", "in words, with numbers"))
+    for x1, y1, x2, y2 in ((420, 370, 552, 370), (720, 320, 720, 168), (880, 110, 1012, 110), (1170, 160, 1170, 312), (420, 110, 552, 110)):
+        svg += f'<path d="M{x1} {y1} L{x2} {y2}" stroke="{g}" stroke-width="3" fill="none" marker-end="url(#ad)"/>'
+    svg += (f'<text x="736" y="250" font-size="18" fill="{mut}">{t("код уходит к данным", "code goes to the data")}</text>'
+            f'<circle cx="270" cy="440" r="0"/>'
+            f'<text x="1180" y="250" font-size="18" fill="{mut}">{t("ответ возвращается", "the answer comes back")}</text>')
+    svg += '</svg>'
+    return dict(min=3, html=f'''
+  {head(t("Часть 1 • главная схема урока", "Part 1 • the key diagram"), t("Данные остаются в файле. ИИ пишет инструкцию, считает программа", "Data stays in the file. AI writes instructions, a program counts"), k="violet")}
+  <div class="body" style="margin-top:6px;">
+    {svg}
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:24px;flex:0 0 auto;">
+      <div class="plaque">{t("<b>Вы в двух точках:</b> задаёте вопрос и проверяете результат.", "<b>You stand at two points:</b> asking the question and checking the result.")}</div>
+      <div class="plaque g">{t("<b>Правило:</b> если ИИ называет число, спросите, какой программой оно посчитано.", "<b>Rule:</b> when AI states a number, ask which program computed it.")}</div>
+    </div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Это главная схема урока, к ней будем возвращаться. Верхняя дорожка — данные: файл или база, программа, которая считает, результат. Нижняя — ИИ: он читает ваш вопрос и названия колонок, пишет формулу, код или запрос. Эта инструкция уходит к данным, программа выполняет её, а модель пересказывает результат словами.",
+                      "⏱ 3 min. This is the key diagram; we’ll come back to it. Top lane — data: the file or database, the program that counts, the result. Bottom lane — AI: it reads your question and the column names, writes a formula, code or a query. That instruction goes to the data, the program runs it, and the model retells the result in words."),
+                    t("Отсюда простое правило: число из ответа ИИ должно быть посчитано программой. Если модель «просто знает» число, это догадка. Вы стоите в двух точках: в начале задаёте вопрос, в конце проверяете.",
+                      "Hence a simple rule: a number in an AI answer should be computed by a program. If the model “just knows” a number, it’s a guess. You stand at two points: you ask at the start and check at the end.")))
+
+
+def s_data_problems():
+    dup = next(r for i, r in enumerate(RAW) if tuple(r.values()) in {tuple(x.values()) for x in RAW[:i]})
+    items = [("red", t("Дубль строки", "A duplicated row"), f'{dup["order_date"]} · {dup["channel"]} · {dup["category"]} · {float(dup["revenue"]):,.1f} ×2', t("выручка завышена на эту сумму", "revenue is inflated by this amount")),
+             ("amber", t("Дата текстом", "A date as text"), f'{TEXT_DATE}  ←  2025-05-10?', t("10 мая или 5 октября? Зависит от формата", "10 May or 5 October? Depends on the format")),
+             ("violet", t("Ноль или пропуск?", "Zero or missing?"), "Email · ad_spend = 0", t("у Email рекламы нет. Модель назвала такие нули «пропусками»", "Email has no ads. The model called these zeros “missing”")),
+             ("cyan", t("Разные единицы", "Mixed units"), t("1 200 (руб.) и 15 ($) в одной колонке", "1,200 (RUB) and 15 ($) in one column"), t("пример из жизни: сложить их нельзя", "a real-life example: they can’t be added"))]
+    d = "".join(f'<div class="door" style="--k:var(--{k})"><div class="h">{h}</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">{c}</div><div class="w">{w}</div></div>' for k, h, c, w in items)
+    return dict(min=3, html=f'''
+  {head(t("Часть 1 • живые данные", "Part 1 • real data"), t("Четыре ловушки в живых данных, три — из нашего файла", "Four traps in real data, three of them in our file"), k="red")}
+  <div class="body" style="margin-top:16px;">
+    <div class="doors">{d}</div>
+    <div class="plaque" style="margin-top:20px;">{t("<b>Модель такие вещи часто находит, но не всегда правильно понимает.</b> Что значит ноль и какая дата верная, знает владелец данных.", "<b>The model often finds these, but doesn’t always understand them.</b> The data owner knows what a zero means and which date is right.")}</div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. В учебный файл мы специально положили несколько типичных проблем. Дубль: одна строка продаж записана дважды, выручка завышена. Дата текстом 10/05/2025: это 10 мая или 5 октября? Нули в рекламе у Email и Organic: рекламы там просто нет. Разные единицы — пример из жизни, его в нашем файле нет.",
+                      "⏱ 3 min. We deliberately put a few typical problems into the practice file. A duplicate: one sales row written twice, revenue inflated. A text date 10/05/2025: is it 10 May or 5 October? Zeros in ad spend for Email and Organic: they simply have no ads. Mixed units is a real-life example, not in our file."),
+                    t("Почему это важно: в нашем прогоне ChatGPT сам нашёл дубль, но нули назвал «пропусками», а дату текстом не заметил. Модель видит странности, но смысл знает только владелец данных.",
+                      "Why it matters: in our run ChatGPT found the duplicate itself, but called the zeros “missing” and missed the text date. The model sees oddities, but only the data owner knows the meaning.")))
+
+
+def s_nocode():
+    return dict(min=3, html=f'''
+  {head(t("Часть 1 • эксперимент", "Part 1 • experiment"), t("73 строки прямо в сообщении: модель посчитала верно. Почему так всё равно не делаем", "73 rows pasted into a message: the model got it right. Why we still don’t do it"), k="amber")}
+  <div class="body" style="margin-top:12px;">
+    <div class="row" style="grid-template-columns:0.75fr 1fr;gap:26px;align-items:start;">
+      <div class="stack" style="gap:8px;">
+        {shot("b0_paste", t("запрос: 73 строки CSV, «без инструментов и кода»", "prompt: 73 CSV rows, “no tools or code”"), k="amber", h=330)}
+      </div>
+      <div class="stack" style="gap:10px;">
+        {shot("b0_answer", t("ответ ChatGPT, 17.10.2026", "ChatGPT answer, 17 Oct 2026"), k="green", cls="good", h=300)}
+        <div class="big3">
+          <div class="note" style="--k:var(--green)">{t("<b>Сумма верная</b>, дубль и пустой регион найдены.", "<b>The total is right</b>; the duplicate and blank region found.")}</div>
+          <div class="note" style="--k:var(--red)">{t("<b>Хода расчёта не видно.</b> Повторить и проверить нечем.", "<b>No visible working.</b> Nothing to repeat or check.")}</div>
+          <div class="note" style="--k:var(--amber)">{t("<b>1 261 строку</b> так уже не вставишь. Нужен файл и код.", "<b>1,261 rows</b> won’t paste like this. You need a file and code.")}</div>
+        </div>
+      </div>
+    </div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Настоящий прогон 17 октября 2026: мы вставили 73 строки учебного CSV прямо в сообщение и попросили не пользоваться инструментами. ChatGPT посчитал выручку верно (256 045 без дубля) и нашёл все четыре проблемы. Про строку с 66 возвратами при 62 заказах написал «требует проверки».",
+                      "⏱ 3 min. A real run on 17 Oct 2026: we pasted 73 rows of the practice CSV into a message and asked for no tools. ChatGPT got revenue right (256,045 without the duplicate) and found all four problems. For the row with 66 returns on 62 orders it said “needs checking”."),
+                    t("Для сравнения: 13 октября на том же файле другие модели без кода «починили» эту строку: «вероятно, 6», хотя в источнике было 4. Модели стали аккуратнее. Но хода расчёта не видно, и реальный файл на тысячи строк в сообщение не поместится. Поэтому дальше работаем с файлом и смотрим, какой код написала модель.",
+                      "For comparison: on 13 Oct, on the same file, other models without code “fixed” that row to “probably 6”, while the source said 4. Models have become more careful. But the working is invisible, and a real file of thousands of rows won’t fit in a message. So from here on we work with the file and look at the code the model wrote.")))
+
+
+def s_p1_anatomy():
+    lines = [(t("Опиши этот файл: что такое одна строка,", "Describe this file: what one row is,"), t("сначала понять данные, а не считать", "understand the data first, not compute"), "cyan"),
+             (t("сколько строк, какой период,", "how many rows, what period,"), t("числа, которые вы потом сверите", "numbers you’ll check later"), "green"),
+             (t("какие проблемы в данных.", "what data problems."), t("дубли и странности — до расчётов", "duplicates and oddities — before any maths"), "amber"),
+             (t("Предложи 5 вопросов, которые задал бы руководитель.", "Suggest 5 questions a manager would ask."), t("план работы: выбираем вопрос из письма", "a work plan: pick the question from the e-mail"), "violet"),
+             (t("Ничего пока не меняй.", "Don’t change anything yet."), t("иначе модель молча «почистит» файл", "or the model quietly “cleans” the file"), "red")]
+    return dict(min=3, html=f'''
+  {head(t("Часть 2 • промпт 1 по строкам", "Part 2 • prompt 1 line by line"), t("Первый промпт к любому файлу: опись, а не «найди инсайты»", "The first prompt for any file: a description"))}
+  <div class="body" style="margin-top:16px;">
+    {anatomy(lines)}
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Разберите промпт по строкам. Первая строка заставляет модель сначала понять, что лежит в файле. Вторая даёт числа для сверки: 1 261 строка, 2025 год. Третья просит найти проблемы до расчётов. Четвёртая превращает ответ в план: пять вопросов руководителя. Пятая запрещает молча править файл.",
+                      "⏱ 3 min. Go through the prompt line by line. Line 1 makes the model understand the file first. Line 2 gives numbers to check: 1,261 rows, 2025. Line 3 asks for problems before any maths. Line 4 turns the answer into a plan: five manager questions. Line 5 forbids silent edits."),
+                    t("Промпт целиком лежит в шпаргалке. Студентам его можно копировать для любого своего файла.",
+                      "The full prompt is in the cheatsheet. Students can copy it for any file of their own.")))
+
+
+def s_bg_insights():
+    return dict(min=4, html=f'''
+  {head(t("Быстро / под контролем #1", "Quick / under control #1"), t("«Найди инсайты» тоже работает. Но вопросы выбирает модель", "“Find insights” works too. But the model picks the questions"), k="amber")}
+  <div class="body" style="margin-top:10px;">
+    {badgood(t("«Вот файл. Найди интересные инсайты.»", "“Here is the file. Find interesting insights.”"), [("b1_top", 360), ("b1_dup", 80)],
+             t("Промпт 1: опись + 5 вопросов + ничего не меняй", "Prompt 1: description + 5 questions + change nothing"), [("p1_questions", 330)],
+             t("Модель нашла Social и N2. Но сравнения выбрала сама (кварталы), а дубль <b>оставила в расчётах</b>.", "The model found Social and N2. But it chose the comparisons itself (quarters) and <b>kept the duplicate in the maths</b>."),
+             t("✓ 1 261 строка, период, дубль · ✗ 632 нуля в рекламе назвала «пропусками» · ✗ дату текстом не заметила. <b>Берём вопрос 1.</b>", "✓ 1,261 rows, period, duplicate · ✗ called 632 zero ad-spend values “missing” · ✗ missed the text date. <b>We take question 1.</b>"))}
+  </div>''',
+                notes=notes(
+                    t("⏱ 4 мин. Результат 17 октября: на «найди интересные инсайты» ChatGPT за полторы минуты нашёл обе главные истории — падение отдачи Social и возвраты на складе N2. Модели стали сильными.",
+                      "⏱ 4 min. An honest result from 17 Oct: on “find interesting insights” ChatGPT found both main stories in a minute and a half — Social’s falling return and N2 returns. Models have become strong."),
+                    t("Справа ответ на промпт 1. Отметьте вслух, что верно: 1 261 строка, период, дубль. И что нет: «отсутствуют 632 значения ad_spend» — это нули, у Email и Organic рекламы нет; дату текстом 10/05/2025 модель не заметила. Переспросите: «Это пропуски или нули?» Из пяти вопросов берём первый, про каналы с учётом рекламы, — он совпадает с письмом.",
+                      "On the right: the answer to prompt 1. Say aloud what is right: 1,261 rows, period, duplicate. And what isn’t: “632 ad_spend values missing” — they are zeros, Email and Organic have no ads; the model missed the text date 10/05/2025. Ask back: “Missing or zeros?” Of the five questions we take the first, channels including ad spend — it matches the e-mail."),
+                    t("Но посмотрите внимательнее. Сравнения модель выбрала сама: кварталы, полугодия. Дубль нашла, но написала «расчёты сохраняют исходные строки» — то есть дубль остался в цифрах. На вопрос Анны «что с продажами за год» прямого ответа нет. Промпт-опись даёт план и оставляет выбор вам.",
+                      "But look closer. The model chose the comparisons itself: quarters, half-years. It found the duplicate but wrote “calculations keep the original rows” — so the duplicate stayed in the numbers. Anna’s question “how did sales go this year” has no direct answer. The description prompt gives a plan and leaves the choice to you.")))
+
+
+def s_p2_anatomy():
+    lines = [(t("Добавь в книгу лист «Отдача рекламы»:", "Add a sheet “Ad return” to the workbook:"), t("где появится результат", "where the result appears"), "cyan"),
+             (t("по месяцам … для Search и Social.", "by month … for Search and Social."), t("разрез: время и каналы", "the breakdown: time and channels"), "violet"),
+             (t("выручка, рекламный расход и выручка на $1 рекламы.", "revenue, ad spend and revenue per $1 of ads."), t("метрика: выручка ÷ расход", "the metric: revenue ÷ spend"), "amber"),
+             (t("Считай формулами Excel, а не готовыми числами.", "Use Excel formulas, not pasted numbers."), t("чтобы проверить и пересчитать", "so you can check and recalculate"), "green"),
+             (t("Построй линейный график", "Build a line chart"), t("тип под вопрос «как менялось»", "the type for “how did it change”"), "violet"),
+             (t("и дай скачать .xlsx.", "and let me download the .xlsx."), t("результат — файл, а не текст в чате", "the result is a file, not chat text"), "cyan")]
+    return dict(min=3, html=f'''
+  {head(t("Часть 2 • промпт 2 по строкам", "Part 2 • prompt 2 line by line"), t("Формула словами: каждая строка промпта за что-то отвечает", "A formula in words: each line has a job"), k="green")}
+  <div class="body" style="margin-top:16px;">
+    {anatomy(lines, "green")}
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Это вопрос 1 из ответа модели: какие каналы выгоднее с учётом рекламы. Разбираем промпт. Где результат — новый лист. Разрез — месяцы и два рекламных канала. Метрика — выручка на доллар рекламы, то есть выручка, делённая на расход. Формулы, а не числа — иначе проверить нечего. Линейный график — потому что вопрос «как менялось во времени». И файл на выходе.",
+                      "⏱ 3 min. This is question 1 from the model’s answer: which channels pay off including ad spend. Line by line: where the result goes — a new sheet; the breakdown — months and two ad channels; the metric — revenue per ad dollar, i.e. revenue divided by spend; formulas, not numbers — otherwise nothing to check; a line chart — because the question is “how did it change over time”; and a file as output."),))
+
+
+def s_bg_formulas():
+    return dict(min=3, html=f'''
+  {head(t("Быстро / под контролем #2", "Quick / under control #2"), t("Числа в ячейках проверить нельзя. Формулы — можно", "Numbers in cells can’t be checked. Formulas can"), k="green")}
+  <div class="body" style="margin-top:10px;gap:12px;">
+    <div class="row" style="grid-template-columns:330px 1fr;gap:20px;align-items:center;flex:0 0 auto;">
+      <div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--amber)"><span class="badge solid" style="--k:var(--amber)">{t("Быстро", "Quick")}</span> {t("Лист из ChatGPT: в ячейках готовые числа", "Sheet from ChatGPT: plain numbers in the cells")}</div>
+        <div class="note" style="--k:var(--amber)">{t("Откуда 5,39 — не видно. Поменяли файл — числа не пересчитались.", "Where 5.39 comes from is invisible. Change the file — numbers don’t update.")}</div></div>
+      {shot("p2_roas_sheet", None, k="amber", h=300)}
+    </div>
+    <div class="row" style="grid-template-columns:330px 1fr;gap:20px;align-items:center;flex:0 0 auto;margin-top:14px;">
+      <div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">{t("✓ Под контролем", "✓ Under control")}</span> {t("Excel: в строке fx формула СУММЕСЛИМН", "Excel: a SUMIFS formula in the fx bar")}</div>
+        <div class="note" style="--k:var(--green)">{t("Видно, какие столбцы сложены и за какой месяц. Исправление одной фразой: «замени числа формулами».", "You can see which columns are summed for which month. The fix is one phrase: “replace the numbers with formulas”.")}</div></div>
+      {shot("xl_fx_sumifs", None, k="green", cls="good")}
+    </div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Слева реальный лист, который вернул ChatGPT в нашем прогоне: в ячейках числа. Справа та же таблица в Excel, где выручка посчитана формулой СУММЕСЛИМН по листу Sales, а отдача — делением =B2/C2. Числа совпадают, но проверить можно только правую.",
+                      "⏱ 3 min. Left: the real sheet ChatGPT returned in our run — numbers in the cells. Right: the same table in Excel, revenue as SUMIFS over the Sales sheet and return as =B2/C2. The numbers match, but only the right one can be checked."),
+                    t("Правило: щёлкните любую ячейку с результатом. Видите число — попросите «замени числа формулами». Эталонная книга: demo_v2/excel_demo/northstar_2025_formulas.xlsx.",
+                      "Rule: click any result cell. See a number — ask “replace the numbers with formulas”. Reference workbook: demo_v2/excel_demo/northstar_2025_formulas_EN.xlsx.")))
+
+
+def s_bg_growth():
+    return dict(min=4, html=f'''
+  {head(t("Плохо / хорошо • сезонность", "Weak / good • seasonality"), t("«Одно число для слайда» — и модель выбрала самое громкое", "“One number for the slide” — and the model picked the loudest"), k="amber")}
+  <div class="body" style="margin-top:10px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:28px;align-items:start;">
+      <div class="stack" style="gap:8px;">
+        <div class="bg-q" style="--k:var(--red)"><span class="badge solid" style="--k:var(--red)">{t("✗ Так себе", "✗ Weak")}</span> {t("«Насколько выросли продажи за год? Одним числом для слайда.»", "“How much did sales grow this year? One number for the slide.”")}</div>
+        {shot("b3_bad", None, k="red", cls="bad", h=120)}
+        <div class="note" style="--k:var(--red)">{t("+161,7 % — декабрь к январю. Январь — самый слабый месяц, декабрь — распродажи. Звучит как рост бизнеса, а это сезон.", "+161.7% is December vs January. January is the weakest month, December is sales season. It sounds like growth; it’s the season.")}</div>
+        <div class="cap" style="font-size:20px;font-weight:700;color:var(--fg);margin-top:6px;">{t("Выручка по месяцам", "Revenue by month")}</div>
+        {s6_chart(1000, 380)}
+      </div>
+      <div class="stack" style="gap:8px;">
+        <div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">{t("✓ Хорошо", "✓ Good")}</span> {t("«Посчитай рост тремя способами, для каждого укажи базу и период. Какое число на слайд и почему?»", "“Compute growth three ways, give the base and period for each. Which number goes on the slide and why?”")}</div>
+        {shot("b3_table", None, k="green", cls="good", h=420)}
+        <div class="note" style="--k:var(--green)">{t("Три числа с базой и вывод: на слайд — «второе полугодие примерно на 40 % выше первого».", "Three numbers with their base and a verdict: “the second half is about 40% above the first”.")}</div>
+      </div>
+    </div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Настоящий прогон 17 октября. На просьбу дать «одно число для слайда» модель ответила: «+161,7 % — рост выручки декабря к январю». Число верное, но январь после праздников — самый слабый месяц, а декабрь — распродажи. Руководитель прочтёт это как рост бизнеса в два с половиной раза.",
+                      "⏱ 3 min. A real run from 17 Oct. Asked for “one number for the slide”, the model said: “+161.7% — December revenue vs January”. The number is right, but January after the holidays is the weakest month and December is sales season. A manager will read it as the business growing 2.5×."),
+                    t("Хороший запрос просит три способа и базу для каждого. Модель сама предложила число, которое не вводит в заблуждение: второе полугодие к первому, около 40 %, и оговорилась, что данных за 2024 год нет, поэтому «год к году» сказать нельзя. Слева внизу график из нашего файла, на нём видны обе базы.",
+                      "The good prompt asks for three ways and the base for each. The model itself proposed the fair number: second half vs first, about 40%, and noted there is no 2024 data, so “year over year” can’t be claimed. Bottom left: the chart from our file showing both bases."),
+                    t("Текст первого запроса на слайде набран заново: в окне чата он при вводе задвоился, ответ от этого не зависит.",
+                      "The first prompt’s text on the slide is retyped: in the chat window it got duplicated while typing; the answer doesn’t depend on it.")))
+
+
+def s_p34_anatomy():
+    l3 = [(t("Посчитай долю возвратов", "Compute the return rate"), t("метрика: возвраты ÷ заказы", "metric: returns ÷ orders"), "amber"),
+          (t("по регионам и категориям", "by region and category"), t("разрез: две оси таблицы", "breakdown: two axes"), "violet"),
+          (t("за сентябрь–декабрь", "for September–December"), t("период, о котором спросила Анна", "the period Anna asked about"), "cyan"),
+          (t("и покажи тепловой картой.", "and show it as a heatmap."), t("тип: аномалия видна цветом", "type: the outlier shows as colour"), "green")]
+    l4 = [(t("Для склада с самой высокой долей возвратов", "For the warehouse with the highest return rate"), t("модель сама находит разрез", "the model finds the slice"), "amber"),
+          (t("разложи отзывы на темы", "sort the reviews into themes"), t("текст → категории", "text → categories"), "violet"),
+          (t("и сравни с остальными складами.", "and compare with the other warehouses."), t("база сравнения", "the base for comparison"), "cyan"),
+          (t("Покажи 5 примеров отзывов.", "Show 5 example reviews."), t("проверка глазами", "a check by eye"), "green")]
+    return dict(min=5, html=f'''
+  {head(t("Часть 3 • демо 2 • промпты 3 и 4", "Part 3 • demo 2 • prompts 3 and 4"), t("За год 6 % возвратов. В одной клетке — 24,8 %", "6% returns for the year. One cell shows 24.8%"), k="violet")}
+  <div class="body" style="margin-top:12px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:26px;align-items:start;">
+      <div class="stack" style="gap:8px;"><div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">{t("Промпт 3 — таблица", "Prompt 3 — the table")}</div>{anatomy(l3)}{shot("p3_heatmap", t("результат: 24,8 % в одной клетке", "result: 24.8% in one cell"), k="violet", h=260)}</div>
+      <div class="stack" style="gap:8px;"><div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">{t("Промпт 4 — текст", "Prompt 4 — the text")}</div>{anatomy(l4)}{shot("p3_themes_before", t("результат: темы отзывов N2 и остальных · промпт 5 → слайд 21", "result: N2 vs other review themes · prompt 5 → slide 21"), k="violet", h=260)}</div>
+    </div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Третий вопрос письма — возвраты осенью. Промпт 3 работает с таблицей: метрика, разрез, период, тип графика. Промпт 4 работает с текстом: модель сама находит склад с худшей долей, раскладывает отзывы на темы и сравнивает с остальными. «Покажи 5 примеров» — чтобы вы могли проверить темы глазами.",
+                      "⏱ 3 min. The e-mail’s third question is autumn returns. Prompt 3 works with the table: metric, breakdown, period, chart type. Prompt 4 works with text: the model finds the worst warehouse, sorts reviews into themes and compares with the rest. “Show 5 examples” lets you check the themes by eye."),
+                    t("Демо: тот же чат, файл уже загружен. После каждого ответа раскройте код (блок «Анализ завершён» или кнопка кода над графиком). Под разбором — реальные результаты: на тепловой карте одна клетка горит, North × Electronics — 24,8 % против примерно 5 %. Это и есть склад N2. Темы отзывов: «упаковка / повреждения» у N2 — 49 %, у остальных 12 %. Ответ дольше 90 секунд — показываем кадр." + EN_SHOTS,
+                      "Demo: same chat, the file is already uploaded. Open the code after each answer (the “Analysis complete” block or the code button above the chart). Under the breakdown are the real results: one heatmap cell lights up, North × Electronics at 24.8% vs about 5%. That is warehouse N2. Review themes: “packaging / damage” is 49% at N2 and 12% elsewhere. Answer over 90 seconds — show the frame." + EN_SHOTS)))
+
+
+def s_sql_anatomy():
+    lines = [("SELECT duration_bucket,", t("что показать: длительность", "what to show: length"), "cyan"),
+             ("COUNT(*) AS videos,", t("сколько видео в группе", "how many videos in the group"), "green"),
+             ("MEDIAN(views) AS typical", t("типичные просмотры: половина выше, половина ниже", "typical views: half above, half below"), "amber"),
+             ("FROM videos", t("из какой таблицы", "from which table"), "violet"),
+             ("GROUP BY duration_bucket;", t("по какому признаку собрать группы", "what to group by"), "cyan")]
+    return dict(min=3, html=f'''
+  {head(t("Часть 4 • SQL по строкам", "Part 4 • SQL line by line"), t("SQL читается почти как обычная фраза", "SQL reads almost like a plain sentence"), k="amber")}
+  <div class="body" style="margin-top:14px;">
+    {pr(t("Промпт", "Prompt"), t("В базе таблица videos: длительность и просмотры каждого видео. Напиши SQL-запрос: видео какой длины набирают больше всего просмотров? Объясни каждую строку.", "The database has a videos table: length and views of every video. Write an SQL query: which video length gets the most views? Explain every line."), k="amber")}
+    <div style="margin-top:14px;">{anatomy(lines, "amber")}</div>
+    <div class="note" style="--k:var(--amber);margin-top:14px;">{t("<b>Опишите таблицы в промпте.</b> Без описания модель угадывает названия колонок, и запрос падает с ошибкой.", "<b>Describe the tables in the prompt.</b> Without it the model guesses column names and the query fails.")}</div>
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. Разберите запрос как фразу: выбрать длительность, посчитать видео, взять типичные просмотры, из таблицы видео, собрать группы по длительности. Писать SQL студентам не нужно, нужно уметь прочитать, что посчитала база. MEDIAN есть не во всех базах (в PostgreSQL это PERCENTILE_CONT) — модель подберёт нужную функцию, если назвать вашу базу.",
+                      "⏱ 3 min. Read the query as a sentence: select the length, count the videos, take typical views, from the videos table, group by length. Students don’t need to write SQL; they need to read what the database computed. MEDIAN isn’t in every database (PostgreSQL uses PERCENTILE_CONT) — the model picks the right function if you name your database."),
+                    t("Про описание таблиц: если модель не видит схему, она придумывает названия колонок. В нашем прогоне ChatGPT вместо этого сам подтянул схему настоящей базы автора из подключённых источников — поэтому тот кадр мы не показываем. На работе так и делайте: давайте модели названия таблиц и колонок, без самих данных.",
+                      "On describing tables: if the model can’t see the schema, it invents column names. In our run ChatGPT instead pulled the real schema of the author’s database from connected sources — which is why we don’t show that frame. At work do it on purpose: give the model the table and column names, not the data.")))
+
+
+def s_db_schema():
+    import json
+    meta = json.loads((DB / "sample_meta.json").read_text(encoding="utf-8"))
+    full = meta["full_db"]
+    tables = [("channels", num(full["channels"]), t("один канал", "one channel"), ["title", "subscriber_count", "country", "language"], "cyan"),
+              ("videos", num(full["videos"]), t("одно видео", "one video"), ["channel_id → channels", "published_at", "duration_seconds", "tags"], "violet"),
+              ("video_stat_observations", num(full["video_stat_observations"]), t("один замер просмотров", "one view measurement"), ["video_id → videos", "observed_at", "views"], "amber")]
+    tb = "".join(f'<div class="door" style="--k:var(--{k})"><div class="h" style="font-family:var(--mono);font-size:22px;">{n}</div><div class="stat" style="--k:var(--{k})"><div class="n" style="font-size:40px;">{c}</div><div class="d">{t("строк · строка = ", "rows · row = ")}{one}</div></div>'
+                 f'<div class="code" style="font-size:17px;padding:10px 12px;">{"<br>".join(cols)}</div></div>' for n, c, one, cols, k in tables)
+    return dict(min=2, html=f'''
+  {head(t("Часть 4 • большая база", "Part 4 • a large database"), t("База каналов: три связанные таблицы, обновляются каждый день", "The channel database: three linked tables, updated daily"), k="amber")}
+  <div class="body" style="margin-top:14px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;">{tb}</div>
+    <div class="flow" style="margin-top:20px;justify-content:center;gap:14px;"><div class="box">channels</div><div class="arr">→</div><div class="box">videos</div><div class="arr">→</div><div class="box">video_stat_observations</div></div>
+    <div class="cap" style="margin-top:12px;text-align:center;">{t("Стрелка — связь: у видео есть номер канала, у замера — номер видео. Для урока взят обезличенный срез: 1 943 канала, 46 132 видео.", "An arrow is a link: a video holds its channel id, a measurement holds its video id. For the lesson: an anonymised sample of 1,943 channels and 46,132 videos.")}</div>
+  </div>''',
+                notes=notes(
+                    t(f"⏱ 2 мин. Рабочая база автора курса: кулинарные YouTube-каналы, собранные через официальный API. Три таблицы: каналы ({num(full['channels'])}), видео ({num(full['videos'])}) и замеры просмотров по дням ({num(full['video_stat_observations'])}). Таблицы связаны: у каждого видео есть номер канала, у каждого замера — номер видео.",
+                      f"⏱ 2 min. The course author’s working database: cooking YouTube channels collected via the official API. Three tables: channels ({num(full['channels'])}), videos ({num(full['videos'])}) and daily view measurements ({num(full['video_stat_observations'])}). They are linked: each video holds its channel id, each measurement its video id."),
+                    t("Почему не файл: таблиц три, они связаны и обновляются каждый день. Выгружать их ради каждого вопроса неудобно. Проще спросить базу запросом, это следующий слайд.",
+                      "Why not a file: there are three linked tables updated daily. Exporting them for every question is impractical. It’s simpler to ask the database with a query — the next slide.")))
+
+
+def s_bg_social():
+    return dict(min=3, html=f'''
+  {head(t("Часть 3 • быстро / под контролем #3", "Part 3 • quick / under control #3"), t("Первая строка ответа — сценарий, а не прогноз. Читайте допущения", "The first line is a scenario, not a forecast. Read the assumptions"), k="red")}
+  <div class="body" style="margin-top:10px;">
+    {badgood(t("Первая строка ответа на «Если с января урезать бюджет Social вдвое, сколько мы сэкономим и сколько потеряем выручки за квартал?»", "The first line of the answer to “If we cut the Social budget in half from January, how much do we save and how much revenue do we lose per quarter?”"), [("b5_top", 290)],
+             t("Тот же ответ, абзацы ниже", "The same answer, paragraphs below"), [("b5_reco", 330)],
+             t("«Потеря выручки — 122,5 тыс.» в первой строке. Это расчёт <b>при условии</b>, что выручка падает вместе с бюджетом.", "“Revenue loss — 122.5k” in the first line. That assumes revenue falls <b>together with</b> the budget."),
+             t("Модель сама пишет: точную потерю файл не покажет, нужен тест с контрольной группой.", "The model itself says: the file can’t show the real loss; you need a test with a control group."))}
+  </div>''',
+                notes=notes(
+                    t("⏱ 3 мин. После находки про Social хочется сразу урезать бюджет. Мы спросили модель прямо. Ответ хороший, если дочитать: в первой строке «потеря выручки 122,5 тыс.», но это сценарий «если выручка падает пропорционально бюджету». Ниже модель сама пишет, что фактическую потерю файл не покажет, и предлагает тест на части аудитории.",
+                      "⏱ 3 min. After the Social finding it’s tempting to cut the budget at once. We asked the model directly. The answer is good if you read to the end: the first line says “revenue loss 122.5k”, but that is a scenario “if revenue falls in proportion to the budget”. Further down the model says the file can’t show the real loss and suggests a test on part of the audience."),
+                    t("Урок: руководитель читает первую строку. Перед тем как нести число дальше, найдите в ответе слова «при условии», «если», «допущение». Таблица говорит, что было. Что будет, покажет только тест.",
+                      "The lesson: a manager reads the first line. Before passing a number on, find the words “assuming”, “if”, “scenario” in the answer. The table says what happened. Only a test shows what will happen.")))
+
+
+SLIDES = [s_cover, s_outcomes, s_data_where, s_table_text, s_anatomy_row, s_scale, s_ai_data, s_data_problems, s_nocode,
+          s_hook, s_p1_anatomy, s_bg_insights, s_p2_anatomy, s_bg_formulas, s_demo1, s_bg_growth, s_charts, s_break,
+          s_p34_anatomy, s_found, s_makeover, s_check, s_bg_social,
+          s_db_schema, s_sql_anatomy, s_db, s_sources, s_report, s_privacy, s_hw, s_summary]
 
 
 # ---------------------------------------------------------------- page
@@ -892,6 +1333,7 @@ def build(lang):
     for i, fn in enumerate(SLIDES, 1):
         s = fn()
         minutes += s["min"]
+        s["notes"] = re.sub(r"⏱ \d+ (мин|min)", lambda m_: f"⏱ {s['min']} {m_.group(1)}", s["notes"], count=1)
         cls = ("slide " + s.get("cls", "")).strip()
         foot = "" if s.get("cls") == "cover" else f'\n  <div class="foot"><span>{FOOT[lang]}</span><span>{i:02d} / {total}</span></div>'
         secs.append(f'<!-- SLIDE {i:02d} · {fn.__name__} · {s["min"]} min -->\n<section class="{cls}" data-n="{i}">{s["html"]}{foot}\n'

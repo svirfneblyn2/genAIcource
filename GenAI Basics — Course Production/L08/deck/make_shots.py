@@ -33,6 +33,24 @@ CROPS = {
     "p5_answer": ("gpt_p5_report_answer_small.jpg", (200, 80, 640, 305)),
 }
 
+# bad / good runs, ChatGPT, 2026-10-17 (assets/v2/chat_badgood/)
+BG = {
+    "b0_paste": ("b0_nocode_paste.jpg", (640, 40, 1180, 495)),
+    "b0_answer": ("b0_nocode_answer.jpg", (400, 40, 1180, 420)),
+    "b1_top": ("b1_insights_top.jpg", (250, 90, 1030, 505)),
+    "b1_chart": ("b1_insights_chart.jpg", (250, 150, 1030, 505)),
+    "b1_mid": ("b1_insights_mid.jpg", (250, 130, 1030, 380)),
+    "b1_dup": ("b1_insights_dup.jpg", (250, 225, 1030, 305)),
+    "b3_bad": ("b3_growth_both.jpg", (250, 118, 1030, 215)),
+    "b3_goodq": ("b3_growth_both.jpg", (480, 225, 1030, 355)),
+    "b3_good": ("b3_growth_both.jpg", (250, 395, 1030, 540)),
+    "b3_table": ("b3_growth_good_table.jpg", (250, 40, 1030, 565)),
+    "b5_top": ("b5_social_top.jpg", (250, 80, 1030, 370)),
+    "b5_reco": ("b5_social_reco.jpg", (250, 60, 1030, 560)),
+}
+BGSRC = HERE.parent / "assets" / "v2" / "chat_badgood"
+CROPS.update({k: (str(BGSRC / f), b) for k, (f, b) in BG.items()})
+
 for name, (src, box) in CROPS.items():
     im = Image.open(SRC / src).convert("RGB").crop(box)
     if name == "p5_answer":

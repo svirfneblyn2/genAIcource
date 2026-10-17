@@ -356,12 +356,29 @@ svg.dia text { font-family: var(--body); }
 .chartbox .f { font-size: 17px; color: var(--muted); line-height: 1.3; margin-top: 4px; }
 .chartbox .f b { color: var(--fg); }
 .chartbox svg { display: block; width: 100%; height: auto; }
+
+/* ---------- v2.1: prompt anatomy, bad / good, reviews, row anatomy ---------- */
+.an { display: flex; flex-direction: column; gap: 10px; }
+.an-row { display: grid; grid-template-columns: 46px 1.25fr 1fr; gap: 16px; align-items: center; background: var(--surface-card); border: 1px solid var(--line); border-left: 5px solid var(--k); border-radius: 10px; padding: 10px 14px; }
+.an-n { font-family: var(--display); font-size: 26px; font-weight: 800; color: #0b0f17; background: var(--k); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; }
+.an-t { font-family: var(--mono); font-size: 21px; line-height: 1.4; color: var(--fg); }
+.an-w { font-size: 20px; line-height: 1.35; color: var(--muted); }
+.bg-q { font-size: 20px; line-height: 1.4; color: var(--fg); background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--k); border-radius: 10px; padding: 10px 14px; }
+.bg-q .badge { margin-right: 8px; vertical-align: 2px; }
+.rvs { display: flex; flex-direction: column; gap: 10px; }
+.rv { font-size: 20px; line-height: 1.4; color: var(--fg); background: var(--surface-card); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.rv small { display: block; font-family: var(--mono); font-size: 14px; color: var(--dim); margin-top: 4px; }
+.rv-s { color: var(--amber); letter-spacing: 1px; margin-right: 6px; }
+.tbl.rowx th { font-size: 17px; padding: 10px 8px; color: var(--fg); }
+.tbl.rowx td.big { font-size: 24px; font-weight: 700; color: var(--fg); padding: 14px 8px; }
+.tbl.rowx td.typ { font-family: var(--body); font-size: 18px; font-weight: 600; border-bottom: none; }
+.checklist.lg { gap: 22px; } .checklist.lg li { font-size: 26px; grid-template-columns: 48px 1fr; } .checklist.lg li::before { width: 34px; height: 34px; font-size: 19px; }
 </style>
 </head>
 <body>
 <main class="stage" id="stage">
 
-<!-- SLIDE 01 · s_cover · 2 min -->
+<!-- SLIDE 01 · s_cover · 1 min -->
 <section class="slide cover" data-n="1">
   <div class="bg"><img class="full" src="assets/l08_cover_hero.png" alt=""></div>
   <div class="shade soft"></div>
@@ -372,124 +389,261 @@ svg.dia text { font-family: var(--body); }
     <p>Формулы, сводные и графики по просьбе обычными словами — в Excel, Google Таблицах или в чате с файлом. Учебный кейс — продажи интернет-магазина Northstar за 2025 год.</p>
   </div>
   <div class="keys">← → листать • N заметки спикера • G все слайды • F полный экран</div>
-  <template class="notes"><p>⏱ 2 мин. Сегодня берём обычную таблицу продаж и за урок получаем из неё формулы, сводную, три графика и страницу отчёта для руководителя. Делаем это в тех инструментах, что у вас уже есть.</p><p>Весь урок на одном файле: продажи вымышленного магазина Northstar за 2025 год, 1 261 строка и лист отзывов. В конце — короткий пример с большой базой YouTube-каналов, которая в Excel уже не помещается.</p></template>
+  <template class="notes"><p>⏱ 1 мин. Сегодня берём обычную таблицу продаж и за урок получаем из неё формулы, сводную, три графика и страницу отчёта для руководителя. Делаем это в тех инструментах, что у вас уже есть.</p><p>Весь урок на одном файле: продажи вымышленного магазина Northstar за 2025 год, 1 261 строка и лист отзывов. В конце — короткий пример с большой базой YouTube-каналов, которая в Excel уже не помещается.</p></template>
 </section>
-<!-- SLIDE 02 · s_hook · 3 min -->
+<!-- SLIDE 02 · s_outcomes · 2 min -->
 <section class="slide" data-n="2">
-  <div class="kicker" style="--k:var(--amber)">С чего начинается анализ</div>
-  <h2 class="title">Сначала вопрос руководителя, потом файл</h2>
-  <div class="body" style="margin-top:16px;">
-    <div class="row" style="grid-template-columns:0.9fr 1.1fr;gap:36px;align-items:stretch;">
-      <div class="stack" style="gap:18px;justify-content:center;">
-        <div class="plaque" style="font-size:24px;line-height:1.5;">
-          <div class="kicker" style="--k:var(--amber);margin-bottom:8px;">Письмо коммерческого директора Анны</div>
-          <div>Привет! Что у нас с продажами за год? Почему во втором полугодии реклама стала хуже окупаться? И откуда столько возвратов осенью? Нужна одна страница к пятнице.</div>
+  <div class="kicker">О чём урок</div>
+  <h2 class="title">Пять навыков, которые вы унесёте сегодня</h2>
+  <div class="body" style="margin-top:10px;">
+    <div class="row" style="grid-template-columns:1.1fr 1fr;gap:44px;align-items:center;">
+      <div class="rules" style="gap:22px;"><div class="rule" style="--k:var(--cyan)"><div class="n">1</div><div class="t">Опись файла<small>за минуту понять, что лежит в таблице</small></div></div><div class="rule" style="--k:var(--green)"><div class="n">2</div><div class="t">Формула словами<small>попросить формулу и сводную в Excel</small></div></div><div class="rule" style="--k:var(--violet)"><div class="n">3</div><div class="t">График для слайда<small>тип под вопрос, заголовок — вывод</small></div></div><div class="rule" style="--k:var(--amber)"><div class="n">4</div><div class="t">Отчёт на страницу<small>файл, который можно переслать</small></div></div><div class="rule" style="--k:var(--red)"><div class="n">5</div><div class="t">Проверка за минуту<small>строки, одна точка, процент от чего</small></div></div></div>
+      <div class="stack" style="gap:16px;">
+        <div class="plaque" style="font-size:23px;line-height:1.5;">
+          <div class="kicker" style="--k:var(--amber);margin-bottom:8px;">Задача, на которой учимся</div>
+          Письмо коммерческого директора: «Что у нас с продажами за год? Почему во втором полугодии реклама стала хуже окупаться? И откуда столько возвратов осенью? Нужна одна страница к пятнице».
         </div>
-        <div class="note" style="--k:var(--amber)">Три вопроса — три графика. «Найди инсайты» здесь не поможет.</div>
-      </div>
-      <div class="stack" style="gap:6px;">
-        <div class="shot " style="--k:var(--cyan);"><div class="lbl" style="--k:var(--cyan)">northstar_2025.xlsx • 1 261 строка</div><img src="assets/v2/shots/p2_sales_sheet.jpg" alt=""></div>
-        <div class="scap">Одна строка — продажи одного канала по одной категории, региону и складу за день. Второй лист — 357 отзывов покупателей.</div>
+        <div class="note" style="--k:var(--cyan)">Весь урок отвечаем на это письмо. В конце у нас готова страница отчёта.</div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>02 / 19</span></div>
-  <template class="notes"><p>⏱ 3 мин. Так анализ выглядит в жизни: письмо с вопросами и файл-выгрузка. Справа настоящий файл урока, открытый в ChatGPT: 1 261 строка продаж за 2025 год и лист с отзывами.</p><p>В письме три конкретных вопроса: год в целом, отдача рекламы во втором полугодии, возвраты осенью. Каждый вопрос потом станет одним графиком. Мы весь урок отвечаем Анне.</p><p>Вопрос в чат Teams: «Какой вопрос из письма вы бы проверили первым и почему?» Соберите 2–3 ответа.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>02 / 31</span></div>
+  <template class="notes"><p>⏱ 2 мин. Расскажите, с чем студенты уйдут: пять навыков на слайде. Каждый мы покажем на живом примере, и почти к каждому будет пара «быстро / под контролем» из настоящих ответов ChatGPT.</p><p>Справа задача: письмо Анны, коммерческого директора магазина Northstar. На неё мы отвечаем весь урок. Магазин и данные вымышленные, поэтому файл можно спокойно загружать в любой чат.</p></template>
 </section>
-<!-- SLIDE 03 · s_first · 4 min -->
+<!-- SLIDE 03 · s_data_where · 3 min -->
 <section class="slide" data-n="3">
-  <div class="kicker">Шаг 1 • первый промпт</div>
-  <h2 class="title">Первый промпт: опиши файл и предложи 5 вопросов</h2>
+  <div class="kicker">Часть 1 • что такое данные</div>
+  <h2 class="title">Где на работе лежат данные</h2>
   <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:26px;align-items:stretch;">
-      <div class="stack" style="gap:14px;">
-        <div class="pr lg" style="--k:var(--cyan)"><span class="no">Промпт</span>Опиши этот файл: что такое одна строка, сколько строк, какой период, какие проблемы в данных. Предложи 5 вопросов, которые задал бы руководитель. Ничего пока не меняй.</div>
-        <div class="shot " style="--k:var(--cyan);"><div class="lbl" style="--k:var(--cyan)">Ответ ChatGPT • часть 1</div><img src="assets/v2/shots/p1_problems.jpg" alt=""></div>
-      </div>
-      <div class="stack" style="gap:14px;">
-        <div class="shot " style="--k:var(--cyan);"><div class="lbl" style="--k:var(--cyan)">Ответ ChatGPT • часть 2</div><img src="assets/v2/shots/p1_questions.jpg" alt=""></div>
-        <div class="note" style="--k:var(--green)">Модель нашла дубль и период и сказала: <b>«Файл не изменял»</b>. А нули в рекламе приняла за пропуски — это первый вопрос владельцу данных.</div>
-        <div class="note" style="--k:var(--amber)">Берём вопрос 1 про каналы с учётом рекламы — он совпадает с письмом. Его и считаем в демо.</div>
-      </div>
-    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;"><div class="door" style="--k:var(--green)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="38" height="34" rx="3"/><path d="M5 18 h38 M5 29 h38 M18 7 v34 M31 7 v34"/></svg><div class="h">Таблицы</div><div class="w">Excel, Google Таблицы: продажи, бюджет, план</div><div class="o">ИИ пишет формулы и сводные</div></div><div class="door" style="--k:var(--cyan)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 v24 M14 20 l10 10 l10 -10"/><path d="M8 32 v8 h32 v-8"/></svg><div class="h">Выгрузки</div><div class="w">CSV из CRM, 1С, рекламного кабинета, YouTube Studio</div><div class="o">файл в чат, ИИ пишет код</div></div><div class="door" style="--k:var(--amber)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="10" rx="16" ry="5"/><path d="M8 10 v28 c0 3 7 5 16 5 s16-2 16-5 V10 M8 24 c0 3 7 5 16 5 s16-2 16-5"/></svg><div class="h">Базы данных</div><div class="w">CRM, сайт, склад: миллионы строк, обновляются каждый день</div><div class="o">ИИ пишет SQL-запрос</div></div><div class="door" style="--k:var(--violet)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10 h34 a3 3 0 0 1 3 3 v18 a3 3 0 0 1 -3 3 H20 l-8 7 v-7 H7 a3 3 0 0 1 -3 -3 V13 a3 3 0 0 1 3 -3 z"/><path d="M13 19 h22 M13 25 h14"/></svg><div class="h">Тексты</div><div class="w">отзывы, письма, чаты поддержки, опросы</div><div class="o">ИИ читает и раскладывает на темы</div></div><div class="door" style="--k:var(--red)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4 h18 l10 10 v30 H11 z M29 4 v10 h10"/><path d="M16 24 h18 M16 31 h18 M16 38 h18 M25 20 v22"/></svg><div class="h">Документы</div><div class="w">PDF-счета, договоры, отчёты партнёров</div><div class="o">ИИ достаёт цифры в таблицу</div></div><div class="door" style="--k:var(--green)"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 14 l-10 10 l10 10 M32 14 l10 10 l-10 10 M27 9 l-6 30"/></svg><div class="h">События и логи</div><div class="w">клики, заказы по минутам, звонки</div><div class="o">обычно считает аналитик по базе</div></div></div>
+    <div class="plaque" style="margin-top:16px;"><b>Чаще всего у вас таблица или выгрузка.</b> Иногда текст. Реже база. Сегодня разберём все три.</div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>03 / 19</span></div>
-  <template class="notes"><p>⏱ 4 мин. Это первый промпт к любому файлу. Он делает две вещи: модель описывает, что лежит в таблице, и предлагает вопросы. Фраза «ничего пока не меняй» важна: без неё модель может молча удалить дубли или заполнить пустые ячейки, и вы не узнаете, что она поменяла.</p><p>Слева реальный ответ: 1 261 строка, период с 1 января по 31 декабря 2025, одна полностью повторяющаяся строка. Справа пять вопросов руководителя. Первый, про каналы с учётом рекламных расходов, совпадает с письмом Анны: его считаем в демо 1. Третий, про возвраты, — в демо 2.</p><p>Модель ошиблась: написала «отсутствуют 632 значения ad_spend». В файле там нули: у Email и Organic рекламы нет. Ещё она не заметила дату текстом 10/05/2025. Переспросите: «Это пропуски или нули? Есть ли даты в другом формате?» Что значат нули, знает владелец данных.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>03 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Прежде чем загружать файлы в чат, договоримся, что такое данные. Это любые записи, из которых можно что-то посчитать или прочитать: таблицы, выгрузки из систем, базы, тексты, документы, логи.</p><p>В нижней строке каждой плитки — как с этим работает ИИ. Это главное: с таблицей ИИ пишет формулу или код, с текстом читает, с базой пишет запрос. Спросите в чат: «Какие из этих данных есть у вас на работе?»</p></template>
 </section>
-<!-- SLIDE 04 · s_doors · 4 min -->
+<!-- SLIDE 04 · s_table_text · 3 min -->
 <section class="slide" data-n="4">
-  <div class="kicker">Где анализировать</div>
-  <h2 class="title">Выбирайте инструмент по тому, где лежат данные</h2>
-  <div class="lead">Внутри всегда одно и то же: модель пишет формулу, код или запрос, а считает программа. Поэтому ход расчёта можно открыть и проверить.</div>
-  <div class="body" style="margin-top:10px;">
-    <div class="doors"><div class="door" style="--k:var(--green)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="38" height="34" rx="3"/><path d="M5 18 h38 M5 29 h38 M18 7 v34 M31 7 v34"/></svg><div class="h">Excel</div><div class="w">Данные уже в книге. ИИ пишет <b>формулы и сводные</b> — их видно в ячейках.</div><div class="o">Claude / Copilot в Excel или файл из чата</div></div><div class="door" style="--k:var(--cyan)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4 h18 l10 10 v30 H11 z M29 4 v10 h10"/><path d="M16 24 h18 M16 31 h18 M16 38 h18 M25 20 v22"/></svg><div class="h">Google Таблицы</div><div class="w">Файл живёт в Google Диске. Gemini в боковой панели строит <b>сводные и графики</b>.</div><div class="o">Gemini в Таблицах</div></div><div class="door" style="--k:var(--violet)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--violet)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10 h34 a3 3 0 0 1 3 3 v18 a3 3 0 0 1 -3 3 H20 l-8 7 v-7 H7 a3 3 0 0 1 -3 -3 V13 a3 3 0 0 1 3 -3 z"/><path d="M13 19 h22 M13 25 h14"/></svg><div class="h">Чат с файлом</div><div class="w">Загрузили CSV или XLSX. Модель пишет <b>код на Python</b>, программа считает, вы видите код.</div><div class="o">ChatGPT · Claude · Gemini</div></div><div class="door" style="--k:var(--amber)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="10" rx="16" ry="5"/><path d="M8 10 v28 c0 3 7 5 16 5 s16-2 16-5 V10 M8 24 c0 3 7 5 16 5 s16-2 16-5"/></svg><div class="h">База данных</div><div class="w">Миллионы строк, в чат не влезут. Модель пишет <b>запрос SQL</b>, база считает сама.</div><div class="o">SQL + ИИ-ассистент</div></div></div>
-    <div class="flow" style="margin-top:30px;justify-content:center;gap:16px;">
-      <div class="box">ваш вопрос<small>обычными словами</small></div><div class="arr">→</div>
-      <div class="box k" style="--k:var(--violet)">модель пишет<small>формулу · код · SQL</small></div><div class="arr">→</div>
-      <div class="box k" style="--k:var(--green)">программа считает<small>Excel · Python · база</small></div><div class="arr">→</div>
-      <div class="box hl" style="--k:var(--amber)">вы открываете и проверяете<small>ячейку · код · запрос</small></div>
-    </div>
-    <div class="cap" style="margin-top:18px;text-align:center;">Сегодня в демо: Excel и чат с файлом. Пример с базой каналов — на слайде 13.</div>
-  </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>04 / 19</span></div>
-  <template class="notes"><p>⏱ 4 мин. Четыре места, где ИИ помогает с данными. Выбор простой: где лежит файл и что нужно на выходе.</p><p>Excel: если данные уже в книге и коллеги будут её открывать. ИИ пишет формулы, их видно в строке формул. Панели ИИ: Claude for Excel (платные тарифы Claude), Copilot в Excel (лицензия Microsoft 365 Copilot), ChatGPT for Excel. Если панели нет, работает обходной путь из демо: файл в чат, книгу с формулами скачиваем обратно.</p><p>Google Таблицы: Gemini в боковой панели умеет сводные, графики и формулы, если у компании Google Workspace с Gemini. Чат с файлом: самый быстрый старт, виден код. База данных: когда строк миллионы. Её покажем на слайде 13.</p><p>Как узнать, есть ли у вас Copilot в Excel: на вкладке «Главная» справа есть кнопка Copilot. Названия кнопок и тарифы меняются, сверяйтесь в день занятия.</p></template>
-</section>
-<!-- SLIDE 05 · s_demo1 · 12 min -->
-<section class="slide" data-n="5">
-  <div class="kicker" style="--k:var(--green)">Демо 1 • Excel • 12 минут</div>
-  <h2 class="title">Формулу и график можно попросить словами</h2>
+  <div class="kicker">Часть 1 • два вида данных</div>
+  <h2 class="title">Таблица и текст: ИИ работает с ними по-разному</h2>
   <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;flex:0 0 auto;">
-      <div class="stack" style="gap:12px;">
-        <div class="pr " style="--k:var(--green)"><span class="no">Промпт 2</span>Добавь в книгу лист «Отдача рекламы»: по месяцам выручка, рекламный расход и выручка на $1 рекламы для Search и Social. Считай формулами Excel, а не готовыми числами. Построй линейный график и дай скачать .xlsx.</div>
-        <div class="note" style="--k:var(--cyan)">Есть Claude или Copilot в Excel? Тот же текст пишем в боковой панели, скачивать ничего не нужно.</div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+      <div class="stack" style="gap:10px;">
+        <div class="cap" style="font-size:22px;font-weight:700;color:var(--fg);">Лист Sales: числа, даты, категории</div>
+        <table class="tbl"><tr><th>date</th><th>channel</th><th>category</th><th>region</th><th class="num">orders</th><th class="num">revenue</th></tr><tr><td>2025-01-01</td><td>Social</td><td>Home</td><td>Central</td><td class="num">10</td><td class="num">580</td></tr><tr><td>2025-01-02</td><td>Organic</td><td>Sports</td><td>West</td><td class="num">11</td><td class="num">670</td></tr><tr><td>2025-01-02</td><td>Social</td><td>Books</td><td>West</td><td class="num">18</td><td class="num">400</td></tr><tr><td>2025-01-02</td><td>Social</td><td>Home</td><td>West</td><td class="num">16</td><td class="num">890</td></tr><tr><td>2025-01-03</td><td>Organic</td><td>Electronics</td><td>South</td><td class="num">39</td><td class="num">3,660</td></tr><tr><td>2025-01-03</td><td>Organic</td><td>Sports</td><td>North</td><td class="num">19</td><td class="num">1,170</td></tr></table>
+        <div class="note" style="--k:var(--cyan)"><b>ИИ считает:</b> пишет формулу или код, программа складывает и делит. Ошибка — неверная формула.</div>
+      </div>
+      <div class="stack" style="gap:10px;">
+        <div class="cap" style="font-size:22px;font-weight:700;color:var(--fg);">Лист Reviews: живые фразы покупателей</div>
+        <div class="rvs"><div class="rv"><span class="rv-s">★★★★★</span> Всё отлично, пришло быстро. Спасибо.<small>C1 · 2025-01-04</small></div><div class="rv"><span class="rv-s">★★★★</span> Товар соответствует описанию. Буду заказывать ещё.<small>N1 · 2025-01-06</small></div><div class="rv"><span class="rv-s">★</span> плохо упаковано — ни плёнки, ни пенопласта, всё в царапинах.<small>N2 · 2025-09-07</small></div><div class="rv"><span class="rv-s">★★</span> курьер отдал мокрую рваную коробку. спасибо.<small>N2 · 2025-09-07</small></div></div>
+        <div class="note" style="--k:var(--violet)"><b>ИИ читает:</b> относит каждый отзыв к теме и считает темы. Ошибка — не та тема.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>04 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Слева настоящие первые строки листа Sales, справа настоящие отзывы из листа Reviews того же файла. Это два разных мира.</p><p>С таблицей ИИ сам ничего не складывает в уме: он пишет формулу или код, считает программа. Ошибка обычно в формуле — не тот столбец, не тот период. С текстом наоборот: ИИ сам читает каждый отзыв и решает, о чём он. Ошибка — неверная тема. Через полчаса мы увидим именно такую ошибку.</p></template>
+</section>
+<!-- SLIDE 05 · s_anatomy_row · 3 min -->
+<section class="slide" data-n="5">
+  <div class="kicker">Часть 1 • из чего состоит таблица</div>
+  <h2 class="title">Одна строка: что это за запись и что в ней измеряют</h2>
+  <div class="body" style="margin-top:14px;">
+    <table class="tbl rowx"><tr><th style="border-bottom:4px solid var(--cyan)">order_date</th><th style="border-bottom:4px solid var(--violet)">channel</th><th style="border-bottom:4px solid var(--violet)">category</th><th style="border-bottom:4px solid var(--violet)">region</th><th style="border-bottom:4px solid var(--violet)">warehouse</th><th style="border-bottom:4px solid var(--green)">orders</th><th style="border-bottom:4px solid var(--amber)">revenue</th><th style="border-bottom:4px solid var(--amber)">ad_spend</th><th style="border-bottom:4px solid var(--green)">returns</th></tr><tr><td class="big">2025-01-05</td><td class="big">Email</td><td class="big">Electronics</td><td class="big">North</td><td class="big">N2</td><td class="big">11</td><td class="big">980.0</td><td class="big">0</td><td class="big">1</td></tr><tr><td class="typ" style="color:var(--cyan)">дата</td><td class="typ" style="color:var(--violet)">категория</td><td class="typ" style="color:var(--violet)">категория</td><td class="typ" style="color:var(--violet)">категория</td><td class="typ" style="color:var(--violet)">категория</td><td class="typ" style="color:var(--green)">число, шт.</td><td class="typ" style="color:var(--amber)">число, $</td><td class="typ" style="color:var(--amber)">число, $</td><td class="typ" style="color:var(--green)">число, шт.</td></tr></table>
+    <div class="row" style="grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px;flex:0 0 auto;">
+      <div class="note" style="--k:var(--cyan)"><b>Строка</b> — продажи одного канала по одной категории, региону и складу за день. Не заказ и не клиент.</div>
+      <div class="note" style="--k:var(--violet)"><b>Категории</b> — то, по чему режем: канал, регион, склад. По ним строят разрезы.</div>
+      <div class="note" style="--k:var(--amber)"><b>Числа</b> — то, что складываем и делим. У каждого свои единицы: доллары или штуки.</div>
+    </div>
+    <div class="plaque" style="margin-top:20px;"><b>Первый вопрос к любому файлу:</b> что такое одна строка? Если перепутать, все «средние на клиента» будут неверны.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>05 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Одна настоящая строка файла крупно. Пройдите по цветам: голубой — дата, фиолетовый — категории, по которым режем, зелёный и жёлтый — числа со своими единицами.</p><p>Вопрос в чат: «Что такое одна строка в этом файле?» Частый ответ — «заказ». Неверно: в этой строке 11 заказов. Это продажи канала за день в одном разрезе. Модель тоже может ошибиться, поэтому первый промпт урока просит её описать строку.</p></template>
+</section>
+<!-- SLIDE 06 · s_scale · 3 min -->
+<section class="slide" data-n="6">
+  <div class="kicker">Часть 1 • сколько данных</div>
+  <h2 class="title">От размера данных зависит, куда их нести</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="hbars" style="gap:26px;"><div class="hb" style="--k:var(--green)"><div class="lab">десятки строк<small>можно вставить прямо в сообщение</small></div><div class="tr" style="height:52px"><div class="b" style="width:20.6%"></div><div class="v" style="left:calc(20.6% + 14px);font-size:38px;">73</div></div></div><div class="hb" style="--k:var(--cyan)"><div class="lab">тысячи строк<small>наш файл Northstar: загружаем файлом</small></div><div class="tr" style="height:52px"><div class="b" style="width:34.2%"></div><div class="v" style="left:calc(34.2% + 14px);font-size:38px;">1 261</div></div></div><div class="hb" style="--k:var(--violet)"><div class="lab">десятки тысяч<small>срез базы каналов: файл ещё работает</small></div><div class="tr" style="height:52px"><div class="b" style="width:51.5%"></div><div class="v" style="left:calc(51.5% + 14px);font-size:38px;">46 132</div></div></div><div class="hb" style="--k:var(--amber)"><div class="lab">сотни тысяч и больше<small>вся база видео: спрашиваем базу запросом</small></div><div class="tr" style="height:52px"><div class="b" style="width:62.0%"></div><div class="v" style="left:calc(62.0% + 14px);font-size:38px;">416 809</div></div></div></div>
+    <div class="cap" style="margin-top:14px;">Шкала логарифмическая: каждая ступень примерно в 10 раз больше предыдущей.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>06 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Четыре ступени. Десятки строк можно вставить текстом прямо в сообщение. Тысячи, как наш файл, загружаем файлом. Десятки тысяч, как срез базы каналов, файл ещё выдерживает. Сотни тысяч и миллионы, да ещё обновляемые каждый день, в файл не выгружают: базу спрашивают запросом.</p><p>Шкала логарифмическая, иначе первые три полоски были бы не видны. На практике чат начинает заметно тормозить от нескольких десятков тысяч строк.</p></template>
+</section>
+<!-- SLIDE 07 · s_ai_data · 3 min -->
+<section class="slide" data-n="7">
+  <div class="kicker" style="--k:var(--violet)">Часть 1 • главная схема урока</div>
+  <h2 class="title">Данные остаются в файле. ИИ пишет инструкцию, считает программа</h2>
+  <div class="body" style="margin-top:6px;">
+    <svg class="dia" viewBox="0 0 1440 470"><defs><marker id="ad" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#5f6e84"/></marker></defs><text x="20" y="40" font-size="20" font-weight="700" fill="#34d399">ДАННЫЕ</text><text x="20" y="300" font-size="20" font-weight="700" fill="#c084fc">ИИ</text><line x1="20" y1="230" x2="1420" y2="230" stroke="#5f6e84" stroke-dasharray="6 6"/><rect x="120" y="60" width="300" height="100" rx="14" fill="#0f1624" stroke="#34d399" stroke-width="2.5"/><text x="270.0" y="98" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">файл или база</text><text x="270.0" y="128" text-anchor="middle" font-size="18" fill="#a3b1c4">1 261 строка остаётся там</text><rect x="560" y="60" width="320" height="100" rx="14" fill="#0f1624" stroke="#34d399" stroke-width="2.5"/><text x="720.0" y="98" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">программа считает</text><text x="720.0" y="128" text-anchor="middle" font-size="18" fill="#a3b1c4">Excel · Python · база</text><rect x="1020" y="60" width="300" height="100" rx="14" fill="#0f1624" stroke="#34d399" stroke-width="2.5"/><text x="1170.0" y="98" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">результат</text><text x="1170.0" y="128" text-anchor="middle" font-size="18" fill="#a3b1c4">таблица · график · файл</text><rect x="120" y="320" width="300" height="100" rx="14" fill="#0f1624" stroke="#38bdf8" stroke-width="2.5"/><text x="270.0" y="358" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">ваш вопрос</text><text x="270.0" y="388" text-anchor="middle" font-size="18" fill="#a3b1c4">обычными словами</text><rect x="560" y="320" width="320" height="100" rx="14" fill="#0f1624" stroke="#c084fc" stroke-width="2.5"/><text x="720.0" y="358" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">модель пишет</text><text x="720.0" y="388" text-anchor="middle" font-size="18" fill="#a3b1c4">формулу · код · SQL</text><rect x="1020" y="320" width="300" height="100" rx="14" fill="#0f1624" stroke="#c084fc" stroke-width="2.5"/><text x="1170.0" y="358" text-anchor="middle" font-size="24" font-weight="700" fill="#f1f5f9">модель объясняет</text><text x="1170.0" y="388" text-anchor="middle" font-size="18" fill="#a3b1c4">словами, с числами</text><path d="M420 370 L552 370" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><path d="M720 320 L720 168" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><path d="M880 110 L1012 110" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><path d="M1170 160 L1170 312" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><path d="M420 110 L552 110" stroke="#5f6e84" stroke-width="3" fill="none" marker-end="url(#ad)"/><text x="736" y="250" font-size="18" fill="#a3b1c4">код уходит к данным</text><circle cx="270" cy="440" r="0"/><text x="1180" y="250" font-size="18" fill="#a3b1c4">ответ возвращается</text></svg>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:24px;flex:0 0 auto;">
+      <div class="plaque"><b>Вы в двух точках:</b> задаёте вопрос и проверяете результат.</div>
+      <div class="plaque g"><b>Правило:</b> если ИИ называет число, спросите, какой программой оно посчитано.</div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>07 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Это главная схема урока, к ней будем возвращаться. Верхняя дорожка — данные: файл или база, программа, которая считает, результат. Нижняя — ИИ: он читает ваш вопрос и названия колонок, пишет формулу, код или запрос. Эта инструкция уходит к данным, программа выполняет её, а модель пересказывает результат словами.</p><p>Отсюда простое правило: число из ответа ИИ должно быть посчитано программой. Если модель «просто знает» число, это догадка. Вы стоите в двух точках: в начале задаёте вопрос, в конце проверяете.</p></template>
+</section>
+<!-- SLIDE 08 · s_data_problems · 3 min -->
+<section class="slide" data-n="8">
+  <div class="kicker" style="--k:var(--red)">Часть 1 • живые данные</div>
+  <h2 class="title">Четыре ловушки в живых данных, три — из нашего файла</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="doors"><div class="door" style="--k:var(--red)"><div class="h">Дубль строки</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">2025-03-19 · Social · Home · 3,890.5 ×2</div><div class="w">выручка завышена на эту сумму</div></div><div class="door" style="--k:var(--amber)"><div class="h">Дата текстом</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">10/05/2025  ←  2025-05-10?</div><div class="w">10 мая или 5 октября? Зависит от формата</div></div><div class="door" style="--k:var(--violet)"><div class="h">Ноль или пропуск?</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">Email · ad_spend = 0</div><div class="w">у Email рекламы нет. Модель назвала такие нули «пропусками»</div></div><div class="door" style="--k:var(--cyan)"><div class="h">Разные единицы</div><div class="code" style="font-size:18px;padding:10px 12px;white-space:normal;">1 200 (руб.) и 15 ($) в одной колонке</div><div class="w">пример из жизни: сложить их нельзя</div></div></div>
+    <div class="plaque" style="margin-top:20px;"><b>Модель такие вещи часто находит, но не всегда правильно понимает.</b> Что значит ноль и какая дата верная, знает владелец данных.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>08 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. В учебный файл мы специально положили несколько типичных проблем. Дубль: одна строка продаж записана дважды, выручка завышена. Дата текстом 10/05/2025: это 10 мая или 5 октября? Нули в рекламе у Email и Organic: рекламы там просто нет. Разные единицы — пример из жизни, его в нашем файле нет.</p><p>Почему это важно: в нашем прогоне ChatGPT сам нашёл дубль, но нули назвал «пропусками», а дату текстом не заметил. Модель видит странности, но смысл знает только владелец данных.</p></template>
+</section>
+<!-- SLIDE 09 · s_nocode · 3 min -->
+<section class="slide" data-n="9">
+  <div class="kicker" style="--k:var(--amber)">Часть 1 • эксперимент</div>
+  <h2 class="title">73 строки прямо в сообщении: модель посчитала верно. Почему так всё равно не делаем</h2>
+  <div class="body" style="margin-top:12px;">
+    <div class="row" style="grid-template-columns:0.75fr 1fr;gap:26px;align-items:start;">
+      <div class="stack" style="gap:8px;">
+        <div class="shot " style="--k:var(--amber);"><div class="lbl" style="--k:var(--amber)">запрос: 73 строки CSV, «без инструментов и кода»</div><img src="assets/v2/shots/b0_paste.jpg" alt="" style="max-height:330px"></div>
+      </div>
+      <div class="stack" style="gap:10px;">
+        <div class="shot good" style="--k:var(--green);"><div class="lbl" style="--k:var(--green)">ответ ChatGPT, 17.10.2026</div><img src="assets/v2/shots/b0_answer.jpg" alt="" style="max-height:300px"></div>
+        <div class="big3">
+          <div class="note" style="--k:var(--green)"><b>Сумма верная</b>, дубль и пустой регион найдены.</div>
+          <div class="note" style="--k:var(--red)"><b>Хода расчёта не видно.</b> Повторить и проверить нечем.</div>
+          <div class="note" style="--k:var(--amber)"><b>1 261 строку</b> так уже не вставишь. Нужен файл и код.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>09 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Настоящий прогон 17 октября 2026: мы вставили 73 строки учебного CSV прямо в сообщение и попросили не пользоваться инструментами. ChatGPT посчитал выручку верно (256 045 без дубля) и нашёл все четыре проблемы. Про строку с 66 возвратами при 62 заказах написал «требует проверки».</p><p>Для сравнения: 13 октября на том же файле другие модели без кода «починили» эту строку: «вероятно, 6», хотя в источнике было 4. Модели стали аккуратнее. Но хода расчёта не видно, и реальный файл на тысячи строк в сообщение не поместится. Поэтому дальше работаем с файлом и смотрим, какой код написала модель.</p></template>
+</section>
+<!-- SLIDE 10 · s_hook · 2 min -->
+<section class="slide" data-n="10">
+  <div class="kicker" style="--k:var(--amber)">Часть 2 • Excel и первый вопрос</div>
+  <h2 class="title">Три вопроса письма — три части урока</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="row" style="grid-template-columns:0.85fr 1.15fr;gap:36px;align-items:center;">
+      <div class="stack" style="gap:16px;">
+        <div class="chk" style="--k:var(--green)"><div class="n">1</div><div class="t">Что с продажами за год?<small>Часть 2: Excel, формулы, сезонность</small></div></div>
+        <div class="chk" style="--k:var(--amber)"><div class="n">2</div><div class="t">Почему реклама хуже окупается?<small>Часть 2–3: отдача Search и Social</small></div></div>
+        <div class="chk" style="--k:var(--red)"><div class="n">3</div><div class="t">Откуда возвраты осенью?<small>Часть 3: таблица + текст отзывов</small></div></div>
       </div>
       <div class="stack" style="gap:6px;">
-        <div class="shot " style="--k:var(--amber);"><div class="lbl" style="--k:var(--amber)">ChatGPT вернул лист: в ячейках числа</div><img src="assets/v2/shots/p2_roas_sheet.jpg" alt="" style="max-height:200px"></div>
-        <div class="scap">Щёлкните ячейку. Видите число — напишите: «замени числа формулами».</div>
+        <div class="shot " style="--k:var(--cyan);"><div class="lbl" style="--k:var(--cyan)">northstar_2025.xlsx • 1 261 строка • лист Reviews: 357 отзывов</div><img src="assets/v2/shots/p2_sales_sheet.jpg" alt="" style="max-height:470px"></div>
       </div>
     </div>
-    <div class="stack" style="gap:6px;margin-top:14px;">
-      <div class="shot good" style="--k:var(--green);"><div class="lbl" style="--k:var(--green)">Excel: в ячейке формула, её видно в строке fx</div><img src="assets/v2/shots/xl_fx_sumifs.jpg" alt=""></div>
-    </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>05 / 19</span></div>
-  <template class="notes"><p>⏱ 12 мин (2 промпта + открыть книгу). Ведите по ранбуку L08_04. Загрузите northstar_2025.xlsx в ChatGPT. Промпт 1 — описание файла с прошлого слайда. Промпт 2 — на экране.</p><p>Ключевые слова в промпте: «формулами Excel, а не готовыми числами». Без них модель часто вставляет посчитанные значения, и проверить их в книге нельзя. Скачайте файл, откройте в Excel, щёлкните ячейку с отдачей рекламы. В строке формул должно быть деление выручки на расход, например =B2/C2. Выручка и расход тоже должны быть формулами (СУММЕСЛИМН / SUMIFS по листу Sales).</p><p>Что увидим: у Search выручка на $1 рекламы держится около 5,4 весь год. У Social с июля падает примерно с 4 до 2. Это вторая история из письма Анны, к ней вернёмся после перерыва.</p><p>Справа вверху реальный лист из книги, которую вернул ChatGPT: в нашем прогоне в ячейках оказались числа, формул не было. Внизу та же таблица в Excel, где выручка посчитана формулой СУММЕСЛИМН по листу Sales, а отдача — делением =B2/C2; рядом график по этим ячейкам. Так должна выглядеть книга после просьбы «замени числа формулами». Эталонная книга: demo_v2/excel_demo/northstar_2025_formulas.xlsx. Если у вас есть Claude for Excel или Copilot, покажите ту же просьбу в боковой панели, 90 секунд. Если сервис думает дольше 90 секунд — показывайте готовые кадры и идите дальше.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>10 / 31</span></div>
+  <template class="notes"><p>⏱ 2 мин. Так анализ выглядит в жизни: письмо с вопросами и файл-выгрузка. Справа настоящий файл урока, открытый в ChatGPT: 1 261 строка продаж за 2025 год и лист с отзывами.</p><p>В письме три конкретных вопроса: год в целом, отдача рекламы во втором полугодии, возвраты осенью. Каждый вопрос потом станет одним графиком. Мы весь урок отвечаем Анне.</p><p>Вопрос в чат Teams: «Какой вопрос из письма вы бы проверили первым и почему?» Соберите 2–3 ответа.</p></template>
 </section>
-<!-- SLIDE 06 · s_season · 3 min -->
-<section class="slide" data-n="6">
-  <div class="kicker" style="--k:var(--amber)">Что увидели • сезонность</div>
-  <h2 class="title">Рост за год: +161,7 % или +15,1 %? Зависит от базы</h2>
+<!-- SLIDE 11 · s_p1_anatomy · 3 min -->
+<section class="slide" data-n="11">
+  <div class="kicker">Часть 2 • промпт 1 по строкам</div>
+  <h2 class="title">Первый промпт к любому файлу: опись, а не «найди инсайты»</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="an"><div class="an-row" style="--k:var(--cyan)"><div class="an-n">1</div><div class="an-t">Опиши этот файл: что такое одна строка,</div><div class="an-w">сначала понять данные, а не считать</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">2</div><div class="an-t">сколько строк, какой период,</div><div class="an-w">числа, которые вы потом сверите</div></div><div class="an-row" style="--k:var(--amber)"><div class="an-n">3</div><div class="an-t">какие проблемы в данных.</div><div class="an-w">дубли и странности — до расчётов</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">4</div><div class="an-t">Предложи 5 вопросов, которые задал бы руководитель.</div><div class="an-w">план работы: выбираем вопрос из письма</div></div><div class="an-row" style="--k:var(--red)"><div class="an-n">5</div><div class="an-t">Ничего пока не меняй.</div><div class="an-w">иначе модель молча «почистит» файл</div></div></div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>11 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Разберите промпт по строкам. Первая строка заставляет модель сначала понять, что лежит в файле. Вторая даёт числа для сверки: 1 261 строка, 2025 год. Третья просит найти проблемы до расчётов. Четвёртая превращает ответ в план: пять вопросов руководителя. Пятая запрещает молча править файл.</p><p>Промпт целиком лежит в шпаргалке. Студентам его можно копировать для любого своего файла.</p></template>
+</section>
+<!-- SLIDE 12 · s_bg_insights · 4 min -->
+<section class="slide" data-n="12">
+  <div class="kicker" style="--k:var(--amber)">Быстро / под контролем #1</div>
+  <h2 class="title">«Найди инсайты» тоже работает. Но вопросы выбирает модель</h2>
   <div class="body" style="margin-top:10px;">
-    <div class="row" style="grid-template-columns:1.55fr 1fr;gap:34px;align-items:center;">
-      <div class="stack" style="gap:4px;">
-        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Выручка Northstar по месяцам, 2025</div>
-        <svg class="dia" viewBox="0 0 1000 520"><line x1="96" y1="476.0" x2="940" y2="476.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="482.0" text-anchor="end" font-size="17" fill="#6b7a90">0 тыс.</text><line x1="96" y1="367.0" x2="940" y2="367.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="373.0" text-anchor="end" font-size="17" fill="#6b7a90">100 тыс.</text><line x1="96" y1="258.0" x2="940" y2="258.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="264.0" text-anchor="end" font-size="17" fill="#6b7a90">200 тыс.</text><line x1="96" y1="149.0" x2="940" y2="149.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="155.0" text-anchor="end" font-size="17" fill="#6b7a90">300 тыс.</text><line x1="96" y1="40.0" x2="940" y2="40.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="46.0" text-anchor="end" font-size="17" fill="#6b7a90">400 тыс.</text><text x="96.0" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">янв</text><text x="172.7" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">фев</text><text x="249.5" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">мар</text><text x="326.2" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">апр</text><text x="402.9" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">май</text><text x="479.6" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">июн</text><text x="556.4" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">июл</text><text x="633.1" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">авг</text><text x="709.8" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">сен</text><text x="786.5" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">окт</text><text x="863.3" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">ноя</text><text x="940.0" y="502" text-anchor="middle" font-size="17" fill="#a3b1c4">дек</text><polyline points="96.0,320.4 172.7,310.4 249.5,276.5 326.2,280.2 402.9,252.6 479.6,270.8 556.4,289.4 633.1,276.1 709.8,261.7 786.5,235.5 863.3,122.5 940.0,69.0" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linejoin="round"/><circle cx="96.0" cy="320.4" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="172.7" cy="310.4" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="249.5" cy="276.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="326.2" cy="280.2" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="402.9" cy="252.6" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="479.6" cy="270.8" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="556.4" cy="289.4" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="633.1" cy="276.1" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="709.8" cy="261.7" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="786.5" cy="235.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="863.3" cy="122.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="940.0" cy="69.0" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><text x="96.0" y="302.4" text-anchor="start" font-size="21" font-weight="700" fill="#f1f5f9">$143 тыс.</text><text x="934.0" y="51.0" text-anchor="end" font-size="21" font-weight="700" fill="#f1f5f9">$373 тыс.</text><line x1="96.0" y1="320.4" x2="940.0" y2="320.4" stroke="#fbbf24" stroke-width="2" stroke-dasharray="7 6"/><line x1="962.0" y1="320.4" x2="962.0" y2="69.0" stroke="#fbbf24" stroke-width="3"/><text x="633.1" y="354.4" text-anchor="middle" font-size="24" font-weight="800" fill="#fbbf24">+161,7 % от уровня января</text><line x1="863.3" y1="122.5" x2="940.0" y2="69.0" stroke="#34d399" stroke-width="7" stroke-linecap="round"/><text x="845.3" y="118.5" text-anchor="end" font-size="24" font-weight="800" fill="#34d399">+15,1 % к ноябрю</text></svg>
-      </div>
-      <div class="stack" style="gap:20px;">
-        <div class="stat" style="--k:var(--amber)"><div class="n">+161,7 %</div><div class="d">декабрь к январю. Январь — самый слабый месяц года</div></div>
-        <div class="stat" style="--k:var(--green)"><div class="n">+15,1 %</div><div class="d">декабрь к ноябрю. Пик уже начался в ноябре</div></div>
-        <div class="stat" style="--k:var(--cyan)"><div class="n">27,7 %</div><div class="d">годовой выручки — в ноябре и декабре</div></div>
-        <div class="plaque"><b>Спрашивайте:</b> процент от какого месяца и за какой период?</div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:28px;align-items:start;"><div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--amber)"><span class="badge solid" style="--k:var(--amber)">Быстро</span> «Вот файл. Найди интересные инсайты.»</div><div class="shot " style="--k:var(--amber);"><img src="assets/v2/shots/b1_top.jpg" alt="" style="max-height:360px"></div><div class="shot " style="--k:var(--amber);"><img src="assets/v2/shots/b1_dup.jpg" alt="" style="max-height:80px"></div><div class="note" style="--k:var(--amber)">Модель нашла Social и N2. Но сравнения выбрала сама (кварталы), а дубль <b>оставила в расчётах</b>.</div></div><div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">✓ Под контролем</span> Промпт 1: опись + 5 вопросов + ничего не меняй</div><div class="shot good" style="--k:var(--green);"><img src="assets/v2/shots/p1_questions.jpg" alt="" style="max-height:330px"></div><div class="note" style="--k:var(--green)">✓ 1 261 строка, период, дубль · ✗ 632 нуля в рекламе назвала «пропусками» · ✗ дату текстом не заметила. <b>Берём вопрос 1.</b></div></div></div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>12 / 31</span></div>
+  <template class="notes"><p>⏱ 4 мин. Результат 17 октября: на «найди интересные инсайты» ChatGPT за полторы минуты нашёл обе главные истории — падение отдачи Social и возвраты на складе N2. Модели стали сильными.</p><p>Справа ответ на промпт 1. Отметьте вслух, что верно: 1 261 строка, период, дубль. И что нет: «отсутствуют 632 значения ad_spend» — это нули, у Email и Organic рекламы нет; дату текстом 10/05/2025 модель не заметила. Переспросите: «Это пропуски или нули?» Из пяти вопросов берём первый, про каналы с учётом рекламы, — он совпадает с письмом.</p><p>Но посмотрите внимательнее. Сравнения модель выбрала сама: кварталы, полугодия. Дубль нашла, но написала «расчёты сохраняют исходные строки» — то есть дубль остался в цифрах. На вопрос Анны «что с продажами за год» прямого ответа нет. Промпт-опись даёт план и оставляет выбор вам.</p></template>
+</section>
+<!-- SLIDE 13 · s_p2_anatomy · 3 min -->
+<section class="slide" data-n="13">
+  <div class="kicker" style="--k:var(--green)">Часть 2 • промпт 2 по строкам</div>
+  <h2 class="title">Формула словами: каждая строка промпта за что-то отвечает</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="an"><div class="an-row" style="--k:var(--cyan)"><div class="an-n">1</div><div class="an-t">Добавь в книгу лист «Отдача рекламы»:</div><div class="an-w">где появится результат</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">2</div><div class="an-t">по месяцам … для Search и Social.</div><div class="an-w">разрез: время и каналы</div></div><div class="an-row" style="--k:var(--amber)"><div class="an-n">3</div><div class="an-t">выручка, рекламный расход и выручка на $1 рекламы.</div><div class="an-w">метрика: выручка ÷ расход</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">4</div><div class="an-t">Считай формулами Excel, а не готовыми числами.</div><div class="an-w">чтобы проверить и пересчитать</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">5</div><div class="an-t">Построй линейный график</div><div class="an-w">тип под вопрос «как менялось»</div></div><div class="an-row" style="--k:var(--cyan)"><div class="an-n">6</div><div class="an-t">и дай скачать .xlsx.</div><div class="an-w">результат — файл, а не текст в чате</div></div></div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>13 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Это вопрос 1 из ответа модели: какие каналы выгоднее с учётом рекламы. Разбираем промпт. Где результат — новый лист. Разрез — месяцы и два рекламных канала. Метрика — выручка на доллар рекламы, то есть выручка, делённая на расход. Формулы, а не числа — иначе проверить нечего. Линейный график — потому что вопрос «как менялось во времени». И файл на выходе.</p></template>
+</section>
+<!-- SLIDE 14 · s_bg_formulas · 3 min -->
+<section class="slide" data-n="14">
+  <div class="kicker" style="--k:var(--green)">Быстро / под контролем #2</div>
+  <h2 class="title">Числа в ячейках проверить нельзя. Формулы — можно</h2>
+  <div class="body" style="margin-top:10px;gap:12px;">
+    <div class="row" style="grid-template-columns:330px 1fr;gap:20px;align-items:center;flex:0 0 auto;">
+      <div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--amber)"><span class="badge solid" style="--k:var(--amber)">Быстро</span> Лист из ChatGPT: в ячейках готовые числа</div>
+        <div class="note" style="--k:var(--amber)">Откуда 5,39 — не видно. Поменяли файл — числа не пересчитались.</div></div>
+      <div class="shot " style="--k:var(--amber);"><img src="assets/v2/shots/p2_roas_sheet.jpg" alt="" style="max-height:300px"></div>
+    </div>
+    <div class="row" style="grid-template-columns:330px 1fr;gap:20px;align-items:center;flex:0 0 auto;margin-top:14px;">
+      <div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">✓ Под контролем</span> Excel: в строке fx формула СУММЕСЛИМН</div>
+        <div class="note" style="--k:var(--green)">Видно, какие столбцы сложены и за какой месяц. Исправление одной фразой: «замени числа формулами».</div></div>
+      <div class="shot good" style="--k:var(--green);"><img src="assets/v2/shots/xl_fx_sumifs.jpg" alt=""></div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>14 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Слева реальный лист, который вернул ChatGPT в нашем прогоне: в ячейках числа. Справа та же таблица в Excel, где выручка посчитана формулой СУММЕСЛИМН по листу Sales, а отдача — делением =B2/C2. Числа совпадают, но проверить можно только правую.</p><p>Правило: щёлкните любую ячейку с результатом. Видите число — попросите «замени числа формулами». Эталонная книга: demo_v2/excel_demo/northstar_2025_formulas.xlsx.</p></template>
+</section>
+<!-- SLIDE 15 · s_demo1 · 5 min -->
+<section class="slide" data-n="15">
+  <div class="kicker" style="--k:var(--green)">Демо 1 вживую • 5 минут</div>
+  <h2 class="title">Повторяем всё вживую: от файла до формулы в ячейке</h2>
+  <div class="body" style="margin-top:16px;">
+    <div class="row" style="grid-template-columns:1.15fr 1fr;gap:36px;align-items:center;">
+      <ol class="checklist lg">
+        <li><span><b>Загрузить</b> northstar_2025.xlsx в ChatGPT</span></li>
+        <li><span><b>Промпт 1</b> — опись файла (слайд 11)</span></li>
+        <li><span><b>Промпт 2</b> — лист «Отдача рекламы» (слайд 13)</span></li>
+        <li><span><b>Скачать</b> книгу и открыть в Excel</span></li>
+        <li><span><b>Щёлкнуть</b> ячейку с отдачей: число → «замени числа формулами»</span></li>
+        <li><span><b>Не успели?</b> Показываем готовые кадры со слайда 14</span></li>
+      </ol>
+      <div class="stack" style="gap:16px;">
+        <div class="plaque g"><b>Что должно получиться:</b> у Search около 5 долларов выручки на доллар рекламы весь год, у Social с июля около 2.</div>
+        <div class="note" style="--k:var(--cyan)">Есть Claude или Copilot в Excel? Тот же промпт 2 — в боковой панели, без скачивания.</div>
+        <div class="note" style="--k:var(--amber)">Ответ дольше 90 секунд — показываем кадр и идём дальше.</div>
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>06 / 19</span></div>
-  <template class="notes"><p>⏱ 3 мин. Первая история файла: сезонность. Если сравнить декабрь с январём, рост +161,7 %. Если с ноябрём — +15,1 %. Оба числа верные, но звучат совсем по-разному.</p><p>Модель охотно пишет «рост на 160 %». Ваша задача — спросить, от какой базы. Январь после праздников — самый слабый месяц, ноябрь и декабрь — распродажи. Это видно только на графике по месяцам, итог за год этого не покажет.</p><p>График построен из файла урока при сборке колоды, числа совпадают с demo_v2/answers.md.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>15 / 31</span></div>
+  <template class="notes"><p>⏱ 5 мин (2 промпта + открыть книгу; разбор был на слайдах 11–14). Ведите по ранбуку L08_04. Загрузите northstar_2025.xlsx в ChatGPT. Шаги на слайде, тексты промптов — в ранбуке и на слайдах 11 и 13.</p><p>Ключевые слова в промпте: «формулами Excel, а не готовыми числами». Без них модель часто вставляет посчитанные значения, и проверить их в книге нельзя. Скачайте файл, откройте в Excel, щёлкните ячейку с отдачей рекламы. В строке формул должно быть деление выручки на расход, например =B2/C2. Выручка и расход тоже должны быть формулами (СУММЕСЛИМН / SUMIFS по листу Sales).</p><p>Что увидим: у Search выручка на $1 рекламы держится около 5,4 весь год. У Social с июля падает примерно с 4 до 2. Это вторая история из письма Анны, к ней вернёмся после перерыва.</p><p>Готовые кадры для запасного пути — на слайде 14. Там реальный лист из книги, которую вернул ChatGPT: в нашем прогоне в ячейках оказались числа, формул не было. Внизу та же таблица в Excel, где выручка посчитана формулой СУММЕСЛИМН по листу Sales, а отдача — делением =B2/C2; рядом график по этим ячейкам. Так должна выглядеть книга после просьбы «замени числа формулами». Эталонная книга: demo_v2/excel_demo/northstar_2025_formulas.xlsx. Если у вас есть Claude for Excel или Copilot, покажите ту же просьбу в боковой панели, 90 секунд. Если сервис думает дольше 90 секунд — показывайте готовые кадры и идите дальше.</p></template>
 </section>
-<!-- SLIDE 07 · s_charts · 4 min -->
-<section class="slide" data-n="7">
-  <div class="kicker">Графики</div>
+<!-- SLIDE 16 · s_bg_growth · 4 min -->
+<section class="slide" data-n="16">
+  <div class="kicker" style="--k:var(--amber)">Плохо / хорошо • сезонность</div>
+  <h2 class="title">«Одно число для слайда» — и модель выбрала самое громкое</h2>
+  <div class="body" style="margin-top:10px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:28px;align-items:start;">
+      <div class="stack" style="gap:8px;">
+        <div class="bg-q" style="--k:var(--red)"><span class="badge solid" style="--k:var(--red)">✗ Так себе</span> «Насколько выросли продажи за год? Одним числом для слайда.»</div>
+        <div class="shot bad" style="--k:var(--red);"><img src="assets/v2/shots/b3_bad.jpg" alt="" style="max-height:120px"></div>
+        <div class="note" style="--k:var(--red)">+161,7 % — декабрь к январю. Январь — самый слабый месяц, декабрь — распродажи. Звучит как рост бизнеса, а это сезон.</div>
+        <div class="cap" style="font-size:20px;font-weight:700;color:var(--fg);margin-top:6px;">Выручка по месяцам</div>
+        <svg class="dia" viewBox="0 0 1000 380"><line x1="96" y1="336.0" x2="940" y2="336.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="342.0" text-anchor="end" font-size="17" fill="#6b7a90">0 тыс.</text><line x1="96" y1="262.0" x2="940" y2="262.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="268.0" text-anchor="end" font-size="17" fill="#6b7a90">100 тыс.</text><line x1="96" y1="188.0" x2="940" y2="188.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="194.0" text-anchor="end" font-size="17" fill="#6b7a90">200 тыс.</text><line x1="96" y1="114.0" x2="940" y2="114.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="120.0" text-anchor="end" font-size="17" fill="#6b7a90">300 тыс.</text><line x1="96" y1="40.0" x2="940" y2="40.0" stroke="#2b3648" stroke-width="1"/><text x="86" y="46.0" text-anchor="end" font-size="17" fill="#6b7a90">400 тыс.</text><text x="96.0" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">янв</text><text x="172.7" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">фев</text><text x="249.5" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">мар</text><text x="326.2" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">апр</text><text x="402.9" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">май</text><text x="479.6" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">июн</text><text x="556.4" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">июл</text><text x="633.1" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">авг</text><text x="709.8" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">сен</text><text x="786.5" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">окт</text><text x="863.3" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">ноя</text><text x="940.0" y="362" text-anchor="middle" font-size="17" fill="#a3b1c4">дек</text><polyline points="96.0,230.4 172.7,223.6 249.5,200.5 326.2,203.1 402.9,184.3 479.6,196.7 556.4,209.3 633.1,200.3 709.8,190.5 786.5,172.7 863.3,96.0 940.0,59.7" fill="none" stroke="#38bdf8" stroke-width="4" stroke-linejoin="round"/><circle cx="96.0" cy="230.4" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="172.7" cy="223.6" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="249.5" cy="200.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="326.2" cy="203.1" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="402.9" cy="184.3" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="479.6" cy="196.7" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="556.4" cy="209.3" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="633.1" cy="200.3" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="709.8" cy="190.5" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="786.5" cy="172.7" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="863.3" cy="96.0" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><circle cx="940.0" cy="59.7" r="5" fill="#0b0f17" stroke="#38bdf8" stroke-width="3"/><text x="96.0" y="212.4" text-anchor="start" font-size="21" font-weight="700" fill="#f1f5f9">$143 тыс.</text><text x="934.0" y="41.7" text-anchor="end" font-size="21" font-weight="700" fill="#f1f5f9">$373 тыс.</text><line x1="96.0" y1="230.4" x2="940.0" y2="230.4" stroke="#fbbf24" stroke-width="2" stroke-dasharray="7 6"/><line x1="962.0" y1="230.4" x2="962.0" y2="59.7" stroke="#fbbf24" stroke-width="3"/><text x="633.1" y="264.4" text-anchor="middle" font-size="24" font-weight="800" fill="#fbbf24">+161,7 % от уровня января</text><line x1="863.3" y1="96.0" x2="940.0" y2="59.7" stroke="#34d399" stroke-width="7" stroke-linecap="round"/><text x="845.3" y="92.0" text-anchor="end" font-size="24" font-weight="800" fill="#34d399">+15,1 % к ноябрю</text></svg>
+      </div>
+      <div class="stack" style="gap:8px;">
+        <div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">✓ Хорошо</span> «Посчитай рост тремя способами, для каждого укажи базу и период. Какое число на слайд и почему?»</div>
+        <div class="shot good" style="--k:var(--green);"><img src="assets/v2/shots/b3_table.jpg" alt="" style="max-height:420px"></div>
+        <div class="note" style="--k:var(--green)">Три числа с базой и вывод: на слайд — «второе полугодие примерно на 40 % выше первого».</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>16 / 31</span></div>
+  <template class="notes"><p>⏱ 4 мин. Настоящий прогон 17 октября. На просьбу дать «одно число для слайда» модель ответила: «+161,7 % — рост выручки декабря к январю». Число верное, но январь после праздников — самый слабый месяц, а декабрь — распродажи. Руководитель прочтёт это как рост бизнеса в два с половиной раза.</p><p>Хороший запрос просит три способа и базу для каждого. Модель сама предложила число, которое не вводит в заблуждение: второе полугодие к первому, около 40 %, и оговорилась, что данных за 2024 год нет, поэтому «год к году» сказать нельзя. Слева внизу график из нашего файла, на нём видны обе базы.</p><p>Текст первого запроса на слайде набран заново: в окне чата он при вводе задвоился, ответ от этого не зависит.</p></template>
+</section>
+<!-- SLIDE 17 · s_charts · 3 min -->
+<section class="slide" data-n="17">
+  <div class="kicker">Часть 2 • графики</div>
   <h2 class="title">Пять вопросов — пять графиков. Все из нашего файла</h2>
   <div class="body" style="margin-top:16px;">
     <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px;"><div class="chartbox"><div class="q">Как менялось во времени?</div><div class="c">линия</div><svg viewBox="0 0 300 250"><line x1="44" y1="226.0" x2="292" y2="226.0" stroke="#2b3648" stroke-width="1"/><text x="34" y="232.0" text-anchor="end" font-size="14" fill="#6b7a90">0т</text><line x1="44" y1="118.0" x2="292" y2="118.0" stroke="#2b3648" stroke-width="1"/><text x="34" y="124.0" text-anchor="end" font-size="14" fill="#6b7a90">200т</text><line x1="44" y1="10.0" x2="292" y2="10.0" stroke="#2b3648" stroke-width="1"/><text x="34" y="16.0" text-anchor="end" font-size="14" fill="#6b7a90">400т</text><polyline points="44.0,148.9 66.5,144.0 89.1,127.2 111.6,129.0 134.2,115.3 156.7,124.4 179.3,133.5 201.8,127.0 224.4,119.8 246.9,106.8 269.5,50.9 292.0,24.3" fill="none" stroke="#38bdf8" stroke-width="3" stroke-linejoin="round"/><circle cx="44.0" cy="148.9" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="66.5" cy="144.0" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="89.1" cy="127.2" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="111.6" cy="129.0" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="134.2" cy="115.3" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="156.7" cy="124.4" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="179.3" cy="133.5" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="201.8" cy="127.0" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="224.4" cy="119.8" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="246.9" cy="106.8" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="269.5" cy="50.9" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><circle cx="292.0" cy="24.3" r="4" fill="#0b0f17" stroke="#38bdf8" stroke-width="2"/><text x="44.0" y="244" text-anchor="start" font-size="15" fill="#a3b1c4">янв</text><text x="292.0" y="244" text-anchor="end" font-size="15" fill="#a3b1c4">дек</text></svg><div class="f">пик в ноябре–декабре</div></div><div class="chartbox"><div class="q">Кто больше?</div><div class="c">столбцы по убыванию</div><svg viewBox="0 0 300 250"><line x1="10" y1="220" x2="294" y2="220" stroke="#2b3648" stroke-width="2"/><rect x="16.0" y="26.0" width="51.5" height="194.0" rx="3" fill="#38bdf8"/><text x="41.8" y="22.0" text-anchor="middle" font-size="13" fill="#f1f5f9">877 тыс.</text><text x="41.8" y="240" text-anchor="middle" font-size="14" fill="#a3b1c4">Electr.</text><rect x="83.5" y="74.0" width="51.5" height="146.0" rx="3" fill="#5f6e84"/><text x="109.2" y="70.0" text-anchor="middle" font-size="13" fill="#f1f5f9">660 тыс.</text><text x="109.2" y="240" text-anchor="middle" font-size="14" fill="#a3b1c4">Home</text><rect x="151.0" y="91.3" width="51.5" height="128.7" rx="3" fill="#5f6e84"/><text x="176.8" y="87.3" text-anchor="middle" font-size="13" fill="#f1f5f9">582 тыс.</text><text x="176.8" y="240" text-anchor="middle" font-size="14" fill="#a3b1c4">Sports</text><rect x="218.5" y="131.5" width="51.5" height="88.5" rx="3" fill="#5f6e84"/><text x="244.2" y="127.5" text-anchor="middle" font-size="13" fill="#f1f5f9">400 тыс.</text><text x="244.2" y="240" text-anchor="middle" font-size="14" fill="#a3b1c4">Books</text></svg><div class="f">Electronics — лидер по выручке</div></div><div class="chartbox"><div class="q">Как распределены значения?</div><div class="c">гистограмма</div><svg viewBox="0 0 300 250"><line x1="10" y1="224" x2="294" y2="224" stroke="#2b3648" stroke-width="2"/><rect x="12.0" y="214.7" width="11.0" height="9.3" fill="#38bdf8"/><rect x="26.0" y="165.9" width="11.0" height="58.1" fill="#38bdf8"/><rect x="40.0" y="24.0" width="11.0" height="200.0" fill="#38bdf8"/><rect x="54.0" y="143.9" width="11.0" height="80.1" fill="#38bdf8"/><rect x="68.0" y="213.0" width="11.0" height="11.0" fill="#38bdf8"/><rect x="82.0" y="222.0" width="11.0" height="2.0" fill="#38bdf8"/><rect x="96.0" y="224.0" width="11.0" height="0.0" fill="#38bdf8"/><rect x="110.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="124.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="138.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="152.0" y="222.0" width="11.0" height="2.0" fill="#f87171"/><rect x="166.0" y="222.0" width="11.0" height="2.0" fill="#f87171"/><rect x="180.0" y="222.0" width="11.0" height="2.0" fill="#f87171"/><rect x="194.0" y="221.7" width="11.0" height="2.3" fill="#f87171"/><rect x="208.0" y="222.0" width="11.0" height="2.0" fill="#f87171"/><rect x="222.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="236.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="250.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="264.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><rect x="278.0" y="224.0" width="11.0" height="0.0" fill="#f87171"/><text x="12" y="244" font-size="13" fill="#a3b1c4">0%</text><text x="292" y="244" text-anchor="end" font-size="13" fill="#a3b1c4">40%+</text></svg><div class="f">красный хвост: 22 строк с возвратами от 14 %</div></div><div class="chartbox"><div class="q">Связаны ли два числа?</div><div class="c">точки</div><svg viewBox="0 0 300 250"><line x1="30" y1="226" x2="294" y2="226" stroke="#2b3648" stroke-width="2"/><line x1="30" y1="8" x2="30" y2="226" stroke="#2b3648" stroke-width="2"/><circle cx="69.3" cy="149.4" r="5" fill="#5f6e84"/><circle cx="71.0" cy="147.3" r="5" fill="#5f6e84"/><circle cx="79.3" cy="132.4" r="5" fill="#5f6e84"/><circle cx="81.9" cy="128.7" r="5" fill="#5f6e84"/><circle cx="88.1" cy="116.2" r="5" fill="#5f6e84"/><circle cx="83.3" cy="126.1" r="5" fill="#5f6e84"/><circle cx="75.8" cy="139.5" r="5" fill="#5f6e84"/><circle cx="75.5" cy="139.1" r="5" fill="#5f6e84"/><circle cx="86.9" cy="119.9" r="5" fill="#5f6e84"/><circle cx="92.9" cy="106.8" r="5" fill="#5f6e84"/><circle cx="120.8" cy="53.2" r="5" fill="#5f6e84"/><circle cx="133.8" cy="24.7" r="5" fill="#5f6e84"/><circle cx="75.4" cy="159.3" r="5" fill="#38bdf8"/><circle cx="80.8" cy="152.9" r="5" fill="#38bdf8"/><circle cx="89.2" cy="139.8" r="5" fill="#38bdf8"/><circle cx="79.6" cy="155.6" r="5" fill="#38bdf8"/><circle cx="94.8" cy="133.5" r="5" fill="#38bdf8"/><circle cx="88.3" cy="142.6" r="5" fill="#38bdf8"/><circle cx="133.8" cy="152.1" r="5" fill="#fbbf24"/><circle cx="148.7" cy="140.6" r="5" fill="#fbbf24"/><circle cx="161.4" cy="130.9" r="5" fill="#fbbf24"/><circle cx="158.0" cy="132.4" r="5" fill="#fbbf24"/><circle cx="241.2" cy="72.7" r="5" fill="#fbbf24"/><circle cx="268.2" cy="53.6" r="5" fill="#fbbf24"/><text x="294" y="244" text-anchor="end" font-size="13" fill="#a3b1c4">расход →</text><text x="36" y="20" font-size="13" fill="#a3b1c4">выручка</text></svg><div class="f"><b style="color:#5f6e84">●</b> Search <b style="color:#38bdf8">●</b> Social янв–июн <b style="color:#fbbf24">●</b> Social июл–дек: расход вырос, выручка нет</div></div><div class="chartbox"><div class="q">Из чего состоит целое?</div><div class="c">столбцы 100 %</div><svg viewBox="0 0 300 250"><rect x="16.0" y="160.1" width="49.5" height="63.9" fill="#38bdf8" opacity=".9"/><rect x="16.0" y="102.0" width="49.5" height="58.0" fill="#fbbf24" opacity=".9"/><rect x="16.0" y="60.3" width="49.5" height="41.7" fill="#34d399" opacity=".9"/><rect x="16.0" y="14.0" width="49.5" height="46.3" fill="#c084fc" opacity=".9"/><text x="40.8" y="242" text-anchor="middle" font-size="13" fill="#a3b1c4">Q1</text><rect x="83.5" y="158.2" width="49.5" height="65.8" fill="#38bdf8" opacity=".9"/><rect x="83.5" y="105.5" width="49.5" height="52.8" fill="#fbbf24" opacity=".9"/><rect x="83.5" y="63.8" width="49.5" height="41.7" fill="#34d399" opacity=".9"/><rect x="83.5" y="14.0" width="49.5" height="49.8" fill="#c084fc" opacity=".9"/><text x="108.2" y="242" text-anchor="middle" font-size="13" fill="#a3b1c4">Q2</text><rect x="151.0" y="161.8" width="49.5" height="62.2" fill="#38bdf8" opacity=".9"/><rect x="151.0" y="105.2" width="49.5" height="56.6" fill="#fbbf24" opacity=".9"/><rect x="151.0" y="63.7" width="49.5" height="41.5" fill="#34d399" opacity=".9"/><rect x="151.0" y="14.0" width="49.5" height="49.7" fill="#c084fc" opacity=".9"/><text x="175.8" y="242" text-anchor="middle" font-size="13" fill="#a3b1c4">Q3</text><rect x="218.5" y="158.1" width="49.5" height="65.9" fill="#38bdf8" opacity=".9"/><rect x="218.5" y="102.1" width="49.5" height="56.0" fill="#fbbf24" opacity=".9"/><rect x="218.5" y="60.7" width="49.5" height="41.4" fill="#34d399" opacity=".9"/><rect x="218.5" y="14.0" width="49.5" height="46.7" fill="#c084fc" opacity=".9"/><text x="243.2" y="242" text-anchor="middle" font-size="13" fill="#a3b1c4">Q4</text></svg><div class="f">доли выручки по кварталам: <b style="color:#38bdf8">●</b> Search <b style="color:#fbbf24">●</b> Social <b style="color:#34d399">●</b> Email <b style="color:#c084fc">●</b> Organic</div></div></div>
-    <div class="plaque" style="margin-top:22px;"><b>Просите так:</b> «Построй один график, который отвечает на вопрос …, подпиши оси и единицы». Сначала назовите вопрос, тип графика модель подберёт.</div>
+    <div class="plaque" style="margin-top:22px;"><b>Просите так:</b> «Построй один график, который отвечает на вопрос …, подпиши оси и единицы». Тип графика назовите сами, если знаете; иначе модель предложит.</div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>07 / 19</span></div>
-  <template class="notes"><p>⏱ 4 мин. Пять типовых вопросов и пять графиков к ним, все построены из файла Northstar. Время — линия: видно пик в конце года. Сравнение — столбцы по убыванию, ось от нуля. Распределение — гистограмма: у большинства строк возвраты 2–8 %, но есть хвост от 14 % и выше, это склад N2. Связь — точки: каждая точка — месяц одного канала, жёлтые точки Social со второго полугодия ушли вправо (расход больше), но не вверх. Доли — столбцы 100 %, не больше 4–5 частей.</p><p>ИИ охотно делает «дашборд из шести графиков». Просите один график под один вопрос, его проще проверить и показать.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>17 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Пять типовых вопросов и пять графиков к ним, все построены из файла Northstar. Время — линия: видно пик в конце года. Сравнение — столбцы по убыванию, ось от нуля. Распределение — гистограмма: у большинства строк возвраты 2–8 %, но есть хвост от 14 % и выше, это склад N2. Связь — точки: каждая точка — месяц одного канала, жёлтые точки Social со второго полугодия ушли вправо (расход больше), но не вверх. Доли — столбцы 100 %, не больше 4–5 частей.</p><p>ИИ охотно делает «дашборд из шести графиков». Просите один график под один вопрос, его проще проверить и показать.</p></template>
 </section>
-<!-- SLIDE 08 · s_break · 5 min -->
-<section class="slide" data-n="8">
+<!-- SLIDE 18 · s_break · 5 min -->
+<section class="slide" data-n="18">
   <div class="brk">
     <div class="kicker" style="--k:var(--amber)">Перерыв</div>
     <h2 class="title">5 минут</h2>
@@ -497,23 +651,25 @@ svg.dia text { font-family: var(--body); }
     <div style="display:flex;gap:14px;"><button class="btn primary" id="timerStart">СТАРТ 5 МИН</button><button class="btn" id="timerReset">СБРОС</button></div>
     <p>Дальше: демо в чате с файлом — возвраты, отзывы, график для слайда. Потом большая база, отчёт на одну страницу и домашнее задание.</p>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>08 / 19</span></div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>18 / 31</span></div>
   <template class="notes"><p>⏱ 5 мин. Нажмите «Старт». Чат не закрывайте: после перерыва работаем в нём же, промпт 6 опирается на графики из демо 1 и 2.</p></template>
 </section>
-<!-- SLIDE 09 · s_demo2 · 12 min -->
-<section class="slide" data-n="9">
-  <div class="kicker" style="--k:var(--violet)">Демо 2 • чат с файлом • 12 минут</div>
+<!-- SLIDE 19 · s_p34_anatomy · 5 min -->
+<section class="slide" data-n="19">
+  <div class="kicker" style="--k:var(--violet)">Часть 3 • демо 2 • промпты 3 и 4</div>
   <h2 class="title">За год 6 % возвратов. В одной клетке — 24,8 %</h2>
-  <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:0.85fr 1.15fr;gap:26px;align-items:start;"><div class="stack" style="gap:10px;"><div class="pr " style="--k:var(--violet)"><span class="no">Промпт 3</span>Посчитай долю возвратов по регионам и категориям за сентябрь–декабрь и покажи тепловой картой.</div><div class="shot " style="--k:var(--violet);"><div class="lbl" style="--k:var(--violet)">тепловая карта</div><img src="assets/v2/shots/p3_heatmap.jpg" alt="" style="max-height:420px"></div></div><div class="stack" style="gap:10px;"><div class="pr " style="--k:var(--violet)"><span class="no">Промпт 4</span>Для склада с самой высокой долей возвратов разложи отзывы на темы и сравни с остальными складами. Покажи 5 примеров отзывов.</div><div class="shot " style="--k:var(--violet);"><div class="lbl" style="--k:var(--violet)">темы отзывов</div><img src="assets/v2/shots/p3_themes_before.jpg" alt=""></div><div class="pr " style="--k:var(--violet)"><span class="no">Промпт 5</span>Переделка графика для слайда. Полный текст и результат — на слайде 11.</div></div></div>
-    <div class="plaque g" style="margin-top:14px;"><b>Задание в чат Teams:</b> какое число на тепловой карте вы бы проверили первым?</div>
+  <div class="body" style="margin-top:12px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:26px;align-items:start;">
+      <div class="stack" style="gap:8px;"><div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Промпт 3 — таблица</div><div class="an"><div class="an-row" style="--k:var(--amber)"><div class="an-n">1</div><div class="an-t">Посчитай долю возвратов</div><div class="an-w">метрика: возвраты ÷ заказы</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">2</div><div class="an-t">по регионам и категориям</div><div class="an-w">разрез: две оси таблицы</div></div><div class="an-row" style="--k:var(--cyan)"><div class="an-n">3</div><div class="an-t">за сентябрь–декабрь</div><div class="an-w">период, о котором спросила Анна</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">4</div><div class="an-t">и покажи тепловой картой.</div><div class="an-w">тип: аномалия видна цветом</div></div></div><div class="shot " style="--k:var(--violet);"><div class="lbl" style="--k:var(--violet)">результат: 24,8 % в одной клетке</div><img src="assets/v2/shots/p3_heatmap.jpg" alt="" style="max-height:260px"></div></div>
+      <div class="stack" style="gap:8px;"><div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Промпт 4 — текст</div><div class="an"><div class="an-row" style="--k:var(--amber)"><div class="an-n">1</div><div class="an-t">Для склада с самой высокой долей возвратов</div><div class="an-w">модель сама находит разрез</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">2</div><div class="an-t">разложи отзывы на темы</div><div class="an-w">текст → категории</div></div><div class="an-row" style="--k:var(--cyan)"><div class="an-n">3</div><div class="an-t">и сравни с остальными складами.</div><div class="an-w">база сравнения</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">4</div><div class="an-t">Покажи 5 примеров отзывов.</div><div class="an-w">проверка глазами</div></div></div><div class="shot " style="--k:var(--violet);"><div class="lbl" style="--k:var(--violet)">результат: темы отзывов N2 и остальных · промпт 5 → слайд 21</div><img src="assets/v2/shots/p3_themes_before.jpg" alt="" style="max-height:260px"></div></div>
+    </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>09 / 19</span></div>
-  <template class="notes"><p>⏱ 12 мин (3 промпта). Тот же чат, файл уже загружен. После каждого ответа раскрывайте код: блок «Анализ завершён» или кнопка кода над графиком.</p><p>Промпт 3: тепловая карта. Общая доля возвратов около 6 %, но одна клетка горит: North × Electronics — 24,8 %. Остальные около 5 %. По итогу за год этого не видно.</p><p>Промпт 4: отзывы. Модель сама выбрала склад N2 и разложила отзывы на темы. Тема «упаковка / повреждения» у N2 — 49 %, у остальных — 12 %. Текст объясняет цифру: посылки приходят повреждёнными.</p><p>Промпт 5: график для слайда. Подробно разберём через слайд. Если любой промпт думает дольше 90 секунд — показывайте готовый кадр с экрана и идите дальше.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>19 / 31</span></div>
+  <template class="notes"><p>⏱ 5 мин. Третий вопрос письма — возвраты осенью. Промпт 3 работает с таблицей: метрика, разрез, период, тип графика. Промпт 4 работает с текстом: модель сама находит склад с худшей долей, раскладывает отзывы на темы и сравнивает с остальными. «Покажи 5 примеров» — чтобы вы могли проверить темы глазами.</p><p>Демо: тот же чат, файл уже загружен. После каждого ответа раскройте код (блок «Анализ завершён» или кнопка кода над графиком). Под разбором — реальные результаты: на тепловой карте одна клетка горит, North × Electronics — 24,8 % против примерно 5 %. Это и есть склад N2. Темы отзывов: «упаковка / повреждения» у N2 — 49 %, у остальных 12 %. Ответ дольше 90 секунд — показываем кадр.</p></template>
 </section>
-<!-- SLIDE 10 · s_found · 4 min -->
-<section class="slide" data-n="10">
-  <div class="kicker" style="--k:var(--red)">Что нашли</div>
+<!-- SLIDE 20 · s_found · 3 min -->
+<section class="slide" data-n="20">
+  <div class="kicker" style="--k:var(--red)">Часть 3 • что нашли</div>
   <h2 class="title">Две проблемы, которых не видно в итоге за год</h2>
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1fr 1fr;gap:40px;align-items:stretch;">
@@ -534,12 +690,12 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>10 / 19</span></div>
-  <template class="notes"><p>⏱ 4 мин. Две находки из демо, перерисованные из данных. Слева Social: с июля расход на рекламу вырос почти втрое (первое полугодие $69 402, второе $197 009), а выручка — на 43 %. Каждый доллар рекламы стал приносить вдвое меньше. Итог за год при этом выглядит нормально: выручка растёт.</p><p>Справа склад N2: до августа возвраты как у всех, с сентября — около четверти заказов. Отзывы объясняют причину: коробки приходят мятыми, экраны разбитыми. Цифры говорят, где проблема, текст — почему.</p><p>Чтобы не запутаться: склад N2 — это и есть клетка North × Electronics с тепловой карты. В клетке 24,8 % за сентябрь–декабрь, на графике по месяцам — около 26 % в отдельные месяцы.</p><p>Вопрос в чат: «Что бы вы предложили Анне по каждой находке?» Ответ «урезать Social» обсудим на слайде 16.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>20 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Две находки из демо, перерисованные из данных. Слева Social: с июля расход на рекламу вырос почти втрое (первое полугодие $69 402, второе $197 009), а выручка — на 43 %. Каждый доллар рекламы стал приносить вдвое меньше. Итог за год при этом выглядит нормально: выручка растёт.</p><p>Справа склад N2: до августа возвраты как у всех, с сентября — около четверти заказов. Отзывы объясняют причину: коробки приходят мятыми, экраны разбитыми. Цифры говорят, где проблема, текст — почему.</p><p>Чтобы не запутаться: склад N2 — это и есть клетка North × Electronics с тепловой карты. В клетке 24,8 % за сентябрь–декабрь, на графике по месяцам — около 26 % в отдельные месяцы.</p><p>Вопрос в чат: «Что бы вы предложили Анне по каждой находке?» Ответ «урезать Social» разберём на слайде 23.</p></template>
 </section>
-<!-- SLIDE 11 · s_makeover · 4 min -->
-<section class="slide" data-n="11">
-  <div class="kicker" style="--k:var(--violet)">График для слайда</div>
+<!-- SLIDE 21 · s_makeover · 3 min -->
+<section class="slide" data-n="21">
+  <div class="kicker" style="--k:var(--violet)">Часть 3 • график для слайда</div>
   <h2 class="title">График правится словами, как текст</h2>
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:0.75fr 1.25fr;gap:26px;align-items:center;">
@@ -557,12 +713,12 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>11 / 19</span></div>
-  <template class="notes"><p>⏱ 4 мин. Это промпт 5 из демо. Слева график, который модель строит по умолчанию: заголовок-тема, легенда, два ярких цвета, мелкие подписи. Справа тот же график после одного промпта. На слайд руководителю идёт правый.</p><p>Пять правил из промпта годятся для любого графика: заголовок — вывод; сортировка; подписи прямо на столбцах; без лишнего (легенды, сетки); один акцентный цвет. Сохраните промпт себе, он в шпаргалке.</p><p>Внимательно посмотрите на числа: было 49 %, стало 46 %. Об этом следующий слайд.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>21 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Это промпт 5 из демо. Слева график, который модель строит по умолчанию: заголовок-тема, легенда, два ярких цвета, мелкие подписи. Справа тот же график после одного промпта. На слайд руководителю идёт правый.</p><p>Пять правил из промпта годятся для любого графика: заголовок — вывод; сортировка; подписи прямо на столбцах; без лишнего (легенды, сетки); один акцентный цвет. Сохраните промпт себе, он в шпаргалке.</p><p>Внимательно посмотрите на числа: было 49 %, стало 46 %. Об этом следующий слайд.</p></template>
 </section>
-<!-- SLIDE 12 · s_check · 3 min -->
-<section class="slide" data-n="12">
-  <div class="kicker" style="--k:var(--green)">Проверка • 60 секунд</div>
+<!-- SLIDE 22 · s_check · 4 min -->
+<section class="slide" data-n="22">
+  <div class="kicker" style="--k:var(--green)">Часть 3 • проверка за 60 секунд</div>
   <h2 class="title">Три версии графика — три разных числа. Сверяйте после каждой переделки</h2>
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1.15fr 1fr;gap:36px;align-items:stretch;">
@@ -584,40 +740,67 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>12 / 19</span></div>
-  <template class="notes"><p>⏱ 3 мин. Мы просили только поменять оформление. А модель заодно пересчитала темы: похвалу упаковке («аккуратно упаковано») перенесла из темы «повреждения» в «товар в порядке». Доля стала 46 %, в итоговом отчёте — 44 %. По разметке, из которой мы собирали учебный файл, про повреждения 53 отзыва из 87, то есть 61 %. Модель ищет по ключевым словам и пропускает жалобы, написанные своими словами.</p><p>Вывод про склад N2 от этого не меняется: жалоб на повреждения там во много раз больше, чем у остальных. Меняется число, которое уйдёт руководителю. Поэтому после каждой переделки сверяйте пару чисел с прошлой версией, а темы отзывов проверяйте выборочным чтением.</p><p>Проверка за 60 секунд, три шага. Строки: сколько было, сколько стало. Одна точка: одно число с графика находите глазами в исходном файле. База процента: от какого месяца и за какой период.</p><p>Для любопытных, эксперимент из подготовки урока: на маленькой таблице модели без кода посчитали сумму правильно, но строку с 66 возвратами при 62 заказах «починили» на 6, хотя в источнике было 4. Догадку модели надо отличать от данных. Подробности: demo_assets/no_code_experiment_2026-10-13.md.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>22 / 31</span></div>
+  <template class="notes"><p>⏱ 4 мин. Мы просили только поменять оформление. А модель заодно пересчитала темы: похвалу упаковке («аккуратно упаковано») перенесла из темы «повреждения» в «товар в порядке». Доля стала 46 %, в итоговом отчёте — 44 %. По разметке, из которой мы собирали учебный файл, про повреждения 53 отзыва из 87, то есть 61 %. Модель ищет по ключевым словам и пропускает жалобы, написанные своими словами.</p><p>Если спросят про «остальных»: в первом графике у остальных складов 12 %, после перекраски 5 %. Модель пересчитала обе группы.</p><p>Вывод про склад N2 от этого не меняется: жалоб на повреждения там во много раз больше, чем у остальных. Меняется число, которое уйдёт руководителю. Поэтому после каждой переделки сверяйте пару чисел с прошлой версией, а темы отзывов проверяйте выборочным чтением.</p><p>Проверка за 60 секунд, три шага. Строки: сколько было, сколько стало. Одна точка: одно число с графика находите глазами в исходном файле. База процента: от какого месяца и за какой период.</p><p>Для любопытных, эксперимент из подготовки урока: на маленькой таблице модели без кода посчитали сумму правильно, но строку с 66 возвратами при 62 заказах «починили» на 6, хотя в источнике было 4. Догадку модели надо отличать от данных. Подробности: demo_assets/no_code_experiment_2026-10-13.md.</p></template>
 </section>
-<!-- SLIDE 13 · s_db · 5 min -->
-<section class="slide" data-n="13">
-  <div class="kicker" style="--k:var(--amber)">Большая база • кулинарные YouTube-каналы</div>
-  <h2 class="title">База обновляется каждый день: файл не выгружаем, спрашиваем базу</h2>
+<!-- SLIDE 23 · s_bg_social · 3 min -->
+<section class="slide" data-n="23">
+  <div class="kicker" style="--k:var(--red)">Часть 3 • быстро / под контролем #3</div>
+  <h2 class="title">Первая строка ответа — сценарий, а не прогноз. Читайте допущения</h2>
+  <div class="body" style="margin-top:10px;">
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:28px;align-items:start;"><div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--amber)"><span class="badge solid" style="--k:var(--amber)">Быстро</span> Первая строка ответа на «Если с января урезать бюджет Social вдвое, сколько мы сэкономим и сколько потеряем выручки за квартал?»</div><div class="shot " style="--k:var(--amber);"><img src="assets/v2/shots/b5_top.jpg" alt="" style="max-height:290px"></div><div class="note" style="--k:var(--amber)">«Потеря выручки — 122,5 тыс.» в первой строке. Это расчёт <b>при условии</b>, что выручка падает вместе с бюджетом.</div></div><div class="stack" style="gap:8px;"><div class="bg-q" style="--k:var(--green)"><span class="badge solid" style="--k:var(--green)">✓ Под контролем</span> Тот же ответ, абзацы ниже</div><div class="shot good" style="--k:var(--green);"><img src="assets/v2/shots/b5_reco.jpg" alt="" style="max-height:330px"></div><div class="note" style="--k:var(--green)">Модель сама пишет: точную потерю файл не покажет, нужен тест с контрольной группой.</div></div></div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>23 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. После находки про Social хочется сразу урезать бюджет. Мы спросили модель прямо. Ответ хороший, если дочитать: в первой строке «потеря выручки 122,5 тыс.», но это сценарий «если выручка падает пропорционально бюджету». Ниже модель сама пишет, что фактическую потерю файл не покажет, и предлагает тест на части аудитории.</p><p>Урок: руководитель читает первую строку. Перед тем как нести число дальше, найдите в ответе слова «при условии», «если», «допущение». Таблица говорит, что было. Что будет, покажет только тест.</p></template>
+</section>
+<!-- SLIDE 24 · s_db_schema · 2 min -->
+<section class="slide" data-n="24">
+  <div class="kicker" style="--k:var(--amber)">Часть 4 • большая база</div>
+  <h2 class="title">База каналов: три связанные таблицы, обновляются каждый день</h2>
+  <div class="body" style="margin-top:14px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;"><div class="door" style="--k:var(--cyan)"><div class="h" style="font-family:var(--mono);font-size:22px;">channels</div><div class="stat" style="--k:var(--cyan)"><div class="n" style="font-size:40px;">26 544</div><div class="d">строк · строка = один канал</div></div><div class="code" style="font-size:17px;padding:10px 12px;">title<br>subscriber_count<br>country<br>language</div></div><div class="door" style="--k:var(--violet)"><div class="h" style="font-family:var(--mono);font-size:22px;">videos</div><div class="stat" style="--k:var(--violet)"><div class="n" style="font-size:40px;">416 809</div><div class="d">строк · строка = одно видео</div></div><div class="code" style="font-size:17px;padding:10px 12px;">channel_id → channels<br>published_at<br>duration_seconds<br>tags</div></div><div class="door" style="--k:var(--amber)"><div class="h" style="font-family:var(--mono);font-size:22px;">video_stat_observations</div><div class="stat" style="--k:var(--amber)"><div class="n" style="font-size:40px;">668 665</div><div class="d">строк · строка = один замер просмотров</div></div><div class="code" style="font-size:17px;padding:10px 12px;">video_id → videos<br>observed_at<br>views</div></div></div>
+    <div class="flow" style="margin-top:20px;justify-content:center;gap:14px;"><div class="box">channels</div><div class="arr">→</div><div class="box">videos</div><div class="arr">→</div><div class="box">video_stat_observations</div></div>
+    <div class="cap" style="margin-top:12px;text-align:center;">Стрелка — связь: у видео есть номер канала, у замера — номер видео. Для урока взят обезличенный срез: 1 943 канала, 46 132 видео.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>24 / 31</span></div>
+  <template class="notes"><p>⏱ 2 мин. Рабочая база автора курса: кулинарные YouTube-каналы, собранные через официальный API. Три таблицы: каналы (26 544), видео (416 809) и замеры просмотров по дням (668 665). Таблицы связаны: у каждого видео есть номер канала, у каждого замера — номер видео.</p><p>Почему не файл: таблиц три, они связаны и обновляются каждый день. Выгружать их ради каждого вопроса неудобно. Проще спросить базу запросом, это следующий слайд.</p></template>
+</section>
+<!-- SLIDE 25 · s_sql_anatomy · 3 min -->
+<section class="slide" data-n="25">
+  <div class="kicker" style="--k:var(--amber)">Часть 4 • SQL по строкам</div>
+  <h2 class="title">SQL читается почти как обычная фраза</h2>
+  <div class="body" style="margin-top:14px;">
+    <div class="pr " style="--k:var(--amber)"><span class="no">Промпт</span>В базе таблица videos: длительность и просмотры каждого видео. Напиши SQL-запрос: видео какой длины набирают больше всего просмотров? Объясни каждую строку.</div>
+    <div style="margin-top:14px;"><div class="an"><div class="an-row" style="--k:var(--cyan)"><div class="an-n">1</div><div class="an-t">SELECT duration_bucket,</div><div class="an-w">что показать: длительность</div></div><div class="an-row" style="--k:var(--green)"><div class="an-n">2</div><div class="an-t">COUNT(*) AS videos,</div><div class="an-w">сколько видео в группе</div></div><div class="an-row" style="--k:var(--amber)"><div class="an-n">3</div><div class="an-t">MEDIAN(views) AS typical</div><div class="an-w">типичные просмотры: половина выше, половина ниже</div></div><div class="an-row" style="--k:var(--violet)"><div class="an-n">4</div><div class="an-t">FROM videos</div><div class="an-w">из какой таблицы</div></div><div class="an-row" style="--k:var(--cyan)"><div class="an-n">5</div><div class="an-t">GROUP BY duration_bucket;</div><div class="an-w">по какому признаку собрать группы</div></div></div></div>
+    <div class="note" style="--k:var(--amber);margin-top:14px;"><b>Опишите таблицы в промпте.</b> Без описания модель угадывает названия колонок, и запрос падает с ошибкой.</div>
+  </div>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>25 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин. Разберите запрос как фразу: выбрать длительность, посчитать видео, взять типичные просмотры, из таблицы видео, собрать группы по длительности. Писать SQL студентам не нужно, нужно уметь прочитать, что посчитала база. MEDIAN есть не во всех базах (в PostgreSQL это PERCENTILE_CONT) — модель подберёт нужную функцию, если назвать вашу базу.</p><p>Про описание таблиц: если модель не видит схему, она придумывает названия колонок. В нашем прогоне ChatGPT вместо этого сам подтянул схему настоящей базы автора из подключённых источников — поэтому тот кадр мы не показываем. На работе так и делайте: давайте модели названия таблиц и колонок, без самих данных.</p></template>
+</section>
+<!-- SLIDE 26 · s_db · 2 min -->
+<section class="slide" data-n="26">
+  <div class="kicker" style="--k:var(--amber)">Часть 4 • результат и ловушка</div>
+  <h2 class="title">Длинные видео в 12 раз популярнее? Нет: их снимают большие каналы</h2>
   <div class="body" style="margin-top:12px;">
-    <div style="display:grid;grid-template-columns:repeat(3,1fr) 1.2fr;gap:24px;align-items:end;"><div class="stat" style="--k:var(--amber)"><div class="n">26 544</div><div class="d">каналов: название, подписчики, страна</div></div><div class="stat" style="--k:var(--amber)"><div class="n">416 809</div><div class="d">видео: длительность, дата, канал</div></div><div class="stat" style="--k:var(--amber)"><div class="n">668 665</div><div class="d">замеров просмотров по дням</div></div>
-      <div class="cap">Для урока — обезличенный срез: <b>1 943</b> канала, <b>46 132</b> видео. Без e-mail, ссылок и id.</div>
-    </div>
-    <div class="row" style="grid-template-columns:0.95fr 1.05fr;gap:32px;margin-top:20px;align-items:stretch;">
-      <div class="stack" style="gap:12px;">
-        <div class="pr " style="--k:var(--amber)"><span class="no">Промпт</span>В базе таблица videos: длительность и просмотры каждого видео. Напиши SQL-запрос: видео какой длины набирают больше всего просмотров? Объясни каждую строку.</div>
-        <div class="code"><span class="cm">-- Видео какой длины набирают больше просмотров?</span>
-<span class="kw">SELECT</span> duration_bucket,            <span class="cm">-- длительность</span>
-       <span class="kw">COUNT</span>(*)      <span class="kw">AS</span> videos,   <span class="cm">-- сколько видео</span>
-       <span class="kw">MEDIAN</span>(views) <span class="kw">AS</span> typical   <span class="cm">-- типичные просмотры</span>
-<span class="kw">FROM</span> videos
-<span class="kw">GROUP BY</span> duration_bucket;</div>
-      </div>
+    <div class="row" style="grid-template-columns:1fr 1fr;gap:32px;margin-top:10px;align-items:stretch;">
       <div class="stack" style="gap:6px;">
-        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Типичные просмотры видео по длительности</div>
+        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Первый запрос: типичные просмотры по длительности</div>
         <svg viewBox="0 0 700 330"><line x1="10" y1="290" x2="694" y2="290" stroke="#2b3648" stroke-width="2"/><rect x="14.0" y="269.7" width="95.3" height="20.3" rx="4" fill="#5f6e84"/><text x="61.7" y="261.7" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1 100</text><text x="61.7" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">до 1 мин</text><rect x="127.3" y="269.7" width="95.3" height="20.3" rx="4" fill="#5f6e84"/><text x="175.0" y="261.7" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1 100</text><text x="175.0" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">1–5 мин</text><rect x="240.7" y="245.7" width="95.3" height="44.3" rx="4" fill="#5f6e84"/><text x="288.3" y="237.7" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">2 400</text><text x="288.3" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">5–10 мин</text><rect x="354.0" y="179.2" width="95.3" height="110.8" rx="4" fill="#5f6e84"/><text x="401.7" y="171.2" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">6 000</text><text x="401.7" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">10–20 мин</text><rect x="467.3" y="50.0" width="95.3" height="240.0" rx="4" fill="#fbbf24"/><text x="515.0" y="42.0" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">13 000</text><text x="515.0" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">20–40 мин</text><rect x="580.7" y="133.1" width="95.3" height="156.9" rx="4" fill="#5f6e84"/><text x="628.3" y="125.1" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">8 500</text><text x="628.3" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">40+ мин</text></svg>
         <div class="note" style="--k:var(--red)">20–40 минут — в 12 раз больше коротких? Сравнили каждое видео с обычными роликами <b>его же канала</b> — всего на 3 % выше обычного. Длинные видео просто чаще снимают большие каналы.</div>
       </div>
+      <div class="stack" style="gap:6px;">
+        <div class="cap" style="font-size:21px;font-weight:700;color:var(--fg);">Второй запрос: видео против обычного видео своего канала</div>
+        <svg viewBox="0 0 700 330"><line x1="10" y1="290" x2="694" y2="290" stroke="#2b3648" stroke-width="2"/><line x1="10" y1="118.6" x2="694" y2="118.6" stroke="#34d399" stroke-width="2" stroke-dasharray="7 6"/><rect x="14.0" y="120.3" width="95.3" height="169.7" rx="4" fill="#5f6e84"/><text x="61.7" y="112.3" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">0,99</text><text x="61.7" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">до 1 мин</text><rect x="127.3" y="118.6" width="95.3" height="171.4" rx="4" fill="#5f6e84"/><text x="175.0" y="110.6" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1,00</text><text x="175.0" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">1–5 мин</text><rect x="240.7" y="118.6" width="95.3" height="171.4" rx="4" fill="#5f6e84"/><text x="288.3" y="110.6" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1,00</text><text x="288.3" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">5–10 мин</text><rect x="354.0" y="111.7" width="95.3" height="178.3" rx="4" fill="#5f6e84"/><text x="401.7" y="103.7" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1,04</text><text x="401.7" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">10–20 мин</text><rect x="467.3" y="113.4" width="95.3" height="176.6" rx="4" fill="#5f6e84"/><text x="515.0" y="105.4" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1,03</text><text x="515.0" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">20–40 мин</text><rect x="580.7" y="101.4" width="95.3" height="188.6" rx="4" fill="#5f6e84"/><text x="628.3" y="93.4" text-anchor="middle" font-size="20" font-weight="700" fill="#f1f5f9">1,10</text><text x="628.3" y="318" text-anchor="middle" font-size="17" fill="#a3b1c4">40+ мин</text></svg>
+        <div class="note" style="--k:var(--green)">1,0 — как обычное видео этого же канала. Все длительности около 1,0.</div>
+      </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>13 / 19</span></div>
-  <template class="notes"><p>⏱ 5 мин (готовые кадры, вживую не запускаем). Это рабочая база автора курса: кулинарные YouTube-каналы, собранные через официальный API. 26 544 каналов, 416 809 видео, 668 665 замеров просмотров. Данные лежат в трёх связанных таблицах и обновляются каждый день, поэтому выгружать их в файл ради каждого вопроса неудобно.</p><p>Приём тот же, что с Excel: вы описываете таблицу и задаёте вопрос словами, модель пишет запрос на языке SQL, база считает сама за секунду. SQL читается почти как английский: выбрать длительность, посчитать видео, взять типичные просмотры, из таблицы видео, сгруппировать по длительности. MEDIAN — типичное значение: половина видео выше, половина ниже. Среднее портят редкие вирусные хиты.</p><p>Первый ответ соблазнительный: видео на 20–40 минут набирают в 12 раз больше коротких. Но длинные видео чаще снимают большие каналы, у которых и так много зрителей. Второй запрос сравнивает каждое видео с обычными видео его же канала, и разница почти исчезает. Вывод «снимайте длинные видео» эти данные не доказывают. Тот же случай, что со Social.</p><p>Срез обезличен: убраны описания, ссылки, телефоны и id YouTube, e-mail в выборке нет. Файлы целиком студентам не раздаём, показываем только графики. Запросы и ответы: demo_v2/channels/queries.sql и results/answers.md.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>26 / 31</span></div>
+  <template class="notes"><p>⏱ 2 мин (готовые кадры, вживую не запускаем). Это рабочая база автора курса: кулинарные YouTube-каналы, собранные через официальный API. 26 544 каналов, 416 809 видео, 668 665 замеров просмотров. Данные лежат в трёх связанных таблицах и обновляются каждый день, поэтому выгружать их в файл ради каждого вопроса неудобно.</p><p>Приём тот же, что с Excel: вы описываете таблицу и задаёте вопрос словами, модель пишет запрос на языке SQL, база считает сама за секунду. SQL читается почти как английский: выбрать длительность, посчитать видео, взять типичные просмотры, из таблицы видео, сгруппировать по длительности. MEDIAN — типичное значение: половина видео выше, половина ниже. Среднее портят редкие вирусные хиты.</p><p>Первый ответ соблазнительный: видео на 20–40 минут набирают в 12 раз больше коротких. Но длинные видео чаще снимают большие каналы, у которых и так много зрителей. Второй запрос сравнивает каждое видео с обычными видео его же канала, и разница почти исчезает. Вывод «снимайте длинные видео» эти данные не доказывают. Тот же случай, что со Social.</p><p>Срез обезличен: убраны описания, ссылки, телефоны и id YouTube, e-mail в выборке нет. Файлы целиком студентам не раздаём, показываем только графики. Запросы и ответы: demo_v2/channels/queries.sql и results/answers.md.</p></template>
 </section>
-<!-- SLIDE 14 · s_sources · 3 min -->
-<section class="slide" data-n="14">
-  <div class="kicker">Откуда берутся данные</div>
+<!-- SLIDE 27 · s_sources · 2 min -->
+<section class="slide" data-n="27">
+  <div class="kicker">Часть 4 • откуда берутся данные</div>
   <h2 class="title">Сначала ищите кнопку «Экспорт», потом API. Скрапинг — последний вариант</h2>
   <div class="body" style="margin-top:18px;">
     <div class="row" style="grid-template-columns:1fr 1.25fr 1fr;gap:22px;align-items:center;">
@@ -629,19 +812,19 @@ svg.dia text { font-family: var(--body); }
   <span class="st">"subscriberCount"</span>: <span class="nm">"184000"</span>,
   <span class="st">"videoCount"</span>: <span class="nm">"412"</span> }</div>
         <div class="w">Программа спрашивает сервис и получает ответ вот в таком виде. ИИ пишет скрипт, который превращает это в строки таблицы.</div>
-        <div class="o">так собрана база каналов со слайда 13</div></div>
+        <div class="o">так собрана база каналов со слайда 24</div></div>
       <div class="door" style="--k:var(--red)"><svg viewBox="0 0 48 48" width="52" height="52" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M6 24 h36 M24 6 c-8 8 -8 28 0 36 M24 6 c8 8 8 28 0 36"/></svg><div class="h">3. Скрапинг</div>
         <div class="w">Программа читает страницы сайта, как человек. Перед этим проверьте:</div>
         <ul class="checklist" style="gap:8px;"><li style="font-size:20px;">условия сайта разрешают</li><li style="font-size:20px;">нет персональных данных</li><li style="font-size:20px;">не нагружаете чужой сайт</li></ul></div>
     </div>
     <div class="plaque" style="margin-top:18px;"><b>Вопрос для ИИ:</b> «Какой официальный экспорт или API есть у системы X, чтобы выгрузить продажи за год?»</div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>14 / 19</span></div>
-  <template class="notes"><p>Перед началом слайда отправьте в чат промпт 6 (отчёт и скрипт): ответ идёт 3–4 минуты, к слайду 15 файл будет готов.</p><p>⏱ 3 мин. Данные для анализа почти всегда уже где-то лежат. Первое, что ищем, — кнопку экспорта: она есть в CRM, 1С, рекламных кабинетах, YouTube Studio. Это самый быстрый и безопасный путь.</p><p>Второе — официальный API: программный вход в сервис. Ответ приходит в виде JSON, как в середине слайда. Код писать самим не нужно: ИИ напишет скрипт, который превратит ответ в таблицу. Так, через YouTube Data API, собрана база каналов, которую мы только что видели. Пример JSON на слайде упрощён.</p><p>Третье — скрапинг: программа читает страницы сайта. Это последний вариант. Три проверки: условия сайта разрешают, нет персональных данных, вы не создаёте нагрузку на чужой сервер. Для большинства рабочих задач хватает экспорта.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>27 / 31</span></div>
+  <template class="notes"><p>Перед началом слайда отправьте в чат промпт 6 (отчёт и скрипт): ответ идёт 3–4 минуты, к слайду 28 файл будет готов.</p><p>⏱ 2 мин. Данные для анализа почти всегда уже где-то лежат. Первое, что ищем, — кнопку экспорта: она есть в CRM, 1С, рекламных кабинетах, YouTube Studio. Это самый быстрый и безопасный путь.</p><p>Второе — официальный API: программный вход в сервис. Ответ приходит в виде JSON, как в середине слайда. Код писать самим не нужно: ИИ напишет скрипт, который превратит ответ в таблицу. Так, через YouTube Data API, собрана база каналов, которую мы только что видели. Пример JSON на слайде упрощён.</p><p>Третье — скрапинг: программа читает страницы сайта. Это последний вариант. Три проверки: условия сайта разрешают, нет персональных данных, вы не создаёте нагрузку на чужой сервер. Для большинства рабочих задач хватает экспорта.</p></template>
 </section>
-<!-- SLIDE 15 · s_report · 5 min -->
-<section class="slide" data-n="15">
-  <div class="kicker" style="--k:var(--green)">Итог анализа</div>
+<!-- SLIDE 28 · s_report · 3 min -->
+<section class="slide" data-n="28">
+  <div class="kicker" style="--k:var(--green)">Часть 5 • ответ Анне</div>
   <h2 class="title">Руководителю отправляем файл отчёта. Превью в чате может врать</h2>
   <div class="body" style="margin-top:12px;">
     <div class="row" style="grid-template-columns:0.95fr 1fr 0.85fr;gap:22px;align-items:center;">
@@ -659,30 +842,12 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>15 / 19</span></div>
-  <template class="notes"><p>⏱ 5 мин (1 живой промпт). Итог анализа — файл, который можно переслать, а не скриншот чата. Промпт 6 просит две вещи: страницу отчёта и скрипт-рецепт.</p><p>Слева то, что ChatGPT показал в чате как превью отчёта: стоковая картинка с «Series A–E» и чужими числами. В центре — тот же отчёт, скачанный и открытый: всё на месте, числа наши. Вывод простой: превью не проверяем, проверяем открытый файл.</p><p>Справа рецепт: скрипт, который строит те же три графика из файла следующего месяца. В январе не нужно повторять весь диалог: кладёте новый файл и запускаете скрипт, в Colab или через чат: «запусти этот скрипт на новом файле». Оговорка: скрипт ждёт книгу с листами Sales и Reviews. На учебном demo_v2/northstar_sales_2026-01.csv (только продажи, один месяц) график отзывов не построится, а на графике по месяцам будет одна точка. Это нормально: скажите студентам заранее.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>28 / 31</span></div>
+  <template class="notes"><p>⏱ 3 мин (1 живой промпт). Итог анализа — файл, который можно переслать, а не скриншот чата. Промпт 6 просит две вещи: страницу отчёта и скрипт-рецепт.</p><p>Слева то, что ChatGPT показал в чате как превью отчёта: стоковая картинка с «Series A–E» и чужими числами. В центре — тот же отчёт, скачанный и открытый: всё на месте, числа наши. Вывод простой: превью не проверяем, проверяем открытый файл.</p><p>Справа рецепт: скрипт, который строит те же три графика из файла следующего месяца. В январе не нужно повторять весь диалог: кладёте новый файл и запускаете скрипт, в Colab или через чат: «запусти этот скрипт на новом файле». Оговорка: скрипт ждёт книгу с листами Sales и Reviews. На учебном demo_v2/northstar_sales_2026-01.csv (только продажи, один месяц) график отзывов не построится, а на графике по месяцам будет одна точка. Это нормально: скажите студентам заранее.</p></template>
 </section>
-<!-- SLIDE 16 · s_causal · 2 min -->
-<section class="slide" data-n="16">
-  <div class="kicker" style="--k:var(--red)">После находки</div>
-  <h2 class="title">Таблица говорит, что было. Что будет после урезания бюджета, покажет только тест</h2>
-  <div class="lead">Соблазн после демо: <b>урезать рекламу Social вдвое?</b></div>
-  <div class="body" style="margin-top:14px;">
-    <div class="row" style="grid-template-columns:1fr 1fr;gap:50px;align-items:center;">
-      <div class="stack" style="gap:20px;">
-        <div class="note" style="--k:var(--amber)">Данные показывают: с июля Social тратит вдвое больше на каждый доллар выручки.</div>
-        <div class="note" style="--k:var(--red)">Данные не показывают: сколько выручки пропадёт, если рекламу урезать.</div>
-        <div class="plaque g"><b>Как узнать:</b> урезать бюджет в одном регионе на 2–4 недели и сравнить с остальными.</div>
-      </div>
-      <svg class="dia" viewBox="0 0 620 330"><defs><marker id="ca" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#5f6e84"/></marker></defs><defs><marker id="cr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#f87171"/></marker></defs><rect x="10" y="0" width="290" height="54" rx="10" fill="#0f1624" stroke="#5f6e84" stroke-width="1.5" stroke-dasharray="5 4"/><text x="155" y="35" text-anchor="middle" font-size="21" fill="#a3b1c4">сезон распродаж</text><rect x="320" y="0" width="290" height="54" rx="10" fill="#0f1624" stroke="#5f6e84" stroke-width="1.5" stroke-dasharray="5 4"/><text x="465" y="35" text-anchor="middle" font-size="21" fill="#a3b1c4">кому показывали рекламу</text><rect x="10" y="66" width="290" height="54" rx="10" fill="#0f1624" stroke="#5f6e84" stroke-width="1.5" stroke-dasharray="5 4"/><text x="155" y="101" text-anchor="middle" font-size="21" fill="#a3b1c4">новые креативы</text><rect x="320" y="66" width="290" height="54" rx="10" fill="#0f1624" stroke="#5f6e84" stroke-width="1.5" stroke-dasharray="5 4"/><text x="465" y="101" text-anchor="middle" font-size="21" fill="#a3b1c4">кому засчитали продажу</text><path d="M310 124 L 310 133" stroke="#5f6e84" stroke-width="2"/><path d="M310 138 L 160 194" stroke="#5f6e84" stroke-width="2" fill="none" marker-end="url(#ca)"/><path d="M310 138 L 460 194" stroke="#5f6e84" stroke-width="2" fill="none" marker-end="url(#ca)"/><text x="310" y="178" text-anchor="middle" font-size="18" fill="#a3b1c4">влияют на оба</text><rect x="40" y="200" width="220" height="70" rx="12" fill="#0f1624" stroke="#fbbf24" stroke-width="2"/><text x="150" y="243" text-anchor="middle" font-size="22" font-weight="700" fill="#f1f5f9">бюджет Social</text><rect x="360" y="200" width="220" height="70" rx="12" fill="#0f1624" stroke="#fbbf24" stroke-width="2"/><text x="470" y="243" text-anchor="middle" font-size="22" font-weight="700" fill="#f1f5f9">выручка</text><path d="M264 235 L 354 235" stroke="#f87171" stroke-width="3" fill="none" stroke-dasharray="8 6" marker-end="url(#cr)"/><text x="309" y="300" text-anchor="middle" font-size="19" font-weight="700" fill="#f87171">причина? не доказано</text></svg>
-    </div>
-  </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>16 / 19</span></div>
-  <template class="notes"><p>⏱ 2 мин. После находки про Social хочется сразу урезать бюджет. Модель часто так и советует. Но таблица описывает прошлое. На бюджет и на выручку одновременно влияют сезон, аудитория, креативы и то, какому каналу засчитали продажу.</p><p>Хороший ответ ИИ звучит так: «по этим данным нельзя сказать, сколько выручки пропадёт; предлагаю тест». Если модель так не ответила, спросите: «Какое допущение ты делаешь?»</p></template>
-</section>
-<!-- SLIDE 17 · s_privacy · 2 min -->
-<section class="slide" data-n="17">
-  <div class="kicker" style="--k:var(--amber)">Данные и приватность</div>
+<!-- SLIDE 29 · s_privacy · 1 min -->
+<section class="slide" data-n="29">
+  <div class="kicker" style="--k:var(--amber)">Часть 5 • данные и приватность</div>
   <h2 class="title">Что можно загружать в чат</h2>
   <div class="body" style="margin-top:20px;">
     <div class="row" style="grid-template-columns:1.3fr 1fr;gap:44px;align-items:center;">
@@ -693,12 +858,12 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>17 / 19</span></div>
-  <template class="notes"><p>⏱ 2 мин. Светофор. Зелёный — учебные и открытые данные, как наш файл. Жёлтый — внутренние данные компании, только в рабочем аккаунте. Красный — персональные данные клиентов и сотрудников, финансы, здоровье: только в одобренной компанией среде.</p><p>Настройки на октябрь 2026: бизнес-тарифы (ChatGPT Business/Enterprise, Claude Team/Enterprise/API, Google Workspace) по умолчанию на обучение не используются. В личных аккаунтах смотрите настройки, названия на слайде.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>29 / 31</span></div>
+  <template class="notes"><p>⏱ 1 мин. Светофор. Зелёный — учебные и открытые данные, как наш файл. Жёлтый — внутренние данные компании, только в рабочем аккаунте. Красный — персональные данные клиентов и сотрудников, финансы, здоровье: только в одобренной компанией среде.</p><p>Настройки на октябрь 2026: бизнес-тарифы (ChatGPT Business/Enterprise, Claude Team/Enterprise/API, Google Workspace) по умолчанию на обучение не используются. В личных аккаунтах смотрите настройки, названия на слайде.</p></template>
 </section>
-<!-- SLIDE 18 · s_hw · 4 min -->
-<section class="slide" data-n="18">
-  <div class="kicker" style="--k:var(--green)">Практика и домашнее задание</div>
+<!-- SLIDE 30 · s_hw · 2 min -->
+<section class="slide" data-n="30">
+  <div class="kicker" style="--k:var(--green)">Часть 5 • домашнее задание</div>
   <h2 class="title">Пакет, который можно отправить руководителю</h2>
   <div class="lead">Файл <code>northstar_2025.xlsx</code>. Ответьте Анне на одно письмо: <b>что с продажами за год и что проверить дальше?</b></div>
   <div class="body" style="margin-top:18px;">
@@ -716,21 +881,21 @@ svg.dia text { font-family: var(--body); }
       </div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>18 / 19</span></div>
-  <template class="notes"><p>⏱ 4 мин. Результат домашки — пакет из пяти частей, который другой человек откроет и поймёт за 5 минут. Книга Excel с формулой, которую написал ИИ, сводной и графиком. Три графика, один из них в паре «было / стало». Отчёт на одну страницу. Рецепт: промпт и скрипт, который строит графики по файлу января. Файл проверок.</p><p>Платная лицензия не нужна: путь через чат и скачанную книгу работает у всех. Свои рабочие данные — только обезличенные и с разрешения, по светофору. Отдельный пункт — одно утверждение, которое напрашивается, но данными не подтверждается. Например, «если урезать бюджет Social, выручка не упадёт».</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>30 / 31</span></div>
+  <template class="notes"><p>⏱ 2 мин. Результат домашки — пакет из пяти частей, который другой человек откроет и поймёт за 5 минут. Книга Excel с формулой, которую написал ИИ, сводной и графиком. Три графика, один из них в паре «было / стало». Отчёт на одну страницу. Рецепт: промпт и скрипт, который строит графики по файлу января. Файл проверок.</p><p>Платная лицензия не нужна: путь через чат и скачанную книгу работает у всех. Свои рабочие данные — только обезличенные и с разрешения, по светофору. Отдельный пункт — одно утверждение, которое напрашивается, но данными не подтверждается. Например, «если урезать бюджет Social, выручка не упадёт».</p></template>
 </section>
-<!-- SLIDE 19 · s_summary · 2 min -->
-<section class="slide" data-n="19">
+<!-- SLIDE 31 · s_summary · 1 min -->
+<section class="slide" data-n="31">
   <div class="kicker">Итоги</div>
   <h2 class="title">Что забрать с урока</h2>
   <div class="body" style="margin-top:14px;">
     <div class="row" style="grid-template-columns:1.5fr 1fr;gap:50px;align-items:center;">
-      <div class="rules" style="gap:24px;"><div class="rule" style="--k:var(--cyan)"><div class="n">1</div><div class="t">Промпт-опись первым<small>«опиши файл, предложи 5 вопросов, ничего не меняй»</small></div></div><div class="rule" style="--k:var(--green)"><div class="n">2</div><div class="t">Формулы словами<small>«формулами Excel, а не готовыми числами»</small></div></div><div class="rule" style="--k:var(--violet)"><div class="n">3</div><div class="t">Один график на один вопрос<small>заголовок — вывод, один акцентный цвет</small></div></div><div class="rule" style="--k:var(--amber)"><div class="n">4</div><div class="t">Отчёт файлом<small>открыть скачанный файл, приложить рецепт</small></div></div><div class="rule" style="--k:var(--red)"><div class="n">5</div><div class="t">60 секунд проверки<small>строки, одна точка, процент от чего</small></div></div></div>
+      <div class="rules" style="gap:24px;"><div class="rule" style="--k:var(--cyan)"><div class="n">1</div><div class="t">✓ Опись файла<small>«опиши файл, предложи 5 вопросов, ничего не меняй»</small></div></div><div class="rule" style="--k:var(--green)"><div class="n">2</div><div class="t">✓ Формула словами<small>«формулами Excel, а не готовыми числами» + щёлкнуть ячейку</small></div></div><div class="rule" style="--k:var(--violet)"><div class="n">3</div><div class="t">✓ График для слайда<small>один вопрос — один график, заголовок — вывод</small></div></div><div class="rule" style="--k:var(--amber)"><div class="n">4</div><div class="t">✓ Отчёт на страницу<small>открыть скачанный файл, приложить рецепт</small></div></div><div class="rule" style="--k:var(--red)"><div class="n">5</div><div class="t">✓ Проверка за минуту<small>строки, одна точка, процент от чего</small></div></div></div>
       <div class="plaque"><b>Следующий урок — L09:</b> экосистема Claude и артефакты. Тот же анализ станет интерактивной страницей, которую открывают по ссылке.</div>
     </div>
   </div>
-  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>19 / 19</span></div>
-  <template class="notes"><p>⏱ 2 мин. Пять приёмов, которые можно применить уже в понедельник на своей таблице: промпт-опись, формулы словами, один график на вопрос, отчёт файлом с рецептом и 60 секунд проверки.</p><p>Тизер L09: в Claude результат анализа можно сразу превратить в артефакт — интерактивную страницу с графиками, которую коллеги открывают по ссылке. Вопросы.</p></template>
+  <div class="foot"><span>GenAI Basics • Урок 08 • ИИ для анализа данных</span><span>31 / 31</span></div>
+  <template class="notes"><p>⏱ 1 мин. Пять приёмов, которые можно применить уже в понедельник на своей таблице: промпт-опись, формулы словами, один график на вопрос, отчёт файлом с рецептом и 60 секунд проверки.</p><p>Тизер L09: в Claude результат анализа можно сразу превратить в артефакт — интерактивную страницу с графиками, которую коллеги открывают по ссылке. Вопросы.</p></template>
 </section>
 
 </main>
